@@ -1,0 +1,12 @@
+markdown: redcarpet
+highlighter: pygments
+relative_permalinks: false
+permalink: /news/:year/:month/:day/:title/
+excerpt_separator: ""
+
+baseurl: /flows
+repository: https://github.com/rapidpro/flows
+
+collections:
+  examples:
+    output: true

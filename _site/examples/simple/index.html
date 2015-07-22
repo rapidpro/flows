@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="/flows/stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="/flows/fonts/rapidpro/style.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="/flows/stylesheets/rapidpro.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="/flows/stylesheets/print.css" media="print">
+    <link rel="stylesheet" type="text/css" href="/flows/stylesheets/syntax.css" media="screen">
+    <link rel="icon" type="image/x-icon" href="/flows/images/rapidpro.ico">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>RapidPro</title>
+  </head>
+
+
+<body class="wrap">
+  <header>
+  <div class="inner">
+    <a id="big-logo" class="logo icon-logo" href="/flows/" title="RapidPro"></a>
+    <h2>Specification and reference engine for RapidPro flows</h2>
+    <a href="https://github.com/rapidpro/rapidpro" class="button"><small>View project on</small> GitHub</a>
+
+    <ul id="navbar">
+      <li><a href="/flows/">Home</a></li>
+      <li><a href="/flows/actions/">Actions</a></li>
+      <li><a href="/flows/rules/">Rules</a></li>
+      <li><a href="/flows/input/">Input</a></li>
+      <li><a href="/flows/output/">Output</a></li>
+      <li><a href="/flows/examples/">Examples</a></li>      
+      <li><a href="/flows/about/">About</a></li>
+    </ul>
+  </div>
+</header>
+
+  <div id="content-wrapper">
+    <div class="inner clearfix">
+      <section id="main-content">
+        <h1>Simple Flow</h1>
+
+<p>Here we provide a few examples of flows, inputs and outputs to help implementors in grasping the concepts involved.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="p">{</span>
+  <span class="s2">&quot;base_language&quot;</span><span class="o">:</span> <span class="s2">&quot;fre&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;action_sets&quot;</span><span class="o">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;y&quot;</span><span class="o">:</span> <span class="mi">4</span><span class="p">,</span>
+      <span class="s2">&quot;x&quot;</span><span class="o">:</span> <span class="mi">119</span><span class="p">,</span>
+      <span class="s2">&quot;destination&quot;</span><span class="o">:</span> <span class="s2">&quot;a86b6a47-a400-4639-b8c7-1df8164eda67&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;uuid&quot;</span><span class="o">:</span> <span class="s2">&quot;bcbfdc41-232a-4549-b396-e23bd883646b&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;actions&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="s2">&quot;msg&quot;</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">&quot;fre&quot;</span><span class="o">:</span> <span class="s2">&quot;I like your grandpa&#39;s style, can I have his hand me downs?&quot;</span>
+          <span class="p">},</span>
+          <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;reply&quot;</span>
+        <span class="p">}</span>
+      <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;y&quot;</span><span class="o">:</span> <span class="mi">114</span><span class="p">,</span>
+      <span class="s2">&quot;x&quot;</span><span class="o">:</span> <span class="mi">595</span><span class="p">,</span>
+      <span class="s2">&quot;destination&quot;</span><span class="o">:</span> <span class="s2">&quot;a86b6a47-a400-4639-b8c7-1df8164eda67&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;uuid&quot;</span><span class="o">:</span> <span class="s2">&quot;07eff9c4-d4ba-4973-86c0-e5bd23a32ebc&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;actions&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="s2">&quot;msg&quot;</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">&quot;fre&quot;</span><span class="o">:</span> <span class="s2">&quot;Please answer yes or no.&quot;</span>
+          <span class="p">},</span>
+          <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;reply&quot;</span>
+        <span class="p">}</span>
+      <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;y&quot;</span><span class="o">:</span> <span class="mi">327</span><span class="p">,</span>
+      <span class="s2">&quot;x&quot;</span><span class="o">:</span> <span class="mi">122</span><span class="p">,</span>
+      <span class="s2">&quot;destination&quot;</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="s2">&quot;uuid&quot;</span><span class="o">:</span> <span class="s2">&quot;3e16d2b9-689f-4f92-8134-5471231b5e49&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;actions&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="s2">&quot;msg&quot;</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">&quot;fre&quot;</span><span class="o">:</span> <span class="s2">&quot;Thank you!&quot;</span>
+          <span class="p">},</span>
+          <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;reply&quot;</span>
+        <span class="p">}</span>
+      <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;y&quot;</span><span class="o">:</span> <span class="mi">326</span><span class="p">,</span>
+      <span class="s2">&quot;x&quot;</span><span class="o">:</span> <span class="mi">350</span><span class="p">,</span>
+      <span class="s2">&quot;destination&quot;</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="s2">&quot;uuid&quot;</span><span class="o">:</span> <span class="s2">&quot;c3acc747-e5a9-446a-a187-7ed300f1f3b5&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;actions&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="s2">&quot;msg&quot;</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">&quot;fre&quot;</span><span class="o">:</span> <span class="s2">&quot;No but for real, I&#39;m going to take your grandpa&#39;s style!&quot;</span>
+          <span class="p">},</span>
+          <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;reply&quot;</span>
+        <span class="p">}</span>
+      <span class="p">]</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="s2">&quot;last_saved&quot;</span><span class="o">:</span> <span class="s2">&quot;2015-06-17T19:37:45.943020Z&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;entry&quot;</span><span class="o">:</span> <span class="s2">&quot;bcbfdc41-232a-4549-b396-e23bd883646b&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;rule_sets&quot;</span><span class="o">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;uuid&quot;</span><span class="o">:</span> <span class="s2">&quot;a86b6a47-a400-4639-b8c7-1df8164eda67&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;webhook_action&quot;</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="s2">&quot;rules&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="s2">&quot;category&quot;</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">&quot;base&quot;</span><span class="o">:</span> <span class="s2">&quot;Yes&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;fre&quot;</span><span class="o">:</span> <span class="s2">&quot;Yes&quot;</span>
+          <span class="p">},</span>
+          <span class="s2">&quot;uuid&quot;</span><span class="o">:</span> <span class="s2">&quot;b88451fb-fc8e-476a-b7d8-44af34ffba3d&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;destination&quot;</span><span class="o">:</span> <span class="s2">&quot;3e16d2b9-689f-4f92-8134-5471231b5e49&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;destination_type&quot;</span><span class="o">:</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;test&quot;</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">&quot;test&quot;</span><span class="o">:</span> <span class="p">{</span>
+              <span class="s2">&quot;fre&quot;</span><span class="o">:</span> <span class="s2">&quot;yes y&quot;</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;base&quot;</span><span class="o">:</span> <span class="s2">&quot;yes y&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;contains_any&quot;</span>
+          <span class="p">},</span>
+          <span class="s2">&quot;config&quot;</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;contains_any&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;verbose_name&quot;</span><span class="o">:</span> <span class="s2">&quot;has any of these words&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;Contains any&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;localized&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+            <span class="s2">&quot;operands&quot;</span><span class="o">:</span> <span class="mi">1</span>
+          <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+          <span class="s2">&quot;category&quot;</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">&quot;base&quot;</span><span class="o">:</span> <span class="s2">&quot;No&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;fre&quot;</span><span class="o">:</span> <span class="s2">&quot;No&quot;</span>
+          <span class="p">},</span>
+          <span class="s2">&quot;uuid&quot;</span><span class="o">:</span> <span class="s2">&quot;5d3b5539-f285-4623-a7fd-b36bf37221ed&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;destination&quot;</span><span class="o">:</span> <span class="s2">&quot;c3acc747-e5a9-446a-a187-7ed300f1f3b5&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;destination_type&quot;</span><span class="o">:</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;test&quot;</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">&quot;test&quot;</span><span class="o">:</span> <span class="p">{</span>
+              <span class="s2">&quot;fre&quot;</span><span class="o">:</span> <span class="s2">&quot;No n&quot;</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;base&quot;</span><span class="o">:</span> <span class="s2">&quot;No n&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;contains_any&quot;</span>
+          <span class="p">},</span>
+          <span class="s2">&quot;config&quot;</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;contains_any&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;verbose_name&quot;</span><span class="o">:</span> <span class="s2">&quot;has any of these words&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;Contains any&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;localized&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+            <span class="s2">&quot;operands&quot;</span><span class="o">:</span> <span class="mi">1</span>
+          <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+          <span class="s2">&quot;category&quot;</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">&quot;base&quot;</span><span class="o">:</span> <span class="s2">&quot;Other&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;fre&quot;</span><span class="o">:</span> <span class="s2">&quot;Other&quot;</span>
+          <span class="p">},</span>
+          <span class="s2">&quot;uuid&quot;</span><span class="o">:</span> <span class="s2">&quot;4ae1b3e3-158d-4109-b926-1a2767cc5112&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;destination&quot;</span><span class="o">:</span> <span class="s2">&quot;07eff9c4-d4ba-4973-86c0-e5bd23a32ebc&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;destination_type&quot;</span><span class="o">:</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;test&quot;</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">&quot;test&quot;</span><span class="o">:</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;true&quot;</span>
+          <span class="p">},</span>
+          <span class="s2">&quot;config&quot;</span><span class="o">:</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;verbose_name&quot;</span><span class="o">:</span> <span class="s2">&quot;contains anything&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;Other&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;operands&quot;</span><span class="o">:</span> <span class="mi">0</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">],</span>
+      <span class="s2">&quot;webhook&quot;</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="s2">&quot;label&quot;</span><span class="o">:</span> <span class="s2">&quot;Hand Me Downs&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;operand&quot;</span><span class="o">:</span> <span class="s2">&quot;@step.value&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;finished_key&quot;</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="s2">&quot;response_type&quot;</span><span class="o">:</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;y&quot;</span><span class="o">:</span> <span class="mi">186</span><span class="p">,</span>
+      <span class="s2">&quot;x&quot;</span><span class="o">:</span> <span class="mi">243</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="s2">&quot;metadata&quot;</span><span class="o">:</span> <span class="p">{}</span>
+<span class="p">}</span>
+</code></pre></div>
+      </section>
+
+      <aside id="sidebar">
+        <div class="unit one-fifth hide-on-mobiles">
+  <aside>
+    
+    <h3>Overview</h3>
+    
+
+<ul>
+  
+  
+
+  
+  
+  
+
+  
+  
+  
+  
+  
+  
+  <li class="current"><a href="/flows/examples/simple/">Simple Flow</a></li>
+  
+  
+
+  
+  
+
+  
+  
+  
+
+  
+  
+  
+  
+  <li class=""><a href="/flows/examples/registration/">Registration Flow</a></li>
+  
+  
+  
+  
+
+  
+</ul>
+
+    
+  </aside>
+</div>
+
+      </aside>
+    </div>
+  </div>
+
+</body>
+
+
+</html>
+
