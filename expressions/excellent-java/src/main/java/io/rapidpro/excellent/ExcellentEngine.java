@@ -7,7 +7,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.util.Map;
 
 /**
- *
+ * Public interface for the Excellent templating engine
  */
 public class ExcellentEngine {
 
@@ -18,11 +18,13 @@ public class ExcellentEngine {
         return new ExcellentEngine();
     }
 
-    public String evaluateTemplate(String template, Map<String, Object> context) {
+    public String evaluateTemplate(String template, EvaluationContext context) {
+        // TODO parse template, evaluate expressions
+
         throw new NotImplementedException();
     }
 
-    public Object evaluateExpression(String expression, Map<String, Object> context) {
+    public Object evaluateExpression(String expression, EvaluationContext context) {
         ExcellentLexer lexer = new ExcellentLexer(new ANTLRInputStream(expression));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         ExcellentParser parser = new ExcellentParser(tokens);

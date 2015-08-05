@@ -4,14 +4,14 @@ import java.math.BigDecimal;
 import java.util.*;
 
 /**
- *
+ * Visitor for our expression trees
  */
 public class ExcellentVisitorImpl extends ExcellentBaseVisitor<Object> {
 
-    private Map<String, Object> m_context;
+    private EvaluationContext m_evalContext;
 
-    public ExcellentVisitorImpl(Map<String, Object> context) {
-        this.m_context = context;
+    public ExcellentVisitorImpl(EvaluationContext context) {
+        this.m_evalContext = context;
     }
 
     @Override
@@ -19,23 +19,21 @@ public class ExcellentVisitorImpl extends ExcellentBaseVisitor<Object> {
         String funcName = ctx.NAME().getText();
         List<Object> parameters;
         if (ctx.parameters() != null) {
-            Object paramz = visit(ctx.parameters());
-            parameters = (List<Object>) paramz;
+            parameters = (List<Object>) visit(ctx.parameters());
         } else {
             parameters = Collections.emptyList();
         }
-        return ExcellentUtils.invokeFunction(funcName, parameters);
+        return EvaluationUtils.invokeFunction(funcName, parameters);
     }
 
     @Override
-    public Object visitParameterList(ExcellentParser.ParameterListContext ctx) {
-        //if len(p) == 2:
-        //    p[0] = [p[1]]
-        //else:
-        //    p[0] = p[1]
-        //    p[0].append(p[3])
+    public Object visitFunctionParameters(ExcellentParser.FunctionParametersContext ctx) {
+        List<Object> paramValues = new ArrayList<>();
+        for (ExcellentParser.ExpressionContext expression : ctx.expression()) {
+            paramValues.add(visit(expression));
+        }
 
-        return super.visitParameterList(ctx);
+        return paramValues;
     }
 
     @Override
@@ -61,14 +59,7 @@ public class ExcellentVisitorImpl extends ExcellentBaseVisitor<Object> {
     @Override
     public Object visitContextReference(ExcellentParser.ContextReferenceContext ctx) {
         String identifier = ctx.NAME().getText();
-
-        // TODO implement dot notation etc
-
-        if (!m_context.containsKey(identifier.toLowerCase())) {
-            throw new EvaluationError("No item called '" + identifier + "' in the context");
-        }
-
-        return m_context.get(identifier.toLowerCase());
+        return m_evalContext.read(identifier);
 
     }
 
@@ -80,7 +71,7 @@ public class ExcellentVisitorImpl extends ExcellentBaseVisitor<Object> {
     @Override
     public Object visitStringLiteral(ExcellentParser.StringLiteralContext ctx) {
         String raw = ctx.STRING().getText();
-        String val = raw.substring(1, raw.length() - 2);  // remove enclosing quotes
+        String val = raw.substring(1, raw.length() - 1);  // remove enclosing quotes
         return val.replaceAll("\"\"", "\"");  // un-escape double quotes
     }
 }

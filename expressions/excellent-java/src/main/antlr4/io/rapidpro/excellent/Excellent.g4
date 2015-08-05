@@ -36,7 +36,5 @@ expression : NAME LPAREN parameters? RPAREN              # functionCall
            | DECIMAL                                     # decimalLiteral
            ;
 
-parameters : expression                     # ParameterList
-           | parameters COMMA expression    # ParameterList
+parameters : expression (COMMA expression)*              # functionParameters
            ;
-

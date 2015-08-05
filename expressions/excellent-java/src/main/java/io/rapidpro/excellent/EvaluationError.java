@@ -1,7 +1,7 @@
 package io.rapidpro.excellent;
 
 /**
- *
+ * Exception class for evaluation errors which should be given back to the user
  */
 public class EvaluationError extends RuntimeException {
 
