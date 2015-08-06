@@ -1,6 +1,6 @@
 package io.rapidpro.excellent.functions;
 
-import io.rapidpro.excellent.Conversions;
+import io.rapidpro.excellent.parser.Conversions;
 import io.rapidpro.excellent.functions.annotations.BooleanDefault;
 import io.rapidpro.excellent.functions.annotations.IntegerDefault;
 import org.apache.commons.lang3.StringUtils;

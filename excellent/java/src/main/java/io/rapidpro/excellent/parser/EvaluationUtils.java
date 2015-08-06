@@ -1,5 +1,6 @@
-package io.rapidpro.excellent;
+package io.rapidpro.excellent.parser;
 
+import io.rapidpro.excellent.EvaluationError;
 import io.rapidpro.excellent.functions.Functions;
 import io.rapidpro.excellent.functions.annotations.BooleanDefault;
 import io.rapidpro.excellent.functions.annotations.IntegerDefault;

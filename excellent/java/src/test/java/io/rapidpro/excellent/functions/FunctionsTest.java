@@ -1,6 +1,5 @@
-package io.rapidpro.excellent;
+package io.rapidpro.excellent.functions;
 
-import io.rapidpro.excellent.functions.Functions;
 import org.junit.Test;
 
 import java.math.BigDecimal;

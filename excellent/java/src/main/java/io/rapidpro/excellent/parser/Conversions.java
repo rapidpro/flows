@@ -1,4 +1,6 @@
-package io.rapidpro.excellent;
+package io.rapidpro.excellent.parser;
+
+import io.rapidpro.excellent.EvaluationError;
 
 import java.math.BigDecimal;
 

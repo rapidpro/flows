@@ -1,12 +1,13 @@
-package io.rapidpro.excellent;
+package io.rapidpro.excellent.parser;
 
+import io.rapidpro.excellent.EvaluationError;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests for {@link io.rapidpro.excellent.Conversions}
+ * Tests for {@link Conversions}
  */
 public class ConversionsTest {
 

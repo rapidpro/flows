@@ -11,7 +11,7 @@ public class EvaluatedTemplate {
 
     private List<String> m_errors;
 
-    EvaluatedTemplate(String m_content, List<String> m_errors) {
+    public EvaluatedTemplate(String m_content, List<String> m_errors) {
         this.m_content = m_content;
         this.m_errors = m_errors;
     }

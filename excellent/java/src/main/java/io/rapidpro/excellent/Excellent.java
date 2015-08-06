@@ -1,5 +1,7 @@
 package io.rapidpro.excellent;
 
+import io.rapidpro.excellent.parser.TemplateEvaluatorImpl;
+
 /**
  * Public interface for the Excellent templating system
  */

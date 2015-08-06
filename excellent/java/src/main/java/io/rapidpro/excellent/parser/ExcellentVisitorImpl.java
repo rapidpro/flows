@@ -1,4 +1,6 @@
-package io.rapidpro.excellent;
+package io.rapidpro.excellent.parser;
+
+import io.rapidpro.excellent.*;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -73,6 +75,16 @@ public class ExcellentVisitorImpl extends ExcellentBaseVisitor<Object> {
         String raw = ctx.STRING().getText();
         String val = raw.substring(1, raw.length() - 1);  // remove enclosing quotes
         return val.replaceAll("\"\"", "\"");  // un-escape double quotes
+    }
+
+    @Override
+    public Object visitTrue(ExcellentParser.TrueContext ctx) {
+        return Boolean.TRUE;
+    }
+
+    @Override
+    public Object visitFalse(ExcellentParser.FalseContext ctx) {
+        return Boolean.FALSE;
     }
 
     @Override

@@ -1,5 +1,6 @@
-package io.rapidpro.excellent;
+package io.rapidpro.excellent.parser;
 
+import io.rapidpro.excellent.*;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 import org.slf4j.Logger;

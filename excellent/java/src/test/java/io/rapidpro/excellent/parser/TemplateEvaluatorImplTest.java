@@ -1,9 +1,13 @@
-package io.rapidpro.excellent;
+package io.rapidpro.excellent.parser;
 
+import io.rapidpro.excellent.EvaluatedTemplate;
+import io.rapidpro.excellent.EvaluationContext;
+import io.rapidpro.excellent.Excellent;
 import org.junit.Test;
 
 import java.math.BigDecimal;
 
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -16,7 +20,9 @@ public class TemplateEvaluatorImplTest {
 
     @Test
     public void evaluateTemplate() {
-        assertThat(m_evaluator.evaluateTemplate("Answer is @(2 + 3)", new EvaluationContext()).getContent(), is("Answer is 5"));
+        EvaluatedTemplate evaluated = m_evaluator.evaluateTemplate("Answer is @(2 + 3)", new EvaluationContext());
+        assertThat(evaluated.getContent(), is("Answer is 5"));
+        assertThat(evaluated.getErrors(), empty());
     }
 
     @Test
