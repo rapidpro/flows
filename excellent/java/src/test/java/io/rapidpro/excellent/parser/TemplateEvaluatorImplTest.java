@@ -37,6 +37,7 @@ public class TemplateEvaluatorImplTest {
         assertThat(m_evaluator.evaluateExpression("\"سلام\"", new EvaluationContext()), is("سلام"));
         assertThat(m_evaluator.evaluateExpression("\"He said \"\"hi\"\" \"", new EvaluationContext()), is("He said \"hi\" "));
 
+        assertThat(m_evaluator.evaluateExpression("-10", new EvaluationContext()), is(new BigDecimal(-10)));
         assertThat(m_evaluator.evaluateExpression("1 + 2", new EvaluationContext()), is(new BigDecimal(3)));
         assertThat(m_evaluator.evaluateExpression("1.3 + 2.2", new EvaluationContext()), is(new BigDecimal("3.5")));
         assertThat(m_evaluator.evaluateExpression("1.3 - 2.2", new EvaluationContext()), is(new BigDecimal("-0.9")));

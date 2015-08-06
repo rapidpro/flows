@@ -4,6 +4,7 @@ import io.rapidpro.excellent.*;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Visitor for our expression trees
@@ -30,22 +31,12 @@ public class ExcellentVisitorImpl extends ExcellentBaseVisitor<Object> {
 
     @Override
     public Object visitFunctionParameters(ExcellentParser.FunctionParametersContext ctx) {
-        List<Object> paramValues = new ArrayList<>();
-        for (ExcellentParser.ExpressionContext expression : ctx.expression()) {
-            paramValues.add(visit(expression));
-        }
-
-        return paramValues;
+        return ctx.expression().stream().map(this::visit).collect(Collectors.toList());
     }
 
     @Override
-    public Object visitAdditionOrSubtractionExpression(ExcellentParser.AdditionOrSubtractionExpressionContext ctx) {
-        boolean addition = ctx.PLUS() != null;
-
-        BigDecimal arg1 = Conversions.toDecimal(visit(ctx.expression(0)));
-        BigDecimal arg2 = Conversions.toDecimal(visit(ctx.expression(1)));
-
-        return addition ? arg1.add(arg2) : arg1.subtract(arg2);
+    public Object visitNegation(ExcellentParser.NegationContext ctx) {
+        return Conversions.toDecimal(visit(ctx.expression())).negate();
     }
 
     @Override
@@ -59,10 +50,13 @@ public class ExcellentVisitorImpl extends ExcellentBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitContextReference(ExcellentParser.ContextReferenceContext ctx) {
-        String identifier = ctx.NAME().getText();
-        return m_evalContext.read(identifier);
+    public Object visitAdditionOrSubtractionExpression(ExcellentParser.AdditionOrSubtractionExpressionContext ctx) {
+        boolean addition = ctx.PLUS() != null;
 
+        BigDecimal arg1 = Conversions.toDecimal(visit(ctx.expression(0)));
+        BigDecimal arg2 = Conversions.toDecimal(visit(ctx.expression(1)));
+
+        return addition ? arg1.add(arg2) : arg1.subtract(arg2);
     }
 
     @Override
@@ -85,6 +79,13 @@ public class ExcellentVisitorImpl extends ExcellentBaseVisitor<Object> {
     @Override
     public Object visitFalse(ExcellentParser.FalseContext ctx) {
         return Boolean.FALSE;
+    }
+
+    @Override
+    public Object visitContextReference(ExcellentParser.ContextReferenceContext ctx) {
+        String identifier = ctx.NAME().getText();
+        return m_evalContext.read(identifier);
+
     }
 
     @Override
