@@ -1,3 +1,1 @@
-Hi Bob,Hi Bob,{},No expressions
-2 plus 3 is @(5),2 plus 3 is 5,{},Single literal in expression
-Answer is @(2 + 3 - 1),Answer is 4,{},
+Hi Bob,Hi Bob,{},N,No expressions2 plus 3 is @(5),2 plus 3 is 5,{},N,Single literal in expressionAnswer is @(2 + 3 - 1),Answer is 4,{},N,Hi @contact,Hi Bob,"{""contact"": {""*"": ""Bob"", ""name"": ""Bob""}}",N,Hi @contact.name,Hi Bob,"{""contact"": {""*"": ""Bob"", ""name"": ""Bob""}}",N,Hi @(contact.name),Hi Bob,"{""contact"": {""*"": ""Bob"", ""name"": ""Bob""}}",N,

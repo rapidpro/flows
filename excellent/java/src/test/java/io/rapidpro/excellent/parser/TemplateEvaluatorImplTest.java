@@ -21,7 +21,7 @@ public class TemplateEvaluatorImplTest {
     @Test
     public void evaluateTemplate() {
         EvaluatedTemplate evaluated = m_evaluator.evaluateTemplate("Answer is @(2 + 3)", new EvaluationContext());
-        assertThat(evaluated.getContent(), is("Answer is 5"));
+        assertThat(evaluated.getOutput(), is("Answer is 5"));
         assertThat(evaluated.getErrors(), empty());
     }
 

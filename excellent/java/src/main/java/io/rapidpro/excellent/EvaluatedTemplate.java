@@ -7,17 +7,17 @@ import java.util.List;
  */
 public class EvaluatedTemplate {
 
-    private String m_content;
+    private String m_output;
 
     private List<String> m_errors;
 
-    public EvaluatedTemplate(String m_content, List<String> m_errors) {
-        this.m_content = m_content;
+    public EvaluatedTemplate(String m_output, List<String> m_errors) {
+        this.m_output = m_output;
         this.m_errors = m_errors;
     }
 
-    public String getContent() {
-        return m_content;
+    public String getOutput() {
+        return m_output;
     }
 
     public List<String> getErrors() {

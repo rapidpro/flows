@@ -1,6 +1,7 @@
 package io.rapidpro.excellent.parser;
 
 import io.rapidpro.excellent.*;
+import io.rapidpro.excellent.functions.Functions;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -26,7 +27,7 @@ public class ExcellentVisitorImpl extends ExcellentBaseVisitor<Object> {
         } else {
             parameters = Collections.emptyList();
         }
-        return EvaluationUtils.invokeFunction(funcName, parameters);
+        return EvaluationUtils.invokeFunction(Functions.class, funcName, parameters);
     }
 
     @Override
