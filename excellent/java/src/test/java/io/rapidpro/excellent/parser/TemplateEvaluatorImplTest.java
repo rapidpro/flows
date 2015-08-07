@@ -43,6 +43,9 @@ public class TemplateEvaluatorImplTest {
         assertThat(m_evaluator.evaluateExpression("1.3 - 2.2", new EvaluationContext()), is(new BigDecimal("-0.9")));
         assertThat(m_evaluator.evaluateExpression("4 * 2", new EvaluationContext()), is(new BigDecimal(8)));
         assertThat(m_evaluator.evaluateExpression("4 / 2", new EvaluationContext()), is(new BigDecimal(2)));
+        assertThat(m_evaluator.evaluateExpression("4 ^ 2", new EvaluationContext()), is(new BigDecimal(16)));
+        assertThat(m_evaluator.evaluateExpression("4 ^ 0.5", new EvaluationContext()), is(new BigDecimal(2)));
+        assertThat(m_evaluator.evaluateExpression("4 ^ -1", new EvaluationContext()), is(new BigDecimal("0.25")));
 
         EvaluationContext context = new EvaluationContext();
         context.put("foo", 5);

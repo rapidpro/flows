@@ -258,7 +258,7 @@ public class Functions {
     public static BigDecimal power(Object number, Object power) {
         BigDecimal _number = Conversions.toDecimal(number);
         BigDecimal _power = Conversions.toDecimal(power);
-        return new BigDecimal(Math.pow(_number.doubleValue(), _power.doubleValue()));
+        return EvaluationUtils.pow(_number, _power);
     }
 
     /**

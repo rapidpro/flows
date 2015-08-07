@@ -41,6 +41,13 @@ public class ExcellentVisitorImpl extends ExcellentBaseVisitor<Object> {
     }
 
     @Override
+    public Object visitExponentExpression(ExcellentParser.ExponentExpressionContext ctx) {
+        BigDecimal exp1 = Conversions.toDecimal(visit(ctx.expression(0)));
+        BigDecimal exp2 = Conversions.toDecimal(visit(ctx.expression(1)));
+        return EvaluationUtils.pow(exp1, exp2);
+    }
+
+    @Override
     public Object visitMultiplicationOrDivisionExpression(ExcellentParser.MultiplicationOrDivisionExpressionContext ctx) {
         boolean multiplication = ctx.TIMES() != null;
 

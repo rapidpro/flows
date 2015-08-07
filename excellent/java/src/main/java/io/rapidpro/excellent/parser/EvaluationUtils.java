@@ -8,6 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -114,5 +115,12 @@ public class EvaluationUtils {
         stop = Math.min(size, stop);
 
         return list.subList(start, stop);
+    }
+
+    /**
+     * Pow for two decimals
+     */
+    public static BigDecimal pow(BigDecimal number, BigDecimal power) {
+        return new BigDecimal(Math.pow(number.doubleValue(), power.doubleValue()));
     }
 }

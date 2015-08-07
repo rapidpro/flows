@@ -8,7 +8,7 @@ PLUS       : '+';
 MINUS      : '-';
 TIMES      : '*';
 DIVIDE     : '/';
-EXPONENT   : '^'; // TODO
+EXPONENT   : '^';
 
 EQ         : '=';
 NEQ        : '<>';
@@ -32,6 +32,7 @@ WS         : [ \t\n\r]+ -> skip;  // ignore whitespace
 
 expression : NAME LPAREN parameters? RPAREN              # functionCall
            | MINUS expression                            # negation
+           | expression EXPONENT expression              # exponentExpression
            | expression (TIMES | DIVIDE) expression      # multiplicationOrDivisionExpression
            | expression (PLUS | MINUS) expression        # additionOrSubtractionExpression
            | expression (LTE | LT | GTE | GT) expression # comparisonExpression
