@@ -1,18 +1,20 @@
 package io.rapidpro.excellent;
 
-import io.rapidpro.excellent.parser.TemplateEvaluatorImpl;
+import io.rapidpro.excellent.evaluator.TemplateEvaluatorImpl;
 
 /**
  * Public interface for the Excellent templating system
  */
 public class Excellent {
 
+    private static TemplateEvaluator s_evaluator = new TemplateEvaluatorImpl();
+
     /**
      * Gets a template evaluator instance
      * @return the instance
      */
     public static TemplateEvaluator getTemplateEvaluator() {
-        return new TemplateEvaluatorImpl();
+        return s_evaluator;
     }
 
     /**

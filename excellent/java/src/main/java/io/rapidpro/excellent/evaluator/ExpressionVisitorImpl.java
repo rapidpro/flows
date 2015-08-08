@@ -1,7 +1,7 @@
-package io.rapidpro.excellent.parser;
+package io.rapidpro.excellent.evaluator;
 
 import io.rapidpro.excellent.*;
-import io.rapidpro.excellent.functions.Functions;
+import io.rapidpro.excellent.functions.FunctionManager;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -10,11 +10,13 @@ import java.util.stream.Collectors;
 /**
  * Visitor for our expression trees
  */
-public class ExcellentVisitorImpl extends ExcellentBaseVisitor<Object> {
+public class ExpressionVisitorImpl extends ExcellentBaseVisitor<Object> {
 
+    private FunctionManager m_functions;
     private EvaluationContext m_evalContext;
 
-    public ExcellentVisitorImpl(EvaluationContext context) {
+    public ExpressionVisitorImpl(FunctionManager functions, EvaluationContext context) {
+        this.m_functions = functions;
         this.m_evalContext = context;
     }
 
@@ -27,7 +29,7 @@ public class ExcellentVisitorImpl extends ExcellentBaseVisitor<Object> {
         } else {
             parameters = Collections.emptyList();
         }
-        return EvaluationUtils.invokeFunction(Functions.class, funcName, parameters);
+        return m_functions.invokeFunction(funcName, parameters);
     }
 
     @Override
@@ -44,7 +46,7 @@ public class ExcellentVisitorImpl extends ExcellentBaseVisitor<Object> {
     public Object visitExponentExpression(ExcellentParser.ExponentExpressionContext ctx) {
         BigDecimal exp1 = Conversions.toDecimal(visit(ctx.expression(0)));
         BigDecimal exp2 = Conversions.toDecimal(visit(ctx.expression(1)));
-        return EvaluationUtils.pow(exp1, exp2);
+        return EvaluatorUtils.pow(exp1, exp2);
     }
 
     @Override
@@ -68,8 +70,22 @@ public class ExcellentVisitorImpl extends ExcellentBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitDecimalLiteral(ExcellentParser.DecimalLiteralContext ctx) {
-        return new BigDecimal(ctx.DECIMAL().getText());
+    public Object visitComparisonExpression(ExcellentParser.ComparisonExpressionContext ctx) {
+        // TODO
+        return super.visitComparisonExpression(ctx);
+    }
+
+    @Override
+    public Object visitEqualityExpression(ExcellentParser.EqualityExpressionContext ctx) {
+        // TODO
+        return super.visitEqualityExpression(ctx);
+    }
+
+    @Override
+    public Object visitConcatenation(ExcellentParser.ConcatenationContext ctx) {
+        String arg1 = Conversions.toString(visit(ctx.expression(0)));
+        String arg2 = Conversions.toString(visit(ctx.expression(1)));
+        return arg1 + arg2;
     }
 
     @Override
@@ -77,6 +93,11 @@ public class ExcellentVisitorImpl extends ExcellentBaseVisitor<Object> {
         String raw = ctx.STRING().getText();
         String val = raw.substring(1, raw.length() - 1);  // remove enclosing quotes
         return val.replaceAll("\"\"", "\"");  // un-escape double quotes
+    }
+
+    @Override
+    public Object visitDecimalLiteral(ExcellentParser.DecimalLiteralContext ctx) {
+        return new BigDecimal(ctx.DECIMAL().getText());
     }
 
     @Override
@@ -93,7 +114,6 @@ public class ExcellentVisitorImpl extends ExcellentBaseVisitor<Object> {
     public Object visitContextReference(ExcellentParser.ContextReferenceContext ctx) {
         String identifier = ctx.NAME().getText();
         return m_evalContext.read(identifier);
-
     }
 
     @Override

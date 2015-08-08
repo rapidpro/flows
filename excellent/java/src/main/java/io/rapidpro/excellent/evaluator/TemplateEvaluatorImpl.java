@@ -1,6 +1,9 @@
-package io.rapidpro.excellent.parser;
+package io.rapidpro.excellent.evaluator;
 
 import io.rapidpro.excellent.*;
+import io.rapidpro.excellent.functions.CustomFunctions;
+import io.rapidpro.excellent.functions.FunctionManager;
+import io.rapidpro.excellent.functions.ExcelFunctions;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
 import org.slf4j.Logger;
@@ -17,6 +20,13 @@ import java.util.List;
 public class TemplateEvaluatorImpl implements Excellent.TemplateEvaluator {
 
     protected static Logger logger = LoggerFactory.getLogger(TemplateEvaluatorImpl.class);
+
+    private FunctionManager m_functionManager = new FunctionManager();
+
+    public TemplateEvaluatorImpl() {
+        m_functionManager.addLibrary(ExcelFunctions.class);
+        m_functionManager.addLibrary(CustomFunctions.class);
+    }
 
     /**
      * Templates support 2 forms of embedded expression:
@@ -169,7 +179,7 @@ public class TemplateEvaluatorImpl implements Excellent.TemplateEvaluator {
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         ExcellentParser parser = new ExcellentParser(tokens);
         ParseTree tree = parser.expression();
-        ExcellentVisitor visitor = new ExcellentVisitorImpl(context);
+        ExcellentVisitor visitor = new ExpressionVisitorImpl(m_functionManager, context);
         return visitor.visit(tree);
     }
 }

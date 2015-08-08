@@ -1,4 +1,4 @@
-package io.rapidpro.excellent.parser;
+package io.rapidpro.excellent.evaluator;
 
 import io.rapidpro.excellent.EvaluationError;
 

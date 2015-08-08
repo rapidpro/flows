@@ -1,4 +1,4 @@
-package io.rapidpro.excellent.parser;
+package io.rapidpro.excellent.evaluator;
 
 import io.rapidpro.excellent.EvaluatedTemplate;
 import io.rapidpro.excellent.EvaluationContext;
@@ -46,6 +46,17 @@ public class TemplateEvaluatorImplTest {
         assertThat(m_evaluator.evaluateExpression("4 ^ 2", new EvaluationContext()), is(new BigDecimal(16)));
         assertThat(m_evaluator.evaluateExpression("4 ^ 0.5", new EvaluationContext()), is(new BigDecimal(2)));
         assertThat(m_evaluator.evaluateExpression("4 ^ -1", new EvaluationContext()), is(new BigDecimal("0.25")));
+
+        assertThat(m_evaluator.evaluateExpression("\"foo\" & \"bar\"", new EvaluationContext()), is("foobar"));
+        assertThat(m_evaluator.evaluateExpression("2 & 3 & 4", new EvaluationContext()), is("234"));
+
+        // check precedence
+        assertThat(m_evaluator.evaluateExpression("2 + 3 / 4 - 5 * 6", new EvaluationContext()), is(new BigDecimal("-27.25")));
+        assertThat(m_evaluator.evaluateExpression("2 & 3 + 4 & 5", new EvaluationContext()), is("275"));
+
+        // check associativity
+        assertThat(m_evaluator.evaluateExpression("2 - -2 + 7", new EvaluationContext()), is(new BigDecimal(11)));
+        assertThat(m_evaluator.evaluateExpression("2 ^ 3 ^ 4", new EvaluationContext()), is(new BigDecimal(4096)));
 
         EvaluationContext context = new EvaluationContext();
         context.put("foo", 5);

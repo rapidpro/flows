@@ -37,6 +37,7 @@ expression : NAME LPAREN parameters? RPAREN              # functionCall
            | expression (PLUS | MINUS) expression        # additionOrSubtractionExpression
            | expression (LTE | LT | GTE | GT) expression # comparisonExpression
            | expression (EQ | NEQ) expression            # equalityExpression
+           | expression AMPERSAND expression             # concatenation
            | STRING                                      # stringLiteral
            | DECIMAL                                     # decimalLiteral
            | TRUE                                        # true
