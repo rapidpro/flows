@@ -4,8 +4,11 @@ import io.rapidpro.excellent.*;
 import io.rapidpro.excellent.functions.CustomFunctions;
 import io.rapidpro.excellent.functions.FunctionManager;
 import io.rapidpro.excellent.functions.ExcelFunctions;
+import org.abego.treelayout.internal.util.java.lang.string.StringUtil;
 import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.*;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,11 +100,6 @@ public class TemplateEvaluatorImpl implements Excellent.TemplateEvaluator {
                 currentExpression.append(ch);
             }
             else if (state == State.IDENTIFIER) {
-                if (ch == '(') {
-                    state = State.BALANCED;
-                    parenthesesLevel += 1;
-                }
-
                 currentExpression.append(ch);
             }
             else if (state == State.BALANCED) {
@@ -129,10 +127,10 @@ public class TemplateEvaluatorImpl implements Excellent.TemplateEvaluator {
 
             // identifier can terminate expression in 3 ways:
             //  1. next char is null (i.e. end of the input)
-            //  2. next char is not a word character or period or left parentheses
+            //  2. next char is not a word character or period
             //  3. next char is a period, but it's not followed by a word character
             if (state == State.IDENTIFIER) {
-                if (nextCh == 0  || (!isWordChar(nextCh) && nextCh != '.' && nextCh != '(') || (nextCh == '.' && ! isWordChar(nextNextCh))) {
+                if (nextCh == 0  || (!isWordChar(nextCh) && nextCh != '.') || (nextCh == '.' && ! isWordChar(nextNextCh))) {
                     currentExpressionTerminated = true;
                 }
             }
@@ -143,6 +141,11 @@ public class TemplateEvaluatorImpl implements Excellent.TemplateEvaluator {
                 currentExpressionTerminated = false;
                 state = State.BODY;
             }
+        }
+
+        // if last expression didn't terminate - add to output as is
+        if (!currentExpressionTerminated && StringUtils.isNotEmpty(currentExpression)) {
+            output.append(currentExpression.toString());
         }
 
         return new EvaluatedTemplate(output.toString(), errors);
@@ -177,8 +180,22 @@ public class TemplateEvaluatorImpl implements Excellent.TemplateEvaluator {
     public Object evaluateExpression(String expression, EvaluationContext context) throws EvaluationError {
         ExcellentLexer lexer = new ExcellentLexer(new ANTLRInputStream(expression));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
+
         ExcellentParser parser = new ExcellentParser(tokens);
-        ParseTree tree = parser.expression();
+        parser.setErrorHandler(new BailErrorStrategy());
+        ParseTree tree;
+
+        try {
+            tree = parser.input();
+
+            if (logger.isDebugEnabled()) {
+                logger.info("Expression '{}' parsed as {}", expression, tree.toStringTree());
+            }
+        }
+        catch (ParseCancellationException ex) {
+            throw new EvaluationError("Expression is invalid", ex);
+        }
+
         ExcellentVisitor visitor = new ExpressionVisitorImpl(m_functionManager, context);
         return visitor.visit(tree);
     }

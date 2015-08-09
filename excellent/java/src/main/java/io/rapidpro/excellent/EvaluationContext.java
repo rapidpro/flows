@@ -65,7 +65,7 @@ public class EvaluationContext extends HashMap<String, Object> {
             }
         }
         else {
-            throw new EvaluationError("No item called '" + originalPath + " in context");
+            throw new EvaluationError("No item called " + originalPath + " in context");
         }
     }
 

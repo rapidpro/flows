@@ -2,7 +2,9 @@ package io.rapidpro.excellent.evaluator;
 
 import io.rapidpro.excellent.EvaluatedTemplate;
 import io.rapidpro.excellent.EvaluationContext;
+import io.rapidpro.excellent.EvaluationError;
 import io.rapidpro.excellent.Excellent;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -22,6 +24,13 @@ public class TemplateEvaluatorImplTest {
     public void evaluateTemplate() {
         EvaluatedTemplate evaluated = m_evaluator.evaluateTemplate("Answer is @(2 + 3)", new EvaluationContext());
         assertThat(evaluated.getOutput(), is("Answer is 5"));
+        assertThat(evaluated.getErrors(), empty());
+    }
+
+    @Test
+    public void evaluateTemplate_unbalancedExpression() {
+        EvaluatedTemplate evaluated = m_evaluator.evaluateTemplate("Answer is @(2 + 3", new EvaluationContext());
+        assertThat(evaluated.getOutput(), is("Answer is @(2 + 3"));
         assertThat(evaluated.getErrors(), empty());
     }
 
@@ -70,5 +79,31 @@ public class TemplateEvaluatorImplTest {
         assertThat(m_evaluator.evaluateExpression("FIXED(1234.5678)", new EvaluationContext()), is("1,234.57"));
         assertThat(m_evaluator.evaluateExpression("FIXED(1234.5678, 1)", new EvaluationContext()), is("1,234.6"));
         assertThat(m_evaluator.evaluateExpression("FIXED(1234.5678, 1, True)", new EvaluationContext()), is("1234.6"));
+    }
+
+    @Test
+    public void evaluateExpression_withErrors() {
+        EvaluationContext context = new EvaluationContext();
+        context.put("foo", 5);
+
+        // parser errors
+        assertErrorMessage("0 /", context, "Expression is invalid");
+        assertErrorMessage("\"", context, "Expression is invalid");
+        assertErrorMessage("1.1.0", context, "Expression is invalid");
+
+        // evaluation errors
+        assertErrorMessage("X", context, "No item called X in context");
+        assertErrorMessage("2 / 0", context, "Division by zero");
+        assertErrorMessage("0 / 0", context, "Division by zero");
+    }
+
+    protected void assertErrorMessage(String expression, EvaluationContext context, String expectedMessage) {
+        try {
+            m_evaluator.evaluateExpression(expression, context);
+            Assert.fail();
+        }
+        catch (EvaluationError ex) {
+            assertThat(ex.getMessage(), is(expectedMessage));
+        }
     }
 }

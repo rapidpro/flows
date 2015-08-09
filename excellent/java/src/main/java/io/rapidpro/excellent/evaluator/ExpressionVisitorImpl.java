@@ -21,6 +21,11 @@ public class ExpressionVisitorImpl extends ExcellentBaseVisitor<Object> {
     }
 
     @Override
+    public Object visitInput(ExcellentParser.InputContext ctx) {
+        return visit(ctx.expression());
+    }
+
+    @Override
     public Object visitFunctionCall(ExcellentParser.FunctionCallContext ctx) {
         String funcName = ctx.NAME().getText();
         List<Object> parameters;
@@ -55,6 +60,10 @@ public class ExpressionVisitorImpl extends ExcellentBaseVisitor<Object> {
 
         BigDecimal arg1 = Conversions.toDecimal(visit(ctx.expression(0)));
         BigDecimal arg2 = Conversions.toDecimal(visit(ctx.expression(1)));
+
+        if (!multiplication && arg2.equals(BigDecimal.ZERO)) {
+            throw new EvaluationError("Division by zero");
+        }
 
         return multiplication ? arg1.multiply(arg2) : arg1.divide(arg2);
     }
@@ -120,4 +129,9 @@ public class ExpressionVisitorImpl extends ExcellentBaseVisitor<Object> {
     public Object visitParentheses(ExcellentParser.ParenthesesContext ctx) {
         return visit(ctx.expression());
     }
+
+    //@Override
+    //public Object visitTokenError(ExcellentParser.TokenErrorContext ctx) {
+    //    throw new EvaluationError("Expression is invalid");
+    //}
 }
