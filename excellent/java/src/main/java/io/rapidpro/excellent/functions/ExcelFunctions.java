@@ -264,6 +264,16 @@ public class ExcelFunctions {
     }
 
     /**
+     * Returns a random integer number between the numbers you specify
+     */
+    public static int randbetween(Object bottom, Object top) {
+        int _bottom = Conversions.toInteger(bottom);
+        int _top = Conversions.toInteger(top);
+
+        return (int)(Math.random() * (_top + 1 - _bottom)) + _bottom;
+    }
+
+    /**
      * Returns the sum of all arguments
      */
     public static BigDecimal sum(Object... args) {

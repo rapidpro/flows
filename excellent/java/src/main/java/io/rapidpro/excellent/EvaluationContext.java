@@ -76,7 +76,7 @@ public class EvaluationContext extends HashMap<String, Object> {
     /**
      * JSON de-serializer for context objects
      */
-    private static class ContextDeserializer implements JsonDeserializer<EvaluationContext> {
+    public static class ContextDeserializer implements JsonDeserializer<EvaluationContext> {
         @Override
         public EvaluationContext deserialize(JsonElement node, Type type, JsonDeserializationContext context) throws JsonParseException {
             EvaluationContext obj = new EvaluationContext();

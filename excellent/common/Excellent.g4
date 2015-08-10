@@ -21,7 +21,7 @@ GT         : '>';
 AMPERSAND  : '&';
 
 DECIMAL    : [0-9]+('.'[0-9]+)?;
-STRING     : '"' (~[\r\n"] | '""')* '"';
+STRING     : '"' (~["] | '""')* '"';
 
 TRUE       : [Tt][Rr][Uu][Ee];
 FALSE      : [Ff][Aa][Ll][Ss][Ee];

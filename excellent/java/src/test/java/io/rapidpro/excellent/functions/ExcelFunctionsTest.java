@@ -4,6 +4,8 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
 import static io.rapidpro.excellent.functions.ExcelFunctions.*;
 import static org.hamcrest.Matchers.*;
@@ -211,6 +213,11 @@ public class ExcelFunctionsTest {
         assertThat(rand(), instanceOf(BigDecimal.class));
         assertThat(rand().compareTo(BigDecimal.ZERO), greaterThan(0));
         assertThat(rand().compareTo(BigDecimal.ONE), lessThan(0));
+    }
+
+    @Test
+    public void test_randbetween() {
+        assertThat(randbetween("2", 4), is(both(greaterThanOrEqualTo(2)).and(lessThanOrEqualTo(4))));
     }
 
     @Test

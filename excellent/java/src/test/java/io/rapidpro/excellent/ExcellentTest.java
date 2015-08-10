@@ -1,7 +1,8 @@
 package io.rapidpro.excellent;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVRecord;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.SerializedName;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
@@ -12,6 +13,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * Tests for {@link Excellent}
@@ -24,31 +26,18 @@ public class ExcellentTest {
     }
 
     @Test
-    public void standardDataSetTest() throws Exception {
+    public void templateTests() throws Exception {
         Excellent.TemplateEvaluator evaluator = Excellent.getTemplateEvaluator();
 
-        InputStream in = ExcellentTest.class.getClassLoader().getResourceAsStream("tests.csv");
-        Iterable<CSVRecord> records = CSVFormat.EXCEL.parse(new InputStreamReader(in));
+        InputStream in = ExcellentTest.class.getClassLoader().getResourceAsStream("template_tests.json");
 
-        List<TemplateTest> tests = new ArrayList<>();
+        GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapter(EvaluationContext.class, new EvaluationContext.ContextDeserializer());
+        Gson gson = builder.create();
+
+        TemplateTest[] tests = gson.fromJson(new InputStreamReader(in), TemplateTest[].class);
+
         List<TemplateTest> failures = new ArrayList<>();
-
-        // load tests from spreadsheet
-        boolean isHeader = true;
-        for (CSVRecord record : records) {
-            if (isHeader) {
-                isHeader = false;
-                continue;
-            }
-            tests.add(new TemplateTest(
-                    record.get(0),
-                    EvaluationContext.fromJson(record.get(1)),
-                    record.get(2).equals("Y"),
-                    record.get(3),
-                    record.get(4)
-            ));
-        }
-
         long start = System.currentTimeMillis();
 
         // run the tests
@@ -60,51 +49,52 @@ public class ExcellentTest {
 
         long duration = System.currentTimeMillis() - start;
 
-        System.out.println("Completed " + tests.size() + " template tests in " + duration + "ms (failures=" + failures.size() + ")");
-        System.out.println("Failed tests:\n");
+        System.out.println("Completed " + tests.length + " template tests in " + duration + "ms (failures=" + failures.size() + ")");
 
-        for (TemplateTest test : failures) {
-            System.out.println("Template: " + test.template);
-            if (!test.expectedOutput.equals(test.actualOutput)) {
+        if (!failures.isEmpty()) {
+            System.out.println("Failed tests:");
+
+            for (TemplateTest test : failures) {
+                System.out.println("========================================");
+                System.out.println("Template: " + test.template);
                 System.out.println("Expected output: " + test.expectedOutput);
                 System.out.println("Actual output: " + test.actualOutput);
+                System.out.println("Expected errors: " + StringUtils.join(test.expectedErrors, ", "));
+                System.out.println("Actual errors: " + StringUtils.join(test.actualErrors, ", "));
             }
-            if (!test.expectedError.equals(test.actualError)) {
-                System.out.println("Expected error: " + test.expectedError);
-                System.out.println("Actual error: " + test.actualError);
-            }
-            System.out.println();
-        }
 
-        // fail unit test if there were any errors
-        assertThat(failures, empty());
+            fail("There were failures in the template tests");  // fail unit test if there were any errors
+        }
     }
 
     protected class TemplateTest {
-        String template;
-        EvaluationContext context;
-        boolean urlEncode;
+        @SerializedName("template") String template;
+        @SerializedName("context") EvaluationContext context;
+        @SerializedName("url_encode") boolean urlEncode;
 
-        String expectedOutput;
-        String expectedError;
+        @SerializedName("output") String expectedOutput;
+        @SerializedName("errors") String[] expectedErrors;
 
         String actualOutput;
-        String actualError;
-
-        public TemplateTest(String template, EvaluationContext context, boolean urlEncode, String expectedOutput, String expectedError) {
-            this.template = template;
-            this.context = context;
-            this.urlEncode = urlEncode;
-            this.expectedOutput = expectedOutput;
-            this.expectedError = expectedError;
-        }
+        List<String> actualErrors;
 
         public boolean run(Excellent.TemplateEvaluator evaluator) {
             EvaluatedTemplate evaluated = evaluator.evaluateTemplate(template, context, urlEncode);
             this.actualOutput = evaluated.getOutput();
-            this.actualError = evaluated.getErrors().isEmpty() ? "" : evaluated.getErrors().get(0);
+            this.actualErrors = evaluated.getErrors();
 
-            return actualOutput.equals(expectedOutput) && actualError.equals(expectedError);
+            if (!expectedOutput.equals(actualOutput)) {
+                return false;
+            }
+            if (expectedErrors.length != actualErrors.size()) {
+                return false;
+            }
+            for (int e = 0; e < expectedErrors.length; e++) {
+                if (!expectedErrors[e].equals(actualErrors.get(e))) {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

@@ -1,0 +1,37 @@
+[
+  {"template": "Hi Bob", "context": {}, "url_encode": false, "output": "Hi Bob", "errors": []}, /* no expression */
+  {"template": "2 plus 3 is @(5)", "context": {}, "url_encode": false, "output": "2 plus 3 is 5", "errors": []}, /* single literal */
+  {"template": "Answer is @(2 + 3 - 1)", "context": {}, "url_encode": false, "output": "Answer is 4", "errors": []},
+
+  /* context */
+
+  {"template": "Hi @CONTACT", "context": {"contact": {"*": "Bob", "name": "Bob"}}, "url_encode": false, "output": "Hi Bob", "errors": []},
+  {"template": "Hi @contact.name", "context": {"contact": {"*": "Bob", "name": "Bob"}}, "url_encode": false, "output": "Hi Bob", "errors": []},
+  {"template": "Hi @(contact.name)", "context": {"contact": {"*": "Bob", "name": "Bob"}}, "url_encode": false, "output": "Hi Bob", "errors": []},
+  {"template": "@(X + Y + Z)", "context": {"x": 1.23, "y": 3, "z": "2"}, "url_encode": false, "output": "6.23", "errors": []},
+
+  /* functions */
+
+  {"template": "@(CHAR(9))@(CHAR(10))@(CHAR(32))@(CHAR(65))", "context": {}, "url_encode": false, "output": "\t\n A", "errors": []},
+  {"template": "@(CLEAN(\"Hello \nwo\tr\rld\"))", "context": {}, "url_encode": false, "output": "Hello world", "errors": []},
+  {"template": "@(CODE(\"\t\")) @(CODE(\"\n\"))", "context": {}, "url_encode": false, "output": "9 10", "errors": []},
+  {"template": "@(CONCATENATE(\"A\", 1, TRUE))", "context": {}, "url_encode": false, "output": "A1TRUE", "errors": []},
+  {"template": "@(FIXED(1234.5678, 1)) @(FIXED(1234.5678, 2))", "context": {}, "url_encode": false, "output": "1,234.6 1,234.57", "errors": []},
+  {"template": "@(FIXED(1234.5678, 0)) @(FIXED(1234.5678, -1))", "context": {}, "url_encode": false, "output": "1,235 1,230", "errors": []},
+  {"template": "@(FIXED(1234.5678, -4)) @(FIXED(1234.1234, 2))", "context": {}, "url_encode": false, "output": "0 1,234.12", "errors": []},
+  {"template": "@(FIXED(1234.5678, 3, FALSE)) @(FIXED(1234.5678, 3, TRUE))", "context": {}, "url_encode": false, "output": "1,234.568 1234.568", "errors": []},
+
+  /* syntax errors */
+
+  {"template": "@(5 + (1 + )", "context": {}, "url_encode": false, "output": "@(5 + (1 + )", "errors": []}, /* unbalanced parenthesis */
+  {"template": "@(\")", "context": {}, "url_encode": false, "output": "@(\")", "errors": []}, /* unterminated string literal */
+
+  /* evaluation errors */
+
+  {"template": "@SUM(1, 2)", "context": {}, "url_encode": false, "output": "@SUM(1, 2)", "errors": ["No item called SUM in context"]}, /* unsupported old syntax */
+  {"template": "@(0 / )", "context": {}, "url_encode": false, "output": "@(0 / )", "errors": ["Expression is invalid"]},
+  {"template": "@(1.1.0)", "context": {}, "url_encode": false, "output": "@(1.1.0)", "errors": ["Expression is invalid"]},
+  {"template": "@X", "context": {}, "url_encode": false, "output": "@X", "errors": ["No item called X in context"]},
+  {"template": "@(2/ 0)", "context": {}, "url_encode": false, "output": "@(2/ 0)", "errors": ["Division by zero"]},
+  {"template": "@(0 /0)", "context": {}, "url_encode": false, "output": "@(0 /0)", "errors": ["Division by zero"]}
+]
