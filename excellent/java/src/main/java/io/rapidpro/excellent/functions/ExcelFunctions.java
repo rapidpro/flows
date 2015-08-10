@@ -1,5 +1,7 @@
 package io.rapidpro.excellent.functions;
 
+import io.rapidpro.excellent.EvaluationContext;
+import io.rapidpro.excellent.EvaluationError;
 import io.rapidpro.excellent.evaluator.Conversions;
 import io.rapidpro.excellent.functions.annotations.BooleanDefault;
 import io.rapidpro.excellent.functions.annotations.IntegerDefault;
@@ -10,6 +12,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 
 /**
  * Library of supported Excel functions.
@@ -25,31 +28,31 @@ public class ExcelFunctions {
     /**
      * Returns the character specified by a number
      */
-    public static String _char(Object number) {
-        return "" + (char) Conversions.toInteger(number);
+    public static String _char(EvaluationContext ctx, Object number) {
+        return "" + (char) Conversions.toInteger(number, ctx);
     }
 
     /**
      * Removes all non-printable characters from a text string
      */
-    public static String clean(Object text) {
-        return Conversions.toString(text).replaceAll("\\p{C}", "");
+    public static String clean(EvaluationContext ctx, Object text) {
+        return Conversions.toString(text, ctx).replaceAll("\\p{C}", "");
     }
 
     /**
      * Returns a numeric code for the first character in a text string
      */
-    public static int code(Object text) {
-        return unicode(text); // everything is unicode
+    public static int code(EvaluationContext ctx, Object text) {
+        return unicode(ctx, text); // everything is unicode
     }
 
     /**
      * Joins text strings into one text string
      */
-    public static String concatenate(Object... args) {
+    public static String concatenate(EvaluationContext ctx, Object... args) {
         StringBuilder sb = new StringBuilder();
         for (Object arg : args) {
-            sb.append(Conversions.toString(arg));
+            sb.append(Conversions.toString(arg, ctx));
         }
         return sb.toString();
     }
@@ -57,47 +60,47 @@ public class ExcelFunctions {
     /**
      * Formats the given number in decimal format using a period and commas
      */
-    public static String fixed(Object number, @IntegerDefault(2) Object decimals, @BooleanDefault(false) Object noCommas) {
-        BigDecimal _number = Conversions.toDecimal(number);
-        _number = _number.setScale(Conversions.toInteger(decimals), RoundingMode.HALF_UP);
+    public static String fixed(EvaluationContext ctx, Object number, @IntegerDefault(2) Object decimals, @BooleanDefault(false) Object noCommas) {
+        BigDecimal _number = Conversions.toDecimal(number, ctx);
+        _number = _number.setScale(Conversions.toInteger(decimals, ctx), RoundingMode.HALF_UP);
 
         DecimalFormat format = new DecimalFormat();
         format.setMaximumFractionDigits(9);
-        format.setGroupingUsed(!Conversions.toBoolean(noCommas));
+        format.setGroupingUsed(!Conversions.toBoolean(noCommas, ctx));
         return format.format(_number);
     }
 
     /**
      * Returns the first characters in a text string
      */
-    public static String left(Object text, Object numChars) {
-        int _numChars = Conversions.toInteger(numChars);
+    public static String left(EvaluationContext ctx, Object text, Object numChars) {
+        int _numChars = Conversions.toInteger(numChars, ctx);
         if (_numChars < 0) {
             throw new RuntimeException("Number of chars can't be negative");
         }
 
-        return StringUtils.left(Conversions.toString(text), _numChars);
+        return StringUtils.left(Conversions.toString(text, ctx), _numChars);
     }
 
     /**
      * Returns the number of characters in a text string
      */
-    public static int len(Object text) {
-        return Conversions.toString(text).length();
+    public static int len(EvaluationContext ctx, Object text) {
+        return Conversions.toString(text, ctx).length();
     }
 
     /**
      * Converts a text string to lowercase
      */
-    public static String lower(Object text) {
-        return Conversions.toString(text).toLowerCase();
+    public static String lower(EvaluationContext ctx, Object text) {
+        return Conversions.toString(text, ctx).toLowerCase();
     }
 
     /**
      * Capitalizes the first letter of every word in a text string
      */
-    public static String proper(Object text) {
-        String _text = Conversions.toString(text).toLowerCase();
+    public static String proper(EvaluationContext ctx, Object text) {
+        String _text = Conversions.toString(text, ctx).toLowerCase();
 
         if (!StringUtils.isEmpty(_text)) {
             char[] buffer = _text.toCharArray();
@@ -121,35 +124,35 @@ public class ExcelFunctions {
     /**
      * Repeats text a given number of times
      */
-    public static String rept(Object text, Object numberTimes) {
-        int _numberTimes = Conversions.toInteger(numberTimes);
+    public static String rept(EvaluationContext ctx, Object text, Object numberTimes) {
+        int _numberTimes = Conversions.toInteger(numberTimes, ctx);
         if (_numberTimes < 0) {
             throw new RuntimeException("Number of times can't be negative");
         }
 
-        return StringUtils.repeat(Conversions.toString(text), _numberTimes);
+        return StringUtils.repeat(Conversions.toString(text, ctx), _numberTimes);
     }
 
     /**
      * Returns the last characters in a text string
      */
-    public static String right(Object text, Object numChars) {
-        int _numChars = Conversions.toInteger(numChars);
+    public static String right(EvaluationContext ctx, Object text, Object numChars) {
+        int _numChars = Conversions.toInteger(numChars, ctx);
         if (_numChars < 0) {
             throw new RuntimeException("Number of chars can't be negative");
         }
 
-        return StringUtils.right(Conversions.toString(text), _numChars);
+        return StringUtils.right(Conversions.toString(text, ctx), _numChars);
     }
 
     /**
      * Substitutes new_text for old_text in a text string
      */
-    public static String substitute(Object text, Object oldText, Object newText, @IntegerDefault(-1) Object instanceNum) {
-        String _text = Conversions.toString(text);
-        String _oldText = Conversions.toString(oldText);
-        String _newText = Conversions.toString(newText);
-        int _instanceNum = Conversions.toInteger(instanceNum);
+    public static String substitute(EvaluationContext ctx, Object text, Object oldText, Object newText, @IntegerDefault(-1) Object instanceNum) {
+        String _text = Conversions.toString(text, ctx);
+        String _oldText = Conversions.toString(oldText, ctx);
+        String _newText = Conversions.toString(newText, ctx);
+        int _instanceNum = Conversions.toInteger(instanceNum, ctx);
 
         if (_instanceNum < 0) {
             return _text.replace(_oldText, _newText);
@@ -169,15 +172,15 @@ public class ExcelFunctions {
     /**
      * Returns the unicode character specified by a number
      */
-    public static String unichar(Object number) {
-        return "" + (char) Conversions.toInteger(number);
+    public static String unichar(EvaluationContext ctx, Object number) {
+        return "" + (char) Conversions.toInteger(number, ctx);
     }
 
     /**
      * Returns a numeric code for the first character in a text string
      */
-    public static int unicode(Object text) {
-        String _text = Conversions.toString(text);
+    public static int unicode(EvaluationContext ctx, Object text) {
+        String _text = Conversions.toString(text, ctx);
         if (_text.length() == 0) {
             throw new RuntimeException("Text can't be empty");
         }
@@ -187,8 +190,8 @@ public class ExcelFunctions {
     /**
      * Converts a text string to uppercase
      */
-    public static String upper(Object text) {
-        return Conversions.toString(text).toUpperCase();
+    public static String upper(EvaluationContext ctx, Object text) {
+        return Conversions.toString(text, ctx).toUpperCase();
     }
 
     /************************************************************************************
@@ -198,8 +201,29 @@ public class ExcelFunctions {
     /**
      * Defines a date value
      */
-    public static LocalDate date(Object year, Object month, Object day) {
-        return LocalDate.of(Conversions.toInteger(year), Conversions.toInteger(month), Conversions.toInteger(day));
+    public static LocalDate date(EvaluationContext ctx, Object year, Object month, Object day) {
+        return LocalDate.of(Conversions.toInteger(year, ctx), Conversions.toInteger(month, ctx), Conversions.toInteger(day, ctx));
+    }
+
+    /**
+     * Converts date stored in text to an actual date
+     */
+    public static LocalDate datevalue(EvaluationContext ctx, Object text) {
+        return Conversions.toDate(text, ctx);
+    }
+
+    /**
+     * Returns the current date and time
+     */
+    public static ZonedDateTime now(EvaluationContext ctx) {
+        try {
+            // for consistency, take datetime from the context if it's defined
+            Object fromContext = ctx.resolveVariable("date.now");
+            return Conversions.toDateTime(fromContext, ctx);
+        }
+        catch (EvaluationError ex) {
+            return ZonedDateTime.now(ctx.getTimezone());
+        }
     }
 
     // TODO add the rest of the date functions
@@ -211,21 +235,21 @@ public class ExcelFunctions {
     /**
      * Returns the absolute value of a number
      */
-    public static BigDecimal abs(Object number) {
-        return Conversions.toDecimal(number).abs();
+    public static BigDecimal abs(EvaluationContext ctx, Object number) {
+        return Conversions.toDecimal(number, ctx).abs();
     }
 
     /**
      * Returns the maximum of all arguments
      */
-    public static BigDecimal max(Object... args) {
+    public static BigDecimal max(EvaluationContext ctx, Object... args) {
         if (args.length == 0) {
             throw new RuntimeException("Wrong number of arguments");
         }
 
         BigDecimal result = null;
         for (Object arg : args) {
-            BigDecimal _arg = Conversions.toDecimal(arg);
+            BigDecimal _arg = Conversions.toDecimal(arg, ctx);
             result = result != null ? _arg.max(result) : _arg;
         }
         return result;
@@ -234,14 +258,14 @@ public class ExcelFunctions {
     /**
      * Returns the minimum of all arguments
      */
-    public static BigDecimal min(Object... args) {
+    public static BigDecimal min(EvaluationContext ctx, Object... args) {
         if (args.length == 0) {
             throw new RuntimeException("Wrong number of arguments");
         }
 
         BigDecimal result = null;
         for (Object arg : args) {
-            BigDecimal _arg = Conversions.toDecimal(arg);
+            BigDecimal _arg = Conversions.toDecimal(arg, ctx);
             result = result != null ? _arg.min(result) : _arg;
         }
         return result;
@@ -250,9 +274,9 @@ public class ExcelFunctions {
     /**
      * Returns the result of a number raised to a power
      */
-    public static BigDecimal power(Object number, Object power) {
-        BigDecimal _number = Conversions.toDecimal(number);
-        BigDecimal _power = Conversions.toDecimal(power);
+    public static BigDecimal power(EvaluationContext ctx, Object number, Object power) {
+        BigDecimal _number = Conversions.toDecimal(number, ctx);
+        BigDecimal _power = Conversions.toDecimal(power, ctx);
         return EvaluatorUtils.pow(_number, _power);
     }
 
@@ -266,9 +290,9 @@ public class ExcelFunctions {
     /**
      * Returns a random integer number between the numbers you specify
      */
-    public static int randbetween(Object bottom, Object top) {
-        int _bottom = Conversions.toInteger(bottom);
-        int _top = Conversions.toInteger(top);
+    public static int randbetween(EvaluationContext ctx, Object bottom, Object top) {
+        int _bottom = Conversions.toInteger(bottom, ctx);
+        int _top = Conversions.toInteger(top, ctx);
 
         return (int)(Math.random() * (_top + 1 - _bottom)) + _bottom;
     }
@@ -276,14 +300,14 @@ public class ExcelFunctions {
     /**
      * Returns the sum of all arguments
      */
-    public static BigDecimal sum(Object... args) {
+    public static BigDecimal sum(EvaluationContext ctx, Object... args) {
         if (args.length == 0) {
             throw new RuntimeException("Wrong number of arguments");
         }
 
         BigDecimal result = BigDecimal.ZERO;
         for (Object arg : args) {
-            result = result.add(Conversions.toDecimal(arg));
+            result = result.add(Conversions.toDecimal(arg, ctx));
         }
         return result;
     }
@@ -295,9 +319,9 @@ public class ExcelFunctions {
     /**
      * Returns TRUE if and only if all its arguments evaluate to TRUE
      */
-    public static boolean and(Object... args) {
+    public static boolean and(EvaluationContext ctx, Object... args) {
         for (Object arg : args) {
-            if (!Conversions.toBoolean(arg)) {
+            if (!Conversions.toBoolean(arg, ctx)) {
                 return false;
             }
         }
@@ -314,16 +338,16 @@ public class ExcelFunctions {
     /**
      * Returns one value if the condition evaluates to TRUE, and another value if it evaluates to FALSE
      */
-    public static Object _if(Object logicalTest, @IntegerDefault(0) Object valueIfTrue, @BooleanDefault(false) Object valueIfFalse) {
-        return Conversions.toBoolean(logicalTest) ? valueIfTrue : valueIfFalse;
+    public static Object _if(EvaluationContext ctx, Object logicalTest, @IntegerDefault(0) Object valueIfTrue, @BooleanDefault(false) Object valueIfFalse) {
+        return Conversions.toBoolean(logicalTest, ctx) ? valueIfTrue : valueIfFalse;
     }
 
     /**
      * Returns TRUE if any argument is TRUE
      */
-    public static boolean or(Object... args) {
+    public static boolean or(EvaluationContext ctx, Object... args) {
         for (Object arg : args) {
-            if (Conversions.toBoolean(arg)) {
+            if (Conversions.toBoolean(arg, ctx)) {
                 return true;
             }
         }

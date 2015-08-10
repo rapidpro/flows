@@ -1,5 +1,6 @@
 package io.rapidpro.excellent.functions;
 
+import io.rapidpro.excellent.EvaluationContext;
 import io.rapidpro.excellent.EvaluationError;
 import io.rapidpro.excellent.functions.annotations.BooleanDefault;
 import io.rapidpro.excellent.functions.annotations.IntegerDefault;
@@ -46,11 +47,13 @@ public class FunctionManager {
     }
 
     /**
-     * Invokes a function in library
+     * Invokes a function
+     * @param ctx the evaluation context
+     * @param name the function name (case insensitive)
      * @param args the arguments to be passed to the function
-     * @return the the function return value
+     * @return the function return value
      */
-    public Object invokeFunction(String name, List<Object> args) {
+    public Object invokeFunction(EvaluationContext ctx, String name, List<Object> args) {
         // find function with given name
         Method func = getFunction(name);
         if (func == null) {
@@ -58,11 +61,16 @@ public class FunctionManager {
         }
 
         List<Object> parameters = new ArrayList<>();
+
         for (Parameter param : func.getParameters()) {
             IntegerDefault defaultInt = param.getAnnotation(IntegerDefault.class);
             BooleanDefault defaultBool = param.getAnnotation(BooleanDefault.class);
 
-            if (param.getType().isArray()) { // we've reach a varargs param
+            if (param.getType().equals(EvaluationContext.class)) {
+                parameters.add(ctx);
+            }
+            else if (param.getType().isArray()) {
+                // we've reach a varargs param
                 parameters.add(args.toArray(new Object[args.size()]));
                 args.clear();
                 break;

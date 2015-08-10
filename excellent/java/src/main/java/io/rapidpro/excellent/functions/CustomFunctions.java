@@ -1,5 +1,6 @@
 package io.rapidpro.excellent.functions;
 
+import io.rapidpro.excellent.EvaluationContext;
 import io.rapidpro.excellent.functions.annotations.BooleanDefault;
 import io.rapidpro.excellent.functions.annotations.IntegerDefault;
 import io.rapidpro.excellent.evaluator.Conversions;
@@ -21,24 +22,24 @@ public class CustomFunctions {
     /**
      * Returns the first word in the given text string
      */
-    public static String first_word(Object text) {
+    public static String first_word(EvaluationContext ctx, Object text) {
         // In Excel this would be IF(ISERR(FIND(" ",A2)),"",LEFT(A2,FIND(" ",A2)-1))
-        return word(text, 1, false);
+        return word(ctx, text, 1, false);
     }
 
     /**
      * Formats a number as a percentage
      */
-    public static String percent(Object number) {
-        int percent = Conversions.toInteger(Conversions.toDecimal(number).multiply(new BigDecimal(100)));
-        return percent + "%";
+    public static String percent(EvaluationContext ctx, Object number) {
+        BigDecimal percent = Conversions.toDecimal(number, ctx).multiply(new BigDecimal(100));
+        return Conversions.toInteger(percent, ctx) + "%";
     }
 
     /**
      * Formats digits in text for reading in TTS
      */
-    public static String read_digits(Object text) {
-        String _text = Conversions.toString(text).trim();
+    public static String read_digits(EvaluationContext ctx, Object text) {
+        String _text = Conversions.toString(text, ctx).trim();
         if (StringUtils.isEmpty(_text)) {
             return "";
         }
@@ -70,9 +71,9 @@ public class CustomFunctions {
     /**
      * Removes the first word from the given text string
      */
-    public static String remove_first_word(Object text) {
-        String _text = StringUtils.stripStart(Conversions.toString(text), null);
-        String firstWord = first_word(_text);
+    public static String remove_first_word(EvaluationContext ctx, Object text) {
+        String _text = StringUtils.stripStart(Conversions.toString(text, ctx), null);
+        String firstWord = first_word(ctx, _text);
 
         if (StringUtils.isNotEmpty(firstWord)) {
             return StringUtils.stripStart(_text.substring(firstWord.length()), null);
@@ -84,27 +85,27 @@ public class CustomFunctions {
     /**
      * Extracts the nth word from the given text string
      */
-    public static String word(Object text, Object number, @BooleanDefault(false) Object bySpaces) {
-        return word_slice(text, number, Conversions.toInteger(number) + 1, bySpaces);
+    public static String word(EvaluationContext ctx, Object text, Object number, @BooleanDefault(false) Object bySpaces) {
+        return word_slice(ctx, text, number, Conversions.toInteger(number, ctx) + 1, bySpaces);
     }
 
     /**
      * Returns the number of words in the given text string
      */
-    public static int word_count(Object text, @BooleanDefault(false) Object bySpaces) {
-        String _text = Conversions.toString(text);
-        boolean _bySpaces = Conversions.toBoolean(bySpaces);
+    public static int word_count(EvaluationContext ctx, Object text, @BooleanDefault(false) Object bySpaces) {
+        String _text = Conversions.toString(text, ctx);
+        boolean _bySpaces = Conversions.toBoolean(bySpaces, ctx);
         return getWords(_text, _bySpaces).size();
     }
 
     /**
      * Extracts a substring spanning from start up to but not-including stop
      */
-    public static String word_slice(Object text, Object start, @IntegerDefault(0) Object stop, @BooleanDefault(false) Object bySpaces) {
-        String _text = Conversions.toString(text);
-        int _start = Conversions.toInteger(start);
-        Integer _stop = Conversions.toInteger(stop);
-        boolean _bySpaces = Conversions.toBoolean(bySpaces);
+    public static String word_slice(EvaluationContext ctx, Object text, Object start, @IntegerDefault(0) Object stop, @BooleanDefault(false) Object bySpaces) {
+        String _text = Conversions.toString(text, ctx);
+        int _start = Conversions.toInteger(start, ctx);
+        Integer _stop = Conversions.toInteger(stop, ctx);
+        boolean _bySpaces = Conversions.toBoolean(bySpaces, ctx);
 
         if (_start == 0) {
             throw new RuntimeException("Start word cannot be zero");

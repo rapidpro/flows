@@ -32,7 +32,7 @@ public class ExcellentTest {
         InputStream in = ExcellentTest.class.getClassLoader().getResourceAsStream("template_tests.json");
 
         GsonBuilder builder = new GsonBuilder();
-        builder.registerTypeAdapter(EvaluationContext.class, new EvaluationContext.ContextDeserializer());
+        builder.registerTypeAdapter(EvaluationContext.class, new EvaluationContext.Deserializer());
         Gson gson = builder.create();
 
         TemplateTest[] tests = gson.fromJson(new InputStreamReader(in), TemplateTest[].class);
@@ -71,7 +71,6 @@ public class ExcellentTest {
         @SerializedName("template") String template;
         @SerializedName("context") EvaluationContext context;
         @SerializedName("url_encode") boolean urlEncode;
-
         @SerializedName("output") String expectedOutput;
         @SerializedName("errors") String[] expectedErrors;
 

@@ -1,22 +1,44 @@
 package io.rapidpro.excellent;
 
 import com.google.gson.*;
+import io.rapidpro.excellent.evaluator.EvaluatorUtils;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The evaluation context, i.e. the data constants accessible in an expression
+ * The evaluation context, i.e. date options and the variables accessible in an expression
  */
-public class EvaluationContext extends HashMap<String, Object> {
+public class EvaluationContext {
 
-    private static Gson m_gson;
+    protected static Gson m_gson;
     static {
         GsonBuilder builder = new GsonBuilder();
-        builder.registerTypeAdapter(EvaluationContext.class, new ContextDeserializer());
+        builder.registerTypeAdapter(EvaluationContext.class, new Deserializer());
         m_gson = builder.create();
+    }
+
+    protected Map<String, Object> m_variables;
+
+    protected ZoneId m_timezone;
+
+    protected boolean m_dayFirst;
+
+    public EvaluationContext() {
+        this.m_variables = new HashMap<>();
+        this.m_timezone = ZoneOffset.UTC;
+        this.m_dayFirst = true;
+    }
+
+    public EvaluationContext(Map<String, Object> variables, ZoneId timezone, boolean dayFirst) {
+        this.m_variables = variables;
+        this.m_timezone = timezone;
+        this.m_dayFirst = dayFirst;
     }
 
     public static EvaluationContext fromJson(String json) {
@@ -24,13 +46,33 @@ public class EvaluationContext extends HashMap<String, Object> {
     }
 
     /**
-     * Returns a named item from the context, e.g. contact, contact.name
+     * Returns a named variable, e.g. contact, contact.name
      */
-    public Object read(String path) {
-        return readFromContainer(this, path.toLowerCase(), path);
+    public Object resolveVariable(String path) {
+        return resolveVariableInContainer(m_variables, path.toLowerCase(), path);
     }
 
-    private Object readFromContainer(Map<String, Object> container, String path, String originalPath) {
+    public void putVariable(String key, Object value) {
+        m_variables.put(key.toLowerCase(), value);
+    }
+
+    public ZoneId getTimezone() {
+        return m_timezone;
+    }
+
+    public boolean isDayFirst() {
+        return m_dayFirst;
+    }
+
+    public void setDayFirst(boolean dayFirst) {
+        m_dayFirst = dayFirst;
+    }
+
+    public DateTimeFormatter getDateFormatter(boolean incTime) {
+        return EvaluatorUtils.getDateFormatter(this.m_dayFirst, incTime);
+    }
+
+    private Object resolveVariableInContainer(Map<String, Object> container, String path, String originalPath) {
         String item, remainingPath;
 
         if (path.contains(".")) {
@@ -49,7 +91,7 @@ public class EvaluationContext extends HashMap<String, Object> {
                 throw new RuntimeException("Context lookup into non-map container");
             }
 
-            return readFromContainer((Map<String, Object>)value, remainingPath, originalPath);
+            return resolveVariableInContainer((Map<String, Object>) value, remainingPath, originalPath);
         }
         else if (value != null) {
             if (value instanceof Map) {
@@ -69,22 +111,23 @@ public class EvaluationContext extends HashMap<String, Object> {
         }
     }
 
-    public String toJson() {
-        return m_gson.toJson(this);
-    }
-
     /**
-     * JSON de-serializer for context objects
+     * JSON de-serializer for evaluation contexts
      */
-    public static class ContextDeserializer implements JsonDeserializer<EvaluationContext> {
+    public static class Deserializer implements JsonDeserializer<EvaluationContext> {
         @Override
         public EvaluationContext deserialize(JsonElement node, Type type, JsonDeserializationContext context) throws JsonParseException {
-            EvaluationContext obj = new EvaluationContext();
+            JsonObject rootObj = node.getAsJsonObject();
+            JsonObject varsObj = rootObj.get("vars").getAsJsonObject();
+            ZoneId timezone = ZoneId.of(rootObj.get("tz").getAsString());
+            boolean dayFirst = rootObj.get("day_first").getAsBoolean();
 
-            for (Map.Entry<String, JsonElement> entry : node.getAsJsonObject().entrySet()) {
-                obj.put(entry.getKey(), handleNode(entry.getValue(), Object.class, context));
+            Map<String, Object> variables = new HashMap<>();
+            for (Map.Entry<String, JsonElement> entry : varsObj.entrySet()) {
+                variables.put(entry.getKey(), handleNode(entry.getValue(), Object.class, context));
             }
-            return obj;
+
+            return new EvaluationContext(variables, timezone, dayFirst);
         }
 
         public Object handleNode(JsonElement node, Type type, JsonDeserializationContext context) throws JsonParseException {

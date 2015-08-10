@@ -1,6 +1,11 @@
 package io.rapidpro.excellent.evaluator;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.math.BigDecimal;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -45,5 +50,33 @@ public class EvaluatorUtils {
      */
     public static BigDecimal pow(BigDecimal number, BigDecimal power) {
         return new BigDecimal(Math.pow(number.doubleValue(), power.doubleValue()));
+    }
+
+    /**
+     * Gets a formatter for dates or datetimes
+     * @param dayFirst whether parsing should be day-first or month-first
+     * @param incTime whether to include time
+     * @return the formatter
+     */
+    public static DateTimeFormatter getDateFormatter(boolean dayFirst, boolean incTime) {
+        String format = dayFirst ? "dd-MM-yyyy" : "MM-dd-yyyy";
+        return DateTimeFormatter.ofPattern(incTime ? format + " HH:mm" : format);
+    }
+
+    /**
+     * Parses a datetime from the given text value
+     * @param dateStr the string containing a date
+     * @param tz the timezone of the date
+     * @param dayFirst whether the date has been entered date first or month first
+     * @return the parsed datetime
+     */
+    public static ZonedDateTime strToDateTime(String dateStr, ZoneId tz, boolean dayFirst) {
+        if (StringUtils.isBlank(dateStr)) {
+            return null;
+        }
+
+        // TODO
+
+        return null;
     }
 }

@@ -68,8 +68,8 @@ public class TemplateEvaluatorImplTest {
         assertThat(m_evaluator.evaluateExpression("2 ^ 3 ^ 4", new EvaluationContext()), is(new BigDecimal(4096)));
 
         EvaluationContext context = new EvaluationContext();
-        context.put("foo", 5);
-        context.put("bar", 3);
+        context.putVariable("foo", 5);
+        context.putVariable("bar", 3);
         assertThat(m_evaluator.evaluateExpression("FOO", context), is(5));
         assertThat(m_evaluator.evaluateExpression("foo + bar", context), is(new BigDecimal(8)));
 
@@ -84,7 +84,7 @@ public class TemplateEvaluatorImplTest {
     @Test
     public void evaluateExpression_withErrors() {
         EvaluationContext context = new EvaluationContext();
-        context.put("foo", 5);
+        context.putVariable("foo", 5);
 
         // parser errors
         assertErrorMessage("0 /", context, "Expression is invalid");

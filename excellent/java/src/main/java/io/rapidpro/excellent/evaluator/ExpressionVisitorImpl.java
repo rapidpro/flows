@@ -34,7 +34,7 @@ public class ExpressionVisitorImpl extends ExcellentBaseVisitor<Object> {
         } else {
             parameters = Collections.emptyList();
         }
-        return m_functions.invokeFunction(funcName, parameters);
+        return m_functions.invokeFunction(m_evalContext, funcName, parameters);
     }
 
     @Override
@@ -44,13 +44,13 @@ public class ExpressionVisitorImpl extends ExcellentBaseVisitor<Object> {
 
     @Override
     public Object visitNegation(ExcellentParser.NegationContext ctx) {
-        return Conversions.toDecimal(visit(ctx.expression())).negate();
+        return Conversions.toDecimal(visit(ctx.expression()), m_evalContext).negate();
     }
 
     @Override
     public Object visitExponentExpression(ExcellentParser.ExponentExpressionContext ctx) {
-        BigDecimal exp1 = Conversions.toDecimal(visit(ctx.expression(0)));
-        BigDecimal exp2 = Conversions.toDecimal(visit(ctx.expression(1)));
+        BigDecimal exp1 = Conversions.toDecimal(visit(ctx.expression(0)), m_evalContext);
+        BigDecimal exp2 = Conversions.toDecimal(visit(ctx.expression(1)), m_evalContext);
         return EvaluatorUtils.pow(exp1, exp2);
     }
 
@@ -58,8 +58,8 @@ public class ExpressionVisitorImpl extends ExcellentBaseVisitor<Object> {
     public Object visitMultiplicationOrDivisionExpression(ExcellentParser.MultiplicationOrDivisionExpressionContext ctx) {
         boolean multiplication = ctx.TIMES() != null;
 
-        BigDecimal arg1 = Conversions.toDecimal(visit(ctx.expression(0)));
-        BigDecimal arg2 = Conversions.toDecimal(visit(ctx.expression(1)));
+        BigDecimal arg1 = Conversions.toDecimal(visit(ctx.expression(0)), m_evalContext);
+        BigDecimal arg2 = Conversions.toDecimal(visit(ctx.expression(1)), m_evalContext);
 
         if (!multiplication && arg2.equals(BigDecimal.ZERO)) {
             throw new EvaluationError("Division by zero");
@@ -72,8 +72,8 @@ public class ExpressionVisitorImpl extends ExcellentBaseVisitor<Object> {
     public Object visitAdditionOrSubtractionExpression(ExcellentParser.AdditionOrSubtractionExpressionContext ctx) {
         boolean addition = ctx.PLUS() != null;
 
-        BigDecimal arg1 = Conversions.toDecimal(visit(ctx.expression(0)));
-        BigDecimal arg2 = Conversions.toDecimal(visit(ctx.expression(1)));
+        BigDecimal arg1 = Conversions.toDecimal(visit(ctx.expression(0)), m_evalContext);
+        BigDecimal arg2 = Conversions.toDecimal(visit(ctx.expression(1)), m_evalContext);
 
         return addition ? arg1.add(arg2) : arg1.subtract(arg2);
     }
@@ -92,8 +92,8 @@ public class ExpressionVisitorImpl extends ExcellentBaseVisitor<Object> {
 
     @Override
     public Object visitConcatenation(ExcellentParser.ConcatenationContext ctx) {
-        String arg1 = Conversions.toString(visit(ctx.expression(0)));
-        String arg2 = Conversions.toString(visit(ctx.expression(1)));
+        String arg1 = Conversions.toString(visit(ctx.expression(0)), m_evalContext);
+        String arg2 = Conversions.toString(visit(ctx.expression(1)), m_evalContext);
         return arg1 + arg2;
     }
 
@@ -122,7 +122,7 @@ public class ExpressionVisitorImpl extends ExcellentBaseVisitor<Object> {
     @Override
     public Object visitContextReference(ExcellentParser.ContextReferenceContext ctx) {
         String identifier = ctx.NAME().getText();
-        return m_evalContext.read(identifier);
+        return m_evalContext.resolveVariable(identifier);
     }
 
     @Override

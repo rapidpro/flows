@@ -159,7 +159,7 @@ public class TemplateEvaluatorImpl implements Excellent.TemplateEvaluator {
             String cleaned = expression.substring(1); // strip @ prefix
             Object evaluated = evaluateExpression(cleaned, context);
 
-            String rendered = Conversions.toString(evaluated); // render result as string
+            String rendered = Conversions.toString(evaluated, context); // render result as string
             return urlEncode ? URLEncoder.encode(rendered, "UTF-8") : rendered;
         }
         catch (EvaluationError ex) {
