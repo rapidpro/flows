@@ -124,7 +124,7 @@ public class Conversions {
      */
     public static LocalDate toDate(Object value, EvaluationContext ctx) {
         if (value instanceof String) {
-            ZonedDateTime dateTime = EvaluatorUtils.strToDateTime((String) value, ctx.getTimezone(), ctx.isDayFirst());
+            ZonedDateTime dateTime = ctx.getDateParser().parse((String) value);
             if (dateTime != null) {
                 return dateTime.toLocalDate();
             }
@@ -144,7 +144,7 @@ public class Conversions {
      */
     public static ZonedDateTime toDateTime(Object value, EvaluationContext ctx) {
         if (value instanceof String) {
-            ZonedDateTime dateTime = EvaluatorUtils.strToDateTime((String) value, ctx.getTimezone(), ctx.isDayFirst());
+            ZonedDateTime dateTime = ctx.getDateParser().parse((String) value);
             if (dateTime != null) {
                 return dateTime;
             }

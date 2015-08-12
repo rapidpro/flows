@@ -62,21 +62,4 @@ public class EvaluatorUtils {
         String format = dayFirst ? "dd-MM-yyyy" : "MM-dd-yyyy";
         return DateTimeFormatter.ofPattern(incTime ? format + " HH:mm" : format);
     }
-
-    /**
-     * Parses a datetime from the given text value
-     * @param dateStr the string containing a date
-     * @param tz the timezone of the date
-     * @param dayFirst whether the date has been entered date first or month first
-     * @return the parsed datetime
-     */
-    public static ZonedDateTime strToDateTime(String dateStr, ZoneId tz, boolean dayFirst) {
-        if (StringUtils.isBlank(dateStr)) {
-            return null;
-        }
-
-        // TODO
-
-        return null;
-    }
 }

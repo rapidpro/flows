@@ -1,12 +1,14 @@
 package io.rapidpro.excellent;
 
 import com.google.gson.*;
+import io.rapidpro.excellent.evaluator.DateParser;
 import io.rapidpro.excellent.evaluator.EvaluatorUtils;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
@@ -70,6 +72,10 @@ public class EvaluationContext {
 
     public DateTimeFormatter getDateFormatter(boolean incTime) {
         return EvaluatorUtils.getDateFormatter(this.m_dayFirst, incTime);
+    }
+
+    public DateParser getDateParser() {
+        return new DateParser(ZonedDateTime.now(this.m_timezone), m_dayFirst);
     }
 
     private Object resolveVariableInContainer(Map<String, Object> container, String path, String originalPath) {
