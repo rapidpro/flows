@@ -7,9 +7,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.time.DateTimeException;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
+import java.time.temporal.Temporal;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,8 +37,6 @@ public class DateParser {
         HOUR,
         MINUTE,
         HOUR_AND_MINUTE,
-        SECOND,
-        NANOSECOND,
         AM_PM
     }
 
@@ -68,16 +65,18 @@ public class DateParser {
             { Component.HOUR_AND_MINUTE },
     };
 
-    private final ZonedDateTime m_now;
+    private final LocalDate m_now;
+    private final ZoneId m_timezone;
     private final boolean m_dayFirst;
 
     /**
      * Creates a new date parser
-     * @param now the now that dates are parsed relative to
+     * @param now the now which parsing happens relative to
      * @param dayFirst whether dates are usually entered day first or month first
      */
-    public DateParser(ZonedDateTime now, boolean dayFirst) {
+    public DateParser(LocalDate now, ZoneId timezone, boolean dayFirst) {
         this.m_now = now;
+        this.m_timezone = timezone;
         this.m_dayFirst = dayFirst;
     }
 
@@ -85,7 +84,7 @@ public class DateParser {
      * Returns a date or datetime depending on what information is available
      * @return the parsed date or datetime
      */
-    public ZonedDateTime parse(String text) {
+    public Temporal auto(String text) {
         if (StringUtils.isBlank(text)) {
             return null;
         }
@@ -114,11 +113,11 @@ public class DateParser {
         for (Component[] dateSeq : dateSequences) {
             outer:
             for (Component[] timeSeq : s_timeSequences) {
-                Component[] sequence = ArrayUtils.addAll(dateSeq, timeSeq);
-                if (sequence.length != tokenPossibilities.size()) {
+                if (dateSeq.length + timeSeq.length != tokenPossibilities.size()) {
                     continue;
                 }
 
+                Component[] sequence = ArrayUtils.addAll(dateSeq, timeSeq);
                 Map<Component, Integer> match = new LinkedHashMap<>();
 
                 for (int c = 0; c < sequence.length; c++) {
@@ -135,50 +134,15 @@ public class DateParser {
             }
         }
 
-        // find the first match that can form a valid date
+        // find the first match that can form a valid date or datetime
         for (Map<Component, Integer> match : possibleMatches) {
-            ZonedDateTime datetime = makeDateTime(match);
-            if (datetime != null) {
-                return datetime;
+            Temporal obj = makeResult(match, m_now, m_timezone);
+            if (obj != null) {
+                return obj;
             }
         }
 
         return null;
-    }
-
-    /**
-     * Makes a datetime object from a map of component values
-     * @param values the component values
-     * @return the datetime or null if a valid datetime couldn't be made
-     */
-    private ZonedDateTime makeDateTime(Map<Component, Integer> values) {
-        int year = values.getOrDefault(Component.YEAR, m_now.getYear());
-        int month = values.getOrDefault(Component.MONTH, m_now.getMonthValue());
-        int day = values.getOrDefault(Component.DAY, m_now.getDayOfMonth());
-        int hour, minute;
-        if (values.containsKey(Component.HOUR_AND_MINUTE)) {
-            int combined = values.get(Component.HOUR_AND_MINUTE);
-            hour = combined / 100;
-            minute = combined - (hour * 100);
-        }
-        else {
-            hour = values.getOrDefault(Component.HOUR, m_now.getHour());
-            minute = values.getOrDefault(Component.MINUTE, m_now.getMinute());
-
-            if (hour <= 12 && values.getOrDefault(Component.AM_PM, AM) == PM) {
-                hour += 12;
-            }
-        }
-        int second = values.getOrDefault(Component.SECOND, m_now.getSecond());
-        int nano = values.getOrDefault(Component.NANOSECOND, m_now.getNano());
-        ZoneId timezone = m_now.getZone();
-
-        try {
-            return ZonedDateTime.of(year, month, day, hour, minute, second, nano, timezone);
-        }
-        catch (DateTimeException ex) {
-            return null;  // not a valid date
-        }
     }
 
     /**
@@ -187,14 +151,13 @@ public class DateParser {
      * @param token the token to classify
      * @return the map of possible types and values if token was of that type
      */
-    private Map<Component, Integer> getTokenPossibilities(String token) {
+    private static Map<Component, Integer> getTokenPossibilities(String token) {
         token = token.toLowerCase().trim();
         Map<Component, Integer> possibilities = new HashMap<>();
         try {
             int asInt = Integer.parseInt(token);
             if (asInt >= 1 && asInt <= 9999 && (token.length() == 2 || token.length() == 4)) {
-                int year = token.length() == 2 ? yearFrom2Digits(asInt) : asInt;
-                possibilities.put(Component.YEAR, year);
+                possibilities.put(Component.YEAR, asInt);
             }
             if (asInt >= 1 && asInt <= 12) {
                 possibilities.put(Component.MONTH, asInt);
@@ -235,22 +198,69 @@ public class DateParser {
     }
 
     /**
+     * Makes a date or datetime object from a map of component values
+     * @param values the component values
+     * @param timezone the current timezone
+     * @return the date, datetime or null if values are invalid
+     */
+    private static Temporal makeResult(Map<Component, Integer> values, LocalDate now, ZoneId timezone) {
+        LocalDate date;
+
+        int year = yearFrom2Digits(values.getOrDefault(Component.YEAR, now.getYear()), now.getYear());
+        int month = values.get(Component.MONTH);
+        int day = values.getOrDefault(Component.DAY, 1);
+        try {
+            date = LocalDate.of(year, month, day);
+        } catch (DateTimeException ex) {
+            return null;  // not a valid date
+        }
+
+        if ((values.containsKey(Component.HOUR) && values.containsKey(Component.MINUTE)) || values.containsKey(Component.HOUR_AND_MINUTE)) {
+            int hour, minute;
+            if (values.containsKey(Component.HOUR_AND_MINUTE)) {
+                int combined = values.get(Component.HOUR_AND_MINUTE);
+                hour = combined / 100;
+                minute = combined - (hour * 100);
+            }
+            else {
+                hour = values.get(Component.HOUR);
+                minute = values.get(Component.MINUTE);
+
+                if (hour <= 12 && values.getOrDefault(Component.AM_PM, AM) == PM) {
+                    hour += 12;
+                }
+            }
+
+            try {
+                LocalTime time = LocalTime.of(hour, minute);
+                return ZonedDateTime.of(date, time, timezone);
+            }
+            catch (DateTimeException ex) {
+                return null;  // not a valid time
+            }
+        }
+        else {
+            return date;
+        }
+    }
+
+    /**
      * Converts a relative 2-digit year to an absolute 4-digit year
-     * @param year the relative year
+     * @param shortYear the relative year
      * @return the absolute year
      */
-    protected int yearFrom2Digits(int year) {
-        if (year < 100) {
-            year += m_now.getYear() - (m_now.getYear() % 100);
-            if (Math.abs(year - m_now.getYear()) >= 50) {
-                if (year < m_now.getYear()) {
-                    year += 100;
+    protected static int yearFrom2Digits(int shortYear, int currentYear) {
+        if (shortYear < 100) {
+            shortYear += currentYear - (currentYear % 100);
+            if (Math.abs(shortYear - currentYear) >= 50) {
+                if (shortYear < currentYear) {
+                    return shortYear + 100;
                 } else {
-                    year -= 100;
+                    return shortYear - 100;
                 }
             }
         }
-        return year;
+        return shortYear;
     }
 
     /**

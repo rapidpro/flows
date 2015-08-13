@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.Temporal;
 
 /**
  * Type conversions required for expression evaluation
@@ -124,9 +125,9 @@ public class Conversions {
      */
     public static LocalDate toDate(Object value, EvaluationContext ctx) {
         if (value instanceof String) {
-            ZonedDateTime dateTime = ctx.getDateParser().parse((String) value);
-            if (dateTime != null) {
-                return dateTime.toLocalDate();
+            Temporal temporal = ctx.getDateParser().auto((String) value);
+            if (temporal != null) {
+                return toDate(temporal, ctx);
             }
         }
         else if (value instanceof LocalDate) {
@@ -144,9 +145,9 @@ public class Conversions {
      */
     public static ZonedDateTime toDateTime(Object value, EvaluationContext ctx) {
         if (value instanceof String) {
-            ZonedDateTime dateTime = ctx.getDateParser().parse((String) value);
-            if (dateTime != null) {
-                return dateTime;
+            Temporal temporal = ctx.getDateParser().auto((String) value);
+            if (temporal != null) {
+                return toDateTime(temporal, ctx);
             }
         }
         else if (value instanceof LocalDate) {

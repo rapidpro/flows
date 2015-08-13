@@ -6,6 +6,7 @@ import io.rapidpro.excellent.evaluator.EvaluatorUtils;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -75,7 +76,7 @@ public class EvaluationContext {
     }
 
     public DateParser getDateParser() {
-        return new DateParser(ZonedDateTime.now(this.m_timezone), m_dayFirst);
+        return new DateParser(LocalDate.now(), this.m_timezone, m_dayFirst);
     }
 
     private Object resolveVariableInContainer(Map<String, Object> container, String path, String originalPath) {
