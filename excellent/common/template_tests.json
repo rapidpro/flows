@@ -1,18 +1,24 @@
 [
-  { /* no expression */
-    "template": "Hi Bob",
+  {
+    "template": "Hi Bob. Nice tests!",
     "context": {"vars": {}, "tz": "UTC", "day_first": true},
     "url_encode": false,
-    "output": "Hi Bob",
+    "output": "Hi Bob. Nice tests!",
     "errors": []
   },
-  { /* single literal */
-    "template": "2 plus 3 is @(5)",
+
+  /* literals */
+
+  {
+    "template": "@(TRUE) @( FALSE ) @(2) @(2.30) @(\"A\"\"a\")",
     "context": {"vars": {}, "tz": "UTC", "day_first": true},
     "url_encode": false,
-    "output": "2 plus 3 is 5",
+    "output": "TRUE FALSE 2 2.3 A\"a",
     "errors": []
   },
+
+  /* arithmetic */
+
   {
     "template": "Answer is @(2 + 3 - 1)",
     "context": {"vars": {}, "tz": "UTC", "day_first": true},
@@ -49,6 +55,58 @@
     "context": {"vars": {"x": 1.23, "y": 2, "z": "3"}, "tz": "UTC", "day_first": true},
     "url_encode": false,
     "output": "6.23",
+    "errors": []
+  },
+
+  /* logical */
+
+  {
+    "template": "@(TRUE = TRUE) @(7 = 7) @(3.2 = 3.2) @(3.0 = 3) @(\"3\" = 3) @(\"3.0\" = 3.00) @(\"ab\" = \"ab\") @(d1 = d2)",
+    "context": {"vars": { "d1": "14-08-2015 15:02", "d2": "14-08-2015 15:02" }, "tz": "UTC", "day_first": true},
+    "url_encode": false,
+    "output": "TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE",
+    "errors": []
+  },
+  {
+    "template": "@(TRUE = FALSE) @(7 = 8) @(3.2 = 2.6) @(\"3.0\" = \"3.00\") @(\"ab\" = \"cd\") @(d1 = d2)",
+    "context": {"vars": { "d1": "14-08-2015 15:02", "d2": "14-08-2015 15:03" }, "tz": "UTC", "day_first": true},
+    "url_encode": false,
+    "output": "FALSE FALSE FALSE FALSE FALSE FALSE",
+    "errors": []
+  },
+  {
+    "template": "@(TRUE <> FALSE) @(7 <> 8) @(3.2 <> 2.6) @(\"3.0\" <> \"3.00\") @(\"ab\" <> \"cd\") @(d1 <> d2)",
+    "context": {"vars": { "d1": "14-08-2015 15:02", "d2": "14-08-2015 15:03" }, "tz": "UTC", "day_first": true},
+    "url_encode": false,
+    "output": "TRUE TRUE TRUE TRUE TRUE TRUE",
+    "errors": []
+  },
+  {
+    "template": "@(TRUE <> TRUE) @(7 <> 7) @(3.2 <> 3.2) @(3.0 <> 3) @(\"3\" <> 3) @(\"3.0\" <> 3.00) @(\"ab\" <> \"AB\") @(d1 <> d2)",
+    "context": {"vars": { "d1": "14-08-2015 15:02", "d2": "14-08-2015 15:02" }, "tz": "UTC", "day_first": true},
+    "url_encode": false,
+    "output": "FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE",
+    "errors": []
+  },
+  {
+    "template": "@(FALSE <= TRUE) @(TRUE <= TRUE) @(7 <= 7) @(7 <= 8) @(3.2 <= 3.2) @(3.0 <= 3) @(\"3\" <= 3) @(\"3.0\" <= 3.00) @(\"ab\" <= \"ab\") @(d1 <= d2)",
+    "context": {"vars": { "d1": "14-08-2015 15:02", "d2": "14-08-2015 15:03" }, "tz": "UTC", "day_first": true},
+    "url_encode": false,
+    "output": "TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE",
+    "errors": []
+  },
+  {
+    "template": "@(TRUE <= FALSE) @(8 <= 7) @(3.3 <= 3.2) @(3.2 <= 3) @(\"4\" <= 3) @(\"3.2\" <= 3.00) @(\"ac\" <= \"ab\") @(d2 <= d1)",
+    "context": {"vars": { "d1": "14-08-2015 15:02", "d2": "14-08-2015 15:03" }, "tz": "UTC", "day_first": true},
+    "url_encode": false,
+    "output": "FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE",
+    "errors": []
+  },
+  {
+    "template": "@(FALSE < TRUE) @(7 < 8) @(2.8 < 3) @(\"2.0\" < 3.00) @(\"ab\" < \"ac\") @(d1 < d2)",
+    "context": {"vars": { "d1": "14-08-2015 15:02", "d2": "14-08-2015 15:03" }, "tz": "UTC", "day_first": true},
+    "url_encode": false,
+    "output": "TRUE TRUE TRUE TRUE TRUE TRUE",
     "errors": []
   },
 
@@ -92,7 +150,7 @@
   },
   {
     "template": "@(WEEKDAY(d1)) @(WEEKDAY(d2))",
-    "context": {"vars": { "d1": "15-08-2015", "d2": "16-08-2015" }, "tz": "UTC", "day_first": true},
+    "context": {"vars": { "d1": "15-08-2015", "d2": "16-08-2015 13:45" }, "tz": "UTC", "day_first": true},
     "url_encode": false,
     "output": "7 1",
     "errors": []

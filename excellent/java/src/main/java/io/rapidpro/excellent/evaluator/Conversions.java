@@ -2,6 +2,8 @@ package io.rapidpro.excellent.evaluator;
 
 import io.rapidpro.excellent.EvaluationContext;
 import io.rapidpro.excellent.EvaluationError;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -198,6 +200,31 @@ public class Conversions {
         }
 
         throw new EvaluationError("Can't convert '" + value + "' to a time");
+    }
+
+    /**
+     * Converts a pair of arguments to their most-likely types. This deviates from Excel which doesn't auto convert values
+     * but is necessary for us to intuitively handle contact fields which don't use the correct value type
+     */
+    public static Pair<Object, Object> toSame(Object value1, Object value2, EvaluationContext ctx) {
+        if (value1.getClass().equals(value2.getClass())) {
+            return new ImmutablePair<>(value1, value2);
+        }
+
+        try {
+            // try converting to two decimals
+            return new ImmutablePair<>(toDecimal(value1, ctx), toDecimal(value2, ctx));
+        }
+        catch (EvaluationError ex) {}
+
+        try {
+            // try converting to two dates
+            return new ImmutablePair<>(toDateOrDateTime(value1, ctx), toDateOrDateTime(value2, ctx));
+        }
+        catch (EvaluationError ex) {}
+
+        // try converting to two strings
+        return new ImmutablePair<>(toString(value1, ctx), toString(value2, ctx));
     }
 
     /**
