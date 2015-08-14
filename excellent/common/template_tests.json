@@ -6,6 +6,13 @@
     "output": "Hi Bob. Nice tests!",
     "errors": []
   },
+  {
+    "template": "Twitter handle for Joe @ Nyaruka is @@flow. @@@(flow)",
+    "context": {"vars": { "flow": "x" }, "tz": "UTC", "day_first": true},
+    "url_encode": false,
+    "output": "Twitter handle for Joe @ Nyaruka is @flow. @x",
+    "errors": []
+  },
 
   /* literals */
 

@@ -38,10 +38,11 @@ public class TemplateEvaluatorImpl implements Excellent.TemplateEvaluator {
      */
     private enum State {
         BODY,               // not in a expression
-        PREFIX,             // '=' prefix that denotes the start of an expression
-        IDENTIFIER,         // the identifier part, e.g. 'SUM' in '=SUM(1, 2)' or 'contact.age' in '=contact.age'
-        BALANCED,           // the balanced parentheses delimited part, e.g. '(1, 2)' in 'SUM(1, 2)'
-        STRING_LITERAL      // a string literal
+        PREFIX,             // '@' prefix that denotes the start of an expression
+        IDENTIFIER,         // the identifier part, e.g. 'SUM' in '@SUM(1, 2)' or 'contact.age' in '@contact.age'
+        BALANCED,           // the balanced parentheses delimited part, e.g. '(1 + 2)' in '@(1 + 2)'
+        STRING_LITERAL,     // a string literal which could contain )
+        ESCAPED_PREFIX      // a '@' prefix preceded by another '@'
     }
 
     /**
@@ -71,6 +72,7 @@ public class TemplateEvaluatorImpl implements Excellent.TemplateEvaluator {
         StringBuilder currentExpression = new StringBuilder();
         boolean currentExpressionTerminated = false;
         int parenthesesLevel = 0;
+        char prevCh = 0;
 
         for (int pos = 0; pos < inputChars.length; pos++) {
             char ch = inputChars[pos];
@@ -84,6 +86,8 @@ public class TemplateEvaluatorImpl implements Excellent.TemplateEvaluator {
                 if (ch == '@' && (isWordChar(nextCh) || nextCh == '(')) {
                     state = State.PREFIX;
                     currentExpression = new StringBuilder("" + ch);
+                } else if (ch == '@' && nextCh == '@') {
+                    state = State.ESCAPED_PREFIX;
                 } else {
                     output.append(ch);
                 }
@@ -124,6 +128,10 @@ public class TemplateEvaluatorImpl implements Excellent.TemplateEvaluator {
                 }
                 currentExpression.append(ch);
             }
+            else if (state == State.ESCAPED_PREFIX) {
+                state = State.BODY;
+                output.append(ch);
+            }
 
             // identifier can terminate expression in 3 ways:
             //  1. next char is null (i.e. end of the input)
@@ -141,6 +149,8 @@ public class TemplateEvaluatorImpl implements Excellent.TemplateEvaluator {
                 currentExpressionTerminated = false;
                 state = State.BODY;
             }
+
+            prevCh = ch;
         }
 
         // if last expression didn't terminate - add to output as is
