@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.time.*;
+import java.util.HashMap;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -20,7 +21,7 @@ public class ConversionsTest {
 
     @Before
     public void setup() {
-        m_context = new EvaluationContext();
+        m_context = new EvaluationContext(new HashMap<>(), ZoneId.of("Africa/Kigali"), true);
     }
 
     @Test
@@ -108,12 +109,38 @@ public class ConversionsTest {
         assertThat(Conversions.toString("hello", m_context), is("hello"));
 
         assertThat(Conversions.toString(LocalDate.of(2012, 3, 4), m_context), is("04-03-2012"));
-        assertThat(Conversions.toString(OffsetTime.of(12, 34, 0, 0, ZoneOffset.UTC), m_context), is("12:34"));
-        assertThat(Conversions.toString(ZonedDateTime.of(2012, 3, 4, 5, 6, 7, 8, ZoneId.of("UTC")), m_context), is("04-03-2012 05:06"));
+        assertThat(Conversions.toString(OffsetTime.of(12, 34, 0, 0, ZoneOffset.ofHours(2)), m_context), is("12:34"));
+        assertThat(Conversions.toString(ZonedDateTime.of(2012, 3, 4, 5, 6, 7, 8, ZoneId.of("Africa/Kigali")), m_context), is("04-03-2012 05:06"));
 
         m_context.setDayFirst(false);
 
         assertThat(Conversions.toString(LocalDate.of(2012, 3, 4), m_context), is("03-04-2012"));
-        assertThat(Conversions.toString(ZonedDateTime.of(2012, 3, 4, 5, 6, 7, 8, ZoneId.of("UTC")), m_context), is("03-04-2012 05:06"));
+        assertThat(Conversions.toString(ZonedDateTime.of(2012, 3, 4, 5, 6, 7, 8, ZoneId.of("Africa/Kigali")), m_context), is("03-04-2012 05:06"));
+    }
+
+    @Test
+    public void test_toDate() {
+        assertThat(Conversions.toDate("14th Aug 2015", m_context), is(LocalDate.of(2015, 8, 14)));
+        assertThat(Conversions.toDate("14/8/15", m_context), is(LocalDate.of(2015, 8, 14)));
+
+        assertThat(Conversions.toDate(LocalDate.of(2015, 8, 14), m_context), is(LocalDate.of(2015, 8, 14)));
+
+        assertThat(Conversions.toDate(ZonedDateTime.of(2015, 8, 14, 9, 12, 0, 0, ZoneId.of("Africa/Kigali")), m_context), is(LocalDate.of(2015, 8, 14)));
+
+        m_context.setDayFirst(false);
+
+        assertThat(Conversions.toDate("12/8/15", m_context), is(LocalDate.of(2015, 12, 8)));
+        assertThat(Conversions.toDate("14/8/15", m_context), is(LocalDate.of(2015, 8, 14))); // ignored because doesn't make sense
+    }
+
+    @Test
+    public void test_toTime() {
+        assertThat(Conversions.toTime("9:12", m_context), is(OffsetTime.of(9, 12, 0, 0, ZoneOffset.ofHours(2))));
+        assertThat(Conversions.toTime("0912", m_context), is(OffsetTime.of(9, 12, 0, 0, ZoneOffset.ofHours(2))));
+        assertThat(Conversions.toTime("09.12am", m_context), is(OffsetTime.of(9, 12, 0, 0, ZoneOffset.ofHours(2))));
+
+        assertThat(Conversions.toTime(OffsetTime.of(9, 12, 0, 0, ZoneOffset.UTC), m_context), is(OffsetTime.of(9, 12, 0, 0, ZoneOffset.UTC)));
+
+        assertThat(Conversions.toTime(ZonedDateTime.of(2015, 8, 14, 9, 12, 0, 0, ZoneId.of("Africa/Kigali")), m_context), is(OffsetTime.of(9, 12, 0, 0, ZoneOffset.ofHours(2))));
     }
 }

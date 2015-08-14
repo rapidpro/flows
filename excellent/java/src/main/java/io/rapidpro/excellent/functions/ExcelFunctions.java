@@ -12,7 +12,10 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.OffsetTime;
 import java.time.ZonedDateTime;
+import java.time.temporal.*;
 
 /**
  * Library of supported Excel functions.
@@ -213,20 +216,106 @@ public class ExcelFunctions {
     }
 
     /**
+     * Returns only the day of the month of a date (1 to 31)
+     */
+    public static int day(EvaluationContext ctx, Object date) {
+        return Conversions.toDateOrDateTime(date, ctx).get(ChronoField.DAY_OF_MONTH);
+    }
+
+    /**
+     * Moves a date by the given number of months
+     */
+    public static Temporal edate(EvaluationContext ctx, Object date, Object months) {
+        Temporal dateOrDateTime = Conversions.toDateOrDateTime(date, ctx);
+        int _months = Conversions.toInteger(months, ctx);
+        return dateOrDateTime.plus(_months, ChronoUnit.MONTHS);
+    }
+
+    /**
+     * Returns only the hour of a datetime (0 to 23)
+     */
+    public static int hour(EvaluationContext ctx, Object datetime) {
+        return Conversions.toDateTime(datetime, ctx).getHour();
+    }
+
+    /**
+     * Returns only the minute of a datetime (0 to 59)
+     */
+    public static int minute(EvaluationContext ctx, Object datetime) {
+        return Conversions.toDateTime(datetime, ctx).getMinute();
+    }
+
+    /**
+     * Returns only the month of a date (1 to 12)
+     */
+    public static int month(EvaluationContext ctx, Object date) {
+        return Conversions.toDateOrDateTime(date, ctx).get(ChronoField.MONTH_OF_YEAR);
+    }
+
+    /**
      * Returns the current date and time
      */
     public static ZonedDateTime now(EvaluationContext ctx) {
         try {
-            // for consistency, take datetime from the context if it's defined
-            Object fromContext = ctx.resolveVariable("date.now");
-            return Conversions.toDateTime(fromContext, ctx);
+            // for consistency, take from the context if it's defined
+            return Conversions.toDateTime(ctx.resolveVariable("date.now"), ctx);
         }
         catch (EvaluationError ex) {
             return ZonedDateTime.now(ctx.getTimezone());
         }
     }
 
-    // TODO add the rest of the date functions
+    /**
+     * Returns only the second of a datetime (0 to 59)
+     */
+    public static int second(EvaluationContext ctx, Object datetime) {
+        return Conversions.toDateTime(datetime, ctx).getSecond();
+    }
+
+    /**
+     * Defines a time value
+     */
+    public static OffsetTime time(EvaluationContext ctx, Object hours, Object minutes, Object seconds) {
+        int _hours = Conversions.toInteger(hours, ctx);
+        int _minutes = Conversions.toInteger(minutes, ctx);
+        int _seconds = Conversions.toInteger(seconds, ctx);
+        LocalTime localTime = LocalTime.of(_hours, _minutes, _seconds);
+        return ZonedDateTime.of(LocalDate.now(ctx.getTimezone()), localTime, ctx.getTimezone()).toOffsetDateTime().toOffsetTime();
+    }
+
+    /**
+     * Converts time stored in text to an actual time
+     */
+    public static OffsetTime timevalue(EvaluationContext ctx, Object text) {
+        return Conversions.toTime(text, ctx);
+    }
+    /**
+     * Returns the current date
+     */
+    public static LocalDate today(EvaluationContext ctx) {
+        try {
+            // for consistency, take from the context if it's defined
+            return Conversions.toDate(ctx.resolveVariable("date.today"), ctx);
+        }
+        catch (EvaluationError ex) {
+            return LocalDate.now(ctx.getTimezone());
+        }
+    }
+
+    /**
+     * Returns the day of the week of a date (1 for Sunday to 7 for Saturday)
+     */
+    public static int weekday(EvaluationContext ctx, Object date) {
+        int iso = Conversions.toDateOrDateTime(date, ctx).get(ChronoField.DAY_OF_WEEK);
+        return iso < 7 ? iso + 1 : 1;
+    }
+
+    /**
+     * Returns only the year of a date
+     */
+    public static int year(EvaluationContext ctx, Object date) {
+        return Conversions.toDateOrDateTime(date, ctx).get(ChronoField.YEAR);
+    }
 
     /************************************************************************************
      * Math Functions

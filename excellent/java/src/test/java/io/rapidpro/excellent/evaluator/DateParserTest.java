@@ -2,9 +2,7 @@ package io.rapidpro.excellent.evaluator;
 
 import org.junit.Test;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -15,49 +13,53 @@ import static org.junit.Assert.assertThat;
 public class DateParserTest {
 
     @Test
-    public void parse_dateOnly() {
-        DateParser parser = new DateParser(LocalDate.of(2015, 8, 12), ZoneId.of("UTC"), true);
+    public void auto() {
+        DateParser parser = new DateParser(LocalDate.of(2015, 8, 12), ZoneId.of("Africa/Kigali"), true);
 
-        // dates only
-        String[] tests = {
-                "1/2/34",
-                "1-2-34",
-                "01 02 34",
-                "1 Feb 34",
-                "1. 2 '34",
-                "1st february 2034",
-                "1er février 2034",
+        Object[][] tests = {
+                { "1/2/34", LocalDate.of(2034, 2, 1) },
+                { "1-2-34", LocalDate.of(2034, 2, 1) },
+                { "01 02 34", LocalDate.of(2034, 2, 1) },
+                { "1 Feb 34", LocalDate.of(2034, 2, 1) },
+                { "1. 2 '34", LocalDate.of(2034, 2, 1) },
+                { "1st february 2034", LocalDate.of(2034, 2, 1) },
+                { "1er février 2034", LocalDate.of(2034, 2, 1) },
+                { "2/25-70", LocalDate.of(1970, 2, 25) }, // dayFirst should be ignored when it doesn't make sense
+                { "1 feb", LocalDate.of(2015, 2, 1) }, // year can be omitted
+                { "Feb 1st", LocalDate.of(2015, 2, 1) },
+                { "1 feb 9999999", LocalDate.of(2015, 2, 1) }, // ignore invalid values
+                { "1/2/34 14:55", ZonedDateTime.of(2034, 2, 1, 14, 55, 0, 0, ZoneId.of("Africa/Kigali")) },
+                { "1-2-34 2:55PM", ZonedDateTime.of(2034, 2, 1, 14, 55, 0, 0, ZoneId.of("Africa/Kigali")) },
+                { "01 02 34 1455", ZonedDateTime.of(2034, 2, 1, 14, 55, 0, 0, ZoneId.of("Africa/Kigali")) },
+                { "1 Feb 34 02:55 PM", ZonedDateTime.of(2034, 2, 1, 14, 55, 0, 0, ZoneId.of("Africa/Kigali")) },
+                { "1. 2 '34 02:55pm", ZonedDateTime.of(2034, 2, 1, 14, 55, 0, 0, ZoneId.of("Africa/Kigali")) },
+                { "1st february 2034 14.55", ZonedDateTime.of(2034, 2, 1, 14, 55, 0, 0, ZoneId.of("Africa/Kigali"))},
+                {"1er février 2034 1455h", ZonedDateTime.of(2034, 2, 1, 14, 55, 0, 0, ZoneId.of("Africa/Kigali")) }
         };
-        for (String test : tests) {
-            assertThat("Parse error for " + test, parser.auto(test), is(LocalDate.of(2034, 2, 1)));
+        for (Object[] test : tests) {
+            assertThat("Parse error for " + test[0], parser.auto((String) test[0]), is(test[1]));
         }
-
-        // dayFirst should be ignored when it doesn't make sense
-        assertThat(parser.auto("2/25-70"), is(LocalDate.of(1970, 2, 25)));
-
-        // year can be omitted
-        assertThat(parser.auto("1 feb"), is(LocalDate.of(2015, 2, 1)));
-        assertThat(parser.auto("Feb 1st"), is(LocalDate.of(2015, 2, 1)));
-
-        // ignore invalid values
-        assertThat(parser.auto("1 feb 9999999"), is(LocalDate.of(2015, 2, 1)));
     }
 
     @Test
-    public void parse_withTime() {
-        DateParser parser = new DateParser(LocalDate.of(2015, 8, 12), ZoneId.of("UTC"), true);
+    public void time() {
+        DateParser parser = new DateParser(LocalDate.of(2015, 8, 12), ZoneId.of("Africa/Kigali"), true);
 
-        String[] tests = {
-                "1/2/34 14:55",
-                "1-2-34 2:55PM",
-                "01 02 34 1455",
-                "1 Feb 34 02:55 PM",
-                "1. 2 '34 02:55pm",
-                "1st february 2034 14.55",
-                "1er février 2034 1455h",
+        Object[][] tests = {
+                { "2:55", OffsetTime.of(2, 55, 0, 0, ZoneOffset.ofHours(2)) },
+                { "2:55 AM", OffsetTime.of(2, 55, 0, 0, ZoneOffset.ofHours(2)) },
+                { "14:55", OffsetTime.of(14, 55, 0, 0, ZoneOffset.ofHours(2)) },
+                { "2:55PM", OffsetTime.of(14, 55, 0, 0, ZoneOffset.ofHours(2)) },
+                { "1455", OffsetTime.of(14, 55, 0, 0, ZoneOffset.ofHours(2)) },
+                { "02:55 PM", OffsetTime.of(14, 55, 0, 0, ZoneOffset.ofHours(2)) },
+                { "02:55pm", OffsetTime.of(14, 55, 0, 0, ZoneOffset.ofHours(2)) },
+                { "14.55", OffsetTime.of(14, 55, 0, 0, ZoneOffset.ofHours(2)) },
+                { "1455h", OffsetTime.of(14, 55, 0, 0, ZoneOffset.ofHours(2)) },
+                { "14:55:30", OffsetTime.of(14, 55, 30, 0, ZoneOffset.ofHours(2)) },
+                { "14:55.30PM", OffsetTime.of(14, 55, 30, 0, ZoneOffset.ofHours(2)) }
         };
-        for (String test : tests) {
-            assertThat("Parse error for " + test, parser.auto(test), is(ZonedDateTime.of(2034, 2, 1, 14, 55, 0, 0, ZoneId.of("UTC"))));
+        for (Object[] test : tests) {
+            assertThat("Parse error for " + test[0], parser.time((String) test[0]), is(test[1]));
         }
     }
 

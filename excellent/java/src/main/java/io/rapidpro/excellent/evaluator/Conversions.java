@@ -161,6 +161,46 @@ public class Conversions {
     }
 
     /**
+     * Tries conversion of any value to a date
+     */
+    public static Temporal toDateOrDateTime(Object value, EvaluationContext ctx) {
+        if (value instanceof String) {
+            Temporal temporal = ctx.getDateParser().auto((String) value);
+            if (temporal != null) {
+                return temporal;
+            }
+        }
+        else if (value instanceof LocalDate) {
+            return (LocalDate) value;
+        }
+        else if (value instanceof ZonedDateTime) {
+            return (ZonedDateTime) value;
+        }
+
+        throw new EvaluationError("Can't convert '" + value + "' to a date or datetime");
+    }
+
+    /**
+     * Tries conversion of any value to a time
+     */
+    public static OffsetTime toTime(Object value, EvaluationContext ctx) {
+        if (value instanceof String) {
+            OffsetTime time = ctx.getDateParser().time((String) value);
+            if (time != null) {
+                return time;
+            }
+        }
+        else if (value instanceof OffsetTime) {
+            return (OffsetTime) value;
+        }
+        else if (value instanceof ZonedDateTime) {
+            return ((ZonedDateTime) value).toOffsetDateTime().toOffsetTime();
+        }
+
+        throw new EvaluationError("Can't convert '" + value + "' to a time");
+    }
+
+    /**
      * Formats a decimal number using the same precision as Excel
      * @param decimal the decimal value
      * @return the formatted string value

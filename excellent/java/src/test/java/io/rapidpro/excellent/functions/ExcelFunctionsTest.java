@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,7 +22,14 @@ public class ExcelFunctionsTest {
 
     @Before
     public void setup() {
-        m_context = new EvaluationContext();
+        Map<String, Object> date = new HashMap<>();
+        date.put("today", "08-14-2015");
+        date.put("now", "08-14-2015 10:38");
+
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("date", date);
+
+        m_context = new EvaluationContext(variables, ZoneId.of("Africa/Kigali"), true);
     }
 
     @Test
@@ -174,6 +181,99 @@ public class ExcelFunctionsTest {
     public void test_date() {
         assertThat(date(m_context, 1900, 1, 1), is(LocalDate.of(1900, 1, 1)));
         assertThat(date(m_context, 2012, "3", new BigDecimal(2.0)), is(LocalDate.of(2012, 3, 2)));
+    }
+
+    @Test
+    public void test_datevalue() {
+        assertThat(datevalue(m_context, "2-3-13"), is(LocalDate.of(2013, 3, 2)));
+        assertThat(datevalue(m_context, "Aug 14th 2015"), is(LocalDate.of(2015, 8, 14)));
+    }
+
+    @Test
+    public void test_day() {
+        assertThat(day(m_context, LocalDate.of(2013, 3, 2)), is(2));
+        assertThat(day(m_context, ZonedDateTime.of(2015, 8, 14, 10, 27, 0, 0, ZoneId.of("Africa/Kigali"))), is(14));
+        assertThat(day(m_context, "Aug 14th 2015"), is(14));
+    }
+
+    @Test
+    public void test_edate() {
+        assertThat(edate(m_context, LocalDate.of(2013, 3, 2), 4), is(LocalDate.of(2013, 7, 2)));
+        assertThat(edate(m_context, LocalDate.of(2013, 3, 2), -4), is(LocalDate.of(2012, 11, 2)));
+        assertThat(edate(m_context, ZonedDateTime.of(2015, 8, 14, 10, 27, 0, 0, ZoneId.of("Africa/Kigali")), 4),
+                is(ZonedDateTime.of(2015, 12, 14, 10, 27, 0, 0, ZoneId.of("Africa/Kigali"))));
+        assertThat(edate(m_context, "Aug 14th 2015", 3), is(LocalDate.of(2015, 11, 14)));
+    }
+
+    @Test
+    public void test_hour() {
+        assertThat(hour(m_context, ZonedDateTime.of(2015, 8, 14, 10, 27, 0, 0, ZoneId.of("Africa/Kigali"))), is(10));
+        assertThat(hour(m_context, "Aug 14th 2015 10:38 PM"), is(22));
+    }
+
+    @Test
+    public void test_minute() {
+        assertThat(minute(m_context, ZonedDateTime.of(2015, 8, 14, 10, 27, 0, 0, ZoneId.of("Africa/Kigali"))), is(27));
+        assertThat(minute(m_context, "Aug 14th 2015 10:38 PM"), is(38));
+    }
+
+    @Test
+    public void test_month() {
+        assertThat(month(m_context, LocalDate.of(2013, 3, 2)), is(3));
+        assertThat(month(m_context, ZonedDateTime.of(2015, 8, 14, 10, 27, 0, 0, ZoneId.of("Africa/Kigali"))), is(8));
+        assertThat(month(m_context, "Aug 14th 2015"), is(8));
+    }
+
+    @Test
+    public void test_now() {
+        assertThat(now(m_context), is(ZonedDateTime.of(2015, 8, 14, 10, 38, 0, 0, ZoneId.of("Africa/Kigali"))));
+
+        // when context doesn't have variable, defaults to calculated value
+        EvaluationContext context = new EvaluationContext(new HashMap<>(), ZoneId.of("UTC"), true);
+
+        assertThat(now(context), instanceOf(ZonedDateTime.class));
+    }
+
+    @Test
+    public void test_second() {
+        assertThat(second(m_context, ZonedDateTime.of(2015, 8, 14, 10, 27, 30, 0, ZoneId.of("Africa/Kigali"))), is(30));
+        assertThat(second(m_context, "Aug 14th 2015 10:38 PM"), is(0));
+    }
+
+    @Test
+    public void test_time() {
+        assertThat(time(m_context, 11, 5, 30), is(OffsetTime.of(11, 5, 30, 0, ZoneOffset.ofHours(2))));
+        assertThat(time(m_context, "11", "5", "30"), is(OffsetTime.of(11, 5, 30, 0, ZoneOffset.ofHours(2))));
+    }
+
+    @Test
+    public void test_timevalue() {
+        assertThat(timevalue(m_context, "11:05"), is(OffsetTime.of(11, 5, 0, 0, ZoneOffset.ofHours(2))));
+        assertThat(timevalue(m_context, "11:05:30"), is(OffsetTime.of(11, 5, 30, 0, ZoneOffset.ofHours(2))));
+    }
+
+    @Test
+    public void test_today() {
+        assertThat(today(m_context), is(LocalDate.of(2015, 8, 14)));
+
+        // when context doesn't have variable, defaults to calculated value
+        EvaluationContext context = new EvaluationContext(new HashMap<>(), ZoneId.of("UTC"), true);
+
+        assertThat(today(context), instanceOf(LocalDate.class));
+    }
+
+    @Test
+    public void test_weekday() {
+        assertThat(weekday(m_context, ZonedDateTime.of(2015, 8, 14, 10, 27, 0, 0, ZoneId.of("Africa/Kigali"))), is(6));
+        assertThat(weekday(m_context, LocalDate.of(2015, 8, 15)), is(7));
+        assertThat(weekday(m_context, "Aug 16th 2015"), is(1));
+    }
+
+    @Test
+    public void test_year() {
+        assertThat(year(m_context, ZonedDateTime.of(2015, 8, 14, 10, 27, 0, 0, ZoneId.of("Africa/Kigali"))), is(2015));
+        assertThat(year(m_context, LocalDate.of(2015, 8, 15)), is(2015));
+        assertThat(year(m_context, "Aug 16th '15"), is(2015));
     }
 
     /************************************************************************************
