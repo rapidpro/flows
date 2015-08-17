@@ -4,7 +4,6 @@ import io.rapidpro.excellent.*;
 import io.rapidpro.excellent.functions.CustomFunctions;
 import io.rapidpro.excellent.functions.FunctionManager;
 import io.rapidpro.excellent.functions.ExcelFunctions;
-import org.abego.treelayout.internal.util.java.lang.string.StringUtil;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.*;

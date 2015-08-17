@@ -237,6 +237,6 @@ public class Conversions {
         int intDigits = decimal.precision() - decimal.scale();  // number of non-fractional digits
         int fractionalDigits = Math.min(Math.max(10 - intDigits, 0), decimal.scale());
         decimal = decimal.setScale(fractionalDigits, RoundingMode.HALF_UP);
-        return decimal.toString();
+        return decimal.toPlainString();
     }
 }

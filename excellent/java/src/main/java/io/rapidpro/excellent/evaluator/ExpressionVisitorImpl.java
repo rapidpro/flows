@@ -2,10 +2,16 @@ package io.rapidpro.excellent.evaluator;
 
 import io.rapidpro.excellent.*;
 import io.rapidpro.excellent.functions.FunctionManager;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.Duration;
+import java.time.LocalTime;
+import java.time.OffsetTime;
+import java.time.Period;
+import java.time.temporal.Temporal;
+import java.time.temporal.TemporalAmount;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -82,7 +88,7 @@ public class ExpressionVisitorImpl extends ExcellentBaseVisitor<Object> {
             throw new EvaluationError("Division by zero");
         }
 
-        return multiplication ? arg1.multiply(arg2) : arg1.divide(arg2);
+        return multiplication ? arg1.multiply(arg2) : arg1.divide(arg2, 10, RoundingMode.HALF_UP);
     }
 
     /**
@@ -90,12 +96,38 @@ public class ExpressionVisitorImpl extends ExcellentBaseVisitor<Object> {
      */
     @Override
     public Object visitAdditionOrSubtractionExpression(ExcellentParser.AdditionOrSubtractionExpressionContext ctx) {
-        boolean addition = ctx.PLUS() != null;
+        boolean add = ctx.PLUS() != null;
+        Object arg1 = visit(ctx.expression(0));
+        Object arg2 = visit(ctx.expression(1));
 
-        BigDecimal arg1 = Conversions.toDecimal(visit(ctx.expression(0)), m_evalContext);
-        BigDecimal arg2 = Conversions.toDecimal(visit(ctx.expression(1)), m_evalContext);
+        // first try as decimals
+        try {
+            BigDecimal _arg1 = Conversions.toDecimal(arg1, m_evalContext);
+            BigDecimal _arg2 = Conversions.toDecimal(arg2, m_evalContext);
+            return add ? _arg1.add(_arg2) : _arg1.subtract(_arg2);
+        } catch (EvaluationError ignored) {}
 
-        return addition ? arg1.add(arg2) : arg1.subtract(arg2);
+        // then as date + something
+        try {
+            Temporal _arg1 = Conversions.toDateOrDateTime(arg1, m_evalContext);
+            TemporalAmount _arg2;
+
+            if (arg2 instanceof OffsetTime) {
+                // upgrade our date to datetime
+                _arg1 = Conversions.toDateTime(_arg1, m_evalContext);
+
+                // convert time value to a duration
+                _arg2 = Duration.between(LocalTime.of(0, 0), ((OffsetTime) arg2).toLocalTime());
+            }
+            else {
+                _arg2 = Period.ofDays(Conversions.toInteger(arg2, m_evalContext));
+            }
+
+            return add ? _arg1.plus(_arg2) : _arg1.minus(_arg2);
+
+        } catch (EvaluationError ex) {
+            throw new EvaluationError("Expression could not be evaluated as decimal or date arithmetic", ex);
+        }
     }
 
     /**

@@ -2,8 +2,11 @@ package io.rapidpro.excellent.functions;
 
 import io.rapidpro.excellent.EvaluationContext;
 import io.rapidpro.excellent.EvaluationError;
+import io.rapidpro.excellent.evaluator.Conversions;
 import io.rapidpro.excellent.functions.annotations.BooleanDefault;
 import io.rapidpro.excellent.functions.annotations.IntegerDefault;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Manages the loaded function libraries
@@ -61,6 +65,7 @@ public class FunctionManager {
         }
 
         List<Object> parameters = new ArrayList<>();
+        List<Object> remainingArgs = new ArrayList<>(args);
 
         for (Parameter param : func.getParameters()) {
             IntegerDefault defaultInt = param.getAnnotation(IntegerDefault.class);
@@ -71,12 +76,12 @@ public class FunctionManager {
             }
             else if (param.getType().isArray()) {
                 // we've reach a varargs param
-                parameters.add(args.toArray(new Object[args.size()]));
-                args.clear();
+                parameters.add(remainingArgs.toArray(new Object[args.size()]));
+                remainingArgs.clear();
                 break;
             }
-            else if (args.size() > 0) {
-                Object arg = args.remove(0);
+            else if (remainingArgs.size() > 0) {
+                Object arg = remainingArgs.remove(0);
                 parameters.add(arg);
             }
             else if (defaultInt != null) {
@@ -86,19 +91,34 @@ public class FunctionManager {
                 parameters.add(defaultBool.value());
             }
             else {
-                throw new EvaluationError("Missing argument " + param.getName() + " for function " + name);
+                throw new EvaluationError("Too few arguments provided for function " + name);
             }
         }
 
-        if (!args.isEmpty()) {
+        if (!remainingArgs.isEmpty()) {
             throw new EvaluationError("Too many arguments provided for function " + name);
         }
 
         try {
             return func.invoke(null, parameters.toArray(new Object[parameters.size()]));
         } catch (IllegalAccessException | InvocationTargetException e) {
-            // TODO format pretty arg list
-            throw new EvaluationError("Error calling function '" + name + "' with arguments ???", e);
+            List<String> prettyArgs = new ArrayList<>();
+            for (Object arg : args) {
+                String pretty;
+                if (arg instanceof String) {
+                    pretty = "\"" + arg + "\"";
+                }
+                else {
+                    try {
+                        pretty = Conversions.toString(arg, ctx);
+                    }
+                    catch (EvaluationError ex) {
+                        pretty = arg.toString();
+                    }
+                }
+                prettyArgs.add(pretty);
+            }
+            throw new EvaluationError("Error calling function " + name + " with arguments " + StringUtils.join(prettyArgs, ", "), e);
         }
     }
 }
