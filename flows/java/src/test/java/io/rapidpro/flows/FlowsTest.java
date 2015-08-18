@@ -3,9 +3,9 @@ package io.rapidpro.flows;
 import org.junit.Test;
 
 /**
- * Tests for {@link FlowEngine}
+ * Tests for {@link Flows}
  */
-public class FlowEngineTest {
+public class FlowsTest {
 
     @Test
     public void testSomething() {

@@ -1,0 +1,153 @@
+{
+  "languages": [
+    {
+      "iso_code": "eng",
+      "name": "English"
+    },
+    {
+      "iso_code": "fre",
+      "name": "French"
+    }
+  ],
+  "flow": {
+    "base_language": "eng",
+    "action_sets": [
+      {
+        "y": 0,
+        "x": 100,
+        "destination": "1e318293-4730-481c-b455-daaaf86b2e6c",
+        "uuid": "32cf414b-35e3-4c75-8a78-d5f4de925e13",
+        "actions": [
+          {
+            "msg": {
+              "eng": "Do you like mushrooms?"
+            },
+            "type": "reply"
+          }
+        ]
+      },
+      {
+        "y": 250,
+        "x": 136,
+        "destination": null,
+        "uuid": "6d12cde9-dbbf-4673-acd7-afa1776d382b",
+        "actions": [
+          {
+            "msg": {
+              "eng": "You should reconsider"
+            },
+            "type": "reply"
+          }
+        ]
+      },
+      {
+        "y": 251,
+        "x": 364,
+        "destination": null,
+        "uuid": "4ef2b232-1484-4db7-b470-98af1a2349d3",
+        "actions": [
+          {
+            "msg": {
+              "eng": "That was the right answer."
+            },
+            "type": "reply"
+          },
+          {
+            "type": "add_group",
+            "groups": [
+              {
+                "name": "Haters",
+                "id": 11083
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "y": 0,
+        "x": 603,
+        "destination": "1e318293-4730-481c-b455-daaaf86b2e6c",
+        "uuid": "e277932e-d546-4e0c-a483-ce6cce06b929",
+        "actions": [
+          {
+            "msg": {
+              "eng": "We didn't understand your answer. Please reply with yes/no."
+            },
+            "type": "reply"
+          }
+        ]
+      }
+    ],
+    "last_saved": "2015-08-18T09:29:42.364518Z",
+    "entry": "32cf414b-35e3-4c75-8a78-d5f4de925e13",
+    "rule_sets": [
+      {
+        "uuid": "1e318293-4730-481c-b455-daaaf86b2e6c",
+        "webhook_action": null,
+        "rules": [
+          {
+            "test": {
+              "test": {
+                "eng": "yes,yeah,yup"
+              },
+              "base": "yes,yeah,yup",
+              "type": "contains_any"
+            },
+            "category": {
+              "base": "Yes",
+              "eng": "Yes"
+            },
+            "destination": "6d12cde9-dbbf-4673-acd7-afa1776d382b",
+            "uuid": "a53e3607-ac87-4bee-ab95-30fd4ad8a837",
+            "destination_type": "A"
+          },
+          {
+            "test": {
+              "test": {
+                "eng": "no,hell no"
+              },
+              "base": "no,hell no",
+              "type": "contains_any"
+            },
+            "category": {
+              "base": "No",
+              "eng": "No"
+            },
+            "destination": "4ef2b232-1484-4db7-b470-98af1a2349d3",
+            "uuid": "d638e042-3f5c-4f03-a6c1-2031bd8971b2",
+            "destination_type": "A"
+          },
+          {
+            "category": {
+              "base": "All Responses",
+              "eng": "Other"
+            },
+            "uuid": "366fb919-7e0b-48be-8f5b-baa14b2a65aa",
+            "destination": "e277932e-d546-4e0c-a483-ce6cce06b929",
+            "destination_type": "A",
+            "test": {
+              "test": "true",
+              "type": "true"
+            },
+            "config": {
+              "type": "true",
+              "verbose_name": "contains anything",
+              "name": "Other",
+              "operands": 0
+            }
+          }
+        ],
+        "webhook": null,
+        "ruleset_type": "wait_message",
+        "label": "Response 1",
+        "operand": "@step.value",
+        "finished_key": null,
+        "response_type": "",
+        "y": 101,
+        "x": 250,
+        "config": {}
+      }
+    ],
+    "metadata": {}
+  }
+}

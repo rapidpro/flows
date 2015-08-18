@@ -1,0 +1,11 @@
+{
+  "flow": {},
+  "contact": { "name": "Joe", "urns": [], "groups": [], "fields": {} },
+  "state": {
+    "node": "1e318293-4730-481c-b455-daaaf86b2e6c",
+    "context": {}
+  },
+  "actions": [
+    { "type": "reply", "msg": "Do you like mushrooms?" }
+  ]
+}

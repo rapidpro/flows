@@ -1,0 +1,12 @@
+{
+  "flow": {},
+  "contact": { "name": "Joe", "urns": [], "groups": [], "fields": {} },
+  "state": {
+    "node": null,
+    "context": {}
+  },
+  "actions": [
+    { "type": "reply", "msg": "That was the right answer." },
+    { "type": "add_group", "groups": [{ "name": "Haters", "id": 11083 }] }
+  ]
+}
