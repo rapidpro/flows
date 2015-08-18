@@ -29,18 +29,18 @@ public class FunctionManagerTest {
         FunctionManager manager = new FunctionManager();
         manager.addLibrary(TestFunctions.class);
 
-        assertThat(manager.invokeFunction(m_context, "foo", new ArrayList<>(Arrays.asList(12))), is(24));
-        assertThat(manager.invokeFunction(m_context, "FOO", new ArrayList<>(Arrays.asList(12))), is(24));
-        assertThat(manager.invokeFunction(m_context, "bar", new ArrayList<>(Arrays.asList(12, 5))), is(17));
-        assertThat(manager.invokeFunction(m_context, "bar", new ArrayList<>(Arrays.asList(12))), is(14));
-        assertThat(manager.invokeFunction(m_context, "doh", new ArrayList<>(Arrays.asList(12, 1, 2, 3))), is(36));
+        assertThat(manager.invokeFunction(m_context, "foo", new ArrayList<Object>(Arrays.asList(12))), is((Object) 24));
+        assertThat(manager.invokeFunction(m_context, "FOO", new ArrayList<Object>(Arrays.asList(12))), is((Object) 24));
+        assertThat(manager.invokeFunction(m_context, "bar", new ArrayList<Object>(Arrays.asList(12, 5))), is((Object) 17));
+        assertThat(manager.invokeFunction(m_context, "bar", new ArrayList<Object>(Arrays.asList(12))), is((Object) 14));
+        assertThat(manager.invokeFunction(m_context, "doh", new ArrayList<Object>(Arrays.asList(12, 1, 2, 3))), is((Object) 36));
     }
 
     @Test(expected = EvaluationError.class)
     public void test_invokeFunction_nonPublic() {
         FunctionManager manager = new FunctionManager();
         manager.addLibrary(TestFunctions.class);
-        manager.invokeFunction(m_context, "zed", new ArrayList<>(Arrays.asList(12)));
+        manager.invokeFunction(m_context, "zed", new ArrayList<Object>(Arrays.asList(12)));
     }
 
     public static class TestFunctions {

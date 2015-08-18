@@ -139,8 +139,14 @@ public class CustomFunctions {
      */
     private static List<String> getWords(String text, boolean bySpaces) {
         Pattern pattern = Pattern.compile(bySpaces ? "\\s+" : "\\W+", Pattern.MULTILINE|Pattern.UNICODE_CHARACTER_CLASS);
-        String[] splits = pattern.split(text);
-        return Arrays.asList(splits).stream().filter(StringUtils::isNotEmpty).collect(Collectors.toList());
+
+        List<String> words = new ArrayList<>();
+        for (String split : pattern.split(text)) {
+            if (StringUtils.isNotEmpty(split)) {
+                words.add(split);
+            }
+        }
+        return words;
     }
 
     /**

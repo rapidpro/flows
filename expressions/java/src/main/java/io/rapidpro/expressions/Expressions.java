@@ -3,7 +3,7 @@ package io.rapidpro.expressions;
 import io.rapidpro.expressions.evaluator.TemplateEvaluatorImpl;
 
 /**
- * Public interface for the Expressions templating system
+ * Public interface for the expression engine
  */
 public class Expressions {
 

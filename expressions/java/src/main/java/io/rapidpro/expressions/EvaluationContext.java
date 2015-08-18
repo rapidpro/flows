@@ -18,11 +18,11 @@ import java.util.Map;
  */
 public class EvaluationContext {
 
-    protected static Gson m_gson;
+    protected static Gson s_gson;
     static {
-        GsonBuilder builder = new GsonBuilder();
-        builder.registerTypeAdapter(EvaluationContext.class, new Deserializer());
-        m_gson = builder.create();
+        s_gson = new GsonBuilder()
+                .registerTypeAdapter(EvaluationContext.class, new Deserializer())
+                .create();
     }
 
     protected Map<String, Object> m_variables;
@@ -44,7 +44,7 @@ public class EvaluationContext {
     }
 
     public static EvaluationContext fromJson(String json) {
-        return m_gson.fromJson(json, EvaluationContext.class);
+        return s_gson.fromJson(json, EvaluationContext.class);
     }
 
     /**

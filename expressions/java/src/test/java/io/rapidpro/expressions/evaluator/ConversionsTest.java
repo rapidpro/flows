@@ -21,7 +21,7 @@ public class ConversionsTest {
 
     @Before
     public void setup() {
-        m_context = new EvaluationContext(new HashMap<>(), ZoneId.of("Africa/Kigali"), true);
+        m_context = new EvaluationContext(new HashMap<String, Object>(), ZoneId.of("Africa/Kigali"), true);
     }
 
     @Test

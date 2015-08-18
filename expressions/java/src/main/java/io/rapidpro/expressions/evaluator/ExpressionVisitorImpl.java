@@ -53,7 +53,11 @@ public class ExpressionVisitorImpl extends ExcellentBaseVisitor<Object> {
      */
     @Override
     public Object visitFunctionParameters(ExcellentParser.FunctionParametersContext ctx) {
-        return ctx.expression().stream().map(this::visit).collect(Collectors.toList());
+        List<Object> parameters = new ArrayList<>();
+        for (ExcellentParser.ExpressionContext expression : ctx.expression()) {
+            parameters.add(visit(expression));
+        }
+        return parameters;
     }
 
     /**

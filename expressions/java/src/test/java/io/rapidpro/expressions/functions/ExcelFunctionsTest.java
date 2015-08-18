@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.time.*;
+import java.time.temporal.Temporal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -198,11 +199,11 @@ public class ExcelFunctionsTest {
 
     @Test
     public void test_edate() {
-        assertThat(edate(m_context, LocalDate.of(2013, 3, 2), 4), is(LocalDate.of(2013, 7, 2)));
-        assertThat(edate(m_context, LocalDate.of(2013, 3, 2), -4), is(LocalDate.of(2012, 11, 2)));
+        assertThat(edate(m_context, LocalDate.of(2013, 3, 2), 4), is((Temporal) LocalDate.of(2013, 7, 2)));
+        assertThat(edate(m_context, LocalDate.of(2013, 3, 2), -4), is((Temporal) LocalDate.of(2012, 11, 2)));
         assertThat(edate(m_context, ZonedDateTime.of(2015, 8, 14, 10, 27, 0, 0, ZoneId.of("Africa/Kigali")), 4),
-                is(ZonedDateTime.of(2015, 12, 14, 10, 27, 0, 0, ZoneId.of("Africa/Kigali"))));
-        assertThat(edate(m_context, "Aug 14th 2015", 3), is(LocalDate.of(2015, 11, 14)));
+                is((Temporal) ZonedDateTime.of(2015, 12, 14, 10, 27, 0, 0, ZoneId.of("Africa/Kigali"))));
+        assertThat(edate(m_context, "Aug 14th 2015", 3), is((Temporal) LocalDate.of(2015, 11, 14)));
     }
 
     @Test
@@ -229,7 +230,7 @@ public class ExcelFunctionsTest {
         assertThat(now(m_context), is(ZonedDateTime.of(2015, 8, 14, 10, 38, 0, 0, ZoneId.of("Africa/Kigali"))));
 
         // when context doesn't have variable, defaults to calculated value
-        EvaluationContext context = new EvaluationContext(new HashMap<>(), ZoneId.of("UTC"), true);
+        EvaluationContext context = new EvaluationContext(new HashMap<String, Object>(), ZoneId.of("UTC"), true);
 
         assertThat(now(context), instanceOf(ZonedDateTime.class));
     }
@@ -257,7 +258,7 @@ public class ExcelFunctionsTest {
         assertThat(today(m_context), is(LocalDate.of(2015, 8, 14)));
 
         // when context doesn't have variable, defaults to calculated value
-        EvaluationContext context = new EvaluationContext(new HashMap<>(), ZoneId.of("UTC"), true);
+        EvaluationContext context = new EvaluationContext(new HashMap<String, Object>(), ZoneId.of("UTC"), true);
 
         assertThat(today(context), instanceOf(LocalDate.class));
     }
@@ -360,12 +361,12 @@ public class ExcelFunctionsTest {
 
     @Test
     public void test_if() {
-        assertThat(_if(m_context, true, 0, false), is(0));
-        assertThat(_if(m_context, true, "x", "y"), is("x"));
-        assertThat(_if(m_context, "true", "x", "y"), is("x"));
-        assertThat(_if(m_context, false, 0, false), is(false));
-        assertThat(_if(m_context, false, "x", "y"), is("y"));
-        assertThat(_if(m_context, 0, "x", "y"), is("y"));
+        assertThat(_if(m_context, true, 0, false), is((Object) 0));
+        assertThat(_if(m_context, true, "x", "y"), is((Object) "x"));
+        assertThat(_if(m_context, "true", "x", "y"), is((Object) "x"));
+        assertThat(_if(m_context, false, 0, false), is((Object) false));
+        assertThat(_if(m_context, false, "x", "y"), is((Object) "y"));
+        assertThat(_if(m_context, 0, "x", "y"), is((Object) "y"));
     }
 
     @Test

@@ -213,18 +213,18 @@ public class Conversions {
 
         try {
             // try converting to two decimals
-            return new ImmutablePair<>(toDecimal(value1, ctx), toDecimal(value2, ctx));
+            return new ImmutablePair<Object, Object>(toDecimal(value1, ctx), toDecimal(value2, ctx));
         }
         catch (EvaluationError ex) {}
 
         try {
             // try converting to two dates
-            return new ImmutablePair<>(toDateOrDateTime(value1, ctx), toDateOrDateTime(value2, ctx));
+            return new ImmutablePair<Object, Object>(toDateOrDateTime(value1, ctx), toDateOrDateTime(value2, ctx));
         }
         catch (EvaluationError ex) {}
 
         // try converting to two strings
-        return new ImmutablePair<>(toString(value1, ctx), toString(value2, ctx));
+        return new ImmutablePair<Object, Object>(toString(value1, ctx), toString(value2, ctx));
     }
 
     /**
