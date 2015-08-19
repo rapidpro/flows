@@ -20,7 +20,7 @@
         "actions": [
           {
             "msg": {
-              "eng": "Do you like mushrooms?"
+              "eng": "Hi @contact.name. Do you like mushrooms?"
             },
             "type": "reply"
           }
@@ -56,7 +56,7 @@
             "type": "add_group",
             "groups": [
               {
-                "name": "Haters",
+                "name": "Approved",
                 "id": 11083
               }
             ]

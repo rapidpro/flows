@@ -1,10 +1,11 @@
 package io.rapidpro.flows.definition;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
+import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.flows.FlowUtils;
-import io.rapidpro.flows.runner.Run;
+import io.rapidpro.flows.runner.RunState;
 import org.apache.commons.lang3.StringUtils;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,27 +28,19 @@ public abstract class Test {
 
     protected TranslatableText m_test;
 
-    protected abstract void initialiseFromJson(JsonObject json);
-
-    public abstract Result evaluate(Run run, String text);
+    public abstract Result evaluate(RunState run, EvaluationContext context, String text);
 
     /**
      * Loads a test from the given JSON object
      */
-    public static Test fromJson(JsonObject json) {
+    public static Test fromJson(JsonObject json) throws JsonSyntaxException {
         String type = json.get("type").getAsString();
+        Class<? extends Test> clazz = s_classByType.get(type);
+        Test test = FlowUtils.fromJson(json, clazz);
 
+        test.m_test = TranslatableText.fromJson(json.get("test"));
 
-        Class<? extends Test> testClass = s_classByType.get(type);
-        try {
-            Test test = testClass.newInstance();
-            test.m_test = TranslatableText.fromJson(json.get("test"));
-            test.initialiseFromJson(json);
-            return test;
-        }
-        catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
+        return test;
     }
 
     /**
@@ -77,12 +70,12 @@ public abstract class Test {
      * Test that always returns true
      */
     public static class True extends Test {
-        @Override
-        public void initialiseFromJson(JsonObject json) {
+        public static True fromJson(JsonObject json) {
+            return new True();
         }
 
         @Override
-        public Result evaluate(Run run, String text) {
+        public Result evaluate(RunState run, EvaluationContext context, String text) {
             return new Result(1, text);
         }
     }
@@ -91,12 +84,12 @@ public abstract class Test {
      * Test that always returns false
      */
     public static class False extends Test {
-        @Override
-        public void initialiseFromJson(JsonObject json) {
+        public static False fromJson(JsonObject json) {
+            return new False();
         }
 
         @Override
-        public Result evaluate(Run run, String text) {
+        public Result evaluate(RunState run, EvaluationContext context, String text) {
             return new Result(0, text);
         }
     }
@@ -105,8 +98,8 @@ public abstract class Test {
      * Test that returns whether the text contains the given words
      */
     public static class Contains extends Test {
-        @Override
-        public void initialiseFromJson(JsonObject json) {
+        public static Contains fromJson(JsonObject json) {
+            return new Contains();
         }
 
         protected String testInWords(String test, String[] words, String[] rawWords) {
@@ -128,8 +121,8 @@ public abstract class Test {
         }
 
         @Override
-        public Result evaluate(Run run, String text) {
-            throw new NotImplementedException();
+        public Result evaluate(RunState run, EvaluationContext context, String text) {
+            throw new UnknownError();
         }
     }
 
@@ -137,17 +130,15 @@ public abstract class Test {
      * Test that returns whether the text contains any of the given words
      */
     public static class ContainsAny extends Contains {
-        @Override
-        public void initialiseFromJson(JsonObject json) {
+        public static ContainsAny fromJson(JsonObject json) {
+            return new ContainsAny();
         }
 
         @Override
-        public Result evaluate(Run run, String text) {
-            // substitute any variables
-            String localizedTest = run.getFlow().getLocalizedText(m_test, run.getContact());
-
-            // TODO
-            //test, has_missing = Msg.substitute_variables(test, run.contact, context, org=run.flow.org)
+        public Result evaluate(RunState run, EvaluationContext context, String text) {
+            // localize and substitute any variables
+            String localizedTest = m_test.getLocalized(run);
+            localizedTest = run.substituteVariables(localizedTest, context).getOutput();
 
             // tokenize our test
             Pattern pattern = Pattern.compile("\\W+", Pattern.UNICODE_CHARACTER_CLASS);

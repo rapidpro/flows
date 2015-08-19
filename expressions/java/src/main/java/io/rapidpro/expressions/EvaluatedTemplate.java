@@ -23,4 +23,8 @@ public class EvaluatedTemplate {
     public List<String> getErrors() {
         return m_errors;
     }
+
+    public boolean hasErrors() {
+        return m_errors.size() > 0;
+    }
 }

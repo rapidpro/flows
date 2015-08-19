@@ -2,7 +2,10 @@ package io.rapidpro.flows.definition;
 
 import com.google.gson.*;
 import io.rapidpro.flows.runner.Contact;
+import io.rapidpro.flows.runner.RunState;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -38,29 +41,6 @@ public class Flow {
         return m_entry;
     }
 
-    public String getLocalizedText(TranslatableText text, Contact contact) {
-        return getLocalizedText(text, contact, "");
-    }
-
-    public String getLocalizedText(TranslatableText text, Contact contact, String defaultText) {
-        // We return according to the following precedence:
-        //   1) Contact's language
-        //   2) Org Primary Language
-        //   3) Flow Base Language
-        //   4) Default Text
-        List<String> preferredLanguages = new ArrayList<>();
-
-        if (StringUtils.isNotEmpty(contact.getLanguage())) {
-            preferredLanguages.add(contact.getLanguage());
-        }
-
-        // TODO add org language somehow
-
-        preferredLanguages.add(m_baseLanguage);
-
-        return text.getLocalized(preferredLanguages, defaultText);
-    }
-
     public static class Deserializer implements JsonDeserializer<Flow> {
 
         public Flow deserialize(JsonElement elem, Type type, JsonDeserializationContext context) throws JsonParseException {
@@ -94,13 +74,30 @@ public class Flow {
     }
 
     /**
-     * Super class for ActionSet and RuleSet. Things which can be a destination.
+     * Super class for ActionSet and RuleSet. Things which can be a destination in a flow graph.
      */
-    public static class Node {
+    public static abstract class Node {
         protected String m_uuid;
+
+        /**
+         * Visits this node
+         * @param run the run state
+         * @param input the last contact input
+         * @return the next destination (may be null)
+         */
+        public abstract Node visit(RunState run, String input);
+
+        public String getUuid() {
+            return m_uuid;
+        }
     }
 
+    /**
+     * ActionSets and Rules can have destinations which are serialized as the node UUID
+     */
     public interface ConnectionStart {
+        Node getDestination();
+
         void setDestination(Node destination);
     }
 }

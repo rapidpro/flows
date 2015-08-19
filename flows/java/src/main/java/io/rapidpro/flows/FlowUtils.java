@@ -6,6 +6,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,5 +63,14 @@ public class FlowUtils {
             }
         }
         return d.get(new ImmutablePair<>(lenstr1-1,lenstr2-1));
+    }
+
+    public static <T> T fromJson(JsonObject json, Class<T> clazz) {
+        try {
+            Method method = clazz.getDeclaredMethod("fromJson", JsonObject.class);
+            return (T) method.invoke(null, json);
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

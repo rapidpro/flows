@@ -1,6 +1,9 @@
 package io.rapidpro.flows;
 
 import io.rapidpro.flows.definition.Flow;
+import io.rapidpro.flows.runner.Contact;
+import io.rapidpro.flows.runner.Org;
+import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.runner.RunnerImpl;
 
 /**
@@ -21,9 +24,8 @@ public class Flows {
      * The flow runner public interface
      */
     public interface Runner {
+        RunState newRun(Org org, Contact contact, Flow flow);
 
-        Flow loadDefinition(String json);
-
-        
+        RunState resume(RunState lastState, String input);
     }
 }
