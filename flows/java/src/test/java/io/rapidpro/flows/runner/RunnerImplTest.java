@@ -57,6 +57,7 @@ public class RunnerImplTest {
         assertThat(state2.getContact().getGroups(), contains("Testers")); // unchanged
         assertThat(state2.getSteps(), hasSize(3));
         assertThat(state2.getSteps().get(0).getNode().getUuid(), is("1e318293-4730-481c-b455-daaaf86b2e6c"));
+        assertThat(state2.getSteps().get(0).getArrivedOn(), is(state1.getSteps().get(1).getArrivedOn()));
         assertThat(state2.getSteps().get(0).getLeftOn(), notNullValue());
         assertThat(state2.getSteps().get(0).getRuleResult().getRule().getUuid(), is("366fb919-7e0b-48be-8f5b-baa14b2a65aa"));
         assertThat(state2.getSteps().get(0).getRuleResult().getCategory(), is("Other"));
@@ -76,7 +77,7 @@ public class RunnerImplTest {
         assertThat(state3.getContact().getGroups(), containsInAnyOrder("Testers", "Approved")); // added to group
         assertThat(state3.getSteps(), hasSize(2));
         assertThat(state3.getSteps().get(0).getNode().getUuid(), is("1e318293-4730-481c-b455-daaaf86b2e6c"));
-        assertThat(state3.getSteps().get(0).getArrivedOn(), notNullValue());
+        assertThat(state3.getSteps().get(0).getArrivedOn(), is(state2.getSteps().get(2).getArrivedOn()));
         assertThat(state3.getSteps().get(0).getLeftOn(), notNullValue());
         assertThat(state3.getSteps().get(0).getRuleResult().getRule().getUuid(), is("d638e042-3f5c-4f03-a6c1-2031bd8971b2"));
         assertThat(state3.getSteps().get(0).getRuleResult().getCategory(), is("No"));

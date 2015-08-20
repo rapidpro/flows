@@ -1,6 +1,7 @@
 package io.rapidpro.flows.definition;
 
 import com.google.gson.*;
+import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.Step;
 import io.rapidpro.flows.runner.RunState;
 
@@ -82,7 +83,7 @@ public class Flow {
          * @param input the last input
          * @return the next destination (may be null)
          */
-        public abstract Node visit(RunState run, Step step, String input);
+        public abstract Node visit(RunState run, Step step, Input input);
 
         public String getUuid() {
             return m_uuid;

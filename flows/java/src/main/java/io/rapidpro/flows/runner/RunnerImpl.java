@@ -25,8 +25,9 @@ public class RunnerImpl implements Flows.Runner {
      * @see io.rapidpro.flows.Flows.Runner#resume(RunState, String)
      */
     @Override
-    public RunState resume(RunState lastState, String input) throws InfiniteLoopException {
+    public RunState resume(RunState lastState, String text) throws InfiniteLoopException {
         RunState newState = new RunState(lastState.getOrg(), lastState.getContact(), lastState.getFlow());
+        Input input = text != null ? new Input(text) : null;
 
         Step lastStep = lastState.getSteps().size() > 0 ? lastState.getSteps().getLast() : null;
 
@@ -37,7 +38,16 @@ public class RunnerImpl implements Flows.Runner {
         Set<Flow.Node> nodesVisited = new LinkedHashSet<>();
 
         do {
-            Step step = new Step(currentNode, Instant.now());
+            // if we're resuming a previously paused step, then use it's arrived on value
+            Instant arrivedOn;
+            if (lastStep != null && nodesVisited.size() == 0) {
+                arrivedOn = lastStep.getArrivedOn();
+            } else {
+                arrivedOn = Instant.now();
+            }
+
+            // create new step for this node
+            Step step = new Step(currentNode, arrivedOn);
             newState.getSteps().add(step);
 
             // should we pause at this node?
@@ -50,10 +60,13 @@ public class RunnerImpl implements Flows.Runner {
             // check for an non-pausing loop
             if (nodesVisited.contains(currentNode)) {
                 throw new InfiniteLoopException(nodesVisited);
+            } else {
+                nodesVisited.add(currentNode);
             }
-            nodesVisited.add(currentNode);
 
             Flow.Node nextNode = currentNode.visit(newState, step, input);
+
+            // if we have a next node, then record leaving this one
             if (nextNode != null) {
                 step.setLeftOn(Instant.now());
             }

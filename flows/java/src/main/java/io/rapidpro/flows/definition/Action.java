@@ -6,6 +6,7 @@ import com.google.gson.JsonSyntaxException;
 import io.rapidpro.expressions.EvaluatedTemplate;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.flows.FlowUtils;
+import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.RunState;
 import org.apache.commons.lang3.StringUtils;
 
@@ -22,7 +23,7 @@ public abstract class Action {
         s_classByType.put("add_group", AddToGroup.class);
     }
 
-    public abstract Result execute(RunState run);
+    public abstract Result execute(RunState run, Input input);
 
     public static Action fromJson(JsonObject json) throws JsonSyntaxException {
         String type = json.get("type").getAsString();
@@ -73,10 +74,10 @@ public abstract class Action {
         }
 
         @Override
-        public Result execute(RunState run) {
+        public Result execute(RunState run, Input input) {
             String msg = m_msg.getLocalized(run);
             if (StringUtils.isNotEmpty(msg)) {
-                EvaluatedTemplate template = run.substituteVariables(msg, run.buildContext());
+                EvaluatedTemplate template = run.substituteVariables(msg, run.buildContext(input));
 
                 return new Result(new Reply(new TranslatableText(template.getOutput())), template.getErrors());
             }
@@ -107,8 +108,8 @@ public abstract class Action {
         }
 
         @Override
-        public Result execute(RunState run) {
-            EvaluationContext context = run.buildContext();
+        public Result execute(RunState run, Input input) {
+            EvaluationContext context = run.buildContext(input);
             List<String> groups = new ArrayList<>();
             for (String group : m_groups) {
                 EvaluatedTemplate template = run.substituteVariables(group, context);

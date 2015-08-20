@@ -1,15 +1,21 @@
 {
   "flow": {},
-  "contact": { "name": "Joe", "urns": ["tel:+260964153686"], "groups": ["Testers"], "fields": {"gender": "M"} },
+  "contact": { "name": "Joe", "urns": ["tel:+260964153686"], "groups": ["Testers", "Approved"], "fields": {"gender": "M"} },
   "org": { "primary_language": "eng", "is_anon": false },
   "steps": [
     {
       "node": "1e318293-4730-481c-b455-daaaf86b2e6c",
+      "arrived_on": "2015-08-20T14:22:17.000Z",
       "left_on": "2015-08-20T14:23:54.000Z",
-      "value": {}
+      "rule": {
+        "uuid": "d638e042-3f5c-4f03-a6c1-2031bd8971b2",
+        "value": "no",
+        "category": "No"
+      }
     },
     {
       "node": "4ef2b232-1484-4db7-b470-98af1a2349d3",
+      "arrived_on": "2015-08-20T14:23:56.000Z",
       "left_on": null,
       "actions": [
         { "type": "reply", "msg": "That was the right answer." },

@@ -4,14 +4,18 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import io.rapidpro.expressions.EvaluationContext;
-import io.rapidpro.flows.runner.Step;
+import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.RunState;
+import io.rapidpro.flows.runner.Step;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -50,8 +54,11 @@ public class RuleSet extends Flow.Node {
         return obj;
     }
 
+    /**
+     * @see io.rapidpro.flows.definition.Flow.Node#visit(RunState, Step, Input)
+     */
     @Override
-    public Flow.Node visit(RunState run, Step step, String input) {
+    public Flow.Node visit(RunState run, Step step, Input input) {
         if (logger.isDebugEnabled()) {
             logger.debug("Visiting rule set " + m_uuid + " with input " + input + " from contact " + run.getContact().getUuid());
         }
@@ -70,19 +77,23 @@ public class RuleSet extends Flow.Node {
         return rule.getDestination();
     }
 
-    protected Pair<Rule, String> findMatchingRule(RunState run, String input) {
-        EvaluationContext context = run.buildContext();
+    /**
+     * Runs through the rules to find the first one that matches
+     * @param run the run state
+     * @param input the input
+     * @return the rule and the matching text
+     */
+    protected Pair<Rule, String> findMatchingRule(RunState run, Input input) {
+        EvaluationContext context = run.buildContext(input);
 
-        // TODO use operand
         String operand = run.substituteVariables(m_operand, context).getOutput();
 
         for (Rule rule : m_rules) {
-            Test.Result result = rule.matches(run, context, input);
+            Test.Result result = rule.matches(run, context, operand);
             if (result.getValue() > 0) {
                 return new ImmutablePair<>(rule, result.getMatch());
             }
         }
-
         return null;
     }
 

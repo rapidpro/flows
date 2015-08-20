@@ -59,6 +59,7 @@ public class TranslatableTextTest {
         assertThat(new TranslatableText("abc").equals(new TranslatableText("abc")), is(true));
         assertThat(new TranslatableText("abc").equals(new TranslatableText("cde")), is(false));
 
-        // TODO test with translations
+        assertThat(new TranslatableText("eng", "Hello", "fra", "Bonjour").equals(new TranslatableText("eng", "Hello", "fra", "Bonjour")), is(true));
+        assertThat(new TranslatableText("eng", "Hello", "fra", "Salut").equals(new TranslatableText("eng", "Hello", "fra", "Bonjour")), is(false));
     }
 }

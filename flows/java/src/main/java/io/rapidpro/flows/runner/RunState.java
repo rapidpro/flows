@@ -56,8 +56,12 @@ public class RunState {
         return s_evaluator.evaluateTemplate(text, context);
     }
 
-    public EvaluationContext buildContext() {
+    public EvaluationContext buildContext(Input input) {
         Map<String, Object> variables = new HashMap<>();
+
+        if (input != null) {
+            variables.put("step", input.buildContext());
+        }
 
         variables.put("contact", m_contact.buildContext(m_org));
 

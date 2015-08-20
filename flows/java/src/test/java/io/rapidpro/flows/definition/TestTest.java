@@ -35,7 +35,7 @@ public class TestTest {
 
         Flows.Runner runner = Flows.getRunner();
         s_run = runner.start(org, contact, flow);
-        s_context = s_run.buildContext();
+        s_context = s_run.buildContext(null);
     }
 
     @org.junit.Test

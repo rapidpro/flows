@@ -5,6 +5,7 @@
   "steps": [
     {
       "node": "32cf414b-35e3-4c75-8a78-d5f4de925e13",
+      "arrived_on": "2015-08-20T14:21:02.000Z",
       "left_on": "2015-08-20T14:21:05.000Z",
       "actions": [
         { "type": "reply", "msg": "Hi Joe. Do you like mushrooms?" }
@@ -12,6 +13,7 @@
     },
     {
       "node": "1e318293-4730-481c-b455-daaaf86b2e6c",
+      "arrived_on": "2015-08-20T14:21:07.000Z",
       "left_on": null,
       "pause": "wait_message"
     }

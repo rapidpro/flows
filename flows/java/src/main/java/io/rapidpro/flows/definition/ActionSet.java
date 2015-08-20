@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import io.rapidpro.flows.FlowUtils;
+import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.Step;
 import io.rapidpro.flows.runner.RunState;
 import org.apache.commons.lang3.StringUtils;
@@ -41,14 +42,17 @@ public class ActionSet extends Flow.Node implements Flow.ConnectionStart {
         return obj;
     }
 
+    /**
+     * @see io.rapidpro.flows.definition.Flow.Node#visit(RunState, Step, Input)
+     */
     @Override
-    public Flow.Node visit(RunState run, Step step, String input) {
+    public Flow.Node visit(RunState run, Step step, Input input) {
         if (logger.isDebugEnabled()) {
             logger.debug("Visiting action set " + m_uuid + " with input " + input + " from contact " + run.getContact().getUuid());
         }
 
         for (Action action : m_actions) {
-            Action.Result result = action.execute(run);
+            Action.Result result = action.execute(run, input);
             if (result.m_action != null) {
                 step.getActionResults().add(result);
             }
