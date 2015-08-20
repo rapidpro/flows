@@ -24,6 +24,7 @@ public abstract class Test {
         s_classByType.put("false", False.class);
         s_classByType.put("contains", Contains.class);
         s_classByType.put("contains_any", ContainsAny.class);
+        s_classByType.put("starts", StartsWith.class);
     }
 
     public abstract Result evaluate(RunState run, EvaluationContext context, String text);
@@ -41,46 +42,31 @@ public abstract class Test {
      * Holds the result of a test evaluation (the int value + the text matched)
      */
     public static class Result {
-        public static Result NO_MATCH = new Result(0, null);
+        public static Result NO_MATCH = new Result(false, null);
 
-        protected int m_value;
-        protected String m_match;
+        protected boolean m_matched;
+        protected String m_text;
 
-        public Result(int value, String match) {
-            m_value = value;
-            m_match = match;
+        public Result(boolean matched, String text) {
+            m_matched = matched;
+            m_text = text;
         }
 
-        public int getValue() {
-            return m_value;
+        public static Result textMatch(String text) {
+            return new Result(true, text);
         }
 
-        public String getMatch() {
-            return m_match;
+        public boolean isMatched() {
+            return m_matched;
+        }
+
+        public String getText() {
+            return m_text;
         }
 
         @Override
         public String toString() {
-            return "Test.Result{value=" + m_value + ", match=" + (m_match != null ? "\"" + m_match + "\"" : "null") + '}';
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            Result result = (Result) o;
-
-            if (m_value != result.m_value) return false;
-            return !(m_match != null ? !m_match.equals(result.m_match) : result.m_match != null);
-
-        }
-
-        @Override
-        public int hashCode() {
-            int result = m_value;
-            result = 31 * result + (m_match != null ? m_match.hashCode() : 0);
-            return result;
+            return "Test.Result{matches=" + m_matched + ", match=" + (m_text != null ? "\"" + m_text + "\"" : "null") + '}';
         }
     }
 
@@ -94,7 +80,7 @@ public abstract class Test {
 
         @Override
         public Result evaluate(RunState run, EvaluationContext context, String text) {
-            return new Result(1, text);
+            return Result.textMatch(text);
         }
     }
 
@@ -108,7 +94,7 @@ public abstract class Test {
 
         @Override
         public Result evaluate(RunState run, EvaluationContext context, String text) {
-            return new Result(0, text);
+            return new Result(false, text);
         }
     }
 
@@ -179,7 +165,7 @@ public abstract class Test {
 
             // we are a match only if every test matches
             if (matches.size() == tests.length) {
-                return new Result(tests.length, StringUtils.join(matches, " "));
+                return Result.textMatch(StringUtils.join(matches, " "));
             } else {
                 return Result.NO_MATCH;
             }
@@ -224,7 +210,38 @@ public abstract class Test {
 
             // we are a match if at least one test matches
             if (matches.size() > 0) {
-                return new Result(1, StringUtils.join(matches, " "));
+                return Result.textMatch(StringUtils.join(matches, " "));
+            } else {
+                return Result.NO_MATCH;
+            }
+        }
+    }
+
+    /**
+     * Whether the text starts with the given string
+     */
+    public static class StartsWith extends TranslatableTest {
+
+        public StartsWith(TranslatableText test) {
+            super(test);
+        }
+
+        public static StartsWith fromJson(JsonObject json) {
+            return new StartsWith(TranslatableText.fromJson(json.get("test")));
+        }
+
+        @Override
+        public Result evaluate(RunState run, EvaluationContext context, String text) {
+            // localize and substitute any variables
+            String localizedTest = m_test.getLocalized(run);
+            localizedTest = run.substituteVariables(localizedTest, context).getOutput();
+
+            // strip leading and trailing whitespace
+            text = text.trim();
+
+            // see whether we start with our test
+            if (text.toLowerCase().startsWith(localizedTest.toLowerCase())) {
+                return Result.textMatch(text.substring(0, localizedTest.length()));
             } else {
                 return Result.NO_MATCH;
             }

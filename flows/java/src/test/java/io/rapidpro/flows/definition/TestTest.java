@@ -41,35 +41,55 @@ public class TestTest {
     @org.junit.Test
     public void _true() {
         Test test = new Test.True();
-        assertThat(test.evaluate(s_run, s_context, "huh?"), is(new Test.Result(1, "huh?")));
+        assertTest(test, "huh?", true, "huh?");
     }
 
     @org.junit.Test
     public void _false() {
         Test test = new Test.False();
-        assertThat(test.evaluate(s_run, s_context, "huh?"), is(new Test.Result(0, "huh?")));
+        assertTest(test, "huh?", false, "huh?");
     }
 
     @org.junit.Test
     public void contains() {
         Test test = new Test.Contains(new TranslatableText("north,east"));
 
-        assertThat(test.evaluate(s_run, s_context, "go north east"), is(new Test.Result(2, "north east")));
-        assertThat(test.evaluate(s_run, s_context, "EAST then NORTH"), is(new Test.Result(2, "NORTH EAST")));
+        assertTest(test, "go north east", true, "north east");
+        assertTest(test, "EAST then NORRTH", true, "NORRTH EAST");
 
-        assertThat(test.evaluate(s_run, s_context, "go north"), is(Test.Result.NO_MATCH));
-        assertThat(test.evaluate(s_run, s_context, "east"), is(Test.Result.NO_MATCH));
+        assertTest(test, "go north", false, null);
+        assertTest(test, "east", false, null);
     }
 
     @org.junit.Test
     public void containsAny() {
-        Test test = new Test.ContainsAny(new TranslatableText("yes,yeah"));
+        Test test = new Test.ContainsAny(new TranslatableText("yes,affirmative"));
 
-        assertThat(test.evaluate(s_run, s_context, "yes"), is(new Test.Result(1, "yes")));
-        assertThat(test.evaluate(s_run, s_context, "Ok YES I will"), is(new Test.Result(1, "YES")));
-        assertThat(test.evaluate(s_run, s_context, "yeah sure"), is(new Test.Result(1, "yeah")));
+        assertTest(test, "yes", true, "yes");
+        assertTest(test, "AFFIRMATIVE SIR", true, "AFFIRMATIVE");
+        assertTest(test, "affirmative yes", true, "yes affirmative");
+        assertTest(test, "afirmative!", true, "afirmative"); // edit distance
 
-        assertThat(test.evaluate(s_run, s_context, "no"), is(Test.Result.NO_MATCH));
-        assertThat(test.evaluate(s_run, s_context, "NO way jose"), is(Test.Result.NO_MATCH));
+        // edit distance doesn't apply for words shorter than 4 chars
+        assertTest(test, "Ok YEES I will", false, null);
+
+        assertTest(test, "no", false, null);
+        assertTest(test, "NO way jose", false, null);
+    }
+
+    @org.junit.Test
+    public void startsWith() {
+        Test test = new Test.StartsWith(new TranslatableText("once"));
+
+        assertTest(test, "ONCE", true, "ONCE");
+        assertTest(test, "Once upon a time", true, "Once");
+
+        assertTest(test, "Hey once", false, null);
+    }
+
+    protected void assertTest(Test test, String input, boolean expectedMatched, String expectedText) {
+        Test.Result result = test.evaluate(s_run, s_context, input);
+        assertThat(result.isMatched(), is(expectedMatched));
+        assertThat(result.getText(), is(expectedText));
     }
 }

@@ -18,6 +18,5 @@ public class FlowUtilsTest {
         assertThat(FlowUtils.editDistance("abcd", "ad"), is(2));      // 2 deletions
         assertThat(FlowUtils.editDistance("abcd", "axbcd"), is(1));   // 1 addition
         assertThat(FlowUtils.editDistance("abcd", "acbd"), is(1));    // 1 transposition
-        assertThat(FlowUtils.editDistance("abcd", "xabcd"), is(100)); // starts with different character
     }
 }

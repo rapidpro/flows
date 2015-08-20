@@ -28,11 +28,6 @@ public class FlowUtils {
      * Computes the Damerau-Levenshtein distance between the two given strings
      */
     public static int editDistance(String s1, String s2) {
-        // if first letters are different, infinite distance
-        if (StringUtils.isNotEmpty(s1) && StringUtils.isNotEmpty(s2) && s1.charAt(0) != s2.charAt(0)) {
-            return 100;
-        }
-
         Map<Pair<Integer, Integer>, Integer> d = new HashMap<>();
         int lenstr1 = s1.length();
         int lenstr2 = s2.length();

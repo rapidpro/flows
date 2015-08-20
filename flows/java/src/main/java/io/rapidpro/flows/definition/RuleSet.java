@@ -81,7 +81,7 @@ public class RuleSet extends Flow.Node {
      * Runs through the rules to find the first one that matches
      * @param run the run state
      * @param input the input
-     * @return the rule and the matching text
+     * @return the rule and the matched text
      */
     protected Pair<Rule, String> findMatchingRule(RunState run, Input input) {
         EvaluationContext context = run.buildContext(input);
@@ -90,8 +90,8 @@ public class RuleSet extends Flow.Node {
 
         for (Rule rule : m_rules) {
             Test.Result result = rule.matches(run, context, operand);
-            if (result.getValue() > 0) {
-                return new ImmutablePair<>(rule, result.getMatch());
+            if (result.isMatched()) {
+                return new ImmutablePair<>(rule, result.getText());
             }
         }
         return null;
