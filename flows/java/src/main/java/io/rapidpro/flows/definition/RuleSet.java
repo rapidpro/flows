@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import io.rapidpro.expressions.EvaluationContext;
+import io.rapidpro.flows.runner.FlowStep;
 import io.rapidpro.flows.runner.RunState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +51,7 @@ public class RuleSet extends Flow.Node {
     }
 
     @Override
-    public Flow.Node visit(RunState run, String input) {
+    public Flow.Node visit(RunState run, FlowStep step, String input) {
         if (logger.isDebugEnabled()) {
             logger.debug("Visiting rule set " + m_uuid + " with input " + input + " from contact " + run.getContact().getUuid());
         }
@@ -89,6 +90,10 @@ public class RuleSet extends Flow.Node {
 
     public String getOperand() {
         return m_operand;
+    }
+
+    public List<Rule> getRules() {
+        return m_rules;
     }
 
     public boolean isPause() {

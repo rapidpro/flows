@@ -33,6 +33,10 @@ public class Rule implements Flow.ConnectionStart {
         return m_test.evaluate(run, context, input);
     }
 
+    public Test getTest() {
+        return m_test;
+    }
+
     @Override
     public Flow.Node getDestination() {
         return m_destination;

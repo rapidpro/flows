@@ -98,6 +98,18 @@ public class TranslatableText {
     }
 
     /**
+     * @see Object#toString()
+     */
+    @Override
+    public String toString() {
+        if (m_untranslated != null) {
+            return m_untranslated;
+        } else {
+            return m_translations.toString();
+        }
+    }
+
+    /**
      * @see Object#equals(Object)
      */
     @Override

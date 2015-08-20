@@ -11,7 +11,7 @@ import static org.junit.Assert.assertThat;
 public class ContactUrnTest {
 
     @Test
-    public void from() {
+    public void parse() {
         ContactUrn urn = ContactUrn.parse("tel:+260964153686");
         assertThat(urn.getScheme(), is(ContactUrn.Scheme.TEL));
         assertThat(urn.getPath(), is("+260964153686"));

@@ -65,6 +65,12 @@ public class FlowUtils {
         return d.get(new ImmutablePair<>(lenstr1-1,lenstr2-1));
     }
 
+    /**
+     * Instantiates a new object instance by calling a static fromJson method on its class.
+     * @param json the JSON object passed to fromJson
+     * @param clazz the class to instantiate
+     * @return the new object instance
+     */
     public static <T> T fromJson(JsonObject json, Class<T> clazz) {
         try {
             Method method = clazz.getDeclaredMethod("fromJson", JsonObject.class);

@@ -9,10 +9,7 @@ import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.TranslatableText;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  *
@@ -30,18 +27,14 @@ public class RunState {
     @SerializedName("flow")
     protected Flow m_flow;
 
-    @SerializedName("step")
-    protected StepState m_stepState;
-
-    @SerializedName("actions")
-    protected List<Action.Result> m_actions;
+    @SerializedName("steps")
+    protected LinkedList<FlowStep> m_steps;
 
     public RunState(Org org, Contact contact, Flow flow) {
         m_org = org;
         m_contact = contact;
         m_flow = flow;
-        m_stepState = new StepState();
-        m_actions = new ArrayList<>();
+        m_steps = new LinkedList<>();
     }
 
     public Org getOrg() {
@@ -56,12 +49,8 @@ public class RunState {
         return m_flow;
     }
 
-    public StepState getStepState() {
-        return m_stepState;
-    }
-
-    public List<Action.Result> getActions() {
-        return m_actions;
+    public LinkedList<FlowStep> getSteps() {
+        return m_steps;
     }
 
     public EvaluatedTemplate substituteVariables(String text, EvaluationContext context) {

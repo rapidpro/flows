@@ -2,6 +2,7 @@ package io.rapidpro.flows.definition;
 
 import com.google.gson.*;
 import io.rapidpro.flows.runner.Contact;
+import io.rapidpro.flows.runner.FlowStep;
 import io.rapidpro.flows.runner.RunState;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -77,18 +78,50 @@ public class Flow {
      * Super class for ActionSet and RuleSet. Things which can be a destination in a flow graph.
      */
     public static abstract class Node {
+
         protected String m_uuid;
 
         /**
          * Visits this node
          * @param run the run state
-         * @param input the last contact input
+         * @param step the current step
+         * @param input the last input
          * @return the next destination (may be null)
          */
-        public abstract Node visit(RunState run, String input);
+        public abstract Node visit(RunState run, FlowStep step, String input);
 
         public String getUuid() {
             return m_uuid;
+        }
+
+        /**
+         * @see Object#toString()
+         */
+        @Override
+        public String toString() {
+            return "Node{uuid=\"" + m_uuid + "\"}";
+        }
+
+        /**
+         * @see Object#equals(Object)
+         */
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Node node = (Node) o;
+
+            return m_uuid.equals(node.m_uuid);
+
+        }
+
+        /**
+         * @see Object#hashCode()
+         */
+        @Override
+        public int hashCode() {
+            return m_uuid.hashCode();
         }
     }
 

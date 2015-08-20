@@ -1,0 +1,24 @@
+{
+  "flow": {},
+  "contact": { "name": "Joe", "urns": ["tel:+260964153686"], "groups": ["Testers"], "fields": {"gender": "M"} },
+  "org": { "primary_language": "eng", "is_anon": false },
+  "steps": [
+    {
+      "node": "1e318293-4730-481c-b455-daaaf86b2e6c",
+      "left_on": "2015-08-20T14:22:12.000Z",
+      "value": {}
+    },
+    {
+      "node": "e277932e-d546-4e0c-a483-ce6cce06b929",
+      "left_on": "2015-08-20T14:22:15.000Z",
+      "actions": [
+        { "type": "reply", "msg": "We didn't understand your answer. Please reply with yes/no." }
+      ]
+    },
+    {
+      "node": "1e318293-4730-481c-b455-daaaf86b2e6c",
+      "left_on": null,
+      "pause": "wait_message"
+    }
+  ]
+}

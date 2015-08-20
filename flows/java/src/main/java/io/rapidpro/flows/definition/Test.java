@@ -26,8 +26,6 @@ public abstract class Test {
         s_classByType.put("contains_any", ContainsAny.class);
     }
 
-    protected TranslatableText m_test;
-
     public abstract Result evaluate(RunState run, EvaluationContext context, String text);
 
     /**
@@ -36,33 +34,53 @@ public abstract class Test {
     public static Test fromJson(JsonObject json) throws JsonSyntaxException {
         String type = json.get("type").getAsString();
         Class<? extends Test> clazz = s_classByType.get(type);
-        Test test = FlowUtils.fromJson(json, clazz);
-
-        test.m_test = TranslatableText.fromJson(json.get("test"));
-
-        return test;
+        return FlowUtils.fromJson(json, clazz);
     }
 
     /**
      * Holds the result of a test evaluation (the int value + the text matched)
      */
     public static class Result {
-        public static Result NEGATIVE = new Result(0, null);
+        public static Result NO_MATCH = new Result(0, null);
 
-        protected Integer m_value;
+        protected int m_value;
         protected String m_match;
 
-        public Result(Integer value, String match) {
+        public Result(int value, String match) {
             m_value = value;
             m_match = match;
         }
 
-        public Integer getValue() {
+        public int getValue() {
             return m_value;
         }
 
         public String getMatch() {
             return m_match;
+        }
+
+        @Override
+        public String toString() {
+            return "Test.Result{value=" + m_value + ", match=" + (m_match != null ? "\"" + m_match + "\"" : "null") + '}';
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Result result = (Result) o;
+
+            if (m_value != result.m_value) return false;
+            return !(m_match != null ? !m_match.equals(result.m_match) : result.m_match != null);
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = m_value;
+            result = 31 * result + (m_match != null ? m_match.hashCode() : 0);
+            return result;
         }
     }
 
@@ -95,11 +113,27 @@ public abstract class Test {
     }
 
     /**
+     * Base class for tests that have a translatable text argument
+     */
+    protected static abstract class TranslatableTest extends Test {
+        protected TranslatableText m_test;
+
+        public TranslatableTest(TranslatableText test) {
+            m_test = test;
+        }
+    }
+
+    /**
      * Test that returns whether the text contains the given words
      */
-    public static class Contains extends Test {
+    public static class Contains extends TranslatableTest {
+
+        public Contains(TranslatableText test) {
+            super(test);
+        }
+
         public static Contains fromJson(JsonObject json) {
-            return new Contains();
+            return new Contains(TranslatableText.fromJson(json.get("test")));
         }
 
         protected String testInWords(String test, String[] words, String[] rawWords) {
@@ -118,20 +152,6 @@ public abstract class Test {
                 }
             }
             return null;
-        }
-
-        @Override
-        public Result evaluate(RunState run, EvaluationContext context, String text) {
-            throw new UnknownError();
-        }
-    }
-
-    /**
-     * Test that returns whether the text contains any of the given words
-     */
-    public static class ContainsAny extends Contains {
-        public static ContainsAny fromJson(JsonObject json) {
-            return new ContainsAny();
         }
 
         @Override
@@ -161,7 +181,52 @@ public abstract class Test {
             if (matches.size() == tests.length) {
                 return new Result(tests.length, StringUtils.join(matches, " "));
             } else {
-                return Result.NEGATIVE;
+                return Result.NO_MATCH;
+            }
+        }
+    }
+
+    /**
+     * Test that returns whether the text contains any of the given words
+     */
+    public static class ContainsAny extends Contains {
+
+        public ContainsAny(TranslatableText test) {
+            super(test);
+        }
+
+        public static ContainsAny fromJson(JsonObject json) {
+            return new ContainsAny(TranslatableText.fromJson(json.get("test")));
+        }
+
+        @Override
+        public Result evaluate(RunState run, EvaluationContext context, String text) {
+            // localize and substitute any variables
+            String localizedTest = m_test.getLocalized(run);
+            localizedTest = run.substituteVariables(localizedTest, context).getOutput();
+
+            // tokenize our test
+            Pattern pattern = Pattern.compile("\\W+", Pattern.UNICODE_CHARACTER_CLASS);
+            String[] tests = pattern.split(localizedTest.toLowerCase());
+
+            // tokenize our input
+            String[] words = pattern.split(text.toLowerCase());
+            String[] rawWords = pattern.split(text);
+
+            // run through each of our tests
+            List<String> matches = new ArrayList<>();
+            for (String test : tests) {
+                String match = testInWords(test, words, rawWords);
+                if (StringUtils.isNotEmpty(match)) {
+                    matches.add(match);
+                }
+            }
+
+            // we are a match if at least one test matches
+            if (matches.size() > 0) {
+                return new Result(1, StringUtils.join(matches, " "));
+            } else {
+                return Result.NO_MATCH;
             }
         }
     }

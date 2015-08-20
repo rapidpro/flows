@@ -1,0 +1,112 @@
+{
+  "languages": [
+    {
+      "iso_code": "eng",
+      "name": "English"
+    },
+    {
+      "iso_code": "fre",
+      "name": "French"
+    }
+  ],
+  "flow": {
+    "base_language": "eng",
+    "action_sets": [
+      {
+        "y": 0,
+        "x": 100,
+        "destination": "b7cfa0ac-4d50-4384-a1ab-9ec79bd45e42",
+        "uuid": "8dbb7e1a-43d6-4c5b-a99d-fe3ee8923b65",
+        "actions": [
+          {
+            "msg": {
+              "eng": "How many people are you?"
+            },
+            "type": "reply"
+          }
+        ]
+      },
+      {
+        "y": 46,
+        "x": 439,
+        "destination": "b7cfa0ac-4d50-4384-a1ab-9ec79bd45e42",
+        "uuid": "c81af400-a744-499a-9ad5-c90e233e4b92",
+        "actions": [
+          {
+            "msg": {
+              "eng": "Please choose a number between 1 and 8"
+            },
+            "type": "reply"
+          }
+        ]
+      },
+      {
+        "y": 277,
+        "x": 92,
+        "destination": null,
+        "uuid": "6100c86d-08a9-4466-998f-60603a8c47e0",
+        "actions": [
+          {
+            "msg": {
+              "eng": "TODO: Generate order"
+            },
+            "type": "reply"
+          }
+        ]
+      }
+    ],
+    "last_saved": "2015-08-20T07:49:42.515142Z",
+    "entry": "8dbb7e1a-43d6-4c5b-a99d-fe3ee8923b65",
+    "rule_sets": [
+      {
+        "uuid": "b7cfa0ac-4d50-4384-a1ab-9ec79bd45e42",
+        "webhook_action": null,
+        "rules": [
+          {
+            "test": {
+              "max": "8",
+              "type": "between",
+              "min": "1"
+            },
+            "category": {
+              "base": "1 - 8",
+              "eng": "1 - 8"
+            },
+            "destination": "6100c86d-08a9-4466-998f-60603a8c47e0",
+            "uuid": "38277179-bef0-4dff-ba09-4471cbe6d13a",
+            "destination_type": "A"
+          },
+          {
+            "category": {
+              "base": "All Responses",
+              "eng": "Other"
+            },
+            "uuid": "7987f891-0783-46a2-82c6-8e61e8ca6e93",
+            "destination": "c81af400-a744-499a-9ad5-c90e233e4b92",
+            "destination_type": "A",
+            "test": {
+              "test": "true",
+              "type": "true"
+            },
+            "config": {
+              "type": "true",
+              "verbose_name": "contains anything",
+              "name": "Other",
+              "operands": 0
+            }
+          }
+        ],
+        "webhook": null,
+        "ruleset_type": "wait_message",
+        "label": "People",
+        "operand": "@step.value",
+        "finished_key": null,
+        "response_type": "",
+        "y": 136,
+        "x": 134,
+        "config": {}
+      }
+    ],
+    "metadata": {}
+  }
+}
