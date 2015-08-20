@@ -8,19 +8,26 @@ import io.rapidpro.flows.runner.RunState;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
+import java.util.UUID;
 
 /**
  *
  */
 public class Rule implements Flow.ConnectionStart {
 
+    protected String m_uuid;
+
     protected Test m_test;
+
+    protected TranslatableText m_category;
 
     protected Flow.Node m_destination;
 
     public static Rule fromJson(JsonObject json, Map<Flow.ConnectionStart, String> destinationsToSet) throws JsonSyntaxException {
         Rule obj = new Rule();
+        obj.m_uuid = json.get("uuid").getAsString();
         obj.m_test = Test.fromJson(json.get("test").getAsJsonObject());
+        obj.m_category = TranslatableText.fromJson(json.get("category"));
 
         String destinationUuid = FlowUtils.getAsString(json, "destination");
         if (StringUtils.isNotEmpty(destinationUuid)) {
@@ -33,8 +40,16 @@ public class Rule implements Flow.ConnectionStart {
         return m_test.evaluate(run, context, input);
     }
 
+    public String getUuid() {
+        return m_uuid;
+    }
+
     public Test getTest() {
         return m_test;
+    }
+
+    public TranslatableText getCategory() {
+        return m_category;
     }
 
     @Override
@@ -45,5 +60,35 @@ public class Rule implements Flow.ConnectionStart {
     @Override
     public void setDestination(Flow.Node destination) {
         this.m_destination = destination;
+    }
+
+    /**
+     * Holds the result of the matched rule
+     */
+    public static class Result {
+
+        protected Rule m_rule;
+
+        protected String m_value;
+
+        protected String m_category;
+
+        public Result(Rule rule, String value, String category) {
+            m_rule = rule;
+            m_value = value;
+            m_category = category;
+        }
+
+        public Rule getRule() {
+            return m_rule;
+        }
+
+        public String getValue() {
+            return m_value;
+        }
+
+        public String getCategory() {
+            return m_category;
+        }
     }
 }

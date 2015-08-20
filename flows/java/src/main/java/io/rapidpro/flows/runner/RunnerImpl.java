@@ -28,7 +28,7 @@ public class RunnerImpl implements Flows.Runner {
     public RunState resume(RunState lastState, String input) throws InfiniteLoopException {
         RunState newState = new RunState(lastState.getOrg(), lastState.getContact(), lastState.getFlow());
 
-        FlowStep lastStep = lastState.getSteps().size() > 0 ? lastState.getSteps().getLast() : null;
+        Step lastStep = lastState.getSteps().size() > 0 ? lastState.getSteps().getLast() : null;
 
         // either we're resuming from a previous step that paused, or we're starting a new run
         Flow.Node currentNode = lastStep == null ? lastState.getFlow().getEntry() : lastStep.getNode();
@@ -37,7 +37,7 @@ public class RunnerImpl implements Flows.Runner {
         Set<Flow.Node> nodesVisited = new LinkedHashSet<>();
 
         do {
-            FlowStep step = new FlowStep(currentNode);
+            Step step = new Step(currentNode, Instant.now());
             newState.getSteps().add(step);
 
             // should we pause at this node?

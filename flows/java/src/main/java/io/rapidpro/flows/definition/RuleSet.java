@@ -4,14 +4,14 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import io.rapidpro.expressions.EvaluationContext;
-import io.rapidpro.flows.runner.FlowStep;
+import io.rapidpro.flows.runner.Step;
 import io.rapidpro.flows.runner.RunState;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  *
@@ -51,33 +51,35 @@ public class RuleSet extends Flow.Node {
     }
 
     @Override
-    public Flow.Node visit(RunState run, FlowStep step, String input) {
+    public Flow.Node visit(RunState run, Step step, String input) {
         if (logger.isDebugEnabled()) {
             logger.debug("Visiting rule set " + m_uuid + " with input " + input + " from contact " + run.getContact().getUuid());
         }
 
-        Rule rule = findMatchingRule(run, input);
-        if (rule == null) {
+        Pair<Rule, String> match = findMatchingRule(run, input);
+        if (match == null) {
             return null;
         }
 
-        // TODO add rule result to run state
+        // get category in the flow base language
+        Rule rule = match.getLeft();
+        String category = rule.getCategory().getLocalized(Collections.singletonList(run.getFlow().getBaseLanguage()), "");
+
+        step.setRuleResult(new Rule.Result(rule, match.getValue(), category));
 
         return rule.getDestination();
     }
 
-    protected Rule findMatchingRule(RunState run, String input) {
+    protected Pair<Rule, String> findMatchingRule(RunState run, String input) {
         EvaluationContext context = run.buildContext();
 
+        // TODO use operand
         String operand = run.substituteVariables(m_operand, context).getOutput();
 
         for (Rule rule : m_rules) {
             Test.Result result = rule.matches(run, context, input);
             if (result.getValue() > 0) {
-                // TODO
-                // treat category as the base category
-                //rule.category = run.flow.get_base_text(rule.category);
-                return rule; //, value;
+                return new ImmutablePair<>(rule, result.getMatch());
             }
         }
 

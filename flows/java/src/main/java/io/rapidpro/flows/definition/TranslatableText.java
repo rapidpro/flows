@@ -20,11 +20,22 @@ public class TranslatableText {
     protected Map<String, String> m_translations;
 
     public TranslatableText(String untranslated) {
-        this.m_untranslated = untranslated;
+        m_untranslated = untranslated;
     }
 
     public TranslatableText(Map<String, String> translations) {
-        this.m_translations = translations;
+        m_translations = translations;
+    }
+
+    /**
+     * Constructs a translatable text from language/translation pairs,
+     * @param pairs alternating language name and translation, e.g. "eng", "Hello", "fra", "Bonjour"
+     */
+    public TranslatableText(String... pairs) {
+        m_translations = new HashMap<>();
+        for (int p = 0; p < pairs.length; p += 2) {
+            this.m_translations.put(pairs[p], pairs[p + 1]);
+        }
     }
 
     public static TranslatableText fromJson(JsonElement elem) throws JsonSyntaxException {
@@ -122,7 +133,6 @@ public class TranslatableText {
         if (m_untranslated != null ? !m_untranslated.equals(that.m_untranslated) : that.m_untranslated != null)
             return false;
         return !(m_translations != null ? !m_translations.equals(that.m_translations) : that.m_translations != null);
-
     }
 
     /**

@@ -1,17 +1,11 @@
 package io.rapidpro.flows.definition;
 
 import com.google.gson.*;
-import io.rapidpro.flows.runner.Contact;
-import io.rapidpro.flows.runner.FlowStep;
+import io.rapidpro.flows.runner.Step;
 import io.rapidpro.flows.runner.RunState;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -88,7 +82,7 @@ public class Flow {
          * @param input the last input
          * @return the next destination (may be null)
          */
-        public abstract Node visit(RunState run, FlowStep step, String input);
+        public abstract Node visit(RunState run, Step step, String input);
 
         public String getUuid() {
             return m_uuid;

@@ -4,10 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import io.rapidpro.expressions.EvaluatedTemplate;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.Expressions;
-import io.rapidpro.flows.definition.Action;
 import io.rapidpro.flows.definition.Flow;
-import io.rapidpro.flows.definition.TranslatableText;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
@@ -28,7 +25,7 @@ public class RunState {
     protected Flow m_flow;
 
     @SerializedName("steps")
-    protected LinkedList<FlowStep> m_steps;
+    protected LinkedList<Step> m_steps;
 
     public RunState(Org org, Contact contact, Flow flow) {
         m_org = org;
@@ -49,7 +46,7 @@ public class RunState {
         return m_flow;
     }
 
-    public LinkedList<FlowStep> getSteps() {
+    public LinkedList<Step> getSteps() {
         return m_steps;
     }
 

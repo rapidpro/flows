@@ -6,7 +6,11 @@
     {
       "node": "1e318293-4730-481c-b455-daaaf86b2e6c",
       "left_on": "2015-08-20T14:22:12.000Z",
-      "value": {}
+      "rule": {
+        "uuid": "a53e3607-ac87-4bee-ab95-30fd4ad8a837",
+        "value": "YUCK!",
+        "category": "All Responses"
+      }
     },
     {
       "node": "e277932e-d546-4e0c-a483-ce6cce06b929",

@@ -35,6 +35,7 @@ public class FlowTest {
         Rule rs1Rule1 = rs1.getRules().get(0);
 
         assertThat(rs1Rule1.getTest(), instanceOf(Test.ContainsAny.class));
+        assertThat(rs1Rule1.getCategory(), is(new TranslatableText("base", "Yes", "eng", "Yes")));
 
         ActionSet as2 = (ActionSet) rs1Rule1.getDestination();
 
@@ -46,6 +47,7 @@ public class FlowTest {
         Rule rs1Rule2 = rs1.getRules().get(1);
 
         assertThat(rs1Rule2.getTest(), instanceOf(Test.ContainsAny.class));
+        assertThat(rs1Rule2.getCategory(), is(new TranslatableText("base", "No", "eng", "No")));
 
         ActionSet as3 = (ActionSet) rs1Rule2.getDestination();
 
@@ -58,6 +60,7 @@ public class FlowTest {
         Rule rs1Rule3 = rs1.getRules().get(2);
 
         assertThat(rs1Rule3.getTest(), instanceOf(Test.True.class));
+        assertThat(rs1Rule3.getCategory(), is(new TranslatableText("base", "All Responses", "eng", "Other")));
 
         ActionSet as4 = (ActionSet) rs1Rule3.getDestination();
 

@@ -20,8 +20,8 @@ public class ContactUrn {
     private String m_path;
 
     public ContactUrn(Scheme scheme, String path) {
-        this.m_scheme = scheme;
-        this.m_path = path;
+        m_scheme = scheme;
+        m_path = path;
     }
 
     /**
@@ -82,7 +82,6 @@ public class ContactUrn {
 
         if (m_scheme != that.m_scheme) return false;
         return m_path.equals(that.m_path);
-
     }
 
     /**
