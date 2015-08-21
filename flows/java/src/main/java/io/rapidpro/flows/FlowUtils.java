@@ -16,11 +16,11 @@ import java.util.Map;
 public class FlowUtils {
 
     /**
-     * Gets the named member as a string, returning null if it's null
+     * Gets the named member as a string, returning null if it's null of it doesn't exist
      */
     public static String getAsString(JsonObject obj, String memberName) {
         JsonElement member = obj.get(memberName);
-        return member.isJsonNull() ? null : member.getAsString();
+        return (member == null || member.isJsonNull()) ? null : member.getAsString();
     }
 
     /**

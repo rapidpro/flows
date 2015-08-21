@@ -24,10 +24,17 @@ public abstract class Test {
         s_classByType.put("false", FalseTest.class);
         s_classByType.put("and", AndTest.class);
         s_classByType.put("or", OrTest.class);
+        s_classByType.put("not_empty", NotEmptyTest.class);
         s_classByType.put("contains", ContainsTest.class);
         s_classByType.put("contains_any", ContainsAnyTest.class);
         s_classByType.put("starts", StartsWithTest.class);
+        s_classByType.put("number", HasNumberTest.class);
         s_classByType.put("between", BetweenTest.class);
+        s_classByType.put("eq", EqualTest.class);
+        s_classByType.put("lt", LessThanTest.class);
+        s_classByType.put("lte", LessThanOrEqualTest.class);
+        s_classByType.put("gt", GreaterThanTest.class);
+        s_classByType.put("gte", GreaterThanOrEqualTest.class);
     }
 
     /**

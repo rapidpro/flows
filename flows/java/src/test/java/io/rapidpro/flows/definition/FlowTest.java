@@ -11,7 +11,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests for {@link Flow}
+ * Test for {@link Flow}
  */
 public class FlowTest {
 

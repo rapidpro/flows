@@ -36,8 +36,8 @@ public class BetweenTest extends NumericTest {
 
         if (!min.hasErrors() && !max.hasErrors()) {
             try {
-                BigDecimal minVal = extractDecimal(min.getOutput()).getLeft();
-                BigDecimal maxVal = extractDecimal(max.getOutput()).getLeft();
+                BigDecimal minVal = new BigDecimal(min.getOutput().trim());
+                BigDecimal maxVal = new BigDecimal(max.getOutput().trim());
 
                 return decimal.compareTo(minVal) >= 0 && decimal.compareTo(maxVal) <= 0;
             }

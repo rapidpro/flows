@@ -6,7 +6,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests for {@link FlowUtils}
+ * Test for {@link FlowUtils}
  */
 public class FlowUtilsTest {
 

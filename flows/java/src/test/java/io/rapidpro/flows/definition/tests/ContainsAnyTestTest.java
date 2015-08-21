@@ -4,7 +4,7 @@ import io.rapidpro.flows.definition.TranslatableText;
 import org.junit.Test;
 
 /**
- * Test for {@link FalseTest}
+ * Test for {@link ContainsAnyTest}
  */
 public class ContainsAnyTestTest extends BaseTestTest {
     @Test

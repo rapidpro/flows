@@ -6,7 +6,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests for {@link ContactUrn}
+ * Test for {@link ContactUrn}
  */
 public class ContactUrnTest {
 

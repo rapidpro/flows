@@ -17,7 +17,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests for {@link RunnerImpl}
+ * Test for {@link RunnerImpl}
  */
 public class RunnerImplTest extends BaseFlowsTest {
 
@@ -90,6 +90,36 @@ public class RunnerImplTest extends BaseFlowsTest {
         assertThat(state3.getSteps().get(1).getActionResults(), hasSize(2));
         assertReply(state3.getSteps().get(1).getActionResults(), 0, "That was the right answer.");
         assertAddToGroup(state3.getSteps().get(1).getActionResults(), 1, "Approved");
+        assertThat(state3.getState(), is(RunState.State.COMPLETED));
+    }
+
+    @Test
+    public void mushrooms_french() throws Exception {
+        String flowJson = IOUtils.toString(getClass().getClassLoader().getResourceAsStream("flows/mushrooms.json"));
+        Flow flow = Flow.fromJson(flowJson);
+
+        Contact jean = new Contact("1234-1234", "Jean D'Amour", ContactUrn.fromString("tel:+260964153686"), "fre");
+
+        RunState state1 = m_runner.start(m_org, jean, flow);
+
+        assertThat(state1.getContact().getLanguage(), is("fre"));
+        assertThat(state1.getSteps(), hasSize(2));
+        assertReply(state1.getSteps().get(0).getActionResults(), 0, "Salut Jean. Aimez-vous les champignons?");
+        assertThat(state1.getState(), is(RunState.State.WAIT_MESSAGE));
+
+        RunState state2 = m_runner.resume(state1, "EUGH!");
+
+        assertThat(state2.getSteps().get(0).getRuleResult().getCategory(), is("Other"));
+        assertThat(state2.getSteps().get(0).getRuleResult().getValue(), is("EUGH!"));
+        assertReply(state2.getSteps().get(1).getActionResults(), 0, "Nous ne comprenions pas votre réponse. S'il vous plaît répondre par oui/non.");
+        assertThat(state2.getState(), is(RunState.State.WAIT_MESSAGE));
+
+        RunState state3 = m_runner.resume(state2, "non");
+
+        assertThat(state3.getContact().getGroups(), contains("Approved")); // added to group
+        assertThat(state3.getSteps().get(0).getRuleResult().getCategory(), is("No"));
+        assertThat(state3.getSteps().get(0).getRuleResult().getValue(), is("non"));
+        assertReply(state3.getSteps().get(1).getActionResults(), 0, "Ce fut la bonne réponse.");
         assertThat(state3.getState(), is(RunState.State.COMPLETED));
     }
 

@@ -3,12 +3,12 @@ package io.rapidpro.flows.definition.tests;
 import org.junit.Test;
 
 /**
- * Test for {@link AndTest}
+ * Test for {@link BetweenTest}
  */
 public class BetweenTestTest extends BaseTestTest {
     @Test
     public void evaluate() {
-        BetweenTest test = new BetweenTest("32 ", "4l");
+        BetweenTest test = new BetweenTest("32 ", "41");
 
         assertTest(test, "32 cats", true, "32");
         assertTest(test, "4l dogs", true, "41");
