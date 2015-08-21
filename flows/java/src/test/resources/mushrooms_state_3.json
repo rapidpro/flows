@@ -22,5 +22,6 @@
         { "type": "add_group", "groups": ["Approved"] }
       ]
     }
-  ]
+  ],
+  "state": "completed"
 }

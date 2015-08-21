@@ -14,8 +14,8 @@
     {
       "node": "1e318293-4730-481c-b455-daaaf86b2e6c",
       "arrived_on": "2015-08-20T14:21:07.000Z",
-      "left_on": null,
-      "pause": "wait_message"
+      "left_on": null
     }
-  ]
+  ],
+  "state": "wait_message"
 }

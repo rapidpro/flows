@@ -53,6 +53,7 @@ public class RunnerImplTest {
         assertThat(state1.getSteps().get(1).getArrivedOn(), notNullValue());
         assertThat(state1.getSteps().get(1).getLeftOn(), nullValue());
         assertThat(state1.getSteps().get(1).getRuleResult(), nullValue());
+        assertThat(state1.getState(), is(RunState.State.WAIT_MESSAGE));
 
         RunState state2 = m_runner.resume(state1, "YUCK!");
 
@@ -73,6 +74,7 @@ public class RunnerImplTest {
         assertThat(state2.getSteps().get(2).getNode().getUuid(), is("1e318293-4730-481c-b455-daaaf86b2e6c"));
         assertThat(state2.getSteps().get(2).getArrivedOn(), notNullValue());
         assertThat(state2.getSteps().get(2).getLeftOn(), nullValue());
+        assertThat(state2.getState(), is(RunState.State.WAIT_MESSAGE));
 
         RunState state3 = m_runner.resume(state2, "no");
 
@@ -91,6 +93,7 @@ public class RunnerImplTest {
         assertThat(state3.getSteps().get(1).getActionResults(), hasSize(2));
         assertReply(state3.getSteps().get(1).getActionResults(), 0, "That was the right answer.");
         assertAddToGroup(state3.getSteps().get(1).getActionResults(), 1, "Approved");
+        assertThat(state3.getState(), is(RunState.State.COMPLETED));
     }
 
     protected void assertReply(List<Action.Result> actions, int index, String msg) {

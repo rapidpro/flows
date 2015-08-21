@@ -26,6 +26,10 @@ public class RunnerImpl implements Flows.Runner {
      */
     @Override
     public RunState resume(RunState lastState, String text) throws InfiniteLoopException {
+        if (lastState.getState().equals(RunState.State.COMPLETED)) {
+            throw new IllegalStateException("Cannot resume a completed run state");
+        }
+
         RunState newState = new RunState(lastState.getOrg(), lastState.getContact(), lastState.getFlow());
         Input input = text != null ? new Input(text) : null;
 
@@ -53,6 +57,7 @@ public class RunnerImpl implements Flows.Runner {
             // should we pause at this node?
             if (currentNode instanceof RuleSet) {
                 if (((RuleSet) currentNode).isPause() && nodesVisited.size() > 0) {
+                    newState.setState(RunState.State.WAIT_MESSAGE);
                     return newState;
                 }
             }
@@ -66,9 +71,12 @@ public class RunnerImpl implements Flows.Runner {
 
             Flow.Node nextNode = currentNode.visit(newState, step, input);
 
-            // if we have a next node, then record leaving this one
             if (nextNode != null) {
+                // if we have a next node, then record leaving this one
                 step.setLeftOn(Instant.now());
+            } else {
+                // if not then we've completed this flow
+                newState.setState(RunState.State.COMPLETED);
             }
 
             currentNode = nextNode;

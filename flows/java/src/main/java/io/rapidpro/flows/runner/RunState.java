@@ -15,6 +15,12 @@ public class RunState {
 
     protected static Expressions.TemplateEvaluator s_evaluator = Expressions.getTemplateEvaluator();
 
+    public enum State {
+        @SerializedName("in_progress") IN_PROGRESS,
+        @SerializedName("completed") COMPLETED,
+        @SerializedName("wait_message") WAIT_MESSAGE
+    }
+
     @SerializedName("org")
     protected Org m_org;
 
@@ -27,11 +33,15 @@ public class RunState {
     @SerializedName("steps")
     protected LinkedList<Step> m_steps;
 
+    @SerializedName("state")
+    protected State m_state;
+
     public RunState(Org org, Contact contact, Flow flow) {
         m_org = org;
         m_contact = contact;
         m_flow = flow;
         m_steps = new LinkedList<>();
+        m_state = State.IN_PROGRESS;
     }
 
     public Org getOrg() {
@@ -48,6 +58,14 @@ public class RunState {
 
     public LinkedList<Step> getSteps() {
         return m_steps;
+    }
+
+    public State getState() {
+        return m_state;
+    }
+
+    public void setState(State state) {
+        m_state = state;
     }
 
     public EvaluatedTemplate substituteVariables(String text, EvaluationContext context) {
