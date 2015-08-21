@@ -2,7 +2,6 @@ package io.rapidpro.flows;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -12,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
+ * Miscellaneous utility methods
  */
 public class FlowUtils {
 

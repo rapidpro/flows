@@ -1,7 +1,9 @@
-package io.rapidpro.flows.definition;
+package io.rapidpro.flows.definition.tests;
 
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.flows.Flows;
+import io.rapidpro.flows.definition.Flow;
+import io.rapidpro.flows.definition.TranslatableText;
 import io.rapidpro.flows.runner.Contact;
 import io.rapidpro.flows.runner.ContactUrn;
 import io.rapidpro.flows.runner.Org;
@@ -40,19 +42,19 @@ public class TestTest {
 
     @org.junit.Test
     public void _true() {
-        Test test = new Test.True();
+        Test test = new TrueTest();
         assertTest(test, "huh?", true, "huh?");
     }
 
     @org.junit.Test
     public void _false() {
-        Test test = new Test.False();
+        Test test = new FalseTest();
         assertTest(test, "huh?", false, "huh?");
     }
 
     @org.junit.Test
     public void contains() {
-        Test test = new Test.Contains(new TranslatableText("north,east"));
+        Test test = new ContainsTest(new TranslatableText("north,east"));
 
         assertTest(test, "go north east", true, "north east");
         assertTest(test, "EAST then NORRTH", true, "NORRTH EAST");
@@ -63,7 +65,7 @@ public class TestTest {
 
     @org.junit.Test
     public void containsAny() {
-        Test test = new Test.ContainsAny(new TranslatableText("yes,affirmative"));
+        Test test = new ContainsAnyTest(new TranslatableText("yes,affirmative"));
 
         assertTest(test, "yes", true, "yes");
         assertTest(test, "AFFIRMATIVE SIR", true, "AFFIRMATIVE");
@@ -79,7 +81,7 @@ public class TestTest {
 
     @org.junit.Test
     public void startsWith() {
-        Test test = new Test.StartsWith(new TranslatableText("once"));
+        Test test = new StartsWithTest(new TranslatableText("once"));
 
         assertTest(test, "ONCE", true, "ONCE");
         assertTest(test, "Once upon a time", true, "Once");

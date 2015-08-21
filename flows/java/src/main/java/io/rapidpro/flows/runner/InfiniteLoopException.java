@@ -16,4 +16,8 @@ public class InfiniteLoopException extends Exception {
     public InfiniteLoopException(Collection<Flow.Node> path) {
         m_path = path;
     }
+
+    public Collection<Flow.Node> getPath() {
+        return m_path;
+    }
 }

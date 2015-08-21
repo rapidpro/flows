@@ -4,14 +4,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.flows.FlowUtils;
+import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.RunState;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
-import java.util.UUID;
 
 /**
- *
+ * A matchable rule in a rule set
  */
 public class Rule implements Flow.ConnectionStart {
 

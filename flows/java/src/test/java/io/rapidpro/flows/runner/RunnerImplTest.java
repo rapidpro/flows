@@ -1,9 +1,11 @@
 package io.rapidpro.flows.runner;
 
 import io.rapidpro.flows.Flows;
-import io.rapidpro.flows.definition.Action;
+import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.TranslatableText;
+import io.rapidpro.flows.definition.actions.AddToGroupAction;
+import io.rapidpro.flows.definition.actions.ReplyAction;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
@@ -92,12 +94,12 @@ public class RunnerImplTest {
     }
 
     protected void assertReply(List<Action.Result> actions, int index, String msg) {
-        Action.Reply action = (Action.Reply) actions.get(index).getAction();
+        ReplyAction action = (ReplyAction) actions.get(index).getAction();
         assertThat(action.getMsg(), is(new TranslatableText(msg)));
     }
 
     protected void assertAddToGroup(List<Action.Result> actions, int index, String... groups) {
-        Action.AddToGroup action = (Action.AddToGroup) actions.get(index).getAction();
+        AddToGroupAction action = (AddToGroupAction) actions.get(index).getAction();
         assertThat(action.getGroups(), contains(groups));
     }
 }

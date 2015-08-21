@@ -1,6 +1,6 @@
 package io.rapidpro.flows.runner;
 
-import io.rapidpro.flows.definition.Action;
+import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.Rule;
 

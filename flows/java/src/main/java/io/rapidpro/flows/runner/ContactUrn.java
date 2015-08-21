@@ -4,7 +4,7 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- *
+ * A URN for a contact (e.g. a telephone number or twitter handle)
  */
 public class ContactUrn {
 

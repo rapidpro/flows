@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import io.rapidpro.flows.FlowUtils;
+import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.Step;
 import io.rapidpro.flows.runner.RunState;
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
+ * A flow node which is a set of actions to be performed
  */
 public class ActionSet extends Flow.Node implements Flow.ConnectionStart {
 
@@ -53,7 +54,7 @@ public class ActionSet extends Flow.Node implements Flow.ConnectionStart {
 
         for (Action action : m_actions) {
             Action.Result result = action.execute(run, input);
-            if (result.m_action != null) {
+            if (result.getAction() != null) {
                 step.getActionResults().add(result);
             }
         }

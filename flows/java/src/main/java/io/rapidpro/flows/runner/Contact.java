@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.*;
 
 /**
- *
+ * A contact that can participate in a flow
  */
 public class Contact {
 

@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
+ * A flow definition, typically loaded from JSON
  */
 public class Flow {
 

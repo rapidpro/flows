@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import io.rapidpro.expressions.EvaluationContext;
+import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.runner.Step;
@@ -18,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
+ * A flow node which is a set of rules, each with its own destination node
  */
 public class RuleSet extends Flow.Node {
 

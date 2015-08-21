@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import java.time.ZoneId;
 
 /**
- *
+ * An organization - used to provide additional information about how a flow should be run
  */
 public class Org {
 
