@@ -3,6 +3,7 @@ package io.rapidpro.flows.definition.tests;
 import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.flows.FlowUtils;
+import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.definition.TranslatableText;
 import io.rapidpro.flows.runner.RunState;
 import org.apache.commons.lang3.StringUtils;
@@ -14,14 +15,14 @@ import java.util.regex.Pattern;
 /**
  * Test that returns whether the text contains the given words
  */
-public class ContainsTest extends Test.Translatable {
+public class ContainsTest extends TranslatableTest {
 
     public ContainsTest(TranslatableText test) {
         super(test);
     }
 
-    public static ContainsTest fromJson(JsonObject json) {
-        return new ContainsTest(TranslatableText.fromJson(json.get("test")));
+    public static ContainsTest fromJson(JsonObject obj) throws FlowParseException {
+        return new ContainsTest(TranslatableText.fromJson(obj.get("test")));
     }
 
     protected String testInWords(String test, String[] words, String[] rawWords) {

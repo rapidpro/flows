@@ -2,7 +2,6 @@ package io.rapidpro.flows.definition;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
 import io.rapidpro.flows.FlowUtils;
 import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.runner.Input;
@@ -27,20 +26,20 @@ public class ActionSet extends Flow.Node implements Flow.ConnectionStart {
 
     protected Flow.Node m_destination;
 
-    public static ActionSet fromJson(JsonObject json, Map<Flow.ConnectionStart, String> destinationsToSet) throws JsonSyntaxException {
-        ActionSet obj = new ActionSet();
-        obj.m_uuid = json.get("uuid").getAsString();
+    public static ActionSet fromJson(JsonObject obj, Map<Flow.ConnectionStart, String> destinationsToSet) throws FlowParseException {
+        ActionSet set = new ActionSet();
+        set.m_uuid = obj.get("uuid").getAsString();
 
-        String destinationUuid = FlowUtils.getAsString(json, "destination");
+        String destinationUuid = FlowUtils.getAsString(obj, "destination");
         if (StringUtils.isNotEmpty(destinationUuid)) {
-            destinationsToSet.put(obj, destinationUuid);
+            destinationsToSet.put(set, destinationUuid);
         }
 
-        for (JsonElement actionElem : json.get("actions").getAsJsonArray()) {
-            obj.m_actions.add(Action.fromJson(actionElem.getAsJsonObject()));
+        for (JsonElement actionElem : obj.get("actions").getAsJsonArray()) {
+            set.m_actions.add(Action.fromJson(actionElem.getAsJsonObject()));
         }
 
-        return obj;
+        return set;
     }
 
     /**

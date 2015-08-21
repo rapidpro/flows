@@ -9,7 +9,7 @@ import io.rapidpro.flows.definition.Flow;
 import java.util.*;
 
 /**
- * Represents state of a flow run after running through a number of flow steps
+ * Represents state of a flow run after visiting one or more nodes in the flow
  */
 public class RunState {
 

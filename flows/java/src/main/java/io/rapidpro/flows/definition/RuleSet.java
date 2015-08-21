@@ -2,7 +2,6 @@ package io.rapidpro.flows.definition;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.Input;
@@ -43,16 +42,16 @@ public class RuleSet extends Flow.Node {
 
     protected List<Rule> m_rules = new ArrayList<>();
 
-    public static RuleSet fromJson(JsonObject json, Map<Flow.ConnectionStart, String> destinationsToSet) throws JsonSyntaxException {
-        RuleSet obj = new RuleSet();
-        obj.m_uuid = json.get("uuid").getAsString();
-        obj.m_type = Type.valueOf(json.get("ruleset_type").getAsString().toUpperCase());
-        obj.m_operand = json.get("operand").getAsString();
+    public static RuleSet fromJson(JsonObject obj, Map<Flow.ConnectionStart, String> destinationsToSet) throws FlowParseException {
+        RuleSet set = new RuleSet();
+        set.m_uuid = obj.get("uuid").getAsString();
+        set.m_type = Type.valueOf(obj.get("ruleset_type").getAsString().toUpperCase());
+        set.m_operand = obj.get("operand").getAsString();
 
-        for (JsonElement ruleElem : json.get("rules").getAsJsonArray()) {
-            obj.m_rules.add(Rule.fromJson(ruleElem.getAsJsonObject(), destinationsToSet));
+        for (JsonElement ruleElem : obj.get("rules").getAsJsonArray()) {
+            set.m_rules.add(Rule.fromJson(ruleElem.getAsJsonObject(), destinationsToSet));
         }
-        return obj;
+        return set;
     }
 
     /**

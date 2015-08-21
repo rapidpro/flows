@@ -1,5 +1,6 @@
 package io.rapidpro.flows.runner;
 
+import io.rapidpro.flows.BaseFlowsTest;
 import io.rapidpro.flows.Flows;
 import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.definition.Flow;
@@ -18,30 +19,26 @@ import static org.junit.Assert.assertThat;
 /**
  * Tests for {@link RunnerImpl}
  */
-public class RunnerImplTest {
+public class RunnerImplTest extends BaseFlowsTest {
 
     protected Flows.Runner m_runner = new RunnerImpl();
 
     @Test
-    public void startAndResume() throws Exception {
+    public void mushrooms() throws Exception {
         String flowJson = IOUtils.toString(getClass().getClassLoader().getResourceAsStream("flows/mushrooms.json"));
-
-        Org org = new Org("eng", ZoneId.of("Africa/Kigali"), true, false);
-        Set<String> contactGroups = new HashSet<>(Collections.singleton("Testers"));
-        Contact contact = new Contact("1234-1234", "Joe", Arrays.asList(ContactUrn.parse("tel:+260964153686")), contactGroups, new HashMap<String, String>(), "eng");
         Flow flow = Flow.fromJson(flowJson);
 
-        RunState state1 = m_runner.start(org, contact, flow);
+        RunState state1 = m_runner.start(m_org, m_contact, flow);
 
         assertThat(state1.getOrg().getPrimaryLanguage(), is("eng"));
         assertThat(state1.getOrg().getTimezone(), is(ZoneId.of("Africa/Kigali")));
         assertThat(state1.getOrg().isDayFirst(), is(true));
         assertThat(state1.getOrg().isAnon(), is(false));
         assertThat(state1.getContact().getUuid(), is("1234-1234"));
-        assertThat(state1.getContact().getName(), is("Joe"));
-        assertThat(state1.getContact().getUrns(), contains(new ContactUrn(ContactUrn.Scheme.TEL, "+260964153686")));
+        assertThat(state1.getContact().getName(), is("Joe Flow"));
+        assertThat(state1.getContact().getUrns(), contains(new ContactUrn(ContactUrn.Scheme.TEL, "+260964153686"), new ContactUrn(ContactUrn.Scheme.TWITTER, "realJoeFlow")));
         assertThat(state1.getContact().getGroups(), contains("Testers"));
-        assertThat(state1.getContact().getFields().size(), is(0));
+        assertThat(state1.getContact().getFields().size(), is(2));
         assertThat(state1.getContact().getLanguage(), is("eng"));
         assertThat(state1.getSteps(), hasSize(2));
         assertThat(state1.getSteps().get(0).getNode().getUuid(), is("32cf414b-35e3-4c75-8a78-d5f4de925e13"));
@@ -94,6 +91,35 @@ public class RunnerImplTest {
         assertReply(state3.getSteps().get(1).getActionResults(), 0, "That was the right answer.");
         assertAddToGroup(state3.getSteps().get(1).getActionResults(), 1, "Approved");
         assertThat(state3.getState(), is(RunState.State.COMPLETED));
+    }
+
+    @Test
+    public void greatwall() throws Exception {
+        String flowJson = IOUtils.toString(getClass().getClassLoader().getResourceAsStream("flows/greatwall.json"));
+        Flow flow = Flow.fromJson(flowJson);
+
+        RunState state1 = m_runner.start(m_org, m_contact, flow);
+
+        assertThat(state1.getSteps().get(0).getNode().getUuid(), is("8dbb7e1a-43d6-4c5b-a99d-fe3ee8923b65"));
+        assertThat(state1.getSteps().get(0).getActionResults(), hasSize(1));
+        assertReply(state1.getSteps().get(0).getActionResults(), 0, "How many people are you?");
+        assertThat(state1.getSteps().get(1).getNode().getUuid(), is("b7cfa0ac-4d50-4384-a1ab-9ec79bd45e42"));
+        assertThat(state1.getState(), is(RunState.State.WAIT_MESSAGE));
+
+        RunState state2 = m_runner.resume(state1, "9");
+
+        assertThat(state2.getSteps().get(0).getNode().getUuid(), is("b7cfa0ac-4d50-4384-a1ab-9ec79bd45e42"));
+        assertThat(state2.getSteps().get(0).getRuleResult().getCategory(), is("Other"));
+        assertThat(state2.getSteps().get(0).getRuleResult().getValue(), is("9"));
+        assertThat(state2.getSteps().get(1).getNode().getUuid(), is("c81af400-a744-499a-9ad5-c90e233e4b92"));
+        assertReply(state2.getSteps().get(1).getActionResults(), 0, "Please choose a number between 1 and 8");
+        assertThat(state2.getSteps().get(2).getNode().getUuid(), is("b7cfa0ac-4d50-4384-a1ab-9ec79bd45e42"));
+
+        RunState state3 = m_runner.resume(state1, "7");
+
+        assertThat(state3.getSteps().get(0).getNode().getUuid(), is("b7cfa0ac-4d50-4384-a1ab-9ec79bd45e42"));
+        assertThat(state3.getSteps().get(0).getRuleResult().getCategory(), is("1 - 8"));
+        assertThat(state3.getSteps().get(0).getRuleResult().getValue(), is("7"));
     }
 
     protected void assertReply(List<Action.Result> actions, int index, String msg) {

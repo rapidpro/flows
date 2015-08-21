@@ -2,20 +2,21 @@ package io.rapidpro.flows.definition.tests;
 
 import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluationContext;
+import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.definition.TranslatableText;
 import io.rapidpro.flows.runner.RunState;
 
 /**
  * Whether the text starts with the given string
  */
-public class StartsWithTest extends Test.Translatable {
+public class StartsWithTest extends TranslatableTest {
 
     public StartsWithTest(TranslatableText test) {
         super(test);
     }
 
-    public static StartsWithTest fromJson(JsonObject json) {
-        return new StartsWithTest(TranslatableText.fromJson(json.get("test")));
+    public static StartsWithTest fromJson(JsonObject obj) throws FlowParseException {
+        return new StartsWithTest(TranslatableText.fromJson(obj.get("test")));
     }
 
     /**

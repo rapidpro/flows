@@ -2,6 +2,7 @@ package io.rapidpro.flows.definition.tests;
 
 import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluationContext;
+import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.definition.TranslatableText;
 import io.rapidpro.flows.runner.RunState;
 import org.apache.commons.lang3.StringUtils;
@@ -19,8 +20,8 @@ public class ContainsAnyTest extends ContainsTest {
         super(test);
     }
 
-    public static ContainsAnyTest fromJson(JsonObject json) {
-        return new ContainsAnyTest(TranslatableText.fromJson(json.get("test")));
+    public static ContainsAnyTest fromJson(JsonObject obj) throws FlowParseException {
+        return new ContainsAnyTest(TranslatableText.fromJson(obj.get("test")));
     }
 
     /**

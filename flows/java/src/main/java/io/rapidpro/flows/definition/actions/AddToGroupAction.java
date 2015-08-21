@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluatedTemplate;
 import io.rapidpro.expressions.EvaluationContext;
+import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.RunState;
 
@@ -20,7 +21,7 @@ public class AddToGroupAction extends Action {
         m_groups = groups;
     }
 
-    public static AddToGroupAction fromJson(JsonObject json) {
+    public static AddToGroupAction fromJson(JsonObject json) throws FlowParseException {
         List<String> groups = new ArrayList<>();
         for (JsonElement groupElem : json.get("groups").getAsJsonArray()) {
             groups.add(groupElem.getAsJsonObject().get("name").getAsString());
@@ -28,6 +29,9 @@ public class AddToGroupAction extends Action {
         return new AddToGroupAction(groups);
     }
 
+    /**
+     * @see Action#execute(RunState, Input)
+     */
     @Override
     public Result execute(RunState run, Input input) {
         EvaluationContext context = run.buildContext(input);

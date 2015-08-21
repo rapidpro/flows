@@ -8,7 +8,7 @@ import io.rapidpro.flows.runner.RunState;
  * Test that always returns true
  */
 public class TrueTest extends Test {
-    public static TrueTest fromJson(JsonObject json) {
+    public static TrueTest fromJson(JsonObject obj) {
         return new TrueTest();
     }
 

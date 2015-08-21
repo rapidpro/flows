@@ -1,7 +1,6 @@
 package io.rapidpro.flows.definition;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.flows.FlowUtils;
 import io.rapidpro.flows.definition.tests.Test;
@@ -23,17 +22,17 @@ public class Rule implements Flow.ConnectionStart {
 
     protected Flow.Node m_destination;
 
-    public static Rule fromJson(JsonObject json, Map<Flow.ConnectionStart, String> destinationsToSet) throws JsonSyntaxException {
-        Rule obj = new Rule();
-        obj.m_uuid = json.get("uuid").getAsString();
-        obj.m_test = Test.fromJson(json.get("test").getAsJsonObject());
-        obj.m_category = TranslatableText.fromJson(json.get("category"));
+    public static Rule fromJson(JsonObject obj, Map<Flow.ConnectionStart, String> destinationsToSet) throws FlowParseException {
+        Rule rule = new Rule();
+        rule.m_uuid = obj.get("uuid").getAsString();
+        rule.m_test = Test.fromJson(obj.get("test").getAsJsonObject());
+        rule.m_category = TranslatableText.fromJson(obj.get("category"));
 
-        String destinationUuid = FlowUtils.getAsString(json, "destination");
+        String destinationUuid = FlowUtils.getAsString(obj, "destination");
         if (StringUtils.isNotEmpty(destinationUuid)) {
-            destinationsToSet.put(obj, destinationUuid);
+            destinationsToSet.put(rule, destinationUuid);
         }
-        return obj;
+        return rule;
     }
 
     public Test.Result matches(RunState run, EvaluationContext context, String input) {

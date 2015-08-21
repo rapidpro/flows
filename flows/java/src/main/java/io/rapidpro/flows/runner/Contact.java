@@ -35,12 +35,12 @@ public class Contact {
         m_language = language;
     }
 
-    public static Contact fromJson(JsonObject json) {
-        Contact obj = new Contact();
-        obj.m_uuid = FlowUtils.getAsString(json, "uuid");
-        obj.m_name = FlowUtils.getAsString(json, "name");
-        obj.m_language = FlowUtils.getAsString(json, "language");
-        return obj;
+    public static Contact fromJson(JsonObject obj) {
+        Contact contact = new Contact();
+        contact.m_uuid = FlowUtils.getAsString(obj, "uuid");
+        contact.m_name = FlowUtils.getAsString(obj, "name");
+        contact.m_language = FlowUtils.getAsString(obj, "language");
+        return contact;
     }
 
     public String getUuid() {
@@ -142,15 +142,15 @@ public class Contact {
             context.put(scheme.name().toLowerCase(), getUrnDisplay(org, scheme, false));
         }
 
-        // TODO add contact fields
-
-        // get all the values for this contact
-        //contact_values = {v.contact_field.key: v for v in Value.objects.filter(contact=self).exclude(contact_field=None).select_related('contact_field')}
-
         // add all fields
-        //for field in ContactField.objects.filter(org_id=self.org_id).select_related('org'):
-        //field_value = Contact.get_field_display_for_value(field, contact_values.get(field.key, None))
-        //contact_dict[field.key] = field_value if not field_value is None else ''
+        for (Map.Entry<String, String> field : m_fields.entrySet()) {
+
+            // TODO match formatting of Contact.get_field_display_for_value
+
+            String value  = field.getValue() != null ? field.getValue() : "";
+
+            context.put(field.getKey(), value);
+        }
 
         return context;
     }

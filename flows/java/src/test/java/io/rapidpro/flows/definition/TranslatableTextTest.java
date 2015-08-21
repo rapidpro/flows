@@ -17,7 +17,7 @@ import static org.junit.Assert.assertThat;
 public class TranslatableTextTest {
 
     @Test
-    public void fromJson() {
+    public void fromJson() throws FlowParseException {
         JsonParser parser = new JsonParser();
 
         TranslatableText text = TranslatableText.fromJson(parser.parse("\"test\""));

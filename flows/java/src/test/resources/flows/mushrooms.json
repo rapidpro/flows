@@ -20,7 +20,8 @@
         "actions": [
           {
             "msg": {
-              "eng": "Hi @contact.name. Do you like mushrooms?"
+              "fre": "Salut @contact.first_name. Aimez-vous les champignons?",
+              "eng": "Hi @contact.first_name. Do you like mushrooms?"
             },
             "type": "reply"
           }
@@ -34,6 +35,7 @@
         "actions": [
           {
             "msg": {
+              "fre": "Vous devriez revoir",
               "eng": "You should reconsider"
             },
             "type": "reply"
@@ -48,6 +50,7 @@
         "actions": [
           {
             "msg": {
+              "fre": "Ce fut la bonne r\u00e9ponse.",
               "eng": "That was the right answer."
             },
             "type": "reply"
@@ -57,7 +60,7 @@
             "groups": [
               {
                 "name": "Approved",
-                "id": 11083
+                "id": 11106
               }
             ]
           }
@@ -71,6 +74,7 @@
         "actions": [
           {
             "msg": {
+              "fre": "Nous ne comprenions pas votre r\u00e9ponse. S'il vous pla\u00eet r\u00e9pondre par oui/non.",
               "eng": "We didn't understand your answer. Please reply with yes/no."
             },
             "type": "reply"
@@ -78,7 +82,7 @@
         ]
       }
     ],
-    "last_saved": "2015-08-18T09:29:42.364518Z",
+    "last_saved": "2015-08-21T11:12:45.511947Z",
     "entry": "32cf414b-35e3-4c75-8a78-d5f4de925e13",
     "rule_sets": [
       {
@@ -88,6 +92,7 @@
           {
             "test": {
               "test": {
+                "fre": "oui",
                 "eng": "yes,yeah,yup"
               },
               "base": "yes,yeah,yup",
@@ -95,6 +100,7 @@
             },
             "category": {
               "base": "Yes",
+              "fre": "Oui",
               "eng": "Yes"
             },
             "destination": "6d12cde9-dbbf-4673-acd7-afa1776d382b",
@@ -104,13 +110,15 @@
           {
             "test": {
               "test": {
-                "eng": "no,nah"
+                "fre": "non",
+                "eng": "no,nay"
               },
-              "base": "no,nah",
+              "base": "no,nay",
               "type": "contains_any"
             },
             "category": {
               "base": "No",
+              "fre": "Non",
               "eng": "No"
             },
             "destination": "4ef2b232-1484-4db7-b470-98af1a2349d3",
@@ -120,6 +128,7 @@
           {
             "category": {
               "base": "All Responses",
+              "fre": "Autre",
               "eng": "Other"
             },
             "uuid": "366fb919-7e0b-48be-8f5b-baa14b2a65aa",

@@ -1,8 +1,8 @@
 package io.rapidpro.flows.definition.actions;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
 import io.rapidpro.flows.FlowUtils;
+import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.RunState;
 
@@ -27,10 +27,19 @@ public abstract class Action {
      */
     public abstract Result execute(RunState run, Input input);
 
-    public static Action fromJson(JsonObject json) throws JsonSyntaxException {
-        String type = json.get("type").getAsString();
+    /**
+     * Parses an action from the given JSON object
+     * @param obj the JSON object
+     * @return the action
+     */
+    public static Action fromJson(JsonObject obj) throws FlowParseException {
+        String type = obj.get("type").getAsString();
         Class<? extends Action> clazz = s_classByType.get(type);
-        return FlowUtils.fromJson(json, clazz);
+        if (clazz == null) {
+            throw new FlowParseException("Unknown action type: " + type);
+        }
+
+        return FlowUtils.fromJson(obj, clazz);
     }
 
     /**

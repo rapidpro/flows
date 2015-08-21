@@ -29,7 +29,7 @@ public class ContactUrn {
      * @param urn the string, e.g. tel:+260964153686, twitter:joe
      * @return the parsed URN
      */
-    public static ContactUrn parse(String urn) {
+    public static ContactUrn fromString(String urn) {
         String[] parts = urn.split(":", 2);
         Scheme scheme = Scheme.valueOf(parts[0].toUpperCase());
         return new ContactUrn(scheme, parts[1]);

@@ -61,14 +61,14 @@ public class FlowUtils {
 
     /**
      * Instantiates a new object instance by calling a static fromJson method on its class.
-     * @param json the JSON object passed to fromJson
+     * @param obj the JSON object passed to fromJson
      * @param clazz the class to instantiate
      * @return the new object instance
      */
-    public static <T> T fromJson(JsonObject json, Class<T> clazz) {
+    public static <T> T fromJson(JsonObject obj, Class<T> clazz) {
         try {
             Method method = clazz.getDeclaredMethod("fromJson", JsonObject.class);
-            return (T) method.invoke(null, json);
+            return (T) method.invoke(null, obj);
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }

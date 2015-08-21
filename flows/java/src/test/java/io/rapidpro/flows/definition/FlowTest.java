@@ -5,8 +5,7 @@ import io.rapidpro.flows.definition.actions.ReplyAction;
 import io.rapidpro.flows.definition.tests.ContainsAnyTest;
 import io.rapidpro.flows.definition.tests.TrueTest;
 import org.apache.commons.io.IOUtils;
-
-import java.io.IOException;
+import org.junit.Test;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -16,8 +15,8 @@ import static org.junit.Assert.assertThat;
  */
 public class FlowTest {
 
-    @org.junit.Test
-    public void fromJson() throws IOException {
+    @Test
+    public void fromJson() throws Exception {
         String json = IOUtils.toString(getClass().getClassLoader().getResourceAsStream("flows/mushrooms.json"));
 
         Flow definition = Flow.fromJson(json);
@@ -39,7 +38,7 @@ public class FlowTest {
         Rule rs1Rule1 = rs1.getRules().get(0);
 
         assertThat(rs1Rule1.getTest(), instanceOf(ContainsAnyTest.class));
-        assertThat(rs1Rule1.getCategory(), is(new TranslatableText("base", "Yes", "eng", "Yes")));
+        assertThat(rs1Rule1.getCategory(), is(new TranslatableText("base", "Yes", "eng", "Yes", "fre", "Oui")));
 
         ActionSet as2 = (ActionSet) rs1Rule1.getDestination();
 
@@ -51,7 +50,7 @@ public class FlowTest {
         Rule rs1Rule2 = rs1.getRules().get(1);
 
         assertThat(rs1Rule2.getTest(), instanceOf(ContainsAnyTest.class));
-        assertThat(rs1Rule2.getCategory(), is(new TranslatableText("base", "No", "eng", "No")));
+        assertThat(rs1Rule2.getCategory(), is(new TranslatableText("base", "No", "eng", "No", "fre", "Non")));
 
         ActionSet as3 = (ActionSet) rs1Rule2.getDestination();
 
@@ -64,7 +63,7 @@ public class FlowTest {
         Rule rs1Rule3 = rs1.getRules().get(2);
 
         assertThat(rs1Rule3.getTest(), instanceOf(TrueTest.class));
-        assertThat(rs1Rule3.getCategory(), is(new TranslatableText("base", "All Responses", "eng", "Other")));
+        assertThat(rs1Rule3.getCategory(), is(new TranslatableText("base", "All Responses", "eng", "Other", "fre", "Autre")));
 
         ActionSet as4 = (ActionSet) rs1Rule3.getDestination();
 

@@ -25,8 +25,17 @@ public class Flow {
     protected Node m_entry;
     protected Map<String, Node> m_nodesByUuid = new HashMap<>();
 
-    public static Flow fromJson(String json) {
-        return s_gson.fromJson(json, Flow.class);
+    public static Flow fromJson(String json) throws FlowParseException {
+        try {
+            return s_gson.fromJson(json, Flow.class);
+        }
+        catch (JsonParseException ex) {
+            if (ex.getCause() instanceof FlowParseException) {
+                throw (FlowParseException) ex.getCause();
+            } else {
+                throw ex;
+            }
+        }
     }
 
     public String getBaseLanguage() {
@@ -40,32 +49,37 @@ public class Flow {
     public static class Deserializer implements JsonDeserializer<Flow> {
 
         public Flow deserialize(JsonElement elem, Type type, JsonDeserializationContext context) throws JsonParseException {
-            JsonObject obj = elem.getAsJsonObject().get("flow").getAsJsonObject();
+            try {
+                JsonObject obj = elem.getAsJsonObject().get("flow").getAsJsonObject();
 
-            Flow definition = new Flow();
-            definition.m_baseLanguage = obj.get("base_language").getAsString();
+                Flow definition = new Flow();
+                definition.m_baseLanguage = obj.get("base_language").getAsString();
 
-            Map<ConnectionStart, String> destinationsToSet = new HashMap<>();
+                Map<ConnectionStart, String> destinationsToSet = new HashMap<>();
 
-            for (JsonElement asElem : obj.get("action_sets").getAsJsonArray()) {
-                ActionSet actionSet = ActionSet.fromJson(asElem.getAsJsonObject(), destinationsToSet);
-                definition.m_nodesByUuid.put(actionSet.m_uuid, actionSet);
+                for (JsonElement asElem : obj.get("action_sets").getAsJsonArray()) {
+                    ActionSet actionSet = ActionSet.fromJson(asElem.getAsJsonObject(), destinationsToSet);
+                    definition.m_nodesByUuid.put(actionSet.m_uuid, actionSet);
+                }
+
+                for (JsonElement rsElem : obj.get("rule_sets").getAsJsonArray()) {
+                    RuleSet ruleSet = RuleSet.fromJson(rsElem.getAsJsonObject(), destinationsToSet);
+                    definition.m_nodesByUuid.put(ruleSet.m_uuid, ruleSet);
+                }
+
+                // lookup and set destination nodes
+                for (Map.Entry<ConnectionStart, String> entry : destinationsToSet.entrySet()) {
+                    ConnectionStart start = entry.getKey();
+                    start.setDestination(definition.m_nodesByUuid.get(entry.getValue()));
+                }
+
+                definition.m_entry = definition.m_nodesByUuid.get(obj.get("entry").getAsString());
+
+                return definition;
             }
-
-            for (JsonElement rsElem : obj.get("rule_sets").getAsJsonArray()) {
-                RuleSet ruleSet = RuleSet.fromJson(rsElem.getAsJsonObject(), destinationsToSet);
-                definition.m_nodesByUuid.put(ruleSet.m_uuid, ruleSet);
+            catch (FlowParseException ex) {
+                throw new JsonParseException(ex);
             }
-
-            // lookup and set destination nodes
-            for (Map.Entry<ConnectionStart, String> entry : destinationsToSet.entrySet()) {
-                ConnectionStart start = entry.getKey();
-                start.setDestination(definition.m_nodesByUuid.get(entry.getValue()));
-            }
-
-            definition.m_entry = definition.m_nodesByUuid.get(obj.get("entry").getAsString());
-
-            return definition;
         }
     }
 

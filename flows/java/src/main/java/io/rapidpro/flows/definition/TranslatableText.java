@@ -2,7 +2,6 @@ package io.rapidpro.flows.definition;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
 import io.rapidpro.flows.runner.RunState;
 import org.apache.commons.lang3.StringUtils;
 
@@ -38,7 +37,7 @@ public class TranslatableText {
         }
     }
 
-    public static TranslatableText fromJson(JsonElement elem) throws JsonSyntaxException {
+    public static TranslatableText fromJson(JsonElement elem) throws FlowParseException {
         if (elem.isJsonObject()) {
             JsonObject translationSet = elem.getAsJsonObject();
 
@@ -54,7 +53,7 @@ public class TranslatableText {
             return new TranslatableText(elem.getAsString());
         }
         else {
-            throw new JsonSyntaxException("Must be an object or string primitive");
+            throw new FlowParseException("Translatable text be an object or string primitive");
         }
     }
 
