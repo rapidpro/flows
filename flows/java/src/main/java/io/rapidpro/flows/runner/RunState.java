@@ -33,6 +33,9 @@ public class RunState {
     @SerializedName("steps")
     protected LinkedList<Step> m_steps;
 
+    @SerializedName("extra")
+    protected Map<String, String> m_extra;
+
     @SerializedName("state")
     protected State m_state;
 
@@ -41,6 +44,7 @@ public class RunState {
         m_contact = contact;
         m_flow = flow;
         m_steps = new LinkedList<>();
+        m_extra = new HashMap<>();
         m_state = State.IN_PROGRESS;
     }
 
@@ -58,6 +62,10 @@ public class RunState {
 
     public LinkedList<Step> getSteps() {
         return m_steps;
+    }
+
+    public Map<String, String> getExtra() {
+        return m_extra;
     }
 
     public State getState() {
@@ -82,8 +90,9 @@ public class RunState {
         }
 
         variables.put("contact", m_contact.buildContext(m_org));
+        variables.put("extra", m_extra);
 
-        // TODO
+        // TODO add previous rule values as @flow.xxxx
         // variables.put("flow", m_stepState.buildContext(m_org));
 
         return new EvaluationContext(variables, m_org.getTimezone(), m_org.isDayFirst());

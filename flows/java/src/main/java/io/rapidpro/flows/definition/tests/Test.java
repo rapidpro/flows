@@ -28,6 +28,7 @@ public abstract class Test {
         s_classByType.put("contains", ContainsTest.class);
         s_classByType.put("contains_any", ContainsAnyTest.class);
         s_classByType.put("starts", StartsWithTest.class);
+        s_classByType.put("regex", RegexTest.class);
         s_classByType.put("number", HasNumberTest.class);
         s_classByType.put("between", BetweenTest.class);
         s_classByType.put("eq", EqualTest.class);

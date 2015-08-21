@@ -44,12 +44,10 @@ public class ContainsTest extends TranslatableTest {
     }
 
     /**
-     * @see Test#evaluate(RunState, EvaluationContext, String)
+     * @see TranslatableTest#evaluateAgainstLocalized(RunState, EvaluationContext, String, String)
      */
     @Override
-    public Result evaluate(RunState run, EvaluationContext context, String text) {
-        // localize and substitute any variables
-        String localizedTest = m_test.getLocalized(run);
+    protected Result evaluateAgainstLocalized(RunState run, EvaluationContext context, String text, String localizedTest) {
         localizedTest = run.substituteVariables(localizedTest, context).getOutput();
 
         // tokenize our test
