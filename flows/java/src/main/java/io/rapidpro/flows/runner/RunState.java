@@ -6,7 +6,9 @@ import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.Expressions;
 import io.rapidpro.flows.definition.Flow;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Represents state of a flow run after visiting one or more nodes in the flow

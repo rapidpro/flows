@@ -5,7 +5,8 @@ import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.RuleSet;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Implementation of the flow runner

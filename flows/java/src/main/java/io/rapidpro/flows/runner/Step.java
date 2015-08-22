@@ -1,8 +1,8 @@
 package io.rapidpro.flows.runner;
 
-import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.Rule;
+import io.rapidpro.flows.definition.actions.Action;
 
 import java.time.Instant;
 import java.util.ArrayList;

@@ -2,8 +2,8 @@ package io.rapidpro.flows.definition;
 
 import io.rapidpro.flows.definition.actions.AddToGroupAction;
 import io.rapidpro.flows.definition.actions.ReplyAction;
-import io.rapidpro.flows.definition.tests.ContainsAnyTest;
-import io.rapidpro.flows.definition.tests.TrueTest;
+import io.rapidpro.flows.definition.tests.text.ContainsAnyTest;
+import io.rapidpro.flows.definition.tests.logic.TrueTest;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 

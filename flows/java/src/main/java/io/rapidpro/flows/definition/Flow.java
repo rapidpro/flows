@@ -2,8 +2,8 @@ package io.rapidpro.flows.definition;
 
 import com.google.gson.*;
 import io.rapidpro.flows.runner.Input;
-import io.rapidpro.flows.runner.Step;
 import io.rapidpro.flows.runner.RunState;
+import io.rapidpro.flows.runner.Step;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;

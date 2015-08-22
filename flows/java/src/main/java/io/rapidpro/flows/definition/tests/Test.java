@@ -6,6 +6,12 @@ import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.flows.FlowUtils;
 import io.rapidpro.flows.definition.FlowParseException;
+import io.rapidpro.flows.definition.tests.logic.AndTest;
+import io.rapidpro.flows.definition.tests.logic.FalseTest;
+import io.rapidpro.flows.definition.tests.logic.OrTest;
+import io.rapidpro.flows.definition.tests.logic.TrueTest;
+import io.rapidpro.flows.definition.tests.numeric.*;
+import io.rapidpro.flows.definition.tests.text.*;
 import io.rapidpro.flows.runner.RunState;
 
 import java.util.ArrayList;

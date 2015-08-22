@@ -9,7 +9,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Ignore;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
