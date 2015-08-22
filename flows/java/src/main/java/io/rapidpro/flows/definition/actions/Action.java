@@ -2,6 +2,7 @@ package io.rapidpro.flows.definition.actions;
 
 import com.google.gson.JsonObject;
 import io.rapidpro.flows.FlowUtils;
+import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.RunState;
@@ -31,18 +32,19 @@ public abstract class Action {
     public abstract Result execute(RunState run, Input input);
 
     /**
-     * Parses an action from the given JSON object
+     * Creates an action from the given JSON object
      * @param obj the JSON object
+     * @param context the deserialization context
      * @return the action
      */
-    public static Action fromJson(JsonObject obj) throws FlowParseException {
+    public static Action fromJson(JsonObject obj, Flow.DeserializationContext context) throws FlowParseException {
         String type = obj.get("type").getAsString();
         Class<? extends Action> clazz = s_classByType.get(type);
         if (clazz == null) {
             throw new FlowParseException("Unknown action type: " + type);
         }
 
-        return FlowUtils.fromJson(obj, clazz);
+        return FlowUtils.fromJson(obj, context, clazz);
     }
 
     /**

@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * A flow node which is a set of actions to be performed
@@ -26,17 +25,23 @@ public class ActionSet extends Flow.Node implements Flow.ConnectionStart {
 
     protected Flow.Node m_destination;
 
-    public static ActionSet fromJson(JsonObject obj, Map<Flow.ConnectionStart, String> destinationsToSet) throws FlowParseException {
+    /**
+     * Creates an action set from a JSON object
+     * @param obj the JSON object
+     * @param context the deserialization context
+     * @return the action set
+     */
+    public static ActionSet fromJson(JsonObject obj, Flow.DeserializationContext context) throws FlowParseException {
         ActionSet set = new ActionSet();
         set.m_uuid = obj.get("uuid").getAsString();
 
         String destinationUuid = FlowUtils.getAsString(obj, "destination");
         if (StringUtils.isNotEmpty(destinationUuid)) {
-            destinationsToSet.put(set, destinationUuid);
+            context.needsDestination(set, destinationUuid);
         }
 
         for (JsonElement actionElem : obj.get("actions").getAsJsonArray()) {
-            set.m_actions.add(Action.fromJson(actionElem.getAsJsonObject()));
+            set.m_actions.add(Action.fromJson(actionElem.getAsJsonObject(), context));
         }
 
         return set;

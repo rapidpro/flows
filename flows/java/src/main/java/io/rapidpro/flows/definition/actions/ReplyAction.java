@@ -2,6 +2,7 @@ package io.rapidpro.flows.definition.actions;
 
 import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluatedTemplate;
+import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.definition.TranslatableText;
 import io.rapidpro.flows.runner.Input;
@@ -18,7 +19,10 @@ public class ReplyAction extends Action {
         m_msg = msg;
     }
 
-    public static ReplyAction fromJson(JsonObject json) throws FlowParseException {
+    /**
+     * @see Action#fromJson(JsonObject, Flow.DeserializationContext)
+     */
+    public static ReplyAction fromJson(JsonObject json, Flow.DeserializationContext context) throws FlowParseException {
         TranslatableText msg = TranslatableText.fromJson(json.get("msg"));
         return new ReplyAction(msg);
     }

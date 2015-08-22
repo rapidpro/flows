@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.flows.FlowUtils;
+import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.definition.tests.logic.AndTest;
 import io.rapidpro.flows.definition.tests.logic.FalseTest;
@@ -45,6 +46,36 @@ public abstract class Test {
     }
 
     /**
+     * Creates a test from the given JSON object
+     * @param obj the JSON object
+     * @param context the deserialization context
+     * @return the test
+     */
+    public static Test fromJson(JsonObject obj, Flow.DeserializationContext context) throws FlowParseException {
+        String type = obj.get("type").getAsString();
+        Class<? extends Test> clazz = s_classByType.get(type);
+        if (clazz == null) {
+            throw new FlowParseException("Unknown test type: " + type);
+        }
+
+        return FlowUtils.fromJson(obj, context, clazz);
+    }
+
+    /**
+     * Creates a list of tests from the given JSON array
+     * @param array the JSON array
+     * @param context the deserialization context
+     * @return the tests
+     */
+    public static List<Test> fromJsonArray(JsonArray array, Flow.DeserializationContext context) throws FlowParseException {
+        List<Test> tests = new ArrayList<>();
+        for (JsonElement testElem : array) {
+            tests.add(Test.fromJson(testElem.getAsJsonObject(), context));
+        }
+        return tests;
+    }
+
+    /**
      * Evaluates this test
      * @param run the run state
      * @param context the evaluation context
@@ -52,34 +83,6 @@ public abstract class Test {
      * @return the test result (true or false, and the matched portion of the input)
      */
     public abstract Result evaluate(RunState run, EvaluationContext context, String text);
-
-    /**
-     * Parses a test from the given JSON object
-     * @param obj the JSON object
-     * @return the test
-     */
-    public static Test fromJson(JsonObject obj) throws FlowParseException {
-        String type = obj.get("type").getAsString();
-        Class<? extends Test> clazz = s_classByType.get(type);
-        if (clazz == null) {
-            throw new FlowParseException("Unknown test type: " + type);
-        }
-
-        return FlowUtils.fromJson(obj, clazz);
-    }
-
-    /**
-     * Loads a list of tests from the given JSON array
-     * @param array the JSON array
-     * @return the tests
-     */
-    public static List<Test> fromJsonArray(JsonArray array) throws FlowParseException {
-        List<Test> tests = new ArrayList<>();
-        for (JsonElement testElem : array) {
-            tests.add(Test.fromJson(testElem.getAsJsonObject()));
-        }
-        return tests;
-    }
 
     /**
      * Holds the result of a test evaluation (the int value + the text matched)

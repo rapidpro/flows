@@ -2,6 +2,7 @@ package io.rapidpro.flows;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.rapidpro.flows.definition.Flow;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -62,13 +63,14 @@ public class FlowUtils {
     /**
      * Instantiates a new object instance by calling a static fromJson method on its class.
      * @param obj the JSON object passed to fromJson
+     * @param context the deserialization context
      * @param clazz the class to instantiate
      * @return the new object instance
      */
-    public static <T> T fromJson(JsonObject obj, Class<T> clazz) {
+    public static <T> T fromJson(JsonObject obj, Flow.DeserializationContext context, Class<T> clazz) {
         try {
-            Method method = clazz.getDeclaredMethod("fromJson", JsonObject.class);
-            return (T) method.invoke(null, obj);
+            Method method = clazz.getDeclaredMethod("fromJson", JsonObject.class, Flow.DeserializationContext.class);
+            return (T) method.invoke(null, obj, context);
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }

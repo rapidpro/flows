@@ -2,6 +2,7 @@ package io.rapidpro.flows.definition.tests.logic;
 
 import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluationContext;
+import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.RunState;
@@ -22,8 +23,11 @@ public class AndTest extends Test {
         m_tests = tests;
     }
 
-    public static AndTest fromJson(JsonObject obj) throws FlowParseException {
-        return new AndTest(Test.fromJsonArray(obj.get("tests").getAsJsonArray()));
+    /**
+     * @see Test#fromJson(JsonObject, Flow.DeserializationContext)
+     */
+    public static AndTest fromJson(JsonObject obj, Flow.DeserializationContext context) throws FlowParseException {
+        return new AndTest(Test.fromJsonArray(obj.get("tests").getAsJsonArray(), context));
     }
 
     /**

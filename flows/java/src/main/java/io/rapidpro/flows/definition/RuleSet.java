@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * A flow node which is a set of rules, each with its own destination node
@@ -42,14 +41,20 @@ public class RuleSet extends Flow.Node {
 
     protected List<Rule> m_rules = new ArrayList<>();
 
-    public static RuleSet fromJson(JsonObject obj, Map<Flow.ConnectionStart, String> destinationsToSet) throws FlowParseException {
+    /**
+     * Creates a rule set from a JSON object
+     * @param obj the JSON object
+     * @param context the deserialization context
+     * @return the rule set
+     */
+    public static RuleSet fromJson(JsonObject obj, Flow.DeserializationContext context) throws FlowParseException {
         RuleSet set = new RuleSet();
         set.m_uuid = obj.get("uuid").getAsString();
         set.m_type = Type.valueOf(obj.get("ruleset_type").getAsString().toUpperCase());
         set.m_operand = obj.get("operand").getAsString();
 
         for (JsonElement ruleElem : obj.get("rules").getAsJsonArray()) {
-            set.m_rules.add(Rule.fromJson(ruleElem.getAsJsonObject(), destinationsToSet));
+            set.m_rules.add(Rule.fromJson(ruleElem.getAsJsonObject(), context));
         }
         return set;
     }

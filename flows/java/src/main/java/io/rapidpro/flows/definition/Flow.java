@@ -5,7 +5,6 @@ import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.runner.Step;
 
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,10 +20,58 @@ public class Flow {
                 .create();
     }
 
+    public enum Type {
+        MESSAGE,
+        IVR,
+        SURVEY
+    }
+
+    protected Type m_type;
+
     protected String m_baseLanguage;
+
     protected Node m_entry;
+
     protected Map<String, Node> m_nodesByUuid = new HashMap<>();
 
+    /**
+     * Creates a flow from a JSON object
+     * @param obj the JSON object
+     * @return the flow
+     */
+    public static Flow fromJson(JsonObject obj) throws FlowParseException {
+        Flow flow = new Flow();
+        flow.m_type = Type.MESSAGE;  // TODO flow type should be included in the JSON
+        flow.m_baseLanguage = obj.get("base_language").getAsString();
+
+        DeserializationContext flowContext = new DeserializationContext(flow);
+
+        for (JsonElement asElem : obj.get("action_sets").getAsJsonArray()) {
+            ActionSet actionSet = ActionSet.fromJson(asElem.getAsJsonObject(), flowContext);
+            flow.m_nodesByUuid.put(actionSet.m_uuid, actionSet);
+        }
+
+        for (JsonElement rsElem : obj.get("rule_sets").getAsJsonArray()) {
+            RuleSet ruleSet = RuleSet.fromJson(rsElem.getAsJsonObject(), flowContext);
+            flow.m_nodesByUuid.put(ruleSet.m_uuid, ruleSet);
+        }
+
+        // lookup and set destination nodes
+        for (Map.Entry<ConnectionStart, String> entry : flowContext.m_destinationsToSet.entrySet()) {
+            ConnectionStart start = entry.getKey();
+            start.setDestination(flow.m_nodesByUuid.get(entry.getValue()));
+        }
+
+        flow.m_entry = flow.m_nodesByUuid.get(obj.get("entry").getAsString());
+
+        return flow;
+    }
+
+    /**
+     * Creates a flow from a JSON flow definition
+     * @param json the JSON
+     * @return the flow
+     */
     public static Flow fromJson(String json) throws FlowParseException {
         try {
             return s_gson.fromJson(json, Flow.class);
@@ -48,38 +95,33 @@ public class Flow {
 
     public static class Deserializer implements JsonDeserializer<Flow> {
 
-        public Flow deserialize(JsonElement elem, Type type, JsonDeserializationContext context) throws JsonParseException {
+        public Flow deserialize(JsonElement elem, java.lang.reflect.Type type, JsonDeserializationContext context) throws JsonParseException {
             try {
                 JsonObject obj = elem.getAsJsonObject().get("flow").getAsJsonObject();
-
-                Flow definition = new Flow();
-                definition.m_baseLanguage = obj.get("base_language").getAsString();
-
-                Map<ConnectionStart, String> destinationsToSet = new HashMap<>();
-
-                for (JsonElement asElem : obj.get("action_sets").getAsJsonArray()) {
-                    ActionSet actionSet = ActionSet.fromJson(asElem.getAsJsonObject(), destinationsToSet);
-                    definition.m_nodesByUuid.put(actionSet.m_uuid, actionSet);
-                }
-
-                for (JsonElement rsElem : obj.get("rule_sets").getAsJsonArray()) {
-                    RuleSet ruleSet = RuleSet.fromJson(rsElem.getAsJsonObject(), destinationsToSet);
-                    definition.m_nodesByUuid.put(ruleSet.m_uuid, ruleSet);
-                }
-
-                // lookup and set destination nodes
-                for (Map.Entry<ConnectionStart, String> entry : destinationsToSet.entrySet()) {
-                    ConnectionStart start = entry.getKey();
-                    start.setDestination(definition.m_nodesByUuid.get(entry.getValue()));
-                }
-
-                definition.m_entry = definition.m_nodesByUuid.get(obj.get("entry").getAsString());
-
-                return definition;
+                return Flow.fromJson(obj);
             }
             catch (FlowParseException ex) {
                 throw new JsonParseException(ex);
             }
+        }
+    }
+
+    public static class DeserializationContext {
+
+        protected Flow m_flow;
+
+        protected Map<ConnectionStart, String> m_destinationsToSet = new HashMap<>();
+
+        public DeserializationContext(Flow flow) {
+            m_flow = flow;
+        }
+
+        public void needsDestination(ConnectionStart start, String destinationUuid) {
+            m_destinationsToSet.put(start, destinationUuid);
+        }
+
+        public Flow getFlow() {
+            return m_flow;
         }
     }
 
@@ -122,7 +164,6 @@ public class Flow {
             Node node = (Node) o;
 
             return m_uuid.equals(node.m_uuid);
-
         }
 
         /**

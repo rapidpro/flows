@@ -7,8 +7,6 @@ import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.RunState;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Map;
-
 /**
  * A matchable rule in a rule set
  */
@@ -22,15 +20,21 @@ public class Rule implements Flow.ConnectionStart {
 
     protected Flow.Node m_destination;
 
-    public static Rule fromJson(JsonObject obj, Map<Flow.ConnectionStart, String> destinationsToSet) throws FlowParseException {
+    /**
+     * Creates a rule from the given JSON object
+     * @param obj the JSON object
+     * @param context the deserialization context
+     * @return the rule
+     */
+    public static Rule fromJson(JsonObject obj, Flow.DeserializationContext context) throws FlowParseException {
         Rule rule = new Rule();
         rule.m_uuid = obj.get("uuid").getAsString();
-        rule.m_test = Test.fromJson(obj.get("test").getAsJsonObject());
+        rule.m_test = Test.fromJson(obj.get("test").getAsJsonObject(), context);
         rule.m_category = TranslatableText.fromJson(obj.get("category"));
 
         String destinationUuid = FlowUtils.getAsString(obj, "destination");
         if (StringUtils.isNotEmpty(destinationUuid)) {
-            destinationsToSet.put(rule, destinationUuid);
+            context.needsDestination(rule, destinationUuid);
         }
         return rule;
     }

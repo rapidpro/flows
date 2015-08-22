@@ -3,8 +3,10 @@ package io.rapidpro.flows.definition.tests.text;
 import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.flows.FlowUtils;
+import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.definition.TranslatableText;
+import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.definition.tests.TranslatableTest;
 import io.rapidpro.flows.runner.RunState;
 import org.apache.commons.lang3.StringUtils;
@@ -22,7 +24,10 @@ public class ContainsTest extends TranslatableTest {
         super(test);
     }
 
-    public static ContainsTest fromJson(JsonObject obj) throws FlowParseException {
+    /**
+     * @see Test#fromJson(JsonObject, Flow.DeserializationContext)
+     */
+    public static ContainsTest fromJson(JsonObject obj, Flow.DeserializationContext context) throws FlowParseException {
         return new ContainsTest(TranslatableText.fromJson(obj.get("test")));
     }
 

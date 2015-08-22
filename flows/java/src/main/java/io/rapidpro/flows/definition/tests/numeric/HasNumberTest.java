@@ -2,6 +2,8 @@ package io.rapidpro.flows.definition.tests.numeric;
 
 import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluationContext;
+import io.rapidpro.flows.definition.Flow;
+import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.RunState;
 
 import java.math.BigDecimal;
@@ -11,7 +13,10 @@ import java.math.BigDecimal;
  */
 public class HasNumberTest extends NumericTest {
 
-    public static HasNumberTest fromJson(JsonObject obj) {
+    /**
+     * @see Test#fromJson(JsonObject, Flow.DeserializationContext)
+     */
+    public static HasNumberTest fromJson(JsonObject obj, Flow.DeserializationContext context) {
         return new HasNumberTest();
     }
 
