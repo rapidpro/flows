@@ -37,6 +37,8 @@ public class RuleSet extends Flow.Node {
 
     protected Type m_type;
 
+    protected String m_label;
+
     protected String m_operand;
 
     protected List<Rule> m_rules = new ArrayList<>();
@@ -51,6 +53,7 @@ public class RuleSet extends Flow.Node {
         RuleSet set = new RuleSet();
         set.m_uuid = obj.get("uuid").getAsString();
         set.m_type = Type.valueOf(obj.get("ruleset_type").getAsString().toUpperCase());
+        set.m_label = obj.get("label").getAsString();
         set.m_operand = obj.get("operand").getAsString();
 
         for (JsonElement ruleElem : obj.get("rules").getAsJsonArray()) {
@@ -77,7 +80,10 @@ public class RuleSet extends Flow.Node {
         Rule rule = match.getLeft();
         String category = rule.getCategory().getLocalized(Collections.singletonList(run.getFlow().getBaseLanguage()), "");
 
-        step.setRuleResult(new Rule.Result(rule, match.getValue(), category));
+        Rule.Result result = new Rule.Result(rule, match.getValue(), category, input.getText());
+        step.setRuleResult(result);
+
+        run.updateValue(this, result, input.getTime());
 
         return rule.getDestination();
     }
@@ -104,6 +110,10 @@ public class RuleSet extends Flow.Node {
 
     public Type getType() {
         return m_type;
+    }
+
+    public String getLabel() {
+        return m_label;
     }
 
     public String getOperand() {

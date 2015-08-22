@@ -144,7 +144,7 @@
         ],
         "webhook": null,
         "ruleset_type": "expression",
-        "label": "Response 2",
+        "label": "Enough For Soup",
         "operand": "@flow.people.text",
         "finished_key": null,
         "response_type": "",

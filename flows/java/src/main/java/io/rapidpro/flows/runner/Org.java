@@ -1,8 +1,10 @@
 package io.rapidpro.flows.runner;
 
 import com.google.gson.annotations.SerializedName;
+import io.rapidpro.expressions.evaluator.EvaluatorUtils;
 
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 /**
  * An organization - used to provide additional information about how a flow should be run
@@ -45,5 +47,9 @@ public class Org {
 
     public boolean isAnon() {
         return m_anon;
+    }
+
+    public DateTimeFormatter getDateFormatter(boolean incTime) {
+        return EvaluatorUtils.getDateFormatter(this.m_dayFirst, incTime);
     }
 }

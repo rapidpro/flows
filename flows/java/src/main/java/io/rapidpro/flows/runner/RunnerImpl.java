@@ -26,18 +26,20 @@ public class RunnerImpl implements Flows.Runner {
      * @see io.rapidpro.flows.Flows.Runner#resume(RunState, String)
      */
     @Override
-    public RunState resume(RunState lastState, String text) throws InfiniteLoopException {
-        if (lastState.getState().equals(RunState.State.COMPLETED)) {
+    public RunState resume(RunState run, String text) throws InfiniteLoopException {
+        if (run.getState().equals(RunState.State.COMPLETED)) {
             throw new IllegalStateException("Cannot resume a completed run state");
         }
 
-        RunState newState = new RunState(lastState.getOrg(), lastState.getContact(), lastState.getFlow());
         Input input = text != null ? new Input(text) : null;
 
-        Step lastStep = lastState.getSteps().size() > 0 ? lastState.getSteps().getLast() : null;
+        Step lastStep = run.getSteps().size() > 0 ? run.getSteps().get(run.getSteps().size() - 1) : null;
+
+        // reset steps list so that it doesn't grow forever in a never-ending flow
+        run.getSteps().clear();
 
         // either we're resuming from a previous step that paused, or we're starting a new run
-        Flow.Node currentNode = lastStep == null ? lastState.getFlow().getEntry() : lastStep.getNode();
+        Flow.Node currentNode = lastStep == null ? run.getFlow().getEntry() : lastStep.getNode();
 
         // tracks nodes visited so we can detect loops
         Set<Flow.Node> nodesVisited = new LinkedHashSet<>();
@@ -53,13 +55,13 @@ public class RunnerImpl implements Flows.Runner {
 
             // create new step for this node
             Step step = new Step(currentNode, arrivedOn);
-            newState.getSteps().add(step);
+            run.getSteps().add(step);
 
             // should we pause at this node?
             if (currentNode instanceof RuleSet) {
                 if (((RuleSet) currentNode).isPause() && nodesVisited.size() > 0) {
-                    newState.setState(RunState.State.WAIT_MESSAGE);
-                    return newState;
+                    run.setState(RunState.State.WAIT_MESSAGE);
+                    return run;
                 }
             }
 
@@ -70,20 +72,20 @@ public class RunnerImpl implements Flows.Runner {
                 nodesVisited.add(currentNode);
             }
 
-            Flow.Node nextNode = currentNode.visit(newState, step, input);
+            Flow.Node nextNode = currentNode.visit(run, step, input);
 
             if (nextNode != null) {
                 // if we have a next node, then record leaving this one
                 step.setLeftOn(Instant.now());
             } else {
                 // if not then we've completed this flow
-                newState.setState(RunState.State.COMPLETED);
+                run.setState(RunState.State.COMPLETED);
             }
 
             currentNode = nextNode;
         }
         while (currentNode != null);
 
-        return newState;
+        return run;
     }
 }

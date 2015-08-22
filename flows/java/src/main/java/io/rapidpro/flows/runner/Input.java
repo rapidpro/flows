@@ -1,5 +1,7 @@
 package io.rapidpro.flows.runner;
 
+import io.rapidpro.flows.FlowUtils;
+
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,20 +13,20 @@ public class Input {
 
     protected String m_text;
 
-    protected Instant m_createdOn;
+    protected Instant m_time;
 
     public Input(String text) {
         m_text = text;
-        m_createdOn = Instant.now();
+        m_time = Instant.now();
     }
 
-    public Map<String, Object> buildContext() {
+    public Map<String, Object> buildContext(Org org) {
         Map<String, Object> context = new HashMap<>();
         context.put("*", m_text);
         context.put("value", m_text);
-        context.put("time", m_createdOn);
+        context.put("time", FlowUtils.formatDate(m_time, org, true));
 
-        // TODO include step.contact
+        // TODO include step.contact ?
 
         return context;
     }
@@ -33,7 +35,7 @@ public class Input {
         return m_text;
     }
 
-    public Instant getCreatedOn() {
-        return m_createdOn;
+    public Instant getTime() {
+        return m_time;
     }
 }

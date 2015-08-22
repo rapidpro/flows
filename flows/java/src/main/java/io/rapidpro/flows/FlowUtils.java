@@ -3,11 +3,15 @@ package io.rapidpro.flows;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.rapidpro.flows.definition.Flow;
+import io.rapidpro.flows.runner.Org;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -74,5 +78,11 @@ public class FlowUtils {
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static String formatDate(Instant instant, Org org, boolean incTime) {
+        DateTimeFormatter dateTimeFormatter = org.getDateFormatter(incTime);
+        ZonedDateTime dateTime = instant.atZone(org.getTimezone());
+        return dateTimeFormatter.format(dateTime);
     }
 }

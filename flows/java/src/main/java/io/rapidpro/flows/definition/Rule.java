@@ -76,10 +76,13 @@ public class Rule implements Flow.ConnectionStart {
 
         protected String m_category;
 
-        public Result(Rule rule, String value, String category) {
+        protected String m_text;
+
+        public Result(Rule rule, String value, String category, String text) {
             m_rule = rule;
             m_value = value;
             m_category = category;
+            m_text = text;
         }
 
         public Rule getRule() {
@@ -92,6 +95,10 @@ public class Rule implements Flow.ConnectionStart {
 
         public String getCategory() {
             return m_category;
+        }
+
+        public String getText() {
+            return m_text;
         }
     }
 }
