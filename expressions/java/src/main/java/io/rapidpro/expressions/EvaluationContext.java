@@ -91,7 +91,11 @@ public class EvaluationContext {
             remainingPath = null;
         }
 
-        Object value = container.getOrDefault(item, null);
+        if (!container.containsKey(item)) {
+            throw new EvaluationError("No item called " + originalPath + " in context");
+        }
+
+        Object value = container.get(item);
 
         if (remainingPath != null && value != null) {
             if (!(value instanceof Map)) {
@@ -100,21 +104,19 @@ public class EvaluationContext {
 
             return resolveVariableInContainer((Map<String, Object>) value, remainingPath, originalPath);
         }
-        else if (value != null) {
-            if (value instanceof Map) {
-                Map valueAsMap = ((Map) value);
-                if (valueAsMap.containsKey("*")) {
-                    return valueAsMap.get("*");
-                }
-                else {
-                    throw new RuntimeException("Context contains map without default key");
-                }
-            } else {
-                return value;
+        else if (value instanceof Map) {
+            Map valueAsMap = ((Map) value);
+            if (valueAsMap.containsKey("*")) {
+                return valueAsMap.get("*");
             }
+            else {
+                throw new RuntimeException("Context contains map without default key");
+            }
+        } else if (value != null) {
+            return value;
         }
         else {
-            throw new EvaluationError("No item called " + originalPath + " in context");
+            return "";  // return empty string rather than null
         }
     }
 
