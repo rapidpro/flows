@@ -142,7 +142,7 @@ public class Conversions {
             return ((ZonedDateTime) value).withZoneSameInstant(ctx.getTimezone()).toLocalDate(); // discard time
         }
 
-        throw new EvaluationError("Can't convert '" + value + "' to a string");
+        throw new EvaluationError("Can't convert '" + value + "' to a date");
     }
 
     /**

@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 /**
  * Test which returns whether input is numerically less than or equal to a value
  */
-public class LessThanOrEqualTest extends ComparisonTest {
+public class LessThanOrEqualTest extends NumericComparisonTest {
 
     public LessThanOrEqualTest(String test) {
         super(test);
@@ -24,7 +24,7 @@ public class LessThanOrEqualTest extends ComparisonTest {
     }
 
     /**
-     * @see ComparisonTest#doComparison(BigDecimal, BigDecimal)
+     * @see NumericComparisonTest#doComparison(BigDecimal, BigDecimal)
      */
     @Override
     protected boolean doComparison(BigDecimal input, BigDecimal test) {

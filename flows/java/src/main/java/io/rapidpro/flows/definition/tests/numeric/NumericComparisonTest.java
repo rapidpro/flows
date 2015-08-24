@@ -9,11 +9,11 @@ import java.math.BigDecimal;
 /**
  * Abstract base class for numeric tests which compare the input against a value
  */
-public abstract class ComparisonTest extends NumericTest {
+public abstract class NumericComparisonTest extends NumericTest {
 
     protected String m_test;
 
-    public ComparisonTest(String test) {
+    public NumericComparisonTest(String test) {
         m_test = test;
     }
 
@@ -21,14 +21,14 @@ public abstract class ComparisonTest extends NumericTest {
      * @see NumericTest#evaluateAgainstDecimal(RunState, EvaluationContext, BigDecimal)
      */
     @Override
-    protected boolean evaluateAgainstDecimal(RunState run, EvaluationContext context, BigDecimal decimal) {
+    protected boolean evaluateAgainstDecimal(RunState run, EvaluationContext context, BigDecimal input) {
         EvaluatedTemplate test = run.substituteVariables(m_test, context);
 
         if (!test.hasErrors()) {
             try {
                 BigDecimal testVal = new BigDecimal(test.getOutput().trim());
 
-                return doComparison(decimal, testVal);
+                return doComparison(input, testVal);
             }
             catch (NumberFormatException ignored) {}
         }

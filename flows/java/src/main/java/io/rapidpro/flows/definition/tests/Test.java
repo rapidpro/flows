@@ -6,6 +6,10 @@ import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.FlowParseException;
+import io.rapidpro.flows.definition.tests.date.DateAfterTest;
+import io.rapidpro.flows.definition.tests.date.DateBeforeTest;
+import io.rapidpro.flows.definition.tests.date.DateEqualTest;
+import io.rapidpro.flows.definition.tests.date.HasDateTest;
 import io.rapidpro.flows.definition.tests.logic.AndTest;
 import io.rapidpro.flows.definition.tests.logic.FalseTest;
 import io.rapidpro.flows.definition.tests.logic.OrTest;
@@ -43,7 +47,11 @@ public abstract class Test {
         s_classByType.put("lte", LessThanOrEqualTest.class);
         s_classByType.put("gt", GreaterThanTest.class);
         s_classByType.put("gte", GreaterThanOrEqualTest.class);
-        s_classByType.put("phone", PhoneTest.class);
+        s_classByType.put("date", HasDateTest.class);
+        s_classByType.put("date_equal", DateEqualTest.class);
+        s_classByType.put("date_before", DateBeforeTest.class);
+        s_classByType.put("date_after", DateAfterTest.class);
+        s_classByType.put("phone", HasPhoneTest.class);
     }
 
     /**

@@ -50,6 +50,10 @@ public abstract class BaseTestTest extends BaseFlowsTest {
         assertThat(result.getText(), is(expectedText));
     }
 
+    public EvaluationContext getContext() {
+        return m_context;
+    }
+
     public Flow.DeserializationContext getDeserializationContext() {
         return m_deserializationContext;
     }

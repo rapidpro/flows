@@ -47,8 +47,6 @@ public abstract class NumericTest extends Test {
     @Override
     public Result evaluate(RunState run, EvaluationContext context, String text) {
         // test every word in the message against our test
-        //def evaluate(self, run, sms, context, text):
-
         text = text.replace(",", ""); // so that 1,234 is parsed as 1234
 
         for (String word : Pattern.compile("\\s+").split(text)) {

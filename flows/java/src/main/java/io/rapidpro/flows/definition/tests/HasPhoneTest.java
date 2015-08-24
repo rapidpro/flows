@@ -12,13 +12,13 @@ import io.rapidpro.flows.runner.RunState;
 /**
  * Test that returns whether the text contains the a valid phone number
  */
-public class PhoneTest extends Test {
+public class HasPhoneTest extends Test {
 
     /**
      * @see Test#fromJson(JsonObject, Flow.DeserializationContext)
      */
-    public static PhoneTest fromJson(JsonObject obj, Flow.DeserializationContext context) throws FlowParseException {
-        return new PhoneTest();
+    public static HasPhoneTest fromJson(JsonObject obj, Flow.DeserializationContext context) throws FlowParseException {
+        return new HasPhoneTest();
     }
 
     @Override
