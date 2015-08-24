@@ -113,10 +113,13 @@ public class Conversions {
             return ctx.getDateFormatter(false).format((LocalDate) value);
         }
         else if (value instanceof OffsetTime) {
-            return DateTimeFormatter.ofPattern("HH:mm").format((OffsetTime) value);
+            ZoneOffset offset = ZonedDateTime.now(ctx.getTimezone()).getOffset();
+            OffsetTime inZone = ((OffsetTime) value).withOffsetSameInstant(offset);
+            return DateTimeFormatter.ofPattern("HH:mm").format(inZone);
         }
         else if (value instanceof ZonedDateTime) {
-            return ctx.getDateFormatter(true).format((ZonedDateTime) value);
+            ZonedDateTime inZone = ((ZonedDateTime) value).withZoneSameInstant(ctx.getTimezone());
+            return ctx.getDateFormatter(true).format(inZone);
         }
 
         throw new EvaluationError("Can't convert '" + value + "' to a string");
@@ -136,7 +139,7 @@ public class Conversions {
             return (LocalDate) value;
         }
         else if (value instanceof ZonedDateTime) {
-            return ((ZonedDateTime) value).toLocalDate(); // discard time
+            return ((ZonedDateTime) value).withZoneSameInstant(ctx.getTimezone()).toLocalDate(); // discard time
         }
 
         throw new EvaluationError("Can't convert '" + value + "' to a string");
@@ -156,7 +159,7 @@ public class Conversions {
             return ((LocalDate) value).atStartOfDay(ctx.getTimezone());
         }
         else if (value instanceof ZonedDateTime) {
-            return (ZonedDateTime) value;
+            return ((ZonedDateTime) value).withZoneSameInstant(ctx.getTimezone());
         }
 
         throw new EvaluationError("Can't convert '" + value + "' to a string");
@@ -176,7 +179,7 @@ public class Conversions {
             return (LocalDate) value;
         }
         else if (value instanceof ZonedDateTime) {
-            return (ZonedDateTime) value;
+            return ((ZonedDateTime) value).withZoneSameInstant(ctx.getTimezone());
         }
 
         throw new EvaluationError("Can't convert '" + value + "' to a date or datetime");
