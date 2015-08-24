@@ -1,4 +1,4 @@
-package io.rapidpro.expressions.evaluator;
+package io.rapidpro.expressions.dates;
 
 import org.junit.Test;
 
@@ -14,7 +14,7 @@ public class DateParserTest {
 
     @Test
     public void auto() {
-        DateParser parser = new DateParser(LocalDate.of(2015, 8, 12), ZoneId.of("Africa/Kigali"), true);
+        DateParser parser = new DateParser(LocalDate.of(2015, 8, 12), ZoneId.of("Africa/Kigali"), DateStyle.DAY_FIRST);
 
         Object[][] tests = {
                 { "1/2/34", LocalDate.of(2034, 2, 1) },
@@ -24,7 +24,7 @@ public class DateParserTest {
                 { "1. 2 '34", LocalDate.of(2034, 2, 1) },
                 { "1st february 2034", LocalDate.of(2034, 2, 1) },
                 { "1er février 2034", LocalDate.of(2034, 2, 1) },
-                { "2/25-70", LocalDate.of(1970, 2, 25) }, // dayFirst should be ignored when it doesn't make sense
+                { "2/25-70", LocalDate.of(1970, 2, 25) }, // date style should be ignored when it doesn't make sense
                 { "1 feb", LocalDate.of(2015, 2, 1) }, // year can be omitted
                 { "Feb 1st", LocalDate.of(2015, 2, 1) },
                 { "1 feb 9999999", LocalDate.of(2015, 2, 1) }, // ignore invalid values
@@ -43,7 +43,7 @@ public class DateParserTest {
 
     @Test
     public void time() {
-        DateParser parser = new DateParser(LocalDate.of(2015, 8, 12), ZoneId.of("Africa/Kigali"), true);
+        DateParser parser = new DateParser(LocalDate.of(2015, 8, 12), ZoneId.of("Africa/Kigali"), DateStyle.DAY_FIRST);
 
         Object[][] tests = {
                 { "2:55", OffsetTime.of(2, 55, 0, 0, ZoneOffset.ofHours(2)) },

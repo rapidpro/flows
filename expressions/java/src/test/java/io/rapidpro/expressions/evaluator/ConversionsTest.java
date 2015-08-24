@@ -1,5 +1,6 @@
 package io.rapidpro.expressions.evaluator;
 
+import io.rapidpro.expressions.dates.DateStyle;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.EvaluationError;
 import org.junit.Before;
@@ -21,7 +22,7 @@ public class ConversionsTest {
 
     @Before
     public void setup() {
-        m_context = new EvaluationContext(new HashMap<String, Object>(), ZoneId.of("Africa/Kigali"), true);
+        m_context = new EvaluationContext(new HashMap<String, Object>(), ZoneId.of("Africa/Kigali"), DateStyle.DAY_FIRST);
     }
 
     @Test
@@ -112,7 +113,7 @@ public class ConversionsTest {
         assertThat(Conversions.toString(OffsetTime.of(12, 34, 0, 0, ZoneOffset.ofHours(2)), m_context), is("12:34"));
         assertThat(Conversions.toString(ZonedDateTime.of(2012, 3, 4, 5, 6, 7, 8, ZoneId.of("Africa/Kigali")), m_context), is("04-03-2012 05:06"));
 
-        m_context.setDayFirst(false);
+        m_context.setDateStyle(DateStyle.MONTH_FIRST);
 
         assertThat(Conversions.toString(LocalDate.of(2012, 3, 4), m_context), is("03-04-2012"));
         assertThat(Conversions.toString(ZonedDateTime.of(2012, 3, 4, 5, 6, 7, 8, ZoneId.of("Africa/Kigali")), m_context), is("03-04-2012 05:06"));
@@ -127,7 +128,7 @@ public class ConversionsTest {
 
         assertThat(Conversions.toDate(ZonedDateTime.of(2015, 8, 14, 9, 12, 0, 0, ZoneId.of("Africa/Kigali")), m_context), is(LocalDate.of(2015, 8, 14)));
 
-        m_context.setDayFirst(false);
+        m_context.setDateStyle(DateStyle.MONTH_FIRST);
 
         assertThat(Conversions.toDate("12/8/15", m_context), is(LocalDate.of(2015, 12, 8)));
         assertThat(Conversions.toDate("14/8/15", m_context), is(LocalDate.of(2015, 8, 14))); // ignored because doesn't make sense

@@ -1,5 +1,7 @@
 package io.rapidpro.expressions.evaluator;
 
+import io.rapidpro.expressions.dates.DateStyle;
+
 import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -50,12 +52,12 @@ public class EvaluatorUtils {
 
     /**
      * Gets a formatter for dates or datetimes
-     * @param dayFirst whether parsing should be day-first or month-first
+     * @param dateStyle whether parsing should be day-first or month-first
      * @param incTime whether to include time
      * @return the formatter
      */
-    public static DateTimeFormatter getDateFormatter(boolean dayFirst, boolean incTime) {
-        String format = dayFirst ? "dd-MM-yyyy" : "MM-dd-yyyy";
+    public static DateTimeFormatter getDateFormatter(DateStyle dateStyle, boolean incTime) {
+        String format = dateStyle.equals(DateStyle.DAY_FIRST) ? "dd-MM-yyyy" : "MM-dd-yyyy";
         return DateTimeFormatter.ofPattern(incTime ? format + " HH:mm" : format);
     }
 }

@@ -1,5 +1,6 @@
 package io.rapidpro.expressions;
 
+import io.rapidpro.expressions.dates.DateStyle;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -18,7 +19,7 @@ public class EvaluationContextTest {
     public void fromJson() {
         EvaluationContext context = EvaluationContext.fromJson("{\"vars\":{\"name\":\"Bob\", \"age\":32, \"weight\":91.6, \"registered\":true, \"icon\":null, \"address\":{\"city\":\"Kigali\", \"plot\":14}, \"groups\":[\"Testers\", \"Developers\"]}, \"tz\": \"UTC\", \"day_first\": true}");
         assertThat(context.getTimezone(), is(ZoneId.of("UTC")));
-        assertThat(context.isDayFirst(), is(true));
+        assertThat(context.getDateStyle(), is(DateStyle.DAY_FIRST));
 
         assertThat(context.m_variables, hasEntry("name", (Object) "Bob"));
         assertThat(context.m_variables, hasEntry("age", (Object) 32));

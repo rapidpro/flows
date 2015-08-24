@@ -1,4 +1,4 @@
-package io.rapidpro.expressions.evaluator;
+package io.rapidpro.expressions.dates;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -75,18 +75,20 @@ public class DateParser {
     };
 
     protected final LocalDate m_now;
+
     protected final ZoneId m_timezone;
-    protected final boolean m_dayFirst;
+
+    protected final DateStyle m_dateStyle;
 
     /**
      * Creates a new date parser
      * @param now the now which parsing happens relative to
-     * @param dayFirst whether dates are usually entered day first or month first
+     * @param dateStyle whether dates are usually entered day first or month first
      */
-    public DateParser(LocalDate now, ZoneId timezone, boolean dayFirst) {
+    public DateParser(LocalDate now, ZoneId timezone, DateStyle dateStyle) {
         this.m_now = now;
         this.m_timezone = timezone;
-        this.m_dayFirst = dayFirst;
+        this.m_dateStyle = dateStyle;
     }
 
     /**
@@ -133,7 +135,7 @@ public class DateParser {
         }
 
         // see what valid sequences we can make
-        List<Component[]> sequences = getPossibleSequences(mode, tokenPossibilities.size(), m_dayFirst);
+        List<Component[]> sequences = getPossibleSequences(mode, tokenPossibilities.size(), m_dateStyle);
         List<Map<Component, Integer>> possibleMatches = new ArrayList<>();
 
         outer:
@@ -167,12 +169,12 @@ public class DateParser {
      * Gets possible component sequences in the given mode
      * @param mode the mode
      * @param length the length (only returns sequences of this length)
-     * @param dayFirst whether dates are usually entered day first or month first
+     * @param dateStyle whether dates are usually entered day first or month first
      * @return the list of sequences
      */
-    protected static List<Component[]> getPossibleSequences(Mode mode, int length, boolean dayFirst) {
+    protected static List<Component[]> getPossibleSequences(Mode mode, int length, DateStyle dateStyle) {
         List<Component[]> sequences = new ArrayList<>();
-        Component[][] dateSequences = dayFirst ? s_dateSequencesDayFirst : s_dateSequencesMonthFirst;
+        Component[][] dateSequences = dateStyle.equals(DateStyle.DAY_FIRST) ? s_dateSequencesDayFirst : s_dateSequencesMonthFirst;
 
         if (mode == Mode.DATE || mode == Mode.AUTO) {
             for (Component[] seq : dateSequences) {

@@ -1,6 +1,7 @@
 package io.rapidpro.expressions.functions;
 
 import io.rapidpro.expressions.EvaluationContext;
+import io.rapidpro.expressions.dates.DateStyle;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -30,7 +31,7 @@ public class ExcelFunctionsTest {
         Map<String, Object> variables = new HashMap<>();
         variables.put("date", date);
 
-        m_context = new EvaluationContext(variables, ZoneId.of("Africa/Kigali"), true);
+        m_context = new EvaluationContext(variables, ZoneId.of("Africa/Kigali"), DateStyle.DAY_FIRST);
     }
 
     @Test
@@ -230,7 +231,7 @@ public class ExcelFunctionsTest {
         assertThat(now(m_context), is(ZonedDateTime.of(2015, 8, 14, 10, 38, 0, 0, ZoneId.of("Africa/Kigali"))));
 
         // when context doesn't have variable, defaults to calculated value
-        EvaluationContext context = new EvaluationContext(new HashMap<String, Object>(), ZoneId.of("UTC"), true);
+        EvaluationContext context = new EvaluationContext(new HashMap<String, Object>(), ZoneId.of("UTC"), DateStyle.DAY_FIRST);
 
         assertThat(now(context), instanceOf(ZonedDateTime.class));
     }
@@ -258,7 +259,7 @@ public class ExcelFunctionsTest {
         assertThat(today(m_context), is(LocalDate.of(2015, 8, 14)));
 
         // when context doesn't have variable, defaults to calculated value
-        EvaluationContext context = new EvaluationContext(new HashMap<String, Object>(), ZoneId.of("UTC"), true);
+        EvaluationContext context = new EvaluationContext(new HashMap<String, Object>(), ZoneId.of("UTC"), DateStyle.DAY_FIRST);
 
         assertThat(today(context), instanceOf(LocalDate.class));
     }

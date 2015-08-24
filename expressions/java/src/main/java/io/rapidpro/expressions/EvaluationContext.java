@@ -1,7 +1,8 @@
 package io.rapidpro.expressions;
 
 import com.google.gson.*;
-import io.rapidpro.expressions.evaluator.DateParser;
+import io.rapidpro.expressions.dates.DateParser;
+import io.rapidpro.expressions.dates.DateStyle;
 import io.rapidpro.expressions.evaluator.EvaluatorUtils;
 
 import java.lang.reflect.Type;
@@ -29,18 +30,18 @@ public class EvaluationContext {
 
     protected ZoneId m_timezone;
 
-    protected boolean m_dayFirst;
+    protected DateStyle m_dateStyle;
 
     public EvaluationContext() {
         this.m_variables = new HashMap<>();
         this.m_timezone = ZoneOffset.UTC;
-        this.m_dayFirst = true;
+        this.m_dateStyle = DateStyle.DAY_FIRST;
     }
 
-    public EvaluationContext(Map<String, Object> variables, ZoneId timezone, boolean dayFirst) {
+    public EvaluationContext(Map<String, Object> variables, ZoneId timezone, DateStyle dateStyle) {
         this.m_variables = variables;
         this.m_timezone = timezone;
-        this.m_dayFirst = dayFirst;
+        this.m_dateStyle = dateStyle;
     }
 
     public static EvaluationContext fromJson(String json) {
@@ -62,20 +63,20 @@ public class EvaluationContext {
         return m_timezone;
     }
 
-    public boolean isDayFirst() {
-        return m_dayFirst;
+    public DateStyle getDateStyle() {
+        return m_dateStyle;
     }
 
-    public void setDayFirst(boolean dayFirst) {
-        m_dayFirst = dayFirst;
+    public void setDateStyle(DateStyle dateStyle) {
+        m_dateStyle = dateStyle;
     }
 
     public DateTimeFormatter getDateFormatter(boolean incTime) {
-        return EvaluatorUtils.getDateFormatter(this.m_dayFirst, incTime);
+        return EvaluatorUtils.getDateFormatter(m_dateStyle, incTime);
     }
 
     public DateParser getDateParser() {
-        return new DateParser(LocalDate.now(), this.m_timezone, m_dayFirst);
+        return new DateParser(LocalDate.now(), this.m_timezone, m_dateStyle);
     }
 
     private Object resolveVariableInContainer(Map<String, Object> container, String path, String originalPath) {
@@ -127,13 +128,14 @@ public class EvaluationContext {
             JsonObject varsObj = rootObj.get("vars").getAsJsonObject();
             ZoneId timezone = ZoneId.of(rootObj.get("tz").getAsString());
             boolean dayFirst = rootObj.get("day_first").getAsBoolean();
+            DateStyle dateStyle = dayFirst ? DateStyle.DAY_FIRST : DateStyle.MONTH_FIRST;
 
             Map<String, Object> variables = new HashMap<>();
             for (Map.Entry<String, JsonElement> entry : varsObj.entrySet()) {
                 variables.put(entry.getKey(), handleNode(entry.getValue(), Object.class, context));
             }
 
-            return new EvaluationContext(variables, timezone, dayFirst);
+            return new EvaluationContext(variables, timezone, dateStyle);
         }
 
         public Object handleNode(JsonElement node, Type type, JsonDeserializationContext context) throws JsonParseException {
