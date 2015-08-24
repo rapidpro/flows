@@ -1,13 +1,19 @@
 package io.rapidpro.flows;
 
+import io.rapidpro.expressions.dates.DateStyle;
 import io.rapidpro.flows.runner.Contact;
 import io.rapidpro.flows.runner.ContactUrn;
 import io.rapidpro.flows.runner.Org;
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Ignore;
 
+import java.io.IOException;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
 
 /**
  * Base class for project tests
@@ -20,8 +26,8 @@ public abstract class BaseFlowsTest {
     protected Contact m_contact;
 
     @Before
-    public void setup() throws Exception {
-        m_org = new Org("eng", ZoneId.of("Africa/Kigali"), true, false);
+    public void initBaseData() throws Exception {
+        m_org = new Org("eng", ZoneId.of("Africa/Kigali"), DateStyle.DAY_FIRST, false);
 
         Map<String, String> contactFields = new HashMap<>();
         contactFields.put("gender", "M");
@@ -34,9 +40,21 @@ public abstract class BaseFlowsTest {
                         ContactUrn.fromString("tel:+260964153686"),
                         ContactUrn.fromString("twitter:realJoeFlow")
                 ),
-                new HashSet<>(Collections.singleton("Testers")),
+                new LinkedHashSet<>(Arrays.asList("Testers", "Developers")),
                 contactFields,
                 "eng"
         );
+    }
+
+    public String readResource(String resource) throws IOException {
+        return IOUtils.toString(getClass().getClassLoader().getResourceAsStream(resource));
+    }
+
+    public Org getOrg() {
+        return m_org;
+    }
+
+    public Contact getContact() {
+        return m_contact;
     }
 }

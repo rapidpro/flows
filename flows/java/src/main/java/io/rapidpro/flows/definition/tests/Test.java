@@ -4,7 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluationContext;
-import io.rapidpro.flows.FlowUtils;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.definition.tests.logic.AndTest;
@@ -14,6 +13,7 @@ import io.rapidpro.flows.definition.tests.logic.TrueTest;
 import io.rapidpro.flows.definition.tests.numeric.*;
 import io.rapidpro.flows.definition.tests.text.*;
 import io.rapidpro.flows.runner.RunState;
+import io.rapidpro.flows.utils.JsonUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,7 +58,7 @@ public abstract class Test {
             throw new FlowParseException("Unknown test type: " + type);
         }
 
-        return FlowUtils.fromJson(obj, context, clazz);
+        return JsonUtils.fromJson(obj, context, clazz);
     }
 
     /**

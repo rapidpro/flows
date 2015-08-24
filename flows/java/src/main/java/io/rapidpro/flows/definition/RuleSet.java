@@ -71,7 +71,9 @@ public class RuleSet extends Flow.Node {
             logger.debug("Visiting rule set " + m_uuid + " with input " + input + " from contact " + run.getContact().getUuid());
         }
 
-        Pair<Rule, String> match = findMatchingRule(run, input);
+        EvaluationContext context = run.buildContext(input);
+
+        Pair<Rule, String> match = findMatchingRule(run, context);
         if (match == null) {
             return null;
         }
@@ -80,7 +82,7 @@ public class RuleSet extends Flow.Node {
         Rule rule = match.getLeft();
         String category = rule.getCategory().getLocalized(Collections.singletonList(run.getFlow().getBaseLanguage()), "");
 
-        Rule.Result result = new Rule.Result(rule, match.getValue(), category, input.getText());
+        Rule.Result result = new Rule.Result(rule, match.getValue(), category, input.getValueAsText(context));
         step.setRuleResult(result);
 
         run.updateValue(this, result, input.getTime());
@@ -91,12 +93,10 @@ public class RuleSet extends Flow.Node {
     /**
      * Runs through the rules to find the first one that matches
      * @param run the run state
-     * @param input the input
+     * @param context the evaluation context
      * @return the rule and the matched text
      */
-    protected Pair<Rule, String> findMatchingRule(RunState run, Input input) {
-        EvaluationContext context = run.buildContext(input);
-
+    protected Pair<Rule, String> findMatchingRule(RunState run, EvaluationContext context) {
         String operand = run.substituteVariables(m_operand, context).getOutput();
 
         for (Rule rule : m_rules) {

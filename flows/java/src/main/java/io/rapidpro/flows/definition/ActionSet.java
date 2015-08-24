@@ -2,11 +2,11 @@ package io.rapidpro.flows.definition;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import io.rapidpro.flows.FlowUtils;
 import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.runner.Step;
+import io.rapidpro.flows.utils.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +35,7 @@ public class ActionSet extends Flow.Node implements Flow.ConnectionStart {
         ActionSet set = new ActionSet();
         set.m_uuid = obj.get("uuid").getAsString();
 
-        String destinationUuid = FlowUtils.getAsString(obj, "destination");
+        String destinationUuid = JsonUtils.getAsString(obj, "destination");
         if (StringUtils.isNotEmpty(destinationUuid)) {
             context.needsDestination(set, destinationUuid);
         }

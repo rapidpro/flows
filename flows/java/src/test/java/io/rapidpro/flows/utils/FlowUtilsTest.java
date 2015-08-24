@@ -1,5 +1,6 @@
-package io.rapidpro.flows;
+package io.rapidpro.flows.utils;
 
+import io.rapidpro.flows.BaseFlowsTest;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
@@ -8,7 +9,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Test for {@link FlowUtils}
  */
-public class FlowUtilsTest {
+public class FlowUtilsTest extends BaseFlowsTest {
 
     @Test
     public void editDistance() {

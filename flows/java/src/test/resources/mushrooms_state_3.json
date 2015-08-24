@@ -9,7 +9,7 @@
       "left_on": "2015-08-20T14:23:54.000Z",
       "rule": {
         "uuid": "d638e042-3f5c-4f03-a6c1-2031bd8971b2",
-        "value": "no",
+        "value": "no way",
         "category": "No"
       }
     },
@@ -23,5 +23,13 @@
       ]
     }
   ],
+  "values": {
+    "response_1": {
+      "value": "no",
+      "category": "No",
+      "text": "no way",
+      "time": "2015-08-20T14:22:15.000Z"
+    }
+  },
   "state": "completed"
 }

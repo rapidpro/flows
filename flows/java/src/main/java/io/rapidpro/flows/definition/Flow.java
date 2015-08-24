@@ -4,6 +4,7 @@ import com.google.gson.*;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.runner.Step;
+import io.rapidpro.flows.utils.JsonUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -62,7 +63,7 @@ public class Flow {
             start.setDestination(flow.m_nodesByUuid.get(entry.getValue()));
         }
 
-        flow.m_entry = flow.m_nodesByUuid.get(obj.get("entry").getAsString());
+        flow.m_entry = flow.m_nodesByUuid.get(JsonUtils.getAsString(obj, "entry"));
 
         return flow;
     }

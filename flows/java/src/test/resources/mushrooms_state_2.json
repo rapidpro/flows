@@ -27,5 +27,13 @@
       "left_on": null
     }
   ],
+  "values": {
+    "response_1": {
+      "value": "YUCK!",
+      "category": "All Responses",
+      "text": "YUCK!",
+      "time": "2015-08-20T14:21:05.000Z"
+    }
+  },
   "state": "wait_message"
 }

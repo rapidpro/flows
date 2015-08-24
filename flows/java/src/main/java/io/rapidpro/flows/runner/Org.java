@@ -1,10 +1,9 @@
 package io.rapidpro.flows.runner;
 
 import com.google.gson.annotations.SerializedName;
-import io.rapidpro.expressions.evaluator.EvaluatorUtils;
+import io.rapidpro.expressions.dates.DateStyle;
 
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 
 /**
  * An organization - used to provide additional information about how a flow should be run
@@ -17,8 +16,8 @@ public class Org {
     @SerializedName("timezone")
     protected ZoneId m_timezone;
 
-    @SerializedName("timezone")
-    protected boolean m_dayFirst;
+    @SerializedName("date_style")
+    protected DateStyle m_dateStyle;
 
     @SerializedName("is_anon")
     protected boolean m_anon;
@@ -26,10 +25,10 @@ public class Org {
     public Org() {
     }
 
-    public Org(String primaryLanguage, ZoneId timezone, boolean dayFirst, boolean anon) {
+    public Org(String primaryLanguage, ZoneId timezone, DateStyle dateStyle, boolean anon) {
         m_primaryLanguage = primaryLanguage;
         m_timezone = timezone;
-        m_dayFirst = dayFirst;
+        m_dateStyle = dateStyle;
         m_anon = anon;
     }
 
@@ -41,15 +40,11 @@ public class Org {
         return m_timezone;
     }
 
-    public boolean isDayFirst() {
-        return m_dayFirst;
+    public DateStyle getDateStyle() {
+        return m_dateStyle;
     }
 
     public boolean isAnon() {
         return m_anon;
-    }
-
-    public DateTimeFormatter getDateFormatter(boolean incTime) {
-        return EvaluatorUtils.getDateFormatter(this.m_dayFirst, incTime);
     }
 }

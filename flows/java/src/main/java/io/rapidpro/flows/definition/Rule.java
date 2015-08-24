@@ -2,9 +2,9 @@ package io.rapidpro.flows.definition;
 
 import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluationContext;
-import io.rapidpro.flows.FlowUtils;
 import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.RunState;
+import io.rapidpro.flows.utils.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -32,7 +32,7 @@ public class Rule implements Flow.ConnectionStart {
         rule.m_test = Test.fromJson(obj.get("test").getAsJsonObject(), context);
         rule.m_category = TranslatableText.fromJson(obj.get("category"));
 
-        String destinationUuid = FlowUtils.getAsString(obj, "destination");
+        String destinationUuid = JsonUtils.getAsString(obj, "destination");
         if (StringUtils.isNotEmpty(destinationUuid)) {
             context.needsDestination(rule, destinationUuid);
         }

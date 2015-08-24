@@ -3,10 +3,21 @@ package io.rapidpro.flows.definition.tests.numeric;
 import io.rapidpro.flows.definition.tests.BaseTestTest;
 import org.junit.Test;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
 /**
  * Test for {@link BetweenTest}
  */
 public class BetweenTestTest extends BaseTestTest {
+
+    @Test
+    public void fromJson() throws Exception {
+        BetweenTest test = BetweenTest.fromJson(parseObject("{\"min\": \"@foo\", \"max\": \"123\"}"), m_deserializationContext);
+        assertThat(test.m_min, is("@foo"));
+        assertThat(test.m_max, is("123"));
+    }
+
     @Test
     public void evaluate() {
         BetweenTest test = new BetweenTest("32 ", "41");

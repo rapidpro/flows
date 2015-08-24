@@ -1,10 +1,10 @@
 package io.rapidpro.flows.definition;
 
+import io.rapidpro.flows.BaseFlowsTest;
 import io.rapidpro.flows.definition.actions.AddToGroupAction;
 import io.rapidpro.flows.definition.actions.ReplyAction;
-import io.rapidpro.flows.definition.tests.text.ContainsAnyTest;
 import io.rapidpro.flows.definition.tests.logic.TrueTest;
-import org.apache.commons.io.IOUtils;
+import io.rapidpro.flows.definition.tests.text.ContainsAnyTest;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.*;
@@ -13,17 +13,15 @@ import static org.junit.Assert.assertThat;
 /**
  * Test for {@link Flow}
  */
-public class FlowTest {
+public class FlowTest extends BaseFlowsTest {
 
     @Test
     public void fromJson() throws Exception {
-        String json = IOUtils.toString(getClass().getClassLoader().getResourceAsStream("flows/mushrooms.json"));
+        Flow flow = Flow.fromJson(readResource("flows/mushrooms.json"));
 
-        Flow definition = Flow.fromJson(json);
+        assertThat(flow.getBaseLanguage(), is("eng"));
 
-        assertThat(definition.getBaseLanguage(), is("eng"));
-
-        ActionSet as1 = (ActionSet) definition.getEntry();
+        ActionSet as1 = (ActionSet) flow.getEntry();
 
         assertThat(as1.getUuid(), is("32cf414b-35e3-4c75-8a78-d5f4de925e13"));
         assertThat(as1.getActions(), hasSize(1));
@@ -72,5 +70,13 @@ public class FlowTest {
         assertThat(as4.getActions(), hasSize(1));
         assertThat(as4.getActions().get(0), instanceOf(ReplyAction.class));
         assertThat(as4.getDestination(), is((Flow.Node) rs1));
+    }
+
+    @Test
+    public void fromJson_withEmptyFlow() throws Exception {
+        Flow flow = Flow.fromJson(readResource("flows/empty.json"));
+
+        assertThat(flow.getBaseLanguage(), is("eng"));
+        assertThat(flow.getEntry(), nullValue());
     }
 }

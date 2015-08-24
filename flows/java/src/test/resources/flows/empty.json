@@ -1,0 +1,20 @@
+{
+  "languages": [
+    {
+      "iso_code": "eng",
+      "name": "English"
+    },
+    {
+      "iso_code": "fre",
+      "name": "French"
+    }
+  ],
+  "flow": {
+    "base_language": "eng",
+    "action_sets": [],
+    "last_saved": "2015-08-24T07:33:25.421535Z",
+    "entry": null,
+    "rule_sets": [],
+    "metadata": {}
+  }
+}

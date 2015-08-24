@@ -1,6 +1,8 @@
 package io.rapidpro.flows.runner;
 
-import io.rapidpro.flows.FlowUtils;
+import com.google.gson.annotations.SerializedName;
+import io.rapidpro.expressions.EvaluationContext;
+import io.rapidpro.expressions.evaluator.Conversions;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -11,10 +13,13 @@ import java.util.Map;
  */
 public class Value {
 
+    @SerializedName("value")
     protected String m_value;
 
+    @SerializedName("category")
     protected String m_category;
 
+    @SerializedName("text")
     protected String m_text;
 
     protected Instant m_time;
@@ -26,13 +31,13 @@ public class Value {
         m_time = time;
     }
 
-    public Map<String, String> buildContext(Org org) {
+    public Map<String, String> buildContext(EvaluationContext container) {
         Map<String, String> context = new HashMap<>();
         context.put("*", m_value);
         context.put("value", m_value);
         context.put("category", m_category);
         context.put("text", m_text);
-        context.put("time", FlowUtils.formatDate(m_time, org, true));
+        context.put("time", Conversions.toString(m_time.atZone(container.getTimezone()), container));
         return context;
     }
 

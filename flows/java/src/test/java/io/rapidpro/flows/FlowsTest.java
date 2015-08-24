@@ -12,7 +12,7 @@ import static org.junit.Assert.assertThat;
 public class FlowsTest {
 
     @Test
-    public void testSomething() {
+    public void getRunner() {
         assertThat(Flows.getRunner(), instanceOf(RunnerImpl.class));
     }
 }

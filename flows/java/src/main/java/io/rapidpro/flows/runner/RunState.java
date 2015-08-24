@@ -4,11 +4,16 @@ import com.google.gson.annotations.SerializedName;
 import io.rapidpro.expressions.EvaluatedTemplate;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.Expressions;
+import io.rapidpro.expressions.evaluator.Conversions;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.Rule;
 import io.rapidpro.flows.definition.RuleSet;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -96,22 +101,30 @@ public class RunState {
         return s_evaluator.evaluateTemplate(text, context);
     }
 
+    /**
+     * Builds the top-level evaluation context (all variables, date information)
+     * @param input the current input
+     * @return the context
+     */
     public EvaluationContext buildContext(Input input) {
-        EvaluationContext context = new EvaluationContext(new HashMap<String, Object>(), m_org.getTimezone(), m_org.isDayFirst());
+        EvaluationContext context = new EvaluationContext(new HashMap<String, Object>(), m_org.getTimezone(), m_org.getDateStyle());
 
         if (input != null) {
-            context.putVariable("step", input.buildContext(m_org));
+            context.putVariable("step", input.buildContext(context));
         }
 
-        // TODO add date values to context
-
+        context.putVariable("date", buildDateContext(context, Instant.now()));
         context.putVariable("contact", m_contact.buildContext(m_org));
         context.putVariable("extra", m_extra);
 
         Map<String, Object> flowContext = new HashMap<>();
+        List<String> values = new ArrayList<>();
         for (Map.Entry<String, Value> entry : m_values.entrySet()) {
-            flowContext.put(entry.getKey(), entry.getValue().buildContext(m_org));
+            flowContext.put(entry.getKey(), entry.getValue().buildContext(context));
+            values.add(entry.getKey() + " " + entry.getValue().getValue());
         }
+        flowContext.put("*", StringUtils.join(values, "\n"));
+
         context.putVariable("flow", flowContext);
 
         return context;
@@ -127,5 +140,24 @@ public class RunState {
         String key = ruleSet.getLabel().toLowerCase().replaceAll("[^a-z0-9]+", "_");
 
         m_values.put(key, new Value(result.getValue(), result.getCategory(), result.getText(), time));
+    }
+
+    /**
+     * Builds the date context (i.e. @date.now, @date.today, ...)
+     */
+    protected static Map<String, String> buildDateContext(EvaluationContext container, Instant now) {
+        ZonedDateTime asDateTime = now.atZone(container.getTimezone());
+        LocalDate asDate = asDateTime.toLocalDate();
+
+        String asDateTimeStr = Conversions.toString(asDateTime, container);
+        String asDateStr = Conversions.toString(asDate, container);
+
+        Map<String, String> dateContext = new HashMap<>();
+        dateContext.put("*", asDateTimeStr);
+        dateContext.put("now", asDateTimeStr);
+        dateContext.put("today", asDateStr);
+        dateContext.put("tomorrow", Conversions.toString(asDate.plus(1, ChronoUnit.DAYS), container));
+        dateContext.put("yesterday", Conversions.toString(asDate.minus(1, ChronoUnit.DAYS), container));
+        return dateContext;
     }
 }

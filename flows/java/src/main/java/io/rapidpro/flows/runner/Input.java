@@ -1,38 +1,70 @@
 package io.rapidpro.flows.runner;
 
-import io.rapidpro.flows.FlowUtils;
+import io.rapidpro.expressions.EvaluationContext;
+import io.rapidpro.expressions.evaluator.Conversions;
 
+import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Input from the contact (for now this is always text)
+ * Input from the contact or surveyor
  */
 public class Input {
 
-    protected String m_text;
+    protected Object m_value;
 
     protected Instant m_time;
 
-    public Input(String text) {
-        m_text = text;
+    protected Input(Object value) {
+        m_value = value;
         m_time = Instant.now();
     }
 
-    public Map<String, Object> buildContext(Org org) {
-        Map<String, Object> context = new HashMap<>();
-        context.put("*", m_text);
-        context.put("value", m_text);
-        context.put("time", FlowUtils.formatDate(m_time, org, true));
+    public static Input of(String value) {
+        return new Input(value);
+    }
+
+    public static Input of(BigDecimal value) {
+        return new Input(value);
+    }
+
+    public static Input of(LocalDate value) {
+        return new Input(value);
+    }
+
+    public static Input of(ZonedDateTime value) {
+        return new Input(value);
+    }
+
+    /**
+     * Builds the evaluation context for this input
+     * @param container the evaluation context
+     * @return the context
+     */
+    public Map<String, String> buildContext(EvaluationContext container) {
+        Map<String, String> context = new HashMap<>();
+        String asText = getValueAsText(container);
+
+        context.put("*", asText);
+        context.put("value", asText);
+        context.put("time", Conversions.toString(m_time.atZone(container.getTimezone()), container));
 
         // TODO include step.contact ?
 
         return context;
     }
 
-    public String getText() {
-        return m_text;
+    /**
+     * Gets the input value as text which can be matched by rules
+     * @param context the evaluation context
+     * @return the text value
+     */
+    public String getValueAsText(EvaluationContext context) {
+        return Conversions.toString(m_value, context);
     }
 
     public Instant getTime() {

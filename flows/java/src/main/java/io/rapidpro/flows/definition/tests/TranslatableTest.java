@@ -26,4 +26,8 @@ public abstract class TranslatableTest extends Test {
     }
 
     protected abstract Result evaluateAgainstLocalized(RunState run, EvaluationContext context, String text, String localizedTest);
+
+    public TranslatableText getTest() {
+        return m_test;
+    }
 }

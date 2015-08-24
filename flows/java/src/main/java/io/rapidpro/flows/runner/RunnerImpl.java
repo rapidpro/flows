@@ -17,29 +17,35 @@ public class RunnerImpl implements Flows.Runner {
      * @see io.rapidpro.flows.Flows.Runner#start(Org, Contact, Flow)
      */
     @Override
-    public RunState start(Org org, Contact contact, Flow flow) throws InfiniteLoopException {
+    public RunState start(Org org, Contact contact, Flow flow) throws FlowRunException {
         RunState run = new RunState(org, contact, flow);
         return resume(run, null);
     }
 
     /**
-     * @see io.rapidpro.flows.Flows.Runner#resume(RunState, String)
+     * @see io.rapidpro.flows.Flows.Runner#resume(RunState, Input)
      */
     @Override
-    public RunState resume(RunState run, String text) throws InfiniteLoopException {
+    public RunState resume(RunState run, Input input) throws FlowRunException {
         if (run.getState().equals(RunState.State.COMPLETED)) {
             throw new IllegalStateException("Cannot resume a completed run state");
         }
-
-        Input input = text != null ? new Input(text) : null;
 
         Step lastStep = run.getSteps().size() > 0 ? run.getSteps().get(run.getSteps().size() - 1) : null;
 
         // reset steps list so that it doesn't grow forever in a never-ending flow
         run.getSteps().clear();
 
-        // either we're resuming from a previous step that paused, or we're starting a new run
-        Flow.Node currentNode = lastStep == null ? run.getFlow().getEntry() : lastStep.getNode();
+        Flow.Node currentNode;
+        if (lastStep != null) {
+            currentNode = lastStep.getNode(); // we're resuming an existing run
+        }
+        else {
+            currentNode = run.getFlow().getEntry();  // we're starting a new run
+            if (currentNode == null) {
+                throw new FlowRunException("Flow has no entry point");
+            }
+        }
 
         // tracks nodes visited so we can detect loops
         Set<Flow.Node> nodesVisited = new LinkedHashSet<>();
@@ -67,7 +73,7 @@ public class RunnerImpl implements Flows.Runner {
 
             // check for an non-pausing loop
             if (nodesVisited.contains(currentNode)) {
-                throw new InfiniteLoopException(nodesVisited);
+                throw new FlowLoopException(nodesVisited);
             } else {
                 nodesVisited.add(currentNode);
             }

@@ -1,5 +1,7 @@
 package io.rapidpro.flows.definition.tests;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.flows.BaseFlowsTest;
 import io.rapidpro.flows.Flows;
@@ -18,6 +20,8 @@ import static org.junit.Assert.assertThat;
 @Ignore
 public abstract class BaseTestTest extends BaseFlowsTest {
 
+    protected Flow.DeserializationContext m_deserializationContext;
+
     protected RunState m_run;
 
     protected EvaluationContext m_context;
@@ -28,9 +32,16 @@ public abstract class BaseTestTest extends BaseFlowsTest {
 
         Flow flow = Flow.fromJson(flowJson);
 
+        m_deserializationContext = new Flow.DeserializationContext(flow);
+
         Flows.Runner runner = Flows.getRunner();
         m_run = runner.start(m_org, m_contact, flow);
         m_context = m_run.buildContext(null);
+    }
+
+    protected JsonObject parseObject(String json) {
+        JsonParser parser = new JsonParser();
+        return parser.parse(json).getAsJsonObject();
     }
 
     protected void assertTest(Test test, String input, boolean expectedMatched, String expectedText) {

@@ -1,6 +1,7 @@
 package io.rapidpro.flows.runner;
 
 import io.rapidpro.flows.definition.Flow;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collection;
 
@@ -8,11 +9,13 @@ import java.util.Collection;
  * Exception thrown when runner detects an infinite loop - i.e. we return to a previously visited node without having
  * waited for user input.
  */
-public class InfiniteLoopException extends Exception {
+public class FlowLoopException extends FlowRunException {
 
     protected Collection<Flow.Node> m_path;
 
-    public InfiniteLoopException(Collection<Flow.Node> path) {
+    public FlowLoopException(Collection<Flow.Node> path) {
+        super("Non-pausing loop detected after path:\n" + StringUtils.join(path, "\n"));
+
         m_path = path;
     }
 

@@ -1,11 +1,11 @@
 package io.rapidpro.flows.definition.actions;
 
 import com.google.gson.JsonObject;
-import io.rapidpro.flows.FlowUtils;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.RunState;
+import io.rapidpro.flows.utils.JsonUtils;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -44,7 +44,7 @@ public abstract class Action {
             throw new FlowParseException("Unknown action type: " + type);
         }
 
-        return FlowUtils.fromJson(obj, context, clazz);
+        return JsonUtils.fromJson(obj, context, clazz);
     }
 
     /**

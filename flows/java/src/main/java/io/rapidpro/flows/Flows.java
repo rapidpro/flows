@@ -27,17 +27,15 @@ public class Flows {
          * @param contact the contact
          * @param flow the flow
          * @return the run state
-         * @throws InfiniteLoopException if an infinite loop was detected
          */
-        RunState start(Org org, Contact contact, Flow flow) throws InfiniteLoopException;
+        RunState start(Org org, Contact contact, Flow flow) throws FlowRunException;
 
         /**
          * Resumes an existing run with new input
          * @param lastState the previous run state
          * @param input the new input
          * @return the new run state
-         * @throws InfiniteLoopException if an infinite loop was detected
          */
-        RunState resume(RunState lastState, String input) throws InfiniteLoopException;
+        RunState resume(RunState lastState, Input input) throws FlowRunException;
     }
 }

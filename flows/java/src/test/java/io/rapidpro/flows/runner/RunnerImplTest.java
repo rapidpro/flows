@@ -1,5 +1,6 @@
 package io.rapidpro.flows.runner;
 
+import io.rapidpro.expressions.dates.DateStyle;
 import io.rapidpro.flows.BaseFlowsTest;
 import io.rapidpro.flows.Flows;
 import io.rapidpro.flows.definition.Flow;
@@ -7,7 +8,6 @@ import io.rapidpro.flows.definition.TranslatableText;
 import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.definition.actions.AddToGroupAction;
 import io.rapidpro.flows.definition.actions.ReplyAction;
-import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import java.time.Instant;
@@ -25,21 +25,20 @@ public class RunnerImplTest extends BaseFlowsTest {
     protected Flows.Runner m_runner = new RunnerImpl();
 
     @Test
-    public void mushrooms() throws Exception {
-        String flowJson = IOUtils.toString(getClass().getClassLoader().getResourceAsStream("flows/mushrooms.json"));
-        Flow flow = Flow.fromJson(flowJson);
+    public void startAndResume_mushrooms() throws Exception {
+        Flow flow = Flow.fromJson(readResource("flows/mushrooms.json"));
 
-        RunState run = m_runner.start(m_org, m_contact, flow);
+        RunState run = m_runner.start(getOrg(), getContact(), flow);
 
         assertThat(run.getOrg().getPrimaryLanguage(), is("eng"));
         assertThat(run.getOrg().getTimezone(), is(ZoneId.of("Africa/Kigali")));
-        assertThat(run.getOrg().isDayFirst(), is(true));
+        assertThat(run.getOrg().getDateStyle(), is(DateStyle.DAY_FIRST));
         assertThat(run.getOrg().isAnon(), is(false));
 
         assertThat(run.getContact().getUuid(), is("1234-1234"));
         assertThat(run.getContact().getName(), is("Joe Flow"));
         assertThat(run.getContact().getUrns(), contains(new ContactUrn(ContactUrn.Scheme.TEL, "+260964153686"), new ContactUrn(ContactUrn.Scheme.TWITTER, "realJoeFlow")));
-        assertThat(run.getContact().getGroups(), contains("Testers"));
+        assertThat(run.getContact().getGroups(), containsInAnyOrder("Testers", "Developers"));
         assertThat(run.getContact().getFields().size(), is(2));
         assertThat(run.getContact().getLanguage(), is("eng"));
 
@@ -60,9 +59,9 @@ public class RunnerImplTest extends BaseFlowsTest {
 
         Instant lastStepLeftOn = run.getSteps().get(1).getArrivedOn();
 
-        m_runner.resume(run, "YUCK!");
+        m_runner.resume(run, Input.of("YUCK!"));
 
-        assertThat(run.getContact().getGroups(), contains("Testers")); // unchanged
+        assertThat(run.getContact().getGroups(), containsInAnyOrder("Testers", "Developers")); // unchanged
 
         assertThat(run.getSteps(), hasSize(3));
         assertThat(run.getSteps().get(0).getNode().getUuid(), is("1e318293-4730-481c-b455-daaaf86b2e6c"));
@@ -91,9 +90,9 @@ public class RunnerImplTest extends BaseFlowsTest {
 
         lastStepLeftOn = run.getSteps().get(2).getArrivedOn();
 
-        m_runner.resume(run, "no");
+        m_runner.resume(run, Input.of("no way"));
 
-        assertThat(run.getContact().getGroups(), containsInAnyOrder("Testers", "Approved")); // added to group
+        assertThat(run.getContact().getGroups(), containsInAnyOrder("Testers", "Developers", "Approved")); // added to group
 
         assertThat(run.getSteps(), hasSize(2));
         assertThat(run.getSteps().get(0).getNode().getUuid(), is("1e318293-4730-481c-b455-daaaf86b2e6c"));
@@ -113,27 +112,26 @@ public class RunnerImplTest extends BaseFlowsTest {
         assertThat(run.getValues().size(), is(1));
         assertThat(run.getValues().get("response_1").getValue(), is("no"));
         assertThat(run.getValues().get("response_1").getCategory(), is("No"));
-        assertThat(run.getValues().get("response_1").getText(), is("no"));
+        assertThat(run.getValues().get("response_1").getText(), is("no way"));
         assertThat(run.getValues().get("response_1").getTime(), notNullValue());
 
         assertThat(run.getState(), is(RunState.State.COMPLETED));
     }
 
     @Test
-    public void mushrooms_french() throws Exception {
-        String flowJson = IOUtils.toString(getClass().getClassLoader().getResourceAsStream("flows/mushrooms.json"));
-        Flow flow = Flow.fromJson(flowJson);
+    public void startAndResume_mushroomsInFrench() throws Exception {
+        Flow flow = Flow.fromJson(readResource("flows/mushrooms.json"));
 
         Contact jean = new Contact("1234-1234", "Jean D'Amour", ContactUrn.fromString("tel:+260964153686"), "fre");
 
-        RunState run = m_runner.start(m_org, jean, flow);
+        RunState run = m_runner.start(getOrg(), jean, flow);
 
         assertThat(run.getContact().getLanguage(), is("fre"));
         assertThat(run.getSteps(), hasSize(2));
         assertReply(run.getSteps().get(0).getActionResults(), 0, "Salut Jean. Aimez-vous les champignons?");
         assertThat(run.getState(), is(RunState.State.WAIT_MESSAGE));
 
-        m_runner.resume(run, "EUGH!");
+        m_runner.resume(run, Input.of("EUGH!"));
 
         assertThat(run.getSteps().get(0).getRuleResult().getCategory(), is("Other"));
         assertThat(run.getSteps().get(0).getRuleResult().getValue(), is("EUGH!"));
@@ -145,7 +143,7 @@ public class RunnerImplTest extends BaseFlowsTest {
 
         assertThat(run.getState(), is(RunState.State.WAIT_MESSAGE));
 
-        m_runner.resume(run, "non");
+        m_runner.resume(run, Input.of("non"));
 
         assertThat(run.getContact().getGroups(), contains("Approved")); // added to group
 
@@ -161,11 +159,10 @@ public class RunnerImplTest extends BaseFlowsTest {
     }
 
     @Test
-    public void greatwall() throws Exception {
-        String flowJson = IOUtils.toString(getClass().getClassLoader().getResourceAsStream("flows/greatwall.json"));
-        Flow flow = Flow.fromJson(flowJson);
+    public void startAndResume_greatwall() throws Exception {
+        Flow flow = Flow.fromJson(readResource("flows/greatwall.json"));
 
-        RunState run = m_runner.start(m_org, m_contact, flow);
+        RunState run = m_runner.start(getOrg(), getContact(), flow);
 
         assertThat(run.getSteps().get(0).getNode().getUuid(), is("8dbb7e1a-43d6-4c5b-a99d-fe3ee8923b65"));
         assertThat(run.getSteps().get(0).getActionResults(), hasSize(1));
@@ -174,7 +171,7 @@ public class RunnerImplTest extends BaseFlowsTest {
 
         assertThat(run.getState(), is(RunState.State.WAIT_MESSAGE));
 
-        m_runner.resume(run, "9");
+        m_runner.resume(run, Input.of("9"));
 
         assertThat(run.getSteps().get(0).getNode().getUuid(), is("b7cfa0ac-4d50-4384-a1ab-9ec79bd45e42"));
         assertThat(run.getSteps().get(0).getRuleResult().getCategory(), is("Other"));
@@ -187,7 +184,7 @@ public class RunnerImplTest extends BaseFlowsTest {
         assertThat(run.getValues().get("people").getCategory(), is("Other"));
         assertThat(run.getValues().get("people").getText(), is("9"));
 
-        m_runner.resume(run, "7");
+        m_runner.resume(run, Input.of("7"));
 
         assertThat(run.getSteps().get(0).getNode().getUuid(), is("b7cfa0ac-4d50-4384-a1ab-9ec79bd45e42"));
         assertThat(run.getSteps().get(0).getRuleResult().getCategory(), is("1 - 8"));
@@ -203,6 +200,12 @@ public class RunnerImplTest extends BaseFlowsTest {
         assertThat(run.getValues().get("enough_for_soup").getValue(), is("7"));
         assertThat(run.getValues().get("enough_for_soup").getCategory(), is("> 2"));
         assertThat(run.getValues().get("enough_for_soup").getText(), is("7"));
+    }
+
+    @Test(expected = FlowRunException.class)
+    public void start_emptyFlow() throws Exception {
+        Flow flow = Flow.fromJson(readResource("flows/empty.json"));
+        m_runner.start(getOrg(), getContact(), flow);
     }
 
     protected void assertReply(List<Action.Result> actions, int index, String msg) {

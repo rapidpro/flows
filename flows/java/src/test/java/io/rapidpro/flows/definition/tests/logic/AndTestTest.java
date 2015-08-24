@@ -2,9 +2,9 @@ package io.rapidpro.flows.definition.tests.logic;
 
 import io.rapidpro.flows.definition.TranslatableText;
 import io.rapidpro.flows.definition.tests.BaseTestTest;
+import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.definition.tests.text.ContainsTest;
 import io.rapidpro.flows.definition.tests.text.StartsWithTest;
-import io.rapidpro.flows.definition.tests.Test;
 
 import java.util.Arrays;
 

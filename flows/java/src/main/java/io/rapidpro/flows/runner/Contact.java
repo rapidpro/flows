@@ -1,7 +1,7 @@
 package io.rapidpro.flows.runner;
 
 import com.google.gson.JsonObject;
-import io.rapidpro.flows.FlowUtils;
+import io.rapidpro.flows.utils.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
@@ -41,9 +41,9 @@ public class Contact {
 
     public static Contact fromJson(JsonObject obj) {
         Contact contact = new Contact();
-        contact.m_uuid = FlowUtils.getAsString(obj, "uuid");
-        contact.m_name = FlowUtils.getAsString(obj, "name");
-        contact.m_language = FlowUtils.getAsString(obj, "language");
+        contact.m_uuid = JsonUtils.getAsString(obj, "uuid");
+        contact.m_name = JsonUtils.getAsString(obj, "name");
+        contact.m_language = JsonUtils.getAsString(obj, "language");
         return contact;
     }
 
@@ -131,15 +131,20 @@ public class Contact {
         return urn != null ? urn.getDisplay(org, full) : "";
     }
 
-    public Map<String, Object> buildContext(Org org) {
-        Map<String, Object> context = new HashMap<>();
+    /**
+     * Builds the evaluation context for this contact
+     * @param org the org
+     * @return the context
+     */
+    public Map<String, String> buildContext(Org org) {
+        Map<String, String> context = new HashMap<>();
         context.put("*", getDisplay(org, false));
-        context.put("name", StringUtils.isNotEmpty(m_name) ? m_name : "");
+        context.put("name", m_name);
         context.put("first_name", getFirstName(org));
         context.put("tel_e164", getUrnDisplay(org, ContactUrn.Scheme.TEL, true));
         context.put("groups", StringUtils.join(m_groups, ","));
         context.put("uuid", m_uuid);
-        context.put("language", m_language);  // TODO what happens when these are null?
+        context.put("language", m_language);
 
         // add all URNs
         for (ContactUrn.Scheme scheme : ContactUrn.Scheme.values()) {
@@ -148,12 +153,7 @@ public class Contact {
 
         // add all fields
         for (Map.Entry<String, String> field : m_fields.entrySet()) {
-
-            // TODO match formatting of Contact.get_field_display_for_value
-
-            String value  = field.getValue() != null ? field.getValue() : "";
-
-            context.put(field.getKey(), value);
+            context.put(field.getKey(), field.getValue());
         }
 
         return context;

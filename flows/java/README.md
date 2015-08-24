@@ -7,12 +7,13 @@ Usage
 -----
 
 ```java
-Org org = new Org("eng", ZoneId.of("Africa/Kigali"), true, false);
+Org org = new Org("eng", ZoneId.of("Africa/Kigali"), DateStyle.DAY_FIRST, false);
 Contact contact = new Contact(...);
-Flow flow = Flow.fromJson(flowJson);
+Flow flow = Flow.fromJson("...");
 
-RunState state1 = m_runner.newRun(org, contact, flow);
-RunState state2 = m_runner.resume(state1, "Yes");
+RunState run = m_runner.start(org, contact, flow);
+
+m_runner.resume(run, Input.of("Yes"));
 ```
 
 Notes
