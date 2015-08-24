@@ -49,4 +49,8 @@ public abstract class BaseTestTest extends BaseFlowsTest {
         assertThat(result.isMatched(), is(expectedMatched));
         assertThat(result.getText(), is(expectedText));
     }
+
+    public Flow.DeserializationContext getDeserializationContext() {
+        return m_deserializationContext;
+    }
 }

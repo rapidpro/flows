@@ -43,6 +43,7 @@ public abstract class Test {
         s_classByType.put("lte", LessThanOrEqualTest.class);
         s_classByType.put("gt", GreaterThanTest.class);
         s_classByType.put("gte", GreaterThanOrEqualTest.class);
+        s_classByType.put("phone", PhoneTest.class);
     }
 
     /**

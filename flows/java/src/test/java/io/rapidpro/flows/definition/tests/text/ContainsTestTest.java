@@ -4,7 +4,7 @@ import io.rapidpro.flows.definition.TranslatableText;
 import io.rapidpro.flows.definition.tests.BaseTestTest;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -14,7 +14,7 @@ public class ContainsTestTest extends BaseTestTest {
 
     @Test
     public void fromJson() throws Exception {
-        ContainsTest test = ContainsTest.fromJson(parseObject("{\"test\": \"Hello\"}"), m_deserializationContext);
+        ContainsTest test = ContainsTest.fromJson(parseObject("{\"test\": \"Hello\"}"), getDeserializationContext());
         assertThat(test.getTest(), is(new TranslatableText("Hello")));
     }
 

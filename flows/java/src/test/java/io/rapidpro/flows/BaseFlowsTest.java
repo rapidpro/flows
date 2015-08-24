@@ -27,7 +27,7 @@ public abstract class BaseFlowsTest {
 
     @Before
     public void initBaseData() throws Exception {
-        m_org = new Org("eng", ZoneId.of("Africa/Kigali"), DateStyle.DAY_FIRST, false);
+        m_org = new Org("RW", "eng", ZoneId.of("Africa/Kigali"), DateStyle.DAY_FIRST, false);
 
         Map<String, String> contactFields = new HashMap<>();
         contactFields.put("gender", "M");

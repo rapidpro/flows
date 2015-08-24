@@ -10,6 +10,9 @@ import java.time.ZoneId;
  */
 public class Org {
 
+    @SerializedName("country")
+    protected String m_country;
+
     @SerializedName("primary_language")
     protected String m_primaryLanguage;
 
@@ -25,11 +28,16 @@ public class Org {
     public Org() {
     }
 
-    public Org(String primaryLanguage, ZoneId timezone, DateStyle dateStyle, boolean anon) {
+    public Org(String country, String primaryLanguage, ZoneId timezone, DateStyle dateStyle, boolean anon) {
+        m_country = country;
         m_primaryLanguage = primaryLanguage;
         m_timezone = timezone;
         m_dateStyle = dateStyle;
         m_anon = anon;
+    }
+
+    public String getCountry() {
+        return m_country;
     }
 
     public String getPrimaryLanguage() {
