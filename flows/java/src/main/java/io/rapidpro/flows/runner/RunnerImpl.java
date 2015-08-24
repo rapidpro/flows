@@ -13,12 +13,18 @@ import java.util.Set;
  */
 public class RunnerImpl implements Flows.Runner {
 
+    protected Location.Resolver m_locationResolver;
+
+    public RunnerImpl(Location.Resolver locationResolver) {
+        m_locationResolver = locationResolver;
+    }
+
     /**
      * @see io.rapidpro.flows.Flows.Runner#start(Org, Contact, Flow)
      */
     @Override
     public RunState start(Org org, Contact contact, Flow flow) throws FlowRunException {
-        RunState run = new RunState(org, contact, flow);
+        RunState run = new RunState(org, contact, flow, m_locationResolver);
         return resume(run, null);
     }
 

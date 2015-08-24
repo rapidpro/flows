@@ -11,7 +11,11 @@ Org org = new Org("RW", "eng", ZoneId.of("Africa/Kigali"), DateStyle.DAY_FIRST, 
 Contact contact = new Contact(...);
 Flow flow = Flow.fromJson("...");
 
-RunState run = m_runner.start(org, contact, flow);
+Flows.Runner runner = new Flows.RunnerBuilder()
+    .withLocationResolver(...)
+    .build();
+
+RunState run = runner.start(org, contact, flow);
 
 m_runner.resume(run, Input.of("Yes"));
 ```

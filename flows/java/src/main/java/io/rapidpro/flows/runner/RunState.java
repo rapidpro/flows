@@ -53,7 +53,9 @@ public class RunState {
     @SerializedName("state")
     protected State m_state;
 
-    public RunState(Org org, Contact contact, Flow flow) {
+    protected transient Location.Resolver m_locationResolver;
+
+    public RunState(Org org, Contact contact, Flow flow, Location.Resolver locationResolver) {
         m_org = org;
         m_contact = contact;
         m_flow = flow;
@@ -61,38 +63,7 @@ public class RunState {
         m_values = new HashMap<>();
         m_extra = new HashMap<>();
         m_state = State.IN_PROGRESS;
-    }
-
-    public Org getOrg() {
-        return m_org;
-    }
-
-    public Contact getContact() {
-        return m_contact;
-    }
-
-    public Flow getFlow() {
-        return m_flow;
-    }
-
-    public List<Step> getSteps() {
-        return m_steps;
-    }
-
-    public Map<String, Value> getValues() {
-        return m_values;
-    }
-
-    public Map<String, String> getExtra() {
-        return m_extra;
-    }
-
-    public State getState() {
-        return m_state;
-    }
-
-    public void setState(State state) {
-        m_state = state;
+        m_locationResolver = locationResolver;
     }
 
     public EvaluatedTemplate substituteVariables(String text, EvaluationContext context) {
@@ -159,5 +130,41 @@ public class RunState {
         dateContext.put("tomorrow", Conversions.toString(asDate.plus(1, ChronoUnit.DAYS), container));
         dateContext.put("yesterday", Conversions.toString(asDate.minus(1, ChronoUnit.DAYS), container));
         return dateContext;
+    }
+
+    public Org getOrg() {
+        return m_org;
+    }
+
+    public Contact getContact() {
+        return m_contact;
+    }
+
+    public Flow getFlow() {
+        return m_flow;
+    }
+
+    public List<Step> getSteps() {
+        return m_steps;
+    }
+
+    public Map<String, Value> getValues() {
+        return m_values;
+    }
+
+    public Map<String, String> getExtra() {
+        return m_extra;
+    }
+
+    public State getState() {
+        return m_state;
+    }
+
+    public void setState(State state) {
+        m_state = state;
+    }
+
+    public Location.Resolver getLocationResolver() {
+        return m_locationResolver;
     }
 }

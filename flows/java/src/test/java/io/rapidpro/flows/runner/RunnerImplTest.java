@@ -22,7 +22,7 @@ import static org.junit.Assert.assertThat;
  */
 public class RunnerImplTest extends BaseFlowsTest {
 
-    protected Flows.Runner m_runner = new RunnerImpl();
+    protected Flows.Runner m_runner = new RunnerImpl(null);
 
     @Test
     public void startAndResume_mushrooms() throws Exception {

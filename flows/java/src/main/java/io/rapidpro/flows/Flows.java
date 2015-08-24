@@ -7,14 +7,26 @@ import io.rapidpro.flows.runner.*;
  * Public interface for the flow engine
  */
 public class Flows {
-    public static Runner s_runner = new RunnerImpl();
 
     /**
-     * Gets a flow runner instance
-     * @return the instance
+     * Builder for runner instances
      */
-    public static Runner getRunner() {
-        return s_runner;
+    public static class RunnerBuilder {
+        protected Location.Resolver m_locationResolver = new Location.Resolver() {
+            @Override
+            public Location resolve(String input, String country, Location.Level level, String parent) {
+                return null;
+            }
+        };
+
+        public RunnerBuilder withLocationResolver(Location.Resolver locationResolver) {
+            m_locationResolver = locationResolver;
+            return this;
+        }
+
+        public Runner build() {
+            return new RunnerImpl(m_locationResolver);
+        }
     }
 
     /**

@@ -3,6 +3,7 @@ package io.rapidpro.flows;
 import io.rapidpro.expressions.dates.DateStyle;
 import io.rapidpro.flows.runner.Contact;
 import io.rapidpro.flows.runner.ContactUrn;
+import io.rapidpro.flows.runner.Location;
 import io.rapidpro.flows.runner.Org;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -48,6 +49,23 @@ public abstract class BaseFlowsTest {
 
     public String readResource(String resource) throws IOException {
         return IOUtils.toString(getClass().getClassLoader().getResourceAsStream(resource));
+    }
+
+    /**
+     * Location parser for testing which has one state (Kigali) and one district (Gasabo)
+     */
+    public static class TestLocationResolver implements Location.Resolver {
+
+        @Override
+        public Location resolve(String input, String country, Location.Level level, String parent) {
+            if (level == Location.Level.STATE && input.trim().equalsIgnoreCase("Kigali")) {
+                return new Location("Kigali");
+            } else if (level == Location.Level.DISTRICT && input.trim().equalsIgnoreCase("Gasabo") && parent.trim().equalsIgnoreCase("Kigali")) {
+                return new Location("Gasabo");
+            } else {
+                return null;
+            }
+        }
     }
 
     public Org getOrg() {

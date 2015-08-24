@@ -13,6 +13,12 @@ public class FlowsTest {
 
     @Test
     public void getRunner() {
-        assertThat(Flows.getRunner(), instanceOf(RunnerImpl.class));
+        Flows.Runner runner = new Flows.RunnerBuilder().build();
+
+        assertThat(runner, instanceOf(RunnerImpl.class));
+
+        runner = new Flows.RunnerBuilder().withLocationResolver(null).build();
+
+        assertThat(runner, instanceOf(RunnerImpl.class));
     }
 }

@@ -34,7 +34,7 @@ public abstract class BaseTestTest extends BaseFlowsTest {
 
         m_deserializationContext = new Flow.DeserializationContext(flow);
 
-        Flows.Runner runner = Flows.getRunner();
+        Flows.Runner runner = new Flows.RunnerBuilder().withLocationResolver(new TestLocationResolver()).build();
         m_run = runner.start(m_org, m_contact, flow);
         m_context = m_run.buildContext(null);
     }

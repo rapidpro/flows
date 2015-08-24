@@ -10,7 +10,7 @@ import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.runner.RunState;
 
 /**
- * Test that returns whether the text contains the a valid phone number
+ * Test that returns whether the text contains a valid phone number
  */
 public class HasPhoneTest extends Test {
 

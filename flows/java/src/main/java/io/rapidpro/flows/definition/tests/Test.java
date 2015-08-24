@@ -10,6 +10,8 @@ import io.rapidpro.flows.definition.tests.date.DateAfterTest;
 import io.rapidpro.flows.definition.tests.date.DateBeforeTest;
 import io.rapidpro.flows.definition.tests.date.DateEqualTest;
 import io.rapidpro.flows.definition.tests.date.HasDateTest;
+import io.rapidpro.flows.definition.tests.location.HasDistrictTest;
+import io.rapidpro.flows.definition.tests.location.HasStateTest;
 import io.rapidpro.flows.definition.tests.logic.AndTest;
 import io.rapidpro.flows.definition.tests.logic.FalseTest;
 import io.rapidpro.flows.definition.tests.logic.OrTest;
@@ -52,6 +54,8 @@ public abstract class Test {
         s_classByType.put("date_before", DateBeforeTest.class);
         s_classByType.put("date_after", DateAfterTest.class);
         s_classByType.put("phone", HasPhoneTest.class);
+        s_classByType.put("state", HasStateTest.class);
+        s_classByType.put("district", HasDistrictTest.class);
     }
 
     /**
