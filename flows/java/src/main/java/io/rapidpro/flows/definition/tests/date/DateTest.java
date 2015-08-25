@@ -5,7 +5,6 @@ import io.rapidpro.expressions.EvaluationError;
 import io.rapidpro.expressions.evaluator.Conversions;
 import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.RunState;
-
 import org.threeten.bp.LocalDate;
 
 /**

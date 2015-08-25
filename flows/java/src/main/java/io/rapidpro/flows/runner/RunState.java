@@ -9,11 +9,11 @@ import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.Rule;
 import io.rapidpro.flows.definition.RuleSet;
 import org.apache.commons.lang3.StringUtils;
-
 import org.threeten.bp.Instant;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.ZonedDateTime;
 import org.threeten.bp.temporal.ChronoUnit;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,9 +38,6 @@ public class RunState {
     @SerializedName("contact")
     protected Contact m_contact;
 
-    @SerializedName("flow")
-    protected Flow m_flow;
-
     @SerializedName("steps")
     protected List<Step> m_steps;
 
@@ -52,6 +49,8 @@ public class RunState {
 
     @SerializedName("state")
     protected State m_state;
+
+    protected transient Flow m_flow;
 
     protected transient Location.Resolver m_locationResolver;
 

@@ -1,10 +1,12 @@
 package io.rapidpro.flows.runner;
 
+import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.evaluator.Conversions;
-
+import io.rapidpro.flows.utils.JsonUtils;
 import org.threeten.bp.Instant;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +24,8 @@ public class Value {
     @SerializedName("text")
     protected String m_text;
 
+    @SerializedName("time")
+    @JsonAdapter(JsonUtils.InstantAdapter.class)
     protected Instant m_time;
 
     public Value(String value, String category, String text, Instant time) {

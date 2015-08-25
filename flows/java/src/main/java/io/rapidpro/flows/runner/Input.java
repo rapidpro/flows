@@ -2,11 +2,11 @@ package io.rapidpro.flows.runner;
 
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.evaluator.Conversions;
-
-import java.math.BigDecimal;
 import org.threeten.bp.Instant;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.ZonedDateTime;
+
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,7 +53,7 @@ public class Input {
         context.put("value", asText);
         context.put("time", Conversions.toString(m_time.atZone(container.getTimezone()), container));
 
-        // TODO include step.contact ?
+        // TODO include step.contact
 
         return context;
     }

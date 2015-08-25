@@ -4,7 +4,6 @@ import io.rapidpro.expressions.EvaluatedTemplate;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.evaluator.Conversions;
 import io.rapidpro.flows.runner.RunState;
-
 import org.threeten.bp.LocalDate;
 
 /**

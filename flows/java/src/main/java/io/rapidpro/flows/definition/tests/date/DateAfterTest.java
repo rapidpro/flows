@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.definition.tests.Test;
-
 import org.threeten.bp.LocalDate;
 
 /**

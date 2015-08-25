@@ -1,11 +1,14 @@
 package io.rapidpro.flows.definition;
 
 import com.google.gson.*;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.runner.Step;
 import io.rapidpro.flows.utils.JsonUtils;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -127,11 +130,56 @@ public class Flow {
     }
 
     /**
-     * Super class for ActionSet and RuleSet. Things which can be a destination in a flow graph.
+     * Super class of anything in a flow definition with a UUID
      */
-    public static abstract class Node {
+    public static abstract class Element {
 
         protected String m_uuid;
+
+        public String getUuid() {
+            return m_uuid;
+        }
+
+        /**
+         * Serializes the element as a reference to its UUID
+         */
+        public class RefAdapter extends TypeAdapter<Element> {
+            @Override
+            public void write(JsonWriter out, Element element) throws IOException {
+                out.value(element.getUuid());
+            }
+            @Override
+            public Element read(JsonReader in) throws IOException {
+                throw new UnsupportedOperationException();
+            }
+        }
+
+        /**
+         * @see Object#equals(Object)
+         */
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof Element)) return false;
+
+            Element element = (Element) o;
+
+            return m_uuid.equals(element.m_uuid);
+        }
+
+        /**
+         * @see Object#hashCode()
+         */
+        @Override
+        public int hashCode() {
+            return m_uuid.hashCode();
+        }
+    }
+
+    /**
+     * Super class for ActionSet and RuleSet. Things which can be a destination in a flow graph.
+     */
+    public static abstract class Node extends Element {
 
         /**
          * Visits this node
@@ -142,37 +190,12 @@ public class Flow {
          */
         public abstract Node visit(RunState run, Step step, Input input);
 
-        public String getUuid() {
-            return m_uuid;
-        }
-
         /**
          * @see Object#toString()
          */
         @Override
         public String toString() {
             return "Node{uuid=\"" + m_uuid + "\"}";
-        }
-
-        /**
-         * @see Object#equals(Object)
-         */
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            Node node = (Node) o;
-
-            return m_uuid.equals(node.m_uuid);
-        }
-
-        /**
-         * @see Object#hashCode()
-         */
-        @Override
-        public int hashCode() {
-            return m_uuid.hashCode();
         }
     }
 

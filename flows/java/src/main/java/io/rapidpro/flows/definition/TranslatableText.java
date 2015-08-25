@@ -2,9 +2,16 @@ package io.rapidpro.flows.definition;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
+import io.rapidpro.flows.definition.tests.TranslatableTest;
 import io.rapidpro.flows.runner.RunState;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,9 +20,11 @@ import java.util.Map;
 /**
  * Text that may be a single untranslated value or a translation map
  */
+@JsonAdapter(TranslatableText.JsonAdapter.class)
 public class TranslatableText {
 
     protected String m_untranslated;
+
     protected Map<String, String> m_translations;
 
     public TranslatableText(String untranslated) {
@@ -105,6 +114,33 @@ public class TranslatableText {
         }
 
         return defaultText;
+    }
+
+    /**
+     * JSON serialization and de-serialization
+     */
+    public static class JsonAdapter extends TypeAdapter<TranslatableText> {
+        @Override
+        public void write(JsonWriter out, TranslatableText text) throws IOException {
+            if (text.m_untranslated != null) {
+                out.value(text.m_untranslated);
+            } else {
+                out.beginObject();
+                for (Map.Entry<String, String> entry : text.m_translations.entrySet()) {
+                    out.name(entry.getKey());
+                    out.value(entry.getValue());
+                }
+                out.endObject();
+            }
+        }
+        @Override
+        public TranslatableText read(JsonReader in) throws IOException {
+            if (in.peek().equals(JsonToken.STRING)) {
+                return new TranslatableText(in.nextString());
+            } else {
+                return null; // TODO ?
+            }
+        }
     }
 
     /**

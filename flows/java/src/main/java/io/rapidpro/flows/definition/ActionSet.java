@@ -58,9 +58,7 @@ public class ActionSet extends Flow.Node implements Flow.ConnectionStart {
 
         for (Action action : m_actions) {
             Action.Result result = action.execute(run, input);
-            if (result.getAction() != null) {
-                step.getActionResults().add(result);
-            }
+            step.addActionResult(result);
         }
 
         return m_destination;

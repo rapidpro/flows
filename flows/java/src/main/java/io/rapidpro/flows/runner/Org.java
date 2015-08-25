@@ -1,8 +1,9 @@
 package io.rapidpro.flows.runner;
 
+import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import io.rapidpro.expressions.dates.DateStyle;
-
+import io.rapidpro.flows.utils.JsonUtils;
 import org.threeten.bp.ZoneId;
 
 /**
@@ -17,12 +18,13 @@ public class Org {
     protected String m_primaryLanguage;
 
     @SerializedName("timezone")
+    @JsonAdapter(JsonUtils.TimezoneAdapter.class)
     protected ZoneId m_timezone;
 
     @SerializedName("date_style")
     protected DateStyle m_dateStyle;
 
-    @SerializedName("is_anon")
+    @SerializedName("anon")
     protected boolean m_anon;
 
     public Org() {

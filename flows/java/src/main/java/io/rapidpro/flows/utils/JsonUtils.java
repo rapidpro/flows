@@ -2,10 +2,22 @@ package io.rapidpro.flows.utils;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import io.rapidpro.flows.definition.Flow;
+import org.threeten.bp.*;
+import org.threeten.bp.chrono.IsoChronology;
+import org.threeten.bp.format.DateTimeFormatter;
+import org.threeten.bp.format.DateTimeFormatterBuilder;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+
+import static org.threeten.bp.format.ResolverStyle.*;
+import static org.threeten.bp.temporal.ChronoField.MILLI_OF_SECOND;
+import static org.threeten.bp.temporal.ChronoField.NANO_OF_SECOND;
 
 /**
  * JSON utility methods
@@ -36,6 +48,43 @@ public class JsonUtils {
             return (T) method.invoke(null, obj, context);
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Adapter for ZoneId instances to serialize as id string, e.g. "Africa/Kigali"
+     */
+    public static class TimezoneAdapter extends TypeAdapter<ZoneId> {
+        @Override
+        public void write(JsonWriter out, ZoneId zoneId) throws IOException {
+            out.value(zoneId.getId());
+        }
+
+        @Override
+        public ZoneId read(JsonReader in) throws IOException {
+            return ZoneId.of(in.nextString());
+        }
+    }
+
+    /**
+     * Adapter for Instant instances to serialize as ISO8601 in UTC, with millisecond precision,
+     * e.g. "2014-10-03T01:41:12.790Z"
+     */
+    public static class InstantAdapter extends TypeAdapter<Instant> {
+        protected static DateTimeFormatter s_formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
+        @Override
+        public void write(JsonWriter out, Instant instant) throws IOException {
+            if (instant != null) {
+                out.value(s_formatter.format(instant.atOffset(ZoneOffset.UTC)));
+            } else {
+                out.nullValue();
+            }
+        }
+
+        @Override
+        public Instant read(JsonReader in) throws IOException {
+            return LocalDateTime.parse(in.nextString(), s_formatter).atOffset(ZoneOffset.UTC).toInstant();
         }
     }
 }

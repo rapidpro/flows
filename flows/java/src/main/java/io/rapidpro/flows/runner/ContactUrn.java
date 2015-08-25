@@ -1,11 +1,18 @@
 package io.rapidpro.flows.runner;
 
+import com.google.gson.*;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import org.apache.commons.lang3.StringUtils;
+
+import java.io.IOException;
 
 /**
  * A URN for a contact (e.g. a telephone number or twitter handle)
  */
+@JsonAdapter(ContactUrn.JsonAdapter.class)
 public class ContactUrn {
 
     public enum Scheme {
@@ -15,9 +22,9 @@ public class ContactUrn {
 
     protected static String ANON_MASK = "********";
 
-    private Scheme m_scheme;
+    protected Scheme m_scheme;
 
-    private String m_path;
+    protected String m_path;
 
     public ContactUrn(Scheme scheme, String path) {
         m_scheme = scheme;
@@ -63,11 +70,25 @@ public class ContactUrn {
     }
 
     /**
+     * Serializes the URN as a string
+     */
+    public class JsonAdapter extends TypeAdapter<ContactUrn> {
+        @Override
+        public void write(JsonWriter out, ContactUrn urn) throws IOException {
+            out.value(urn.toString());
+        }
+        @Override
+        public ContactUrn read(JsonReader in) throws IOException {
+            return ContactUrn.fromString(in.nextString());
+        }
+    }
+
+    /**
      * @see Object#toString()
      */
     @Override
     public String toString() {
-        return m_scheme + ":" + m_path;
+        return m_scheme.name().toLowerCase() + ":" + m_path;
     }
 
     /**

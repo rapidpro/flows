@@ -46,8 +46,8 @@ public class RunnerImplTest extends BaseFlowsTest {
         assertThat(run.getSteps().get(0).getNode().getUuid(), is("32cf414b-35e3-4c75-8a78-d5f4de925e13"));
         assertThat(run.getSteps().get(0).getArrivedOn(), notNullValue());
         assertThat(run.getSteps().get(0).getLeftOn(), notNullValue());
-        assertThat(run.getSteps().get(0).getActionResults(), hasSize(1));
-        assertReply(run.getSteps().get(0).getActionResults(), 0, "Hi Joe. Do you like mushrooms?");
+        assertThat(run.getSteps().get(0).getActions(), hasSize(1));
+        assertReply(run.getSteps().get(0).getActions(), 0, "Hi Joe. Do you like mushrooms?");
         assertThat(run.getSteps().get(1).getNode().getUuid(), is("1e318293-4730-481c-b455-daaaf86b2e6c"));
         assertThat(run.getSteps().get(1).getArrivedOn(), notNullValue());
         assertThat(run.getSteps().get(1).getLeftOn(), nullValue());
@@ -74,8 +74,8 @@ public class RunnerImplTest extends BaseFlowsTest {
         assertThat(run.getSteps().get(1).getArrivedOn(), notNullValue());
         assertThat(run.getSteps().get(1).getLeftOn(), notNullValue());
         assertThat(run.getSteps().get(1).getRuleResult(), nullValue());
-        assertThat(run.getSteps().get(1).getActionResults(), hasSize(1));
-        assertReply(run.getSteps().get(1).getActionResults(), 0, "We didn't understand your answer. Please reply with yes/no.");
+        assertThat(run.getSteps().get(1).getActions(), hasSize(1));
+        assertReply(run.getSteps().get(1).getActions(), 0, "We didn't understand your answer. Please reply with yes/no.");
         assertThat(run.getSteps().get(2).getNode().getUuid(), is("1e318293-4730-481c-b455-daaaf86b2e6c"));
         assertThat(run.getSteps().get(2).getArrivedOn(), notNullValue());
         assertThat(run.getSteps().get(2).getLeftOn(), nullValue());
@@ -105,9 +105,9 @@ public class RunnerImplTest extends BaseFlowsTest {
         assertThat(run.getSteps().get(1).getArrivedOn(), notNullValue());
         assertThat(run.getSteps().get(1).getLeftOn(), nullValue());
         assertThat(run.getSteps().get(1).getRuleResult(), nullValue());
-        assertThat(run.getSteps().get(1).getActionResults(), hasSize(2));
-        assertReply(run.getSteps().get(1).getActionResults(), 0, "That was the right answer.");
-        assertAddToGroup(run.getSteps().get(1).getActionResults(), 1, "Approved");
+        assertThat(run.getSteps().get(1).getActions(), hasSize(2));
+        assertReply(run.getSteps().get(1).getActions(), 0, "That was the right answer.");
+        assertAddToGroup(run.getSteps().get(1).getActions(), 1, "Approved");
 
         assertThat(run.getValues().size(), is(1));
         assertThat(run.getValues().get("response_1").getValue(), is("no"));
@@ -128,14 +128,14 @@ public class RunnerImplTest extends BaseFlowsTest {
 
         assertThat(run.getContact().getLanguage(), is("fre"));
         assertThat(run.getSteps(), hasSize(2));
-        assertReply(run.getSteps().get(0).getActionResults(), 0, "Salut Jean. Aimez-vous les champignons?");
+        assertReply(run.getSteps().get(0).getActions(), 0, "Salut Jean. Aimez-vous les champignons?");
         assertThat(run.getState(), is(RunState.State.WAIT_MESSAGE));
 
         m_runner.resume(run, Input.of("EUGH!"));
 
         assertThat(run.getSteps().get(0).getRuleResult().getCategory(), is("Other"));
         assertThat(run.getSteps().get(0).getRuleResult().getValue(), is("EUGH!"));
-        assertReply(run.getSteps().get(1).getActionResults(), 0, "Nous ne comprenions pas votre réponse. S'il vous plaît répondre par oui/non.");
+        assertReply(run.getSteps().get(1).getActions(), 0, "Nous ne comprenions pas votre réponse. S'il vous plaît répondre par oui/non.");
 
         assertThat(run.getValues().get("response_1").getValue(), is("EUGH!"));
         assertThat(run.getValues().get("response_1").getCategory(), is("Other"));
@@ -149,7 +149,7 @@ public class RunnerImplTest extends BaseFlowsTest {
 
         assertThat(run.getSteps().get(0).getRuleResult().getCategory(), is("No"));
         assertThat(run.getSteps().get(0).getRuleResult().getValue(), is("non"));
-        assertReply(run.getSteps().get(1).getActionResults(), 0, "Ce fut la bonne réponse.");
+        assertReply(run.getSteps().get(1).getActions(), 0, "Ce fut la bonne réponse.");
 
         assertThat(run.getValues().get("response_1").getValue(), is("non"));
         assertThat(run.getValues().get("response_1").getCategory(), is("No"));
@@ -165,8 +165,8 @@ public class RunnerImplTest extends BaseFlowsTest {
         RunState run = m_runner.start(getOrg(), getContact(), flow);
 
         assertThat(run.getSteps().get(0).getNode().getUuid(), is("8dbb7e1a-43d6-4c5b-a99d-fe3ee8923b65"));
-        assertThat(run.getSteps().get(0).getActionResults(), hasSize(1));
-        assertReply(run.getSteps().get(0).getActionResults(), 0, "How many people are you?");
+        assertThat(run.getSteps().get(0).getActions(), hasSize(1));
+        assertReply(run.getSteps().get(0).getActions(), 0, "How many people are you?");
         assertThat(run.getSteps().get(1).getNode().getUuid(), is("b7cfa0ac-4d50-4384-a1ab-9ec79bd45e42"));
 
         assertThat(run.getState(), is(RunState.State.WAIT_MESSAGE));
@@ -177,7 +177,7 @@ public class RunnerImplTest extends BaseFlowsTest {
         assertThat(run.getSteps().get(0).getRuleResult().getCategory(), is("Other"));
         assertThat(run.getSteps().get(0).getRuleResult().getValue(), is("9"));
         assertThat(run.getSteps().get(1).getNode().getUuid(), is("c81af400-a744-499a-9ad5-c90e233e4b92"));
-        assertReply(run.getSteps().get(1).getActionResults(), 0, "Please choose a number between 1 and 8");
+        assertReply(run.getSteps().get(1).getActions(), 0, "Please choose a number between 1 and 8");
         assertThat(run.getSteps().get(2).getNode().getUuid(), is("b7cfa0ac-4d50-4384-a1ab-9ec79bd45e42"));
 
         assertThat(run.getValues().get("people").getValue(), is("9"));
@@ -208,13 +208,13 @@ public class RunnerImplTest extends BaseFlowsTest {
         m_runner.start(getOrg(), getContact(), flow);
     }
 
-    protected void assertReply(List<Action.Result> actions, int index, String msg) {
-        ReplyAction action = (ReplyAction) actions.get(index).getAction();
+    protected void assertReply(List<Action> actions, int index, String msg) {
+        ReplyAction action = (ReplyAction) actions.get(index);
         assertThat(action.getMsg(), is(new TranslatableText(msg)));
     }
 
-    protected void assertAddToGroup(List<Action.Result> actions, int index, String... groups) {
-        AddToGroupAction action = (AddToGroupAction) actions.get(index).getAction();
+    protected void assertAddToGroup(List<Action> actions, int index, String... groups) {
+        AddToGroupAction action = (AddToGroupAction) actions.get(index);
         assertThat(action.getGroups(), contains(groups));
     }
 }

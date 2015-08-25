@@ -54,6 +54,7 @@ public abstract class Action {
         public static final Result NOOP = new Result(null, null);
 
         protected Action m_action;
+
         protected List<String> m_errors;
 
         public Result(Action action) {
@@ -71,6 +72,10 @@ public abstract class Action {
 
         public List<String> getErrors() {
             return m_errors;
+        }
+
+        public boolean hasErrors() {
+            return !m_errors.isEmpty();
         }
     }
 }

@@ -1,11 +1,13 @@
 package io.rapidpro.flows.runner;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import io.rapidpro.flows.BaseFlowsTest;
 import org.junit.Test;
 
 import java.util.Map;
 
-import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -29,5 +31,30 @@ public class ContactTest extends BaseFlowsTest {
 
         assertThat(context, hasEntry("gender", "M"));
         assertThat(context, hasEntry("age", "34"));
+    }
+
+    @Test
+    public void toAndFromJson() {
+        Gson gson = new GsonBuilder().create();
+        String json = gson.toJson(getContact());
+
+        assertThat(json, is("{" +
+                "\"uuid\":\"1234-1234\"," +
+                "\"name\":\"Joe Flow\"," +
+                "\"urns\":[\"tel:+260964153686\",\"twitter:realJoeFlow\"]," +
+                "\"groups\":[\"Testers\",\"Developers\"]," +
+                "\"fields\":{\"age\":\"34\",\"gender\":\"M\"}," +
+                "\"language\":\"eng\"" +
+        "}"));
+
+        Contact contact = gson.fromJson(json, Contact.class);
+
+        assertThat(contact.getUuid(), is("1234-1234"));
+        assertThat(contact.getName(), is("Joe Flow"));
+        assertThat(contact.getUrns(), contains(new ContactUrn(ContactUrn.Scheme.TEL, "+260964153686"), new ContactUrn(ContactUrn.Scheme.TWITTER, "realJoeFlow")));
+        assertThat(contact.getGroups(), contains("Testers", "Developers"));
+        assertThat(contact.getFields(), hasEntry("age", "34"));
+        assertThat(contact.getFields(), hasEntry("gender", "M"));
+        assertThat(contact.getLanguage(), is("eng"));
     }
 }

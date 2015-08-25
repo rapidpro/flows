@@ -1,6 +1,8 @@
 package io.rapidpro.flows.definition;
 
 import com.google.gson.JsonObject;
+
+import com.google.gson.annotations.SerializedName;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.RunState;
@@ -10,9 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * A matchable rule in a rule set
  */
-public class Rule implements Flow.ConnectionStart {
-
-    protected String m_uuid;
+public class Rule extends Flow.Element implements Flow.ConnectionStart {
 
     protected Test m_test;
 
@@ -43,10 +43,6 @@ public class Rule implements Flow.ConnectionStart {
         return m_test.evaluate(run, context, input);
     }
 
-    public String getUuid() {
-        return m_uuid;
-    }
-
     public Test getTest() {
         return m_test;
     }
@@ -70,12 +66,17 @@ public class Rule implements Flow.ConnectionStart {
      */
     public static class Result {
 
+        @SerializedName("uuid")
+        @com.google.gson.annotations.JsonAdapter(RefAdapter.class)
         protected Rule m_rule;
 
+        @SerializedName("value")
         protected String m_value;
 
+        @SerializedName("category")
         protected String m_category;
 
+        @SerializedName("text")
         protected String m_text;
 
         public Result(Rule rule, String value, String category, String text) {
