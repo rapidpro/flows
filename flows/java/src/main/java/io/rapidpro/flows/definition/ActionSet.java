@@ -2,6 +2,7 @@ package io.rapidpro.flows.definition;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.rapidpro.flows.Flows;
 import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.RunState;
@@ -48,10 +49,10 @@ public class ActionSet extends Flow.Node implements Flow.ConnectionStart {
     }
 
     /**
-     * @see io.rapidpro.flows.definition.Flow.Node#visit(RunState, Step, Input)
+     * @see io.rapidpro.flows.definition.Flow.Node#visit(Flows.Runner, RunState, Step, Input)
      */
     @Override
-    public Flow.Node visit(RunState run, Step step, Input input) {
+    public Flow.Node visit(Flows.Runner runner, RunState run, Step step, Input input) {
         if (logger.isDebugEnabled()) {
             logger.debug("Visiting action set " + m_uuid + " with input " + input + " from contact " + run.getContact().getUuid());
         }

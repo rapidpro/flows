@@ -1,8 +1,12 @@
 package io.rapidpro.flows.runner;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.dates.DateStyle;
 import io.rapidpro.flows.BaseFlowsTest;
+import io.rapidpro.flows.Flows;
+import io.rapidpro.flows.definition.Flow;
 import org.junit.Test;
 
 import org.threeten.bp.Instant;
@@ -11,7 +15,7 @@ import org.threeten.bp.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -41,5 +45,19 @@ public class RunStateTest extends BaseFlowsTest {
         assertThat(context, hasEntry("today", "08-24-2015"));
         assertThat(context, hasEntry("tomorrow", "08-25-2015"));
         assertThat(context, hasEntry("yesterday", "08-23-2015"));
+    }
+
+    @Test
+    public void toAndFromJson() throws Exception {
+        Flow flow = Flow.fromJson(readResource("flows/mushrooms.json"));
+        Flows.Runner runner = new RunnerImpl(null);
+        RunState run = runner.start(getOrg(), getContact(), flow);
+
+        Gson gson = new GsonBuilder().create();
+        String json = gson.toJson(run);
+
+        // TODO
+
+        //RunState run1 = RunState.fromJson(json, flow);
     }
 }

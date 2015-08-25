@@ -1,7 +1,9 @@
-package io.rapidpro.flows.definition.tests;
+package io.rapidpro.flows.definition.tests.text;
 
 import io.rapidpro.expressions.EvaluationContext;
+import io.rapidpro.flows.Flows;
 import io.rapidpro.flows.definition.TranslatableText;
+import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.RunState;
 
 /**
@@ -16,10 +18,10 @@ public abstract class TranslatableTest extends Test {
     }
 
     /**
-     * @see Test#evaluate(RunState, EvaluationContext, String)
+     * @see Test#evaluate(Flows.Runner, RunState, EvaluationContext, String)
      */
     @Override
-    public Result evaluate(RunState run, EvaluationContext context, String text) {
+    public Result evaluate(Flows.Runner runner, RunState run, EvaluationContext context, String text) {
         String localizedTest = m_test.getLocalized(run);
 
         return evaluateAgainstLocalized(run, context, text, localizedTest);

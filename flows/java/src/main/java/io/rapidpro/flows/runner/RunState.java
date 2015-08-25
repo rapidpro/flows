@@ -52,17 +52,18 @@ public class RunState {
 
     protected transient Flow m_flow;
 
-    protected transient Location.Resolver m_locationResolver;
-
-    public RunState(Org org, Contact contact, Flow flow, Location.Resolver locationResolver) {
+    public RunState(Org org, Contact contact, Flow flow) {
         m_org = org;
         m_contact = contact;
-        m_flow = flow;
         m_steps = new ArrayList<>();
         m_values = new HashMap<>();
         m_extra = new HashMap<>();
         m_state = State.IN_PROGRESS;
-        m_locationResolver = locationResolver;
+        m_flow = flow;
+    }
+
+    public static RunState fromJson(String json, Flow flow) {
+        return null; // TODO
     }
 
     public EvaluatedTemplate substituteVariables(String text, EvaluationContext context) {
@@ -161,9 +162,5 @@ public class RunState {
 
     public void setState(State state) {
         m_state = state;
-    }
-
-    public Location.Resolver getLocationResolver() {
-        return m_locationResolver;
     }
 }

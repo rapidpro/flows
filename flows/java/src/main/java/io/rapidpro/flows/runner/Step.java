@@ -32,10 +32,10 @@ public class Step {
     protected Rule.Result m_ruleResult;
 
     @SerializedName("actions")
-    List<Action> m_actions;
+    protected List<Action> m_actions;
 
     @SerializedName("errors")
-    List<String> m_errors;
+    protected List<String> m_errors;
 
     public Step(Flow.Node node, Instant arrivedOn) {
         m_node = node;

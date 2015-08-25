@@ -22,6 +22,8 @@ public abstract class BaseTestTest extends BaseFlowsTest {
 
     protected Flow.DeserializationContext m_deserializationContext;
 
+    protected Flows.Runner m_runner;
+
     protected RunState m_run;
 
     protected EvaluationContext m_context;
@@ -34,8 +36,8 @@ public abstract class BaseTestTest extends BaseFlowsTest {
 
         m_deserializationContext = new Flow.DeserializationContext(flow);
 
-        Flows.Runner runner = new Flows.RunnerBuilder().withLocationResolver(new TestLocationResolver()).build();
-        m_run = runner.start(m_org, m_contact, flow);
+        m_runner = new Flows.RunnerBuilder().withLocationResolver(new TestLocationResolver()).build();
+        m_run = m_runner.start(m_org, m_contact, flow);
         m_context = m_run.buildContext(null);
     }
 
@@ -45,7 +47,7 @@ public abstract class BaseTestTest extends BaseFlowsTest {
     }
 
     protected void assertTest(Test test, String input, boolean expectedMatched, String expectedText) {
-        Test.Result result = test.evaluate(m_run, m_context, input);
+        Test.Result result = test.evaluate(m_runner, m_run, m_context, input);
         assertThat(result.isMatched(), is(expectedMatched));
         assertThat(result.getText(), is(expectedText));
     }

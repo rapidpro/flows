@@ -5,6 +5,7 @@ import com.google.i18n.phonenumbers.PhoneNumberMatch;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 import io.rapidpro.expressions.EvaluationContext;
+import io.rapidpro.flows.Flows;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.runner.RunState;
@@ -21,8 +22,11 @@ public class HasPhoneTest extends Test {
         return new HasPhoneTest();
     }
 
+    /**
+     * @see Test#evaluate(Flows.Runner, RunState, EvaluationContext, String)
+     */
     @Override
-    public Result evaluate(RunState run, EvaluationContext context, String text) {
+    public Result evaluate(Flows.Runner runner, RunState run, EvaluationContext context, String text) {
         String country = run.getOrg().getCountry();
         PhoneNumberUtil numberUtil = PhoneNumberUtil.getInstance();
 

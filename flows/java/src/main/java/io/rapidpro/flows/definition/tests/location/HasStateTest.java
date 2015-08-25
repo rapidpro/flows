@@ -2,6 +2,7 @@ package io.rapidpro.flows.definition.tests.location;
 
 import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluationContext;
+import io.rapidpro.flows.Flows;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.definition.tests.Test;
@@ -21,11 +22,14 @@ public class HasStateTest extends Test {
         return new HasStateTest();
     }
 
+    /**
+     * @see Test#evaluate(Flows.Runner, RunState, EvaluationContext, String)
+     */
     @Override
-    public Result evaluate(RunState run, EvaluationContext context, String text) {
+    public Result evaluate(Flows.Runner runner, RunState run, EvaluationContext context, String text) {
         String country = run.getOrg().getCountry();
         if (StringUtils.isNotEmpty(country)) {
-            Location location = run.getLocationResolver().resolve(text, country, Location.Level.STATE, null);
+            Location location = runner.getLocationResolver().resolve(text, country, Location.Level.STATE, null);
             if (location != null) {
                 return Result.textMatch(location.getName());
             }

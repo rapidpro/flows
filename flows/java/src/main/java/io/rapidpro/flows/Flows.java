@@ -49,5 +49,11 @@ public class Flows {
          * @return the new run state
          */
         RunState resume(RunState lastState, Input input) throws FlowRunException;
+
+        /**
+         * Gets the location resolver used by this runner
+         * @return the resolver
+         */
+        Location.Resolver getLocationResolver();
     }
 }

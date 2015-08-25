@@ -3,6 +3,7 @@ package io.rapidpro.flows.definition.tests.date;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.EvaluationError;
 import io.rapidpro.expressions.evaluator.Conversions;
+import io.rapidpro.flows.Flows;
 import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.RunState;
 import org.threeten.bp.LocalDate;
@@ -13,12 +14,10 @@ import org.threeten.bp.LocalDate;
 public abstract class DateTest extends Test {
 
     /**
-     * @see Test#evaluate(RunState, EvaluationContext, String)
+     * @see Test#evaluate(Flows.Runner, RunState, EvaluationContext, String)
      */
     @Override
-    public Result evaluate(RunState run, EvaluationContext context, String text) {
-        // test every word in the message against our test
-
+    public Result evaluate(Flows.Runner runner, RunState run, EvaluationContext context, String text) {
         try {
             LocalDate date = Conversions.toDate(text, context);
             if (evaluateAgainstDate(run, context, date)) {

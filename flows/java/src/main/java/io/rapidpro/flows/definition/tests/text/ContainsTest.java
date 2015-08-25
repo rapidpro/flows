@@ -6,7 +6,6 @@ import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.definition.TranslatableText;
 import io.rapidpro.flows.definition.tests.Test;
-import io.rapidpro.flows.definition.tests.TranslatableTest;
 import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.utils.FlowUtils;
 import org.apache.commons.lang3.StringUtils;

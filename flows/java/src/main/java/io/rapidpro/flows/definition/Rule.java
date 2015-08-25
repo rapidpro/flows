@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 
 import com.google.gson.annotations.SerializedName;
 import io.rapidpro.expressions.EvaluationContext;
+import io.rapidpro.flows.Flows;
 import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.utils.JsonUtils;
@@ -39,8 +40,16 @@ public class Rule extends Flow.Element implements Flow.ConnectionStart {
         return rule;
     }
 
-    public Test.Result matches(RunState run, EvaluationContext context, String input) {
-        return m_test.evaluate(run, context, input);
+    /**
+     * Checks whether this rule is a match for the given input
+     * @param runner the flow runner
+     * @param run the current run state
+     * @param context the evaluation context
+     * @param input the input
+     * @return the test result
+     */
+    public Test.Result matches(Flows.Runner runner, RunState run, EvaluationContext context, String input) {
+        return m_test.evaluate(runner, run, context, input);
     }
 
     public Test getTest() {

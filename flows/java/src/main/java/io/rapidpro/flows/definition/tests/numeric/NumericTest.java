@@ -1,6 +1,7 @@
 package io.rapidpro.flows.definition.tests.numeric;
 
 import io.rapidpro.expressions.EvaluationContext;
+import io.rapidpro.flows.Flows;
 import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.RunState;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -42,10 +43,10 @@ public abstract class NumericTest extends Test {
     }
 
     /**
-     * @see Test#evaluate(RunState, EvaluationContext, String)
+     * @see Test#evaluate(Flows.Runner, RunState, EvaluationContext, String)
      */
     @Override
-    public Result evaluate(RunState run, EvaluationContext context, String text) {
+    public Result evaluate(Flows.Runner runner, RunState run, EvaluationContext context, String text) {
         // test every word in the message against our test
         text = text.replace(",", ""); // so that 1,234 is parsed as 1234
 

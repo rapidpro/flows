@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluationContext;
+import io.rapidpro.flows.Flows;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.definition.tests.date.DateAfterTest;
@@ -90,12 +91,13 @@ public abstract class Test {
 
     /**
      * Evaluates this test
-     * @param run the run state
+     * @param runner the flow runner
+     * @param run the current run state
      * @param context the evaluation context
      * @param text the text to test against
      * @return the test result (true or false, and the matched portion of the input)
      */
-    public abstract Result evaluate(RunState run, EvaluationContext context, String text);
+    public abstract Result evaluate(Flows.Runner runner, RunState run, EvaluationContext context, String text);
 
     /**
      * Holds the result of a test evaluation (the int value + the text matched)

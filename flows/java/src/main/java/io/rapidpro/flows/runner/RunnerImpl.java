@@ -24,7 +24,7 @@ public class RunnerImpl implements Flows.Runner {
      */
     @Override
     public RunState start(Org org, Contact contact, Flow flow) throws FlowRunException {
-        RunState run = new RunState(org, contact, flow, m_locationResolver);
+        RunState run = new RunState(org, contact, flow);
         return resume(run, null);
     }
 
@@ -84,7 +84,7 @@ public class RunnerImpl implements Flows.Runner {
                 nodesVisited.add(currentNode);
             }
 
-            Flow.Node nextNode = currentNode.visit(run, step, input);
+            Flow.Node nextNode = currentNode.visit(this, run, step, input);
 
             if (nextNode != null) {
                 // if we have a next node, then record leaving this one
@@ -99,5 +99,13 @@ public class RunnerImpl implements Flows.Runner {
         while (currentNode != null);
 
         return run;
+    }
+
+    /**
+     * @see Flows.Runner#getLocationResolver()
+     */
+    @Override
+    public Location.Resolver getLocationResolver() {
+        return m_locationResolver;
     }
 }

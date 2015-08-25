@@ -3,6 +3,7 @@ package io.rapidpro.flows.definition;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluationContext;
+import io.rapidpro.flows.Flows;
 import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.RunState;
@@ -63,17 +64,17 @@ public class RuleSet extends Flow.Node {
     }
 
     /**
-     * @see io.rapidpro.flows.definition.Flow.Node#visit(RunState, Step, Input)
+     * @see io.rapidpro.flows.definition.Flow.Node#visit(Flows.Runner, RunState, Step, Input)
      */
     @Override
-    public Flow.Node visit(RunState run, Step step, Input input) {
+    public Flow.Node visit(Flows.Runner runner, RunState run, Step step, Input input) {
         if (logger.isDebugEnabled()) {
             logger.debug("Visiting rule set " + m_uuid + " with input " + input + " from contact " + run.getContact().getUuid());
         }
 
         EvaluationContext context = run.buildContext(input);
 
-        Pair<Rule, String> match = findMatchingRule(run, context);
+        Pair<Rule, String> match = findMatchingRule(runner, run, context);
         if (match == null) {
             return null;
         }
@@ -92,15 +93,16 @@ public class RuleSet extends Flow.Node {
 
     /**
      * Runs through the rules to find the first one that matches
+     * @param runner the flow runner
      * @param run the run state
      * @param context the evaluation context
      * @return the rule and the matched text
      */
-    protected Pair<Rule, String> findMatchingRule(RunState run, EvaluationContext context) {
+    protected Pair<Rule, String> findMatchingRule(Flows.Runner runner, RunState run, EvaluationContext context) {
         String operand = run.substituteVariables(m_operand, context).getOutput();
 
         for (Rule rule : m_rules) {
-            Test.Result result = rule.matches(run, context, operand);
+            Test.Result result = rule.matches(runner, run, context, operand);
             if (result.isMatched()) {
                 return new ImmutablePair<>(rule, result.getText());
             }
