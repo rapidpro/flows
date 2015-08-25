@@ -4,10 +4,10 @@ import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.dates.DateStyle;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.math.BigDecimal;
 import org.threeten.bp.*;
 import org.threeten.bp.temporal.Temporal;
+
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -3,9 +3,9 @@ package io.rapidpro.expressions.functions;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.EvaluationError;
 import io.rapidpro.expressions.evaluator.Conversions;
-import io.rapidpro.expressions.evaluator.EvaluatorUtils;
 import io.rapidpro.expressions.functions.annotations.BooleanDefault;
 import io.rapidpro.expressions.functions.annotations.IntegerDefault;
+import io.rapidpro.expressions.utils.ExpressionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalTime;
@@ -368,7 +368,7 @@ public class ExcelFunctions {
     public static BigDecimal power(EvaluationContext ctx, Object number, Object power) {
         BigDecimal _number = Conversions.toDecimal(number, ctx);
         BigDecimal _power = Conversions.toDecimal(power, ctx);
-        return EvaluatorUtils.pow(_number, _power);
+        return ExpressionUtils.pow(_number, _power);
     }
 
     /**

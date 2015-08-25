@@ -1,4 +1,4 @@
-package io.rapidpro.expressions.evaluator;
+package io.rapidpro.expressions.utils;
 
 import io.rapidpro.expressions.dates.DateStyle;
 import org.threeten.bp.format.DateTimeFormatter;
@@ -6,11 +6,12 @@ import org.threeten.bp.format.DateTimeFormatter;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Utility methods
  */
-public class EvaluatorUtils {
+public class ExpressionUtils {
 
     /**
      * Slices a list, Python style
@@ -60,5 +61,12 @@ public class EvaluatorUtils {
     public static DateTimeFormatter getDateFormatter(DateStyle dateStyle, boolean incTime) {
         String format = dateStyle.equals(DateStyle.DAY_FIRST) ? "dd-MM-yyyy" : "MM-dd-yyyy";
         return DateTimeFormatter.ofPattern(incTime ? format + " HH:mm" : format);
+    }
+
+    /**
+     * Replacement for Java 8's Map#getOrDefault(String, Object)
+     */
+    public static <K, V> V getOrDefault(Map<K, V> map, K key, V defaultValue) {
+        return map.containsKey(key) ? map.get(key) : defaultValue;
     }
 }

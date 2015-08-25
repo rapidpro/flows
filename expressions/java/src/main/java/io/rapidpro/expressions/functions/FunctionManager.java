@@ -5,12 +5,12 @@ import io.rapidpro.expressions.EvaluationError;
 import io.rapidpro.expressions.evaluator.Conversions;
 import io.rapidpro.expressions.functions.annotations.BooleanDefault;
 import io.rapidpro.expressions.functions.annotations.IntegerDefault;
+import io.rapidpro.expressions.utils.Parameter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -65,7 +65,8 @@ public class FunctionManager {
         List<Object> parameters = new ArrayList<>();
         List<Object> remainingArgs = new ArrayList<>(args);
 
-        for (Parameter param : func.getParameters()) {
+
+        for (Parameter param : Parameter.fromMethod(func)) {
             IntegerDefault defaultInt = param.getAnnotation(IntegerDefault.class);
             BooleanDefault defaultBool = param.getAnnotation(BooleanDefault.class);
 

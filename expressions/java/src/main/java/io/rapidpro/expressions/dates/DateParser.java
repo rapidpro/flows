@@ -1,5 +1,6 @@
 package io.rapidpro.expressions.dates;
 
+import io.rapidpro.expressions.utils.ExpressionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.threeten.bp.*;
@@ -280,9 +281,9 @@ public class DateParser {
         LocalTime time = null;
 
         if (values.containsKey(Component.MONTH)) {
-            int year = yearFrom2Digits(values.getOrDefault(Component.YEAR, now.getYear()), now.getYear());
+            int year = yearFrom2Digits(ExpressionUtils.getOrDefault(values, Component.YEAR, now.getYear()), now.getYear());
             int month = values.get(Component.MONTH);
-            int day = values.getOrDefault(Component.DAY, 1);
+            int day = ExpressionUtils.getOrDefault(values, Component.DAY, 1);
             try {
                 date = LocalDate.of(year, month, day);
             } catch (DateTimeException ex) {
@@ -301,9 +302,9 @@ public class DateParser {
             else {
                 hour = values.get(Component.HOUR);
                 minute = values.get(Component.MINUTE);
-                second = values.getOrDefault(Component.SECOND, 0);
+                second = ExpressionUtils.getOrDefault(values, Component.SECOND, 0);
 
-                if (hour <= 12 && values.getOrDefault(Component.AM_PM, AM) == PM) {
+                if (hour <= 12 && ExpressionUtils.getOrDefault(values, Component.AM_PM, AM) == PM) {
                     hour += 12;
                 }
             }

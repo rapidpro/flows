@@ -1,19 +1,19 @@
-package io.rapidpro.expressions.evaluator;
+package io.rapidpro.expressions.utils;
 
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
 
-import static io.rapidpro.expressions.evaluator.EvaluatorUtils.*;
+import static io.rapidpro.expressions.utils.ExpressionUtils.slice;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests for {@link EvaluatorUtils}
+ * Tests for {@link ExpressionUtils}
  */
-public class EvaluatorUtilsTest {
+public class ExpressionUtilsTest {
 
     @Test
     public void test_slice() {

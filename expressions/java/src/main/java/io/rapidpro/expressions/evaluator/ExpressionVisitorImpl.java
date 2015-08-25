@@ -5,6 +5,7 @@ import io.rapidpro.expressions.EvaluationError;
 import io.rapidpro.expressions.ExcellentBaseVisitor;
 import io.rapidpro.expressions.ExcellentParser;
 import io.rapidpro.expressions.functions.FunctionManager;
+import io.rapidpro.expressions.utils.ExpressionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.threeten.bp.Duration;
 import org.threeten.bp.LocalTime;
@@ -79,7 +80,7 @@ public class ExpressionVisitorImpl extends ExcellentBaseVisitor<Object> {
     public Object visitExponentExpression(ExcellentParser.ExponentExpressionContext ctx) {
         BigDecimal arg1 = Conversions.toDecimal(visit(ctx.expression(0)), m_evalContext);
         BigDecimal arg2 = Conversions.toDecimal(visit(ctx.expression(1)), m_evalContext);
-        return EvaluatorUtils.pow(arg1, arg2);
+        return ExpressionUtils.pow(arg1, arg2);
     }
 
     /**

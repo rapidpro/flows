@@ -2,9 +2,9 @@ package io.rapidpro.expressions.functions;
 
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.evaluator.Conversions;
-import io.rapidpro.expressions.evaluator.EvaluatorUtils;
 import io.rapidpro.expressions.functions.annotations.BooleanDefault;
 import io.rapidpro.expressions.functions.annotations.IntegerDefault;
+import io.rapidpro.expressions.utils.ExpressionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
@@ -118,7 +118,7 @@ public class CustomFunctions {
         }
 
         List<String> words = getWords(_text, _bySpaces);
-        List<String> selection = EvaluatorUtils.slice(words, _start, _stop);
+        List<String> selection = ExpressionUtils.slice(words, _start, _stop);
 
         // re-combine selected words with a single space
         return StringUtils.join(selection, ' ');

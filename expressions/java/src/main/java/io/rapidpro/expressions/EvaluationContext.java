@@ -3,7 +3,7 @@ package io.rapidpro.expressions;
 import com.google.gson.*;
 import io.rapidpro.expressions.dates.DateParser;
 import io.rapidpro.expressions.dates.DateStyle;
-import io.rapidpro.expressions.evaluator.EvaluatorUtils;
+import io.rapidpro.expressions.utils.ExpressionUtils;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.ZoneId;
 import org.threeten.bp.ZoneOffset;
@@ -72,7 +72,7 @@ public class EvaluationContext {
     }
 
     public DateTimeFormatter getDateFormatter(boolean incTime) {
-        return EvaluatorUtils.getDateFormatter(m_dateStyle, incTime);
+        return ExpressionUtils.getDateFormatter(m_dateStyle, incTime);
     }
 
     public DateParser getDateParser() {
