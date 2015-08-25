@@ -6,7 +6,7 @@ import io.rapidpro.expressions.evaluator.Conversions;
 import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.RunState;
 
-import java.time.LocalDate;
+import org.threeten.bp.LocalDate;
 
 /**
  * Abstract base class for tests that are date based

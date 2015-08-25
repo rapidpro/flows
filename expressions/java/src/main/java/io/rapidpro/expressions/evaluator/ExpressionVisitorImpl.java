@@ -1,19 +1,23 @@
 package io.rapidpro.expressions.evaluator;
 
-import io.rapidpro.expressions.*;
+import io.rapidpro.expressions.EvaluationContext;
+import io.rapidpro.expressions.EvaluationError;
+import io.rapidpro.expressions.ExcellentBaseVisitor;
+import io.rapidpro.expressions.ExcellentParser;
 import io.rapidpro.expressions.functions.FunctionManager;
 import org.apache.commons.lang3.tuple.Pair;
+import org.threeten.bp.Duration;
+import org.threeten.bp.LocalTime;
+import org.threeten.bp.OffsetTime;
+import org.threeten.bp.Period;
+import org.threeten.bp.temporal.Temporal;
+import org.threeten.bp.temporal.TemporalAmount;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.Duration;
-import java.time.LocalTime;
-import java.time.OffsetTime;
-import java.time.Period;
-import java.time.temporal.Temporal;
-import java.time.temporal.TemporalAmount;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Visitor for our expression trees

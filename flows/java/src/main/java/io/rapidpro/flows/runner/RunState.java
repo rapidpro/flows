@@ -10,10 +10,10 @@ import io.rapidpro.flows.definition.Rule;
 import io.rapidpro.flows.definition.RuleSet;
 import org.apache.commons.lang3.StringUtils;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
+import org.threeten.bp.Instant;
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.ZonedDateTime;
+import org.threeten.bp.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

@@ -1,18 +1,16 @@
 package io.rapidpro.expressions.functions;
 
 import io.rapidpro.expressions.EvaluationContext;
-import io.rapidpro.expressions.functions.annotations.BooleanDefault;
-import io.rapidpro.expressions.functions.annotations.IntegerDefault;
 import io.rapidpro.expressions.evaluator.Conversions;
 import io.rapidpro.expressions.evaluator.EvaluatorUtils;
+import io.rapidpro.expressions.functions.annotations.BooleanDefault;
+import io.rapidpro.expressions.functions.annotations.IntegerDefault;
 import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * Library of supported custom functions.

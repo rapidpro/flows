@@ -10,7 +10,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 
 import java.io.IOException;
-import java.time.ZoneId;
+import org.threeten.bp.ZoneId;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashSet;

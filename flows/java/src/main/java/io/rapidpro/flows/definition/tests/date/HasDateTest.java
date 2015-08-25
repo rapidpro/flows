@@ -6,7 +6,7 @@ import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.RunState;
 
-import java.time.LocalDate;
+import org.threeten.bp.LocalDate;
 
 /**
  * Test that returns whether the text contains the a valid date

@@ -4,7 +4,7 @@ import io.rapidpro.expressions.dates.DateStyle;
 import org.junit.Test;
 
 import java.math.BigDecimal;
-import java.time.ZoneId;
+import org.threeten.bp.ZoneId;
 import java.util.*;
 
 import static org.hamcrest.Matchers.*;

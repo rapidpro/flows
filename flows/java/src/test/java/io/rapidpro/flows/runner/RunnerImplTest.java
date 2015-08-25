@@ -10,8 +10,8 @@ import io.rapidpro.flows.definition.actions.AddToGroupAction;
 import io.rapidpro.flows.definition.actions.ReplyAction;
 import org.junit.Test;
 
-import java.time.Instant;
-import java.time.ZoneId;
+import org.threeten.bp.Instant;
+import org.threeten.bp.ZoneId;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;

@@ -2,7 +2,7 @@ package io.rapidpro.expressions.dates;
 
 import org.junit.Test;
 
-import java.time.*;
+import org.threeten.bp.*;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;

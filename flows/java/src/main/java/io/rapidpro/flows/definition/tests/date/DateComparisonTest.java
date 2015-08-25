@@ -5,7 +5,7 @@ import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.evaluator.Conversions;
 import io.rapidpro.flows.runner.RunState;
 
-import java.time.LocalDate;
+import org.threeten.bp.LocalDate;
 
 /**
  * Abstract base class for date tests which compare the input against a value

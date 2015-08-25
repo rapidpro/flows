@@ -5,7 +5,7 @@ import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.definition.tests.Test;
 
-import java.time.LocalDate;
+import org.threeten.bp.LocalDate;
 
 /**
  * Test which returns whether input is a date equal to the given value

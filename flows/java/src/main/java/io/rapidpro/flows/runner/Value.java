@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.evaluator.Conversions;
 
-import java.time.Instant;
+import org.threeten.bp.Instant;
 import java.util.HashMap;
 import java.util.Map;
 

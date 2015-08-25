@@ -3,7 +3,7 @@ package io.rapidpro.flows.runner;
 import com.google.gson.annotations.SerializedName;
 import io.rapidpro.expressions.dates.DateStyle;
 
-import java.time.ZoneId;
+import org.threeten.bp.ZoneId;
 
 /**
  * An organization - used to provide additional information about how a flow should be run

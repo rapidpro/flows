@@ -4,7 +4,7 @@ import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.Rule;
 import io.rapidpro.flows.definition.actions.Action;
 
-import java.time.Instant;
+import org.threeten.bp.Instant;
 import java.util.ArrayList;
 import java.util.List;
 

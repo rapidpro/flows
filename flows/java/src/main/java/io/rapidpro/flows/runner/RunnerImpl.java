@@ -4,7 +4,7 @@ import io.rapidpro.flows.Flows;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.RuleSet;
 
-import java.time.Instant;
+import org.threeten.bp.Instant;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
