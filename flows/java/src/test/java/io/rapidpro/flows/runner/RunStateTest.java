@@ -58,6 +58,8 @@ public class RunStateTest extends BaseFlowsTest {
 
         // TODO
 
-        //RunState run1 = RunState.fromJson(json, flow);
+        //RunState restored = RunState.fromJson(json, flow);
+
+        //assertThat(restored.getOrg().getCountry(), is("RW"));
     }
 }

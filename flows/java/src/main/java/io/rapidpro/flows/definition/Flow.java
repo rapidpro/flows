@@ -37,7 +37,7 @@ public class Flow {
 
     protected Node m_entry;
 
-    protected Map<String, Node> m_nodesByUuid = new HashMap<>();
+    protected Map<String, Element> m_elementsByUuid = new HashMap<>();
 
     /**
      * Creates a flow from a JSON object
@@ -53,21 +53,21 @@ public class Flow {
 
         for (JsonElement asElem : obj.get("action_sets").getAsJsonArray()) {
             ActionSet actionSet = ActionSet.fromJson(asElem.getAsJsonObject(), flowContext);
-            flow.m_nodesByUuid.put(actionSet.m_uuid, actionSet);
+            flow.m_elementsByUuid.put(actionSet.m_uuid, actionSet);
         }
 
         for (JsonElement rsElem : obj.get("rule_sets").getAsJsonArray()) {
             RuleSet ruleSet = RuleSet.fromJson(rsElem.getAsJsonObject(), flowContext);
-            flow.m_nodesByUuid.put(ruleSet.m_uuid, ruleSet);
+            flow.m_elementsByUuid.put(ruleSet.m_uuid, ruleSet);
         }
 
         // lookup and set destination nodes
         for (Map.Entry<ConnectionStart, String> entry : flowContext.m_destinationsToSet.entrySet()) {
             ConnectionStart start = entry.getKey();
-            start.setDestination(flow.m_nodesByUuid.get(entry.getValue()));
+            start.setDestination((Node) flow.getElementByUuid(entry.getValue()));
         }
 
-        flow.m_entry = flow.m_nodesByUuid.get(JsonUtils.getAsString(obj, "entry"));
+        flow.m_entry = flow.getElementByUuid(JsonUtils.getAsString(obj, "entry"));
 
         return flow;
     }
@@ -96,6 +96,10 @@ public class Flow {
 
     public Node getEntry() {
         return m_entry;
+    }
+
+    public <T extends Element> T getElementByUuid(String uuid) {
+        return (T) m_elementsByUuid.get(uuid);
     }
 
     public static class Deserializer implements JsonDeserializer<Flow> {
@@ -151,7 +155,8 @@ public class Flow {
             }
             @Override
             public Element read(JsonReader in) throws IOException {
-                throw new UnsupportedOperationException();
+                String elementUuid = in.nextString();
+                return JsonUtils.getFlowContext().getElementByUuid(elementUuid);
             }
         }
 

@@ -6,23 +6,22 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import io.rapidpro.flows.definition.Flow;
-import org.threeten.bp.*;
-import org.threeten.bp.chrono.IsoChronology;
+import org.threeten.bp.Instant;
+import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.ZoneId;
+import org.threeten.bp.ZoneOffset;
 import org.threeten.bp.format.DateTimeFormatter;
-import org.threeten.bp.format.DateTimeFormatterBuilder;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import static org.threeten.bp.format.ResolverStyle.*;
-import static org.threeten.bp.temporal.ChronoField.MILLI_OF_SECOND;
-import static org.threeten.bp.temporal.ChronoField.NANO_OF_SECOND;
-
 /**
  * JSON utility methods
  */
 public class JsonUtils {
+
+    protected static ThreadLocal<Flow> s_flowContext = new ThreadLocal<>();
 
     /**
      * Gets the named member as a string, returning null if it's null of it doesn't exist
@@ -86,5 +85,17 @@ public class JsonUtils {
         public Instant read(JsonReader in) throws IOException {
             return LocalDateTime.parse(in.nextString(), s_formatter).atOffset(ZoneOffset.UTC).toInstant();
         }
+    }
+
+    public static Flow getFlowContext() {
+        return s_flowContext.get();
+    }
+
+    public static void setFlowContext(Flow flow) {
+        s_flowContext.set(flow);
+    }
+
+    public static void clearFlowContext() {
+        s_flowContext.remove();
     }
 }

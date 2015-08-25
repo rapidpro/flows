@@ -1,6 +1,7 @@
 package io.rapidpro.flows.definition.actions;
 
 import com.google.gson.JsonObject;
+import io.rapidpro.flows.Flows;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.runner.Input;
@@ -25,11 +26,12 @@ public abstract class Action {
 
     /**
      * Executes this action
-     * @param run the run state
+     * @param runner the flow runner
+     * @param run the current run state
      * @param input the current input
      * @return the action result (action that was actually performed and any errors)
      */
-    public abstract Result execute(RunState run, Input input);
+    public abstract Result execute(Flows.Runner runner, RunState run, Input input);
 
     /**
      * Creates an action from the given JSON object

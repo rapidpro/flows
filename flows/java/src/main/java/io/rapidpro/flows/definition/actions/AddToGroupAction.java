@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import io.rapidpro.expressions.EvaluatedTemplate;
 import io.rapidpro.expressions.EvaluationContext;
+import io.rapidpro.flows.Flows;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.runner.Input;
@@ -37,10 +38,10 @@ public class AddToGroupAction extends Action {
     }
 
     /**
-     * @see Action#execute(RunState, Input)
+     * @see Action#execute(Flows.Runner, RunState, Input)
      */
     @Override
-    public Result execute(RunState run, Input input) {
+    public Result execute(Flows.Runner runner, RunState run, Input input) {
         EvaluationContext context = run.buildContext(input);
         List<String> groups = new ArrayList<>();
         List<String> errors = new ArrayList<>();

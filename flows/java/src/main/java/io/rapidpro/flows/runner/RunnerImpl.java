@@ -24,7 +24,7 @@ public class RunnerImpl implements Flows.Runner {
      */
     @Override
     public RunState start(Org org, Contact contact, Flow flow) throws FlowRunException {
-        RunState run = new RunState(org, contact, flow);
+        RunState run = RunState.newRun(org, contact, flow);
         return resume(run, null);
     }
 

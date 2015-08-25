@@ -1,5 +1,7 @@
 package io.rapidpro.flows.runner;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 import io.rapidpro.expressions.EvaluatedTemplate;
 import io.rapidpro.expressions.EvaluationContext;
@@ -8,6 +10,7 @@ import io.rapidpro.expressions.evaluator.Conversions;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.Rule;
 import io.rapidpro.flows.definition.RuleSet;
+import io.rapidpro.flows.utils.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.threeten.bp.Instant;
 import org.threeten.bp.LocalDate;
@@ -52,18 +55,37 @@ public class RunState {
 
     protected transient Flow m_flow;
 
-    public RunState(Org org, Contact contact, Flow flow) {
-        m_org = org;
-        m_contact = contact;
-        m_steps = new ArrayList<>();
-        m_values = new HashMap<>();
-        m_extra = new HashMap<>();
-        m_state = State.IN_PROGRESS;
-        m_flow = flow;
+    protected RunState() {
+    }
+
+    /**
+     * Creates a run state for a new run by the given contact in the given flow
+     * @param org the org
+     * @param contact the contact
+     * @param flow the flow
+     * @return the run state
+     */
+    public static RunState newRun(Org org, Contact contact, Flow flow) {
+        RunState run = new RunState();
+        run.m_org = org;
+        run.m_contact = contact;
+        run.m_steps = new ArrayList<>();
+        run.m_values = new HashMap<>();
+        run.m_extra = new HashMap<>();
+        run.m_state = State.IN_PROGRESS;
+        run.m_flow = flow;
+        return run;
     }
 
     public static RunState fromJson(String json, Flow flow) {
-        return null; // TODO
+        try {
+            JsonUtils.setFlowContext(flow);
+            Gson gson = new GsonBuilder().create();
+            return gson.fromJson(json, RunState.class);
+        }
+        finally {
+            JsonUtils.clearFlowContext();
+        }
     }
 
     public EvaluatedTemplate substituteVariables(String text, EvaluationContext context) {

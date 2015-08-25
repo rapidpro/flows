@@ -3,6 +3,7 @@ package io.rapidpro.flows.definition.actions;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import io.rapidpro.expressions.EvaluatedTemplate;
+import io.rapidpro.flows.Flows;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.definition.TranslatableText;
@@ -31,10 +32,10 @@ public class ReplyAction extends Action {
     }
 
     /**
-     * @see Action#execute(RunState, Input)
+     * @see Action#execute(Flows.Runner, RunState, Input)
      */
     @Override
-    public Result execute(RunState run, Input input) {
+    public Result execute(Flows.Runner runner, RunState run, Input input) {
         String msg = m_msg.getLocalized(run);
         if (StringUtils.isNotEmpty(msg)) {
             EvaluatedTemplate template = run.substituteVariables(msg, run.buildContext(input));
