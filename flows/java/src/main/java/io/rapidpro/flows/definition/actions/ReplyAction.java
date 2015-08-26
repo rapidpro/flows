@@ -1,11 +1,8 @@
 package io.rapidpro.flows.definition.actions;
 
-import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import io.rapidpro.expressions.EvaluatedTemplate;
 import io.rapidpro.flows.Flows;
-import io.rapidpro.flows.definition.Flow;
-import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.definition.TranslatableText;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.RunState;
@@ -16,19 +13,14 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class ReplyAction extends Action {
 
+    protected static final String TYPE = "reply";
+
     @SerializedName("msg")
     protected TranslatableText m_msg;
 
     public ReplyAction(TranslatableText msg) {
+        super(TYPE);
         m_msg = msg;
-    }
-
-    /**
-     * @see Action#fromJson(JsonObject, Flow.DeserializationContext)
-     */
-    public static ReplyAction fromJson(JsonObject json, Flow.DeserializationContext context) throws FlowParseException {
-        TranslatableText msg = TranslatableText.fromJson(json.get("msg"));
-        return new ReplyAction(msg);
     }
 
     /**

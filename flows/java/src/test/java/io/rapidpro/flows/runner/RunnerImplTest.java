@@ -4,14 +4,15 @@ import io.rapidpro.expressions.dates.DateStyle;
 import io.rapidpro.flows.BaseFlowsTest;
 import io.rapidpro.flows.Flows;
 import io.rapidpro.flows.definition.Flow;
+import io.rapidpro.flows.definition.Group;
 import io.rapidpro.flows.definition.TranslatableText;
 import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.definition.actions.AddToGroupAction;
 import io.rapidpro.flows.definition.actions.ReplyAction;
 import org.junit.Test;
-
 import org.threeten.bp.Instant;
 import org.threeten.bp.ZoneId;
+
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
@@ -107,7 +108,7 @@ public class RunnerImplTest extends BaseFlowsTest {
         assertThat(run.getSteps().get(1).getRuleResult(), nullValue());
         assertThat(run.getSteps().get(1).getActions(), hasSize(2));
         assertReply(run.getSteps().get(1).getActions(), 0, "That was the right answer.");
-        assertAddToGroup(run.getSteps().get(1).getActions(), 1, "Approved");
+        assertAddToGroup(run.getSteps().get(1).getActions(), 1, new Group(11106, "Approved"));
 
         assertThat(run.getValues().size(), is(1));
         assertThat(run.getValues().get("response_1").getValue(), is("no"));
@@ -213,7 +214,7 @@ public class RunnerImplTest extends BaseFlowsTest {
         assertThat(action.getMsg(), is(new TranslatableText(msg)));
     }
 
-    protected void assertAddToGroup(List<Action> actions, int index, String... groups) {
+    protected void assertAddToGroup(List<Action> actions, int index, Group... groups) {
         AddToGroupAction action = (AddToGroupAction) actions.get(index);
         assertThat(action.getGroups(), contains(groups));
     }

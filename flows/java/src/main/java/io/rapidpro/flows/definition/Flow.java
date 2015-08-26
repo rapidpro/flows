@@ -4,6 +4,7 @@ import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import io.rapidpro.flows.Flows;
+import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.runner.Step;
@@ -17,13 +18,6 @@ import java.util.Map;
  * A flow definition, typically loaded from JSON
  */
 public class Flow {
-
-    protected static Gson s_gson = null;
-    static {
-        s_gson = new GsonBuilder()
-                .registerTypeAdapter(Flow.class, new Deserializer())
-                .create();
-    }
 
     public enum Type {
         MESSAGE,
@@ -40,81 +34,53 @@ public class Flow {
     protected Map<String, Element> m_elementsByUuid = new HashMap<>();
 
     /**
-     * Creates a flow from a JSON object
-     * @param obj the JSON object
-     * @return the flow
-     */
-    public static Flow fromJson(JsonObject obj) throws FlowParseException {
-        Flow flow = new Flow();
-        flow.m_type = Type.MESSAGE;  // TODO flow type should be included in the JSON
-        flow.m_baseLanguage = obj.get("base_language").getAsString();
-
-        DeserializationContext flowContext = new DeserializationContext(flow);
-
-        for (JsonElement asElem : obj.get("action_sets").getAsJsonArray()) {
-            ActionSet actionSet = ActionSet.fromJson(asElem.getAsJsonObject(), flowContext);
-            flow.m_elementsByUuid.put(actionSet.m_uuid, actionSet);
-        }
-
-        for (JsonElement rsElem : obj.get("rule_sets").getAsJsonArray()) {
-            RuleSet ruleSet = RuleSet.fromJson(rsElem.getAsJsonObject(), flowContext);
-            flow.m_elementsByUuid.put(ruleSet.m_uuid, ruleSet);
-        }
-
-        // lookup and set destination nodes
-        for (Map.Entry<ConnectionStart, String> entry : flowContext.m_destinationsToSet.entrySet()) {
-            ConnectionStart start = entry.getKey();
-            start.setDestination((Node) flow.getElementByUuid(entry.getValue()));
-        }
-
-        flow.m_entry = flow.getElementByUuid(JsonUtils.getAsString(obj, "entry"));
-
-        return flow;
-    }
-
-    /**
      * Creates a flow from a JSON flow definition
      * @param json the JSON
      * @return the flow
      */
     public static Flow fromJson(String json) throws FlowParseException {
-        try {
-            return s_gson.fromJson(json, Flow.class);
-        }
-        catch (JsonParseException ex) {
-            if (ex.getCause() instanceof FlowParseException) {
-                throw (FlowParseException) ex.getCause();
-            } else {
-                throw ex;
-            }
-        }
+        return JsonUtils.getGson().fromJson(json, Flow.class);
     }
 
-    public String getBaseLanguage() {
-        return m_baseLanguage;
-    }
-
-    public Node getEntry() {
-        return m_entry;
-    }
-
-    public <T extends Element> T getElementByUuid(String uuid) {
-        return (T) m_elementsByUuid.get(uuid);
-    }
-
+    /**
+     * Custom JSON deserializer
+     */
     public static class Deserializer implements JsonDeserializer<Flow> {
+        @Override
+        public Flow deserialize(JsonElement elem, java.lang.reflect.Type type, JsonDeserializationContext jsonContext) throws JsonParseException {
+            JsonObject obj = elem.getAsJsonObject().get("flow").getAsJsonObject();
 
-        public Flow deserialize(JsonElement elem, java.lang.reflect.Type type, JsonDeserializationContext context) throws JsonParseException {
-            try {
-                JsonObject obj = elem.getAsJsonObject().get("flow").getAsJsonObject();
-                return Flow.fromJson(obj);
+            Flow flow = new Flow();
+            flow.m_type = Type.MESSAGE;  // TODO flow type should be included in the JSON
+            flow.m_baseLanguage = obj.get("base_language").getAsString();
+
+            DeserializationContext context = new DeserializationContext(flow);
+
+            for (JsonElement asElem : obj.get("action_sets").getAsJsonArray()) {
+                ActionSet actionSet = ActionSet.fromJson(asElem.getAsJsonObject(), context, jsonContext);
+                flow.m_elementsByUuid.put(actionSet.m_uuid, actionSet);
             }
-            catch (FlowParseException ex) {
-                throw new JsonParseException(ex);
+
+            for (JsonElement rsElem : obj.get("rule_sets").getAsJsonArray()) {
+                RuleSet ruleSet = RuleSet.fromJson(rsElem.getAsJsonObject(), context);
+                flow.m_elementsByUuid.put(ruleSet.m_uuid, ruleSet);
             }
+
+            // lookup and set destination nodes
+            for (Map.Entry<ConnectionStart, String> entry : context.m_destinationsToSet.entrySet()) {
+                ConnectionStart start = entry.getKey();
+                start.setDestination((Node) flow.getElementByUuid(entry.getValue()));
+            }
+
+            flow.m_entry = flow.getElementByUuid(JsonUtils.getAsString(obj, "entry"));
+
+            return flow;
         }
     }
 
+    /**
+     * Allows state to be provided to deserialization methods
+     */
     public static class DeserializationContext {
 
         protected Flow m_flow;
@@ -156,7 +122,7 @@ public class Flow {
             @Override
             public Element read(JsonReader in) throws IOException {
                 String elementUuid = in.nextString();
-                return JsonUtils.getFlowContext().getElementByUuid(elementUuid);
+                return JsonUtils.getDeserializationContext().getFlow().getElementByUuid(elementUuid);
             }
         }
 
@@ -213,5 +179,17 @@ public class Flow {
         Node getDestination();
 
         void setDestination(Node destination);
+    }
+
+    public String getBaseLanguage() {
+        return m_baseLanguage;
+    }
+
+    public Node getEntry() {
+        return m_entry;
+    }
+
+    public <T extends Element> T getElementByUuid(String uuid) {
+        return (T) m_elementsByUuid.get(uuid);
     }
 }

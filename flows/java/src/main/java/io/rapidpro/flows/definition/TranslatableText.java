@@ -137,7 +137,13 @@ public class TranslatableText {
             if (in.peek().equals(JsonToken.STRING)) {
                 return new TranslatableText(in.nextString());
             } else {
-                return null; // TODO ?
+                Map<String, String> translations = new HashMap<>();
+                in.beginObject();
+                while (in.hasNext()) {
+                    translations.put(in.nextName(), in.nextString());
+                }
+                in.endObject();
+                return new TranslatableText(translations);
             }
         }
     }

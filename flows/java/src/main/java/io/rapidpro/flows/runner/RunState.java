@@ -8,8 +8,10 @@ import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.Expressions;
 import io.rapidpro.expressions.evaluator.Conversions;
 import io.rapidpro.flows.definition.Flow;
+import io.rapidpro.flows.definition.Group;
 import io.rapidpro.flows.definition.Rule;
 import io.rapidpro.flows.definition.RuleSet;
+import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.utils.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.threeten.bp.Instant;
@@ -79,13 +81,17 @@ public class RunState {
 
     public static RunState fromJson(String json, Flow flow) {
         try {
-            JsonUtils.setFlowContext(flow);
-            Gson gson = new GsonBuilder().create();
-            return gson.fromJson(json, RunState.class);
+            Flow.DeserializationContext context = new Flow.DeserializationContext(flow);
+            JsonUtils.setDeserializationContext(context);
+            return JsonUtils.getGson().fromJson(json, RunState.class);
         }
         finally {
-            JsonUtils.clearFlowContext();
+            JsonUtils.clearDeserializationContext();
         }
+    }
+
+    public String toJson() {
+        return JsonUtils.getGson().toJson(this);
     }
 
     public EvaluatedTemplate substituteVariables(String text, EvaluationContext context) {

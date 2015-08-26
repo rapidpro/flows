@@ -1,5 +1,6 @@
 package io.rapidpro.flows.definition;
 
+import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.rapidpro.flows.Flows;
@@ -32,7 +33,7 @@ public class ActionSet extends Flow.Node implements Flow.ConnectionStart {
      * @param context the deserialization context
      * @return the action set
      */
-    public static ActionSet fromJson(JsonObject obj, Flow.DeserializationContext context) throws FlowParseException {
+    public static ActionSet fromJson(JsonObject obj, Flow.DeserializationContext context, JsonDeserializationContext jsonContext) throws FlowParseException {
         ActionSet set = new ActionSet();
         set.m_uuid = obj.get("uuid").getAsString();
 
@@ -42,7 +43,8 @@ public class ActionSet extends Flow.Node implements Flow.ConnectionStart {
         }
 
         for (JsonElement actionElem : obj.get("actions").getAsJsonArray()) {
-            set.m_actions.add(Action.fromJson(actionElem.getAsJsonObject(), context));
+            Action action = jsonContext.deserialize(actionElem, Action.class);
+            set.m_actions.add(action);
         }
 
         return set;

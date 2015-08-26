@@ -1,13 +1,10 @@
 package io.rapidpro.flows.definition.actions;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import io.rapidpro.expressions.EvaluatedTemplate;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.flows.Flows;
-import io.rapidpro.flows.definition.Flow;
-import io.rapidpro.flows.definition.FlowParseException;
+import io.rapidpro.flows.definition.Group;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.RunState;
 
@@ -19,22 +16,14 @@ import java.util.List;
  */
 public class AddToGroupAction extends Action {
 
+    protected static final String TYPE = "add_group";
+
     @SerializedName("groups")
-    protected List<String> m_groups;
+    protected List<Group> m_groups;
 
-    public AddToGroupAction(List<String> groups) {
+    public AddToGroupAction(List<Group> groups) {
+        super(TYPE);
         m_groups = groups;
-    }
-
-    /**
-     * @see Action#fromJson(JsonObject, Flow.DeserializationContext)
-     */
-    public static AddToGroupAction fromJson(JsonObject json, Flow.DeserializationContext context) throws FlowParseException {
-        List<String> groups = new ArrayList<>();
-        for (JsonElement groupElem : json.get("groups").getAsJsonArray()) {
-            groups.add(groupElem.getAsJsonObject().get("name").getAsString());
-        }
-        return new AddToGroupAction(groups);
     }
 
     /**
@@ -43,17 +32,21 @@ public class AddToGroupAction extends Action {
     @Override
     public Result execute(Flows.Runner runner, RunState run, Input input) {
         EvaluationContext context = run.buildContext(input);
-        List<String> groups = new ArrayList<>();
+        List<Group> groups = new ArrayList<>();
         List<String> errors = new ArrayList<>();
 
-        for (String group : m_groups) {
-            EvaluatedTemplate template = run.substituteVariables(group, context);
-
-            if (!template.hasErrors()) {
-                run.getContact().getGroups().add(template.getOutput());
-                groups.add(template.getOutput());
+        for (Group group : m_groups) {
+            if (group.getId() == null) {
+                EvaluatedTemplate template = run.substituteVariables(group.getName(), context);
+                if (!template.hasErrors()) {
+                    run.getContact().getGroups().add(template.getOutput());
+                    groups.add(new Group(template.getOutput()));
+                } else {
+                    errors.add(group.getName());
+                }
             } else {
-                errors.add(group);
+                run.getContact().getGroups().add(group.getName());
+                groups.add(group);
             }
         }
 
@@ -61,7 +54,7 @@ public class AddToGroupAction extends Action {
         return new Result(performed, errors);
     }
 
-    public List<String> getGroups() {
+    public List<Group> getGroups() {
         return m_groups;
     }
 }

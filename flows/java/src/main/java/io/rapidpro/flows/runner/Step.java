@@ -73,8 +73,8 @@ public class Step {
     }
 
     public void addActionResult(Action.Result actionResult) {
-        if (actionResult.getAction() != null) {
-            m_actions.add(actionResult.getAction());
+        if (actionResult.getActionPerformed() != null) {
+            m_actions.add(actionResult.getActionPerformed());
         }
         if (actionResult.hasErrors()) {
             m_errors.addAll(actionResult.getErrors());

@@ -1,13 +1,13 @@
 package io.rapidpro.flows.definition.actions;
 
-import com.google.gson.JsonObject;
+import com.google.gson.*;
+import com.google.gson.annotations.SerializedName;
 import io.rapidpro.flows.Flows;
-import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.RunState;
-import io.rapidpro.flows.utils.JsonUtils;
 
+import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -20,8 +20,15 @@ public abstract class Action {
 
     protected static Map<String, Class<? extends Action>> s_classByType = new HashMap<>();
     static {
-        s_classByType.put("reply", ReplyAction.class);
-        s_classByType.put("add_group", AddToGroupAction.class);
+        s_classByType.put(ReplyAction.TYPE, ReplyAction.class);
+        s_classByType.put(AddToGroupAction.TYPE, AddToGroupAction.class);
+    }
+
+    @SerializedName("type")
+    protected String m_type;
+
+    protected Action(String type) {
+        m_type = type;
     }
 
     /**
@@ -34,19 +41,25 @@ public abstract class Action {
     public abstract Result execute(Flows.Runner runner, RunState run, Input input);
 
     /**
-     * Creates an action from the given JSON object
-     * @param obj the JSON object
-     * @param context the deserialization context
-     * @return the action
+     * Custom JSON deserializer
      */
-    public static Action fromJson(JsonObject obj, Flow.DeserializationContext context) throws FlowParseException {
-        String type = obj.get("type").getAsString();
-        Class<? extends Action> clazz = s_classByType.get(type);
-        if (clazz == null) {
-            throw new FlowParseException("Unknown action type: " + type);
+    public static class Deserializer implements JsonDeserializer<Action> {
+        @Override
+        public Action deserialize(JsonElement elem, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            String type = elem.getAsJsonObject().get("type").getAsString();
+            Class<? extends Action> clazz = s_classByType.get(type);
+            if (clazz == null) {
+                throw new FlowParseException("Unknown action type: " + type);
+            }
+            return context.deserialize(elem, clazz);
         }
-
-        return JsonUtils.fromJson(obj, context, clazz);
+    }
+    
+    public static class Serializer implements JsonSerializer<Action> {
+        @Override
+        public JsonElement serialize(Action action, Type type, JsonSerializationContext context) {
+            return context.serialize(action, action.getClass());
+        }
     }
 
     /**
@@ -55,21 +68,21 @@ public abstract class Action {
     public static class Result {
         public static final Result NOOP = new Result(null, null);
 
-        protected Action m_action;
+        protected Action m_actionPerformed;
 
         protected List<String> m_errors;
 
-        public Result(Action action) {
-            this(action, Collections.<String>emptyList());
+        public Result(Action performed) {
+            this(performed, Collections.<String>emptyList());
         }
 
-        public Result(Action action, List<String> errors) {
-            m_action = action;
+        public Result(Action performed, List<String> errors) {
+            m_actionPerformed = performed;
             m_errors = errors;
         }
 
-        public Action getAction() {
-            return m_action;
+        public Action getActionPerformed() {
+            return m_actionPerformed;
         }
 
         public List<String> getErrors() {

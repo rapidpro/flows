@@ -43,7 +43,7 @@ public class StepTest extends BaseFlowsTest {
         assertThat(json, is("{" +
                 "\"node\":\"32cf414b-35e3-4c75-8a78-d5f4de925e13\"," +
                 "\"arrived_on\":\"2015-08-25T11:59:30.088Z\"," +
-                "\"actions\":[{\"msg\":\"Hi Joe\"}]," +
+                "\"actions\":[{\"msg\":\"Hi Joe\",\"type\":\"reply\"}]," +
                 "\"errors\":[]" +
                 "}"));
 
@@ -53,7 +53,7 @@ public class StepTest extends BaseFlowsTest {
         assertThat(json, is("{" +
                 "\"node\":\"32cf414b-35e3-4c75-8a78-d5f4de925e13\"," +
                 "\"arrived_on\":\"2015-08-25T11:59:30.088Z\"," +
-                "\"actions\":[{\"msg\":\"Hi Joe\"}]," +
+                "\"actions\":[{\"msg\":\"Hi Joe\",\"type\":\"reply\"}]," +
                 "\"errors\":[\"This is an error\",\"This too\"]" +
                 "}"));
 
@@ -72,9 +72,5 @@ public class StepTest extends BaseFlowsTest {
                 "\"actions\":[]," +
                 "\"errors\":[]" +
                 "}"));
-
-        //step = gson.fromJson(json, Step.class);
-
-        //assertThat(step.getNode(), is(flow.getEntry()));
     }
 }

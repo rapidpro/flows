@@ -1,21 +1,22 @@
 package io.rapidpro.flows.runner;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.dates.DateStyle;
 import io.rapidpro.flows.BaseFlowsTest;
 import io.rapidpro.flows.Flows;
 import io.rapidpro.flows.definition.Flow;
+import io.rapidpro.flows.definition.TranslatableText;
+import io.rapidpro.flows.definition.actions.ReplyAction;
 import org.junit.Test;
-
 import org.threeten.bp.Instant;
 import org.threeten.bp.ZoneId;
 import org.threeten.bp.ZonedDateTime;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -53,13 +54,17 @@ public class RunStateTest extends BaseFlowsTest {
         Flows.Runner runner = new RunnerImpl(null);
         RunState run = runner.start(getOrg(), getContact(), flow);
 
-        Gson gson = new GsonBuilder().create();
-        String json = gson.toJson(run);
+        String json = run.toJson();
 
-        // TODO
+        System.out.println(json);
 
-        //RunState restored = RunState.fromJson(json, flow);
+        RunState restored = RunState.fromJson(json, flow);
 
-        //assertThat(restored.getOrg().getCountry(), is("RW"));
+        assertThat(restored.getOrg().getCountry(), is("RW"));
+        assertThat(restored.getState(), is(RunState.State.WAIT_MESSAGE));
+
+        ReplyAction replyAction = (ReplyAction) restored.getSteps().get(0).getActions().get(0);
+
+        assertThat(replyAction.getMsg(), is(new TranslatableText("Hi Joe. Do you like mushrooms?")));
     }
 }

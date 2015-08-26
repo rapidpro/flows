@@ -3,7 +3,7 @@ package io.rapidpro.flows.definition.tests.date;
 import io.rapidpro.flows.definition.tests.BaseTestTest;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 /**

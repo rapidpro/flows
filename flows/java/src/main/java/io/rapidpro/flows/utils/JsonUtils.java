@@ -1,11 +1,11 @@
 package io.rapidpro.flows.utils;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.TypeAdapter;
+import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import io.rapidpro.flows.definition.Flow;
+import io.rapidpro.flows.definition.Group;
+import io.rapidpro.flows.definition.actions.Action;
 import org.threeten.bp.Instant;
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.ZoneId;
@@ -21,7 +21,18 @@ import java.lang.reflect.Method;
  */
 public class JsonUtils {
 
-    protected static ThreadLocal<Flow> s_flowContext = new ThreadLocal<>();
+    protected static Gson s_gson = new GsonBuilder()
+            .registerTypeAdapter(Flow.class, new Flow.Deserializer())
+            .registerTypeAdapter(Action.class, new Action.Deserializer())
+            .registerTypeAdapter(Group.class, new Group.Serializer())
+            .registerTypeAdapter(Group.class, new Group.Deserializer())
+            .create();
+
+    protected static ThreadLocal<Flow.DeserializationContext> s_deserializationContext = new ThreadLocal<>();
+
+    public static Gson getGson() {
+        return s_gson;
+    }
 
     /**
      * Gets the named member as a string, returning null if it's null of it doesn't exist
@@ -87,15 +98,15 @@ public class JsonUtils {
         }
     }
 
-    public static Flow getFlowContext() {
-        return s_flowContext.get();
+    public static Flow.DeserializationContext getDeserializationContext() {
+        return s_deserializationContext.get();
     }
 
-    public static void setFlowContext(Flow flow) {
-        s_flowContext.set(flow);
+    public static void setDeserializationContext(Flow.DeserializationContext context) {
+        s_deserializationContext.set(context);
     }
 
-    public static void clearFlowContext() {
-        s_flowContext.remove();
+    public static void clearDeserializationContext() {
+        s_deserializationContext.remove();
     }
 }
