@@ -4,16 +4,9 @@ import io.rapidpro.expressions.dates.DateStyle;
 import io.rapidpro.flows.BaseFlowsTest;
 import io.rapidpro.flows.Flows;
 import io.rapidpro.flows.definition.Flow;
-import io.rapidpro.flows.definition.Group;
-import io.rapidpro.flows.definition.TranslatableText;
-import io.rapidpro.flows.definition.actions.Action;
-import io.rapidpro.flows.definition.actions.AddToGroupAction;
-import io.rapidpro.flows.definition.actions.ReplyAction;
 import org.junit.Test;
 import org.threeten.bp.Instant;
 import org.threeten.bp.ZoneId;
-
-import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -48,7 +41,7 @@ public class RunnerImplTest extends BaseFlowsTest {
         assertThat(run.getSteps().get(0).getArrivedOn(), notNullValue());
         assertThat(run.getSteps().get(0).getLeftOn(), notNullValue());
         assertThat(run.getSteps().get(0).getActions(), hasSize(1));
-        assertReply(run.getSteps().get(0).getActions(), 0, "Hi Joe. Do you like mushrooms?");
+        assertReply(run.getSteps().get(0).getActions().get(0), "Hi Joe. Do you like mushrooms?");
         assertThat(run.getSteps().get(1).getNode().getUuid(), is("1e318293-4730-481c-b455-daaaf86b2e6c"));
         assertThat(run.getSteps().get(1).getArrivedOn(), notNullValue());
         assertThat(run.getSteps().get(1).getLeftOn(), nullValue());
@@ -76,7 +69,7 @@ public class RunnerImplTest extends BaseFlowsTest {
         assertThat(run.getSteps().get(1).getLeftOn(), notNullValue());
         assertThat(run.getSteps().get(1).getRuleResult(), nullValue());
         assertThat(run.getSteps().get(1).getActions(), hasSize(1));
-        assertReply(run.getSteps().get(1).getActions(), 0, "We didn't understand your answer. Please reply with yes/no.");
+        assertReply(run.getSteps().get(1).getActions().get(0), "We didn't understand your answer. Please reply with yes/no.");
         assertThat(run.getSteps().get(2).getNode().getUuid(), is("1e318293-4730-481c-b455-daaaf86b2e6c"));
         assertThat(run.getSteps().get(2).getArrivedOn(), notNullValue());
         assertThat(run.getSteps().get(2).getLeftOn(), nullValue());
@@ -107,8 +100,8 @@ public class RunnerImplTest extends BaseFlowsTest {
         assertThat(run.getSteps().get(1).getLeftOn(), nullValue());
         assertThat(run.getSteps().get(1).getRuleResult(), nullValue());
         assertThat(run.getSteps().get(1).getActions(), hasSize(2));
-        assertReply(run.getSteps().get(1).getActions(), 0, "That was the right answer.");
-        assertAddToGroup(run.getSteps().get(1).getActions(), 1, new Group(11106, "Approved"));
+        assertReply(run.getSteps().get(1).getActions().get(0), "That was the right answer.");
+        assertAddToGroup(run.getSteps().get(1).getActions().get(1), "Approved");
 
         assertThat(run.getValues().size(), is(1));
         assertThat(run.getValues().get("response_1").getValue(), is("no"));
@@ -129,14 +122,14 @@ public class RunnerImplTest extends BaseFlowsTest {
 
         assertThat(run.getContact().getLanguage(), is("fre"));
         assertThat(run.getSteps(), hasSize(2));
-        assertReply(run.getSteps().get(0).getActions(), 0, "Salut Jean. Aimez-vous les champignons?");
+        assertReply(run.getSteps().get(0).getActions().get(0), "Salut Jean. Aimez-vous les champignons?");
         assertThat(run.getState(), is(RunState.State.WAIT_MESSAGE));
 
         m_runner.resume(run, Input.of("EUGH!"));
 
         assertThat(run.getSteps().get(0).getRuleResult().getCategory(), is("Other"));
         assertThat(run.getSteps().get(0).getRuleResult().getValue(), is("EUGH!"));
-        assertReply(run.getSteps().get(1).getActions(), 0, "Nous ne comprenions pas votre réponse. S'il vous plaît répondre par oui/non.");
+        assertReply(run.getSteps().get(1).getActions().get(0), "Nous ne comprenions pas votre réponse. S'il vous plaît répondre par oui/non.");
 
         assertThat(run.getValues().get("response_1").getValue(), is("EUGH!"));
         assertThat(run.getValues().get("response_1").getCategory(), is("Other"));
@@ -150,7 +143,7 @@ public class RunnerImplTest extends BaseFlowsTest {
 
         assertThat(run.getSteps().get(0).getRuleResult().getCategory(), is("No"));
         assertThat(run.getSteps().get(0).getRuleResult().getValue(), is("non"));
-        assertReply(run.getSteps().get(1).getActions(), 0, "Ce fut la bonne réponse.");
+        assertReply(run.getSteps().get(1).getActions().get(0), "Ce fut la bonne réponse.");
 
         assertThat(run.getValues().get("response_1").getValue(), is("non"));
         assertThat(run.getValues().get("response_1").getCategory(), is("No"));
@@ -167,7 +160,7 @@ public class RunnerImplTest extends BaseFlowsTest {
 
         assertThat(run.getSteps().get(0).getNode().getUuid(), is("8dbb7e1a-43d6-4c5b-a99d-fe3ee8923b65"));
         assertThat(run.getSteps().get(0).getActions(), hasSize(1));
-        assertReply(run.getSteps().get(0).getActions(), 0, "How many people are you?");
+        assertReply(run.getSteps().get(0).getActions().get(0), "How many people are you?");
         assertThat(run.getSteps().get(1).getNode().getUuid(), is("b7cfa0ac-4d50-4384-a1ab-9ec79bd45e42"));
 
         assertThat(run.getState(), is(RunState.State.WAIT_MESSAGE));
@@ -178,7 +171,7 @@ public class RunnerImplTest extends BaseFlowsTest {
         assertThat(run.getSteps().get(0).getRuleResult().getCategory(), is("Other"));
         assertThat(run.getSteps().get(0).getRuleResult().getValue(), is("9"));
         assertThat(run.getSteps().get(1).getNode().getUuid(), is("c81af400-a744-499a-9ad5-c90e233e4b92"));
-        assertReply(run.getSteps().get(1).getActions(), 0, "Please choose a number between 1 and 8");
+        assertReply(run.getSteps().get(1).getActions().get(0), "Please choose a number between 1 and 8");
         assertThat(run.getSteps().get(2).getNode().getUuid(), is("b7cfa0ac-4d50-4384-a1ab-9ec79bd45e42"));
 
         assertThat(run.getValues().get("people").getValue(), is("9"));
@@ -207,15 +200,5 @@ public class RunnerImplTest extends BaseFlowsTest {
     public void start_emptyFlow() throws Exception {
         Flow flow = Flow.fromJson(readResource("flows/empty.json"));
         m_runner.start(getOrg(), getContact(), flow);
-    }
-
-    protected void assertReply(List<Action> actions, int index, String msg) {
-        ReplyAction action = (ReplyAction) actions.get(index);
-        assertThat(action.getMsg(), is(new TranslatableText(msg)));
-    }
-
-    protected void assertAddToGroup(List<Action> actions, int index, Group... groups) {
-        AddToGroupAction action = (AddToGroupAction) actions.get(index);
-        assertThat(action.getGroups(), contains(groups));
     }
 }

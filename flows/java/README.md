@@ -17,7 +17,14 @@ Flows.Runner runner = new Flows.RunnerBuilder()
 
 RunState run = runner.start(org, contact, flow);
 
-m_runner.resume(run, Input.of("Yes"));
+runner.resume(run, Input.of("Yes"));
+
+String json = run.toJson(); // run state can be serialized as JSON
+
+RunState restored = RunState.fromJson(json, flow); // and then de-serialized when needed
+
+runner.resume(run, Input.of(123));
+
 ```
 
 Notes

@@ -23,6 +23,7 @@ public class JsonUtils {
 
     protected static Gson s_gson = new GsonBuilder()
             .registerTypeAdapter(Flow.class, new Flow.Deserializer())
+            .registerTypeAdapter(Action.class, new Action.Serializer())
             .registerTypeAdapter(Action.class, new Action.Deserializer())
             .registerTypeAdapter(Group.class, new Group.Serializer())
             .registerTypeAdapter(Group.class, new Group.Deserializer())

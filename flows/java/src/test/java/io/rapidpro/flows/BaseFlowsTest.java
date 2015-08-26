@@ -1,6 +1,11 @@
 package io.rapidpro.flows;
 
 import io.rapidpro.expressions.dates.DateStyle;
+import io.rapidpro.flows.definition.Group;
+import io.rapidpro.flows.definition.TranslatableText;
+import io.rapidpro.flows.definition.actions.Action;
+import io.rapidpro.flows.definition.actions.AddToGroupAction;
+import io.rapidpro.flows.definition.actions.ReplyAction;
 import io.rapidpro.flows.runner.Contact;
 import io.rapidpro.flows.runner.ContactUrn;
 import io.rapidpro.flows.runner.Location;
@@ -11,10 +16,11 @@ import org.junit.Ignore;
 import org.threeten.bp.ZoneId;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
+import java.util.*;
+
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Base class for project tests
@@ -66,6 +72,21 @@ public abstract class BaseFlowsTest {
                 return null;
             }
         }
+    }
+
+    protected void assertReply(Action action, String msg) {
+        assertThat(action, instanceOf(ReplyAction.class));
+        assertThat(((ReplyAction) action).getMsg(), is(new TranslatableText(msg)));
+    }
+
+    protected void assertAddToGroup(Action action, String... groupNames) {
+        assertThat(action, instanceOf(AddToGroupAction.class));
+
+        List<String> names = new ArrayList<>();
+        for (Group group : ((AddToGroupAction) action).getGroups()) {
+            names.add(group.getName());
+        }
+        assertThat(names, is(Arrays.asList(groupNames)));
     }
 
     public Org getOrg() {

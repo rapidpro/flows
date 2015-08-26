@@ -54,7 +54,7 @@ public abstract class Action {
             return context.deserialize(elem, clazz);
         }
     }
-    
+
     public static class Serializer implements JsonSerializer<Action> {
         @Override
         public JsonElement serialize(Action action, Type type, JsonSerializationContext context) {

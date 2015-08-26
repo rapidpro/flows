@@ -5,8 +5,6 @@ import io.rapidpro.expressions.dates.DateStyle;
 import io.rapidpro.flows.BaseFlowsTest;
 import io.rapidpro.flows.Flows;
 import io.rapidpro.flows.definition.Flow;
-import io.rapidpro.flows.definition.TranslatableText;
-import io.rapidpro.flows.definition.actions.ReplyAction;
 import org.junit.Test;
 import org.threeten.bp.Instant;
 import org.threeten.bp.ZoneId;
@@ -56,15 +54,8 @@ public class RunStateTest extends BaseFlowsTest {
 
         String json = run.toJson();
 
-        System.out.println(json);
-
         RunState restored = RunState.fromJson(json, flow);
 
-        assertThat(restored.getOrg().getCountry(), is("RW"));
-        assertThat(restored.getState(), is(RunState.State.WAIT_MESSAGE));
-
-        ReplyAction replyAction = (ReplyAction) restored.getSteps().get(0).getActions().get(0);
-
-        assertThat(replyAction.getMsg(), is(new TranslatableText("Hi Joe. Do you like mushrooms?")));
+        assertThat(restored.toJson(), is(json));
     }
 }

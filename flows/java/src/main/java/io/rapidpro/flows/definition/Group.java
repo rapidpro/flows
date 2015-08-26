@@ -5,7 +5,7 @@ import com.google.gson.*;
 import java.lang.reflect.Type;
 
 /**
- * A reference to a contact group which can be an object like {"id":123,"name":"Testers"} or an expression string
+ * Reference to a contact group which can be an object like {"id":123,"name":"Testers"} or an expression string
  */
 public class Group {
 
@@ -55,23 +55,5 @@ public class Group {
                 return new JsonPrimitive(group.m_name);
             }
         }
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Group)) return false;
-
-        Group group = (Group) o;
-
-        if (m_id != null ? !m_id.equals(group.m_id) : group.m_id != null) return false;
-        return m_name.equals(group.m_name);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = m_id != null ? m_id.hashCode() : 0;
-        result = 31 * result + m_name.hashCode();
-        return result;
     }
 }

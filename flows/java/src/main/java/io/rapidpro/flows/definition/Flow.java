@@ -4,7 +4,6 @@ import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import io.rapidpro.flows.Flows;
-import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.runner.Step;
