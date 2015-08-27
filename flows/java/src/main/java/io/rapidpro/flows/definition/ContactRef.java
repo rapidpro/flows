@@ -20,4 +20,12 @@ public class ContactRef {
         m_id = id;
         m_name = name;
     }
+
+    public Integer getId() {
+        return m_id;
+    }
+
+    public String getName() {
+        return m_name;
+    }
 }

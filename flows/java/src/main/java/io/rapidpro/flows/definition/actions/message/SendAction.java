@@ -76,4 +76,16 @@ public class SendAction extends MessageAction {
         }
         return result;
     }
+
+    public List<ContactRef> getContacts() {
+        return m_contacts;
+    }
+
+    public List<GroupRef> getGroups() {
+        return m_groups;
+    }
+
+    public List<RecipientVariable> getVariables() {
+        return m_variables;
+    }
 }

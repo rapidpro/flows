@@ -78,6 +78,10 @@ public class Contact {
         return m_language;
     }
 
+    public void setLanguage(String language) {
+        m_language = language;
+    }
+
     public String getFirstName(Org org) {
         if (StringUtils.isEmpty(m_name)) {
             return getUrnDisplay(org, null, false);

@@ -24,6 +24,7 @@ public abstract class Action {
 
     protected static Map<String, Class<? extends Action>> s_classByType = new HashMap<>();
     static {
+        s_classByType.put(SetLanguageAction.TYPE, SetLanguageAction.class);
         s_classByType.put(ReplyAction.TYPE, ReplyAction.class);
         s_classByType.put(SendAction.TYPE, SendAction.class);
         s_classByType.put(AddToGroupsAction.TYPE, AddToGroupsAction.class);

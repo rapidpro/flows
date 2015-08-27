@@ -7,6 +7,7 @@ import io.rapidpro.flows.definition.TranslatableText;
 import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.definition.actions.BaseActionTest;
 import io.rapidpro.flows.runner.Input;
+import io.rapidpro.flows.utils.JsonUtils;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -18,6 +19,32 @@ import static org.junit.Assert.assertThat;
  * Test for {@link SendAction}
  */
 public class SendActionTest extends BaseActionTest {
+
+    @Test
+    public void fromJson() {
+        SendAction action = (SendAction) JsonUtils.getGson().fromJson("{" +
+                "\"type\":\"send\"," +
+                "\"msg\":{" +
+                    "\"fre\":\"Bonjour\"" +
+                "}," +
+                "\"groups\":[" +
+                    "{\"id\":123,\"name\":\"Testers\"}" +
+                "]," +
+                "\"contacts\":[" +
+                "{\"id\":234,\"name\":\"Mr Test\"}" +
+                "]," +
+                "\"variables\":[" +
+                "{\"id\":\"@new_contact\"}" +
+                "]" +
+        "}", Action.class);
+
+        assertThat(action.getMsg(), is(new TranslatableText("fre", "Bonjour")));
+        assertThat(action.getGroups().get(0).getId(), is(123));
+        assertThat(action.getGroups().get(0).getName(), is("Testers"));
+        assertThat(action.getContacts().get(0).getId(), is(234));
+        assertThat(action.getContacts().get(0).getName(), is("Mr Test"));
+        assertThat(action.getVariables().get(0).getId(), is("@new_contact"));
+    }
 
     @Test
     public void execute() {

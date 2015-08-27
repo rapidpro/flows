@@ -3,7 +3,9 @@ package io.rapidpro.flows.definition.actions.message;
 import io.rapidpro.flows.definition.TranslatableText;
 import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.definition.actions.BaseActionTest;
+import io.rapidpro.flows.definition.actions.SetLanguageAction;
 import io.rapidpro.flows.runner.Input;
+import io.rapidpro.flows.utils.JsonUtils;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.contains;
@@ -14,6 +16,13 @@ import static org.junit.Assert.assertThat;
  * Test for {@link ReplyAction}
  */
 public class ReplyActionTest extends BaseActionTest {
+
+    @Test
+    public void fromJson() {
+        ReplyAction action = (ReplyAction) JsonUtils.getGson().fromJson("{\"type\":\"reply\",\"msg\":{\"fre\":\"Bonjour\"}}", Action.class);
+
+        assertThat(action.getMsg(), is(new TranslatableText("fre", "Bonjour")));
+    }
 
     @Test
     public void execute() {
