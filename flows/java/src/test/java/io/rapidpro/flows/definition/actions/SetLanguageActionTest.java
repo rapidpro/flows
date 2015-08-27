@@ -29,5 +29,7 @@ public class SetLanguageActionTest extends BaseActionTest {
 
         assertThat(performed.getLang(), is("fre"));
         assertThat(performed.getName(), is("Français"));
+
+        assertThat(m_run.getContact().getLanguage(), is("fre"));
     }
 }

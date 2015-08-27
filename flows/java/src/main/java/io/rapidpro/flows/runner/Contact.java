@@ -2,7 +2,9 @@ package io.rapidpro.flows.runner;
 
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import io.rapidpro.expressions.utils.ExpressionUtils;
 import io.rapidpro.flows.utils.JsonUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
@@ -62,6 +64,10 @@ public class Contact {
         return m_name;
     }
 
+    public void setName(String name) {
+        m_name = name;
+    }
+
     public List<ContactUrn> getUrns() {
         return m_urns;
     }
@@ -87,8 +93,18 @@ public class Contact {
             return getUrnDisplay(org, null, false);
         }
         else {
-            String[] names = m_name.split("\\s");
+            String[] names = m_name.split("\\s+");
             return names.length > 1 ? names[0] : m_name;
+        }
+    }
+
+    public void setFirstName(String firstName) {
+        if (StringUtils.isEmpty(m_name)) {
+            m_name = firstName;
+        } else {
+            String[] names = m_name.split("\\s+");
+            names[0]= firstName;
+            m_name = StringUtils.join(names, " ");
         }
     }
 
@@ -138,7 +154,8 @@ public class Contact {
             return getAnonIdentifier();
         }
 
-        ContactUrn urn = getUrn(Collections.singletonList(scheme));
+        List<ContactUrn.Scheme> schemes = scheme != null ? Collections.singletonList(scheme) : null;
+        ContactUrn urn = getUrn(schemes);
         return urn != null ? urn.getDisplay(org, full) : "";
     }
 

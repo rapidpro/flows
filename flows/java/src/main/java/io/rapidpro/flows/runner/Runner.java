@@ -117,8 +117,6 @@ public class Runner {
      * @return the evaluated template, e.g. "Hi Joe"
      */
     public EvaluatedTemplate substituteVariables(String text, EvaluationContext context) {
-        // TODO update context when necessary
-
         return m_evaluator.evaluateTemplate(text, context);
     }
 

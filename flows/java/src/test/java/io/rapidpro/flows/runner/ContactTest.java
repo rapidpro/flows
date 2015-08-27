@@ -45,7 +45,7 @@ public class ContactTest extends BaseFlowsTest {
                 "\"groups\":[\"Testers\",\"Developers\"]," +
                 "\"fields\":{\"age\":\"34\",\"gender\":\"M\"}," +
                 "\"language\":\"eng\"" +
-        "}"));
+                "}"));
 
         Contact contact = gson.fromJson(json, Contact.class);
 
@@ -56,5 +56,33 @@ public class ContactTest extends BaseFlowsTest {
         assertThat(contact.getFields(), hasEntry("age", "34"));
         assertThat(contact.getFields(), hasEntry("gender", "M"));
         assertThat(contact.getLanguage(), is("eng"));
+    }
+
+    @Test
+    public void getFirstName() {
+        assertThat(m_contact.getFirstName(m_org), is("Joe"));
+        m_contact.m_name = "Joe";
+        assertThat(m_contact.getFirstName(m_org), is("Joe"));
+        m_contact.m_name = "";
+        assertThat(m_contact.getFirstName(m_org), is("096 4153686"));
+        m_contact.m_name = null;
+        assertThat(m_contact.getFirstName(m_org), is("096 4153686"));
+        m_org.m_anon = true;
+        assertThat(m_contact.getFirstName(m_org), is("1234-1234"));
+    }
+
+    @Test
+    public void setFirstName() {
+        m_contact.setFirstName("Bob");
+        assertThat(m_contact.m_name, is("Bob Flow"));
+        m_contact.m_name = "Joe McFlow Jr III";
+        m_contact.setFirstName("Bob");
+        assertThat(m_contact.m_name, is("Bob McFlow Jr III"));
+        m_contact.m_name = "";
+        m_contact.setFirstName("Bob");
+        assertThat(m_contact.m_name, is("Bob"));
+        m_contact.m_name = null;
+        m_contact.setFirstName("Bob");
+        assertThat(m_contact.m_name, is("Bob"));
     }
 }
