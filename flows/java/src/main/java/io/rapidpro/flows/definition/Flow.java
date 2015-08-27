@@ -3,9 +3,9 @@ package io.rapidpro.flows.definition;
 import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import io.rapidpro.flows.Flows;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.RunState;
+import io.rapidpro.flows.runner.Runner;
 import io.rapidpro.flows.runner.Step;
 import io.rapidpro.flows.utils.JsonUtils;
 
@@ -160,7 +160,7 @@ public class Flow {
          * @param input the last input
          * @return the next destination (may be null)
          */
-        public abstract Node visit(Flows.Runner runner, RunState run, Step step, Input input);
+        public abstract Node visit(Runner runner, RunState run, Step step, Input input);
 
         /**
          * @see Object#toString()

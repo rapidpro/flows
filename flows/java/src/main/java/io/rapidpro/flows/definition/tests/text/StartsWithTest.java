@@ -7,6 +7,7 @@ import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.definition.TranslatableText;
 import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.RunState;
+import io.rapidpro.flows.runner.Runner;
 
 /**
  * Whether the text starts with the given string
@@ -25,11 +26,11 @@ public class StartsWithTest extends TranslatableTest {
     }
 
     /**
-     * @see TranslatableTest#evaluateAgainstLocalized(RunState, EvaluationContext, String, String)
+     * @see TranslatableTest#evaluateAgainstLocalized(Runner, RunState, EvaluationContext, String, String)
      */
     @Override
-    protected Result evaluateAgainstLocalized(RunState run, EvaluationContext context, String text, String localizedTest) {
-        localizedTest = run.substituteVariables(localizedTest, context).getOutput();
+    protected Result evaluateAgainstLocalized(Runner runner, RunState run, EvaluationContext context, String text, String localizedTest) {
+        localizedTest = runner.substituteVariables(localizedTest, context).getOutput();
 
         // strip leading and trailing whitespace
         text = text.trim();

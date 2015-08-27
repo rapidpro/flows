@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.tests.Test;
-import io.rapidpro.flows.runner.RunState;
+import io.rapidpro.flows.runner.Runner;
 import org.threeten.bp.LocalDate;
 
 /**
@@ -20,10 +20,10 @@ public class HasDateTest extends DateTest {
     }
 
     /**
-     * @see DateTest#evaluateAgainstDate(RunState, EvaluationContext, LocalDate)
+     * @see DateTest#evaluateAgainstDate(Runner, EvaluationContext, LocalDate)
      */
     @Override
-    protected boolean evaluateAgainstDate(RunState run, EvaluationContext context, LocalDate date) {
+    protected boolean evaluateAgainstDate(Runner runner, EvaluationContext context, LocalDate date) {
         return true;
     }
 }

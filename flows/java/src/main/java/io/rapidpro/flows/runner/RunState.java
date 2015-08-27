@@ -1,9 +1,7 @@
 package io.rapidpro.flows.runner;
 
 import com.google.gson.annotations.SerializedName;
-import io.rapidpro.expressions.EvaluatedTemplate;
 import io.rapidpro.expressions.EvaluationContext;
-import io.rapidpro.expressions.Expressions;
 import io.rapidpro.expressions.evaluator.Conversions;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.Rule;
@@ -24,8 +22,6 @@ import java.util.Map;
  * Represents state of a flow run after visiting one or more nodes in the flow
  */
 public class RunState {
-
-    protected static Expressions.TemplateEvaluator s_evaluator = Expressions.getTemplateEvaluator();
 
     public enum State {
         @SerializedName("in_progress") IN_PROGRESS,
@@ -88,12 +84,6 @@ public class RunState {
 
     public String toJson() {
         return JsonUtils.getGson().toJson(this);
-    }
-
-    public EvaluatedTemplate substituteVariables(String text, EvaluationContext context) {
-        // TODO update context when necessary
-
-        return s_evaluator.evaluateTemplate(text, context);
     }
 
     /**
@@ -170,6 +160,20 @@ public class RunState {
 
     public List<Step> getSteps() {
         return m_steps;
+    }
+
+    /**
+     * Gets the completed steps, i.e. those where the contact left the node
+     * @return the completed steps
+     */
+    public List<Step> getCompletedSteps() {
+        List<Step> completed = new ArrayList<>();
+        for (Step step : m_steps) {
+            if (step.isCompleted()) {
+                completed.add(step);
+            }
+        }
+        return completed;
     }
 
     public Map<String, Value> getValues() {

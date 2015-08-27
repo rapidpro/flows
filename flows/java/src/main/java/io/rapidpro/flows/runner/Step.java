@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * A step taken by a contact or surveyor in a flow run
  */
 public class Step {
 
@@ -83,5 +83,9 @@ public class Step {
 
     public List<String> getErrors() {
         return m_errors;
+    }
+
+    public boolean isCompleted() {
+        return m_leftOn != null;
     }
 }

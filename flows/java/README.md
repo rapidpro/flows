@@ -11,7 +11,7 @@ Org org = new Org("RW", "eng", ZoneId.of("Africa/Kigali"), DateStyle.DAY_FIRST, 
 Contact contact = new Contact(...);
 Flow flow = Flow.fromJson("...");
 
-Flows.Runner runner = new Flows.RunnerBuilder()
+Runner runner = new RunnerBuilder()
     .withLocationResolver(...)
     .build();
 

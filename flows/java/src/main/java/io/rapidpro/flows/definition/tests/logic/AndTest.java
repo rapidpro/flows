@@ -2,11 +2,11 @@ package io.rapidpro.flows.definition.tests.logic;
 
 import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluationContext;
-import io.rapidpro.flows.Flows;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.RunState;
+import io.rapidpro.flows.runner.Runner;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -32,10 +32,10 @@ public class AndTest extends Test {
     }
 
     /**
-     * @see Test#evaluate(Flows.Runner, RunState, EvaluationContext, String)
+     * @see Test#evaluate(Runner, RunState, EvaluationContext, String)
      */
     @Override
-    public Result evaluate(Flows.Runner runner, RunState run, EvaluationContext context, String text) {
+    public Result evaluate(Runner runner, RunState run, EvaluationContext context, String text) {
         List<String> matches = new ArrayList<>();
         for (Test test : m_tests) {
             Test.Result result = test.evaluate(runner, run, context, text);

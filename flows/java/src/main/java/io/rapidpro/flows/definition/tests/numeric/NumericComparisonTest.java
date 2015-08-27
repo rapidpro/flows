@@ -2,7 +2,7 @@ package io.rapidpro.flows.definition.tests.numeric;
 
 import io.rapidpro.expressions.EvaluatedTemplate;
 import io.rapidpro.expressions.EvaluationContext;
-import io.rapidpro.flows.runner.RunState;
+import io.rapidpro.flows.runner.Runner;
 
 import java.math.BigDecimal;
 
@@ -18,11 +18,11 @@ public abstract class NumericComparisonTest extends NumericTest {
     }
 
     /**
-     * @see NumericTest#evaluateAgainstDecimal(RunState, EvaluationContext, BigDecimal)
+     * @see NumericTest#evaluateAgainstDecimal(Runner, EvaluationContext, BigDecimal)
      */
     @Override
-    protected boolean evaluateAgainstDecimal(RunState run, EvaluationContext context, BigDecimal input) {
-        EvaluatedTemplate test = run.substituteVariables(m_test, context);
+    protected boolean evaluateAgainstDecimal(Runner runner, EvaluationContext context, BigDecimal input) {
+        EvaluatedTemplate test = runner.substituteVariables(m_test, context);
 
         if (!test.hasErrors()) {
             try {

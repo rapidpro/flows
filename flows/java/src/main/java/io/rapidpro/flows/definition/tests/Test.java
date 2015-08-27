@@ -4,7 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluationContext;
-import io.rapidpro.flows.Flows;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.definition.tests.date.DateAfterTest;
@@ -20,6 +19,7 @@ import io.rapidpro.flows.definition.tests.logic.TrueTest;
 import io.rapidpro.flows.definition.tests.numeric.*;
 import io.rapidpro.flows.definition.tests.text.*;
 import io.rapidpro.flows.runner.RunState;
+import io.rapidpro.flows.runner.Runner;
 import io.rapidpro.flows.utils.JsonUtils;
 
 import java.util.ArrayList;
@@ -97,7 +97,7 @@ public abstract class Test {
      * @param text the text to test against
      * @return the test result (true or false, and the matched portion of the input)
      */
-    public abstract Result evaluate(Flows.Runner runner, RunState run, EvaluationContext context, String text);
+    public abstract Result evaluate(Runner runner, RunState run, EvaluationContext context, String text);
 
     /**
      * Holds the result of a test evaluation (the int value + the text matched)

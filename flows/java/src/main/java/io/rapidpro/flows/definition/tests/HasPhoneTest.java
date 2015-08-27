@@ -5,10 +5,10 @@ import com.google.i18n.phonenumbers.PhoneNumberMatch;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 import io.rapidpro.expressions.EvaluationContext;
-import io.rapidpro.flows.Flows;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.runner.RunState;
+import io.rapidpro.flows.runner.Runner;
 
 /**
  * Test that returns whether the text contains a valid phone number
@@ -23,10 +23,10 @@ public class HasPhoneTest extends Test {
     }
 
     /**
-     * @see Test#evaluate(Flows.Runner, RunState, EvaluationContext, String)
+     * @see Test#evaluate(Runner, RunState, EvaluationContext, String)
      */
     @Override
-    public Result evaluate(Flows.Runner runner, RunState run, EvaluationContext context, String text) {
+    public Result evaluate(Runner runner, RunState run, EvaluationContext context, String text) {
         String country = run.getOrg().getCountry();
         PhoneNumberUtil numberUtil = PhoneNumberUtil.getInstance();
 

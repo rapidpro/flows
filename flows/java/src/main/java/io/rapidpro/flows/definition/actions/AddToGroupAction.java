@@ -3,10 +3,10 @@ package io.rapidpro.flows.definition.actions;
 import com.google.gson.annotations.SerializedName;
 import io.rapidpro.expressions.EvaluatedTemplate;
 import io.rapidpro.expressions.EvaluationContext;
-import io.rapidpro.flows.Flows;
 import io.rapidpro.flows.definition.Group;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.RunState;
+import io.rapidpro.flows.runner.Runner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,17 +27,17 @@ public class AddToGroupAction extends Action {
     }
 
     /**
-     * @see Action#execute(Flows.Runner, RunState, Input)
+     * @see Action#execute(Runner, RunState, Input)
      */
     @Override
-    public Result execute(Flows.Runner runner, RunState run, Input input) {
+    public Result execute(Runner runner, RunState run, Input input) {
         EvaluationContext context = run.buildContext(input);
         List<Group> groups = new ArrayList<>();
         List<String> errors = new ArrayList<>();
 
         for (Group group : m_groups) {
             if (group.getId() == null) {
-                EvaluatedTemplate template = run.substituteVariables(group.getName(), context);
+                EvaluatedTemplate template = runner.substituteVariables(group.getName(), context);
                 if (!template.hasErrors()) {
                     run.getContact().getGroups().add(template.getOutput());
                     groups.add(new Group(template.getOutput()));

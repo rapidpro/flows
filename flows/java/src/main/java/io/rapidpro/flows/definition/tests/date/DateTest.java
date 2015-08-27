@@ -3,9 +3,9 @@ package io.rapidpro.flows.definition.tests.date;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.EvaluationError;
 import io.rapidpro.expressions.evaluator.Conversions;
-import io.rapidpro.flows.Flows;
 import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.RunState;
+import io.rapidpro.flows.runner.Runner;
 import org.threeten.bp.LocalDate;
 
 /**
@@ -14,13 +14,13 @@ import org.threeten.bp.LocalDate;
 public abstract class DateTest extends Test {
 
     /**
-     * @see Test#evaluate(Flows.Runner, RunState, EvaluationContext, String)
+     * @see Test#evaluate(Runner, RunState, EvaluationContext, String)
      */
     @Override
-    public Result evaluate(Flows.Runner runner, RunState run, EvaluationContext context, String text) {
+    public Result evaluate(Runner runner, RunState run, EvaluationContext context, String text) {
         try {
             LocalDate date = Conversions.toDate(text, context);
-            if (evaluateAgainstDate(run, context, date)) {
+            if (evaluateAgainstDate(runner, context, date)) {
                 return Result.textMatch(Conversions.toString(date, context));
             }
         }
@@ -31,10 +31,10 @@ public abstract class DateTest extends Test {
 
     /**
      * Evaluates the test against the given decimal value. Subclasses must implement this.
-     * @param run the run state
+     * @param runner the flow runner
      * @param context the evaluation context
      * @param date the date value
      * @return the test result
      */
-    protected abstract boolean evaluateAgainstDate(RunState run, EvaluationContext context, LocalDate date);
+    protected abstract boolean evaluateAgainstDate(Runner runner, EvaluationContext context, LocalDate date);
 }

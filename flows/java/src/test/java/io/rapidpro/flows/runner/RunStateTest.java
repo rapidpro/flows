@@ -3,7 +3,7 @@ package io.rapidpro.flows.runner;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.dates.DateStyle;
 import io.rapidpro.flows.BaseFlowsTest;
-import io.rapidpro.flows.Flows;
+import io.rapidpro.flows.RunnerBuilder;
 import io.rapidpro.flows.definition.Flow;
 import org.junit.Test;
 import org.threeten.bp.Instant;
@@ -49,7 +49,7 @@ public class RunStateTest extends BaseFlowsTest {
     @Test
     public void toAndFromJson() throws Exception {
         Flow flow = Flow.fromJson(readResource("flows/mushrooms.json"));
-        Flows.Runner runner = new RunnerImpl(null);
+        Runner runner = new RunnerBuilder().build();
         RunState run = runner.start(getOrg(), getContact(), flow);
 
         String json = run.toJson();

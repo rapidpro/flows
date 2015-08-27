@@ -7,6 +7,7 @@ import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.definition.TranslatableText;
 import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.RunState;
+import io.rapidpro.flows.runner.Runner;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -30,11 +31,11 @@ public class ContainsAnyTest extends ContainsTest {
     }
 
     /**
-     * @see TranslatableTest#evaluateAgainstLocalized(RunState, EvaluationContext, String, String)
+     * @see TranslatableTest#evaluateAgainstLocalized(Runner, RunState, EvaluationContext, String, String)
      */
     @Override
-    protected Test.Result evaluateAgainstLocalized(RunState run, EvaluationContext context, String text, String localizedTest) {
-        localizedTest = run.substituteVariables(localizedTest, context).getOutput();
+    protected Test.Result evaluateAgainstLocalized(Runner runner, RunState run, EvaluationContext context, String text, String localizedTest) {
+        localizedTest = runner.substituteVariables(localizedTest, context).getOutput();
 
         // tokenize our test
         Pattern pattern = Pattern.compile("\\W+", Pattern.UNICODE_CHARACTER_CLASS);

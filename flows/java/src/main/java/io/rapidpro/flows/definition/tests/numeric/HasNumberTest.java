@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.tests.Test;
-import io.rapidpro.flows.runner.RunState;
+import io.rapidpro.flows.runner.Runner;
 
 import java.math.BigDecimal;
 
@@ -21,10 +21,10 @@ public class HasNumberTest extends NumericTest {
     }
 
     /**
-     * @see NumericTest#evaluateAgainstDecimal(RunState, EvaluationContext, BigDecimal)
+     * @see NumericTest#evaluateAgainstDecimal(Runner, EvaluationContext, BigDecimal)
      */
     @Override
-    protected boolean evaluateAgainstDecimal(RunState run, EvaluationContext context, BigDecimal decimal) {
+    protected boolean evaluateAgainstDecimal(Runner runner, EvaluationContext context, BigDecimal decimal) {
         return true; // this method is only called on decimals parsed from the input
     }
 }

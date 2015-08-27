@@ -7,6 +7,7 @@ import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.definition.TranslatableText;
 import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.RunState;
+import io.rapidpro.flows.runner.Runner;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,10 +32,10 @@ public class RegexTest extends TranslatableTest {
     }
 
     /**
-     * @see TranslatableTest#evaluateAgainstLocalized(RunState, EvaluationContext, String, String)
+     * @see TranslatableTest#evaluateAgainstLocalized(Runner, RunState, EvaluationContext, String, String)
      */
     @Override
-    protected Result evaluateAgainstLocalized(RunState run, EvaluationContext context, String text, String localizedTest) {
+    protected Result evaluateAgainstLocalized(Runner runner, RunState run, EvaluationContext context, String text, String localizedTest) {
         // check whether we match
         try {
             Map<String, String> groupNames = new HashMap<>();

@@ -3,12 +3,12 @@ package io.rapidpro.flows.definition.tests.location;
 import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluatedTemplate;
 import io.rapidpro.expressions.EvaluationContext;
-import io.rapidpro.flows.Flows;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.Location;
 import io.rapidpro.flows.runner.RunState;
+import io.rapidpro.flows.runner.Runner;
 import io.rapidpro.flows.utils.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -31,14 +31,14 @@ public class HasDistrictTest extends Test {
     }
 
     /**
-     * @see Test#evaluate(Flows.Runner, RunState, EvaluationContext, String)
+     * @see Test#evaluate(Runner, RunState, EvaluationContext, String)
      */
     @Override
-    public Result evaluate(Flows.Runner runner, RunState run, EvaluationContext context, String text) {
+    public Result evaluate(Runner runner, RunState run, EvaluationContext context, String text) {
         String country = run.getOrg().getCountry();
         if (StringUtils.isNotEmpty(country)) {
             // state might be an expression
-            EvaluatedTemplate state = run.substituteVariables(m_state, context);
+            EvaluatedTemplate state = runner.substituteVariables(m_state, context);
 
             if (!state.hasErrors()) {
                 Location location = runner.getLocationResolver().resolve(text, country, Location.Level.DISTRICT, state.getOutput());

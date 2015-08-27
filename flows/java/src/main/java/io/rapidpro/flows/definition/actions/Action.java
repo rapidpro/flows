@@ -2,10 +2,10 @@ package io.rapidpro.flows.definition.actions;
 
 import com.google.gson.*;
 import com.google.gson.annotations.SerializedName;
-import io.rapidpro.flows.Flows;
 import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.RunState;
+import io.rapidpro.flows.runner.Runner;
 
 import java.lang.reflect.Type;
 import java.util.Collections;
@@ -38,7 +38,7 @@ public abstract class Action {
      * @param input the current input
      * @return the action result (action that was actually performed and any errors)
      */
-    public abstract Result execute(Flows.Runner runner, RunState run, Input input);
+    public abstract Result execute(Runner runner, RunState run, Input input);
 
     /**
      * Custom JSON deserializer

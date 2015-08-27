@@ -2,11 +2,11 @@ package io.rapidpro.flows.definition.tests.logic;
 
 import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluationContext;
-import io.rapidpro.flows.Flows;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.RunState;
+import io.rapidpro.flows.runner.Runner;
 
 import java.util.Collection;
 
@@ -29,10 +29,10 @@ public class OrTest extends Test {
     }
 
     /**
-     * @see Test#evaluate(Flows.Runner, RunState, EvaluationContext, String)
+     * @see Test#evaluate(Runner, RunState, EvaluationContext, String)
      */
     @Override
-    public Result evaluate(Flows.Runner runner, RunState run, EvaluationContext context, String text) {
+    public Result evaluate(Runner runner, RunState run, EvaluationContext context, String text) {
         for (Test test : m_tests) {
             Result result = test.evaluate(runner, run, context, text);
             if (result.isMatched()) {

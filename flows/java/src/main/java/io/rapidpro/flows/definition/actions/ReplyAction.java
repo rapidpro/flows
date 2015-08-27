@@ -2,10 +2,10 @@ package io.rapidpro.flows.definition.actions;
 
 import com.google.gson.annotations.SerializedName;
 import io.rapidpro.expressions.EvaluatedTemplate;
-import io.rapidpro.flows.Flows;
 import io.rapidpro.flows.definition.TranslatableText;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.RunState;
+import io.rapidpro.flows.runner.Runner;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -24,13 +24,13 @@ public class ReplyAction extends Action {
     }
 
     /**
-     * @see Action#execute(Flows.Runner, RunState, Input)
+     * @see Action#execute(Runner, RunState, Input)
      */
     @Override
-    public Result execute(Flows.Runner runner, RunState run, Input input) {
+    public Result execute(Runner runner, RunState run, Input input) {
         String msg = m_msg.getLocalized(run);
         if (StringUtils.isNotEmpty(msg)) {
-            EvaluatedTemplate template = run.substituteVariables(msg, run.buildContext(input));
+            EvaluatedTemplate template = runner.substituteVariables(msg, run.buildContext(input));
             Action performed = new ReplyAction(new TranslatableText(template.getOutput()));
             return new Result(performed, template.getErrors());
         }

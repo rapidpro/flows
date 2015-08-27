@@ -4,9 +4,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.flows.BaseFlowsTest;
-import io.rapidpro.flows.Flows;
+import io.rapidpro.flows.RunnerBuilder;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.runner.RunState;
+import io.rapidpro.flows.runner.Runner;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -22,7 +23,7 @@ public abstract class BaseTestTest extends BaseFlowsTest {
 
     protected Flow.DeserializationContext m_deserializationContext;
 
-    protected Flows.Runner m_runner;
+    protected Runner m_runner;
 
     protected RunState m_run;
 
@@ -36,7 +37,7 @@ public abstract class BaseTestTest extends BaseFlowsTest {
 
         m_deserializationContext = new Flow.DeserializationContext(flow);
 
-        m_runner = new Flows.RunnerBuilder().withLocationResolver(new TestLocationResolver()).build();
+        m_runner = new RunnerBuilder().withLocationResolver(new TestLocationResolver()).build();
         m_run = m_runner.start(m_org, m_contact, flow);
         m_context = m_run.buildContext(null);
     }

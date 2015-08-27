@@ -1,9 +1,9 @@
 package io.rapidpro.flows.definition.tests.numeric;
 
 import io.rapidpro.expressions.EvaluationContext;
-import io.rapidpro.flows.Flows;
 import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.RunState;
+import io.rapidpro.flows.runner.Runner;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -43,17 +43,17 @@ public abstract class NumericTest extends Test {
     }
 
     /**
-     * @see Test#evaluate(Flows.Runner, RunState, EvaluationContext, String)
+     * @see Test#evaluate(Runner, RunState, EvaluationContext, String)
      */
     @Override
-    public Result evaluate(Flows.Runner runner, RunState run, EvaluationContext context, String text) {
+    public Result evaluate(Runner runner, RunState run, EvaluationContext context, String text) {
         // test every word in the message against our test
         text = text.replace(",", ""); // so that 1,234 is parsed as 1234
 
         for (String word : Pattern.compile("\\s+").split(text)) {
             try {
                 Pair<BigDecimal, String> pair = extractDecimal(word);
-                if (evaluateAgainstDecimal(run, context, pair.getLeft())) {
+                if (evaluateAgainstDecimal(runner, context, pair.getLeft())) {
                     return Test.Result.textMatch(pair.getRight());
                 }
             }
@@ -65,10 +65,10 @@ public abstract class NumericTest extends Test {
 
     /**
      * Evaluates the test against the given decimal value. Subclasses must implement this.
-     * @param run the run state
+     * @param runner the flow runner
      * @param context the evaluation context
      * @param decimal the decimal value
      * @return the test result
      */
-    protected abstract boolean evaluateAgainstDecimal(RunState run, EvaluationContext context, BigDecimal decimal);
+    protected abstract boolean evaluateAgainstDecimal(Runner runner, EvaluationContext context, BigDecimal decimal);
 }

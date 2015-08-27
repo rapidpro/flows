@@ -2,7 +2,7 @@ package io.rapidpro.flows.runner;
 
 import io.rapidpro.expressions.dates.DateStyle;
 import io.rapidpro.flows.BaseFlowsTest;
-import io.rapidpro.flows.Flows;
+import io.rapidpro.flows.RunnerBuilder;
 import io.rapidpro.flows.definition.Flow;
 import org.junit.Test;
 import org.threeten.bp.Instant;
@@ -12,11 +12,11 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
- * Test for {@link RunnerImpl}
+ * Test for {@link Runner}
  */
-public class RunnerImplTest extends BaseFlowsTest {
+public class RunnerTest extends BaseFlowsTest {
 
-    protected Flows.Runner m_runner = new RunnerImpl(null);
+    protected Runner m_runner = new RunnerBuilder().build();
 
     @Test
     public void startAndResume_mushrooms() throws Exception {

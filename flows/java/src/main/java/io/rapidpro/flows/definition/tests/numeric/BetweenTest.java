@@ -6,7 +6,7 @@ import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.definition.tests.Test;
-import io.rapidpro.flows.runner.RunState;
+import io.rapidpro.flows.runner.Runner;
 
 import java.math.BigDecimal;
 
@@ -32,12 +32,12 @@ public class BetweenTest extends NumericTest {
     }
 
     /**
-     * @see NumericTest#evaluateAgainstDecimal(RunState, EvaluationContext, BigDecimal)
+     * @see NumericTest#evaluateAgainstDecimal(Runner, EvaluationContext, BigDecimal)
      */
     @Override
-    protected boolean evaluateAgainstDecimal(RunState run, EvaluationContext context, BigDecimal decimal) {
-        EvaluatedTemplate min = run.substituteVariables(m_min, context);
-        EvaluatedTemplate max = run.substituteVariables(m_max, context);
+    protected boolean evaluateAgainstDecimal(Runner runner, EvaluationContext context, BigDecimal decimal) {
+        EvaluatedTemplate min = runner.substituteVariables(m_min, context);
+        EvaluatedTemplate max = runner.substituteVariables(m_max, context);
 
         if (!min.hasErrors() && !max.hasErrors()) {
             try {

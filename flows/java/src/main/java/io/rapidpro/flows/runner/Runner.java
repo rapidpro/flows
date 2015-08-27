@@ -1,6 +1,8 @@
 package io.rapidpro.flows.runner;
 
-import io.rapidpro.flows.Flows;
+import io.rapidpro.expressions.EvaluatedTemplate;
+import io.rapidpro.expressions.EvaluationContext;
+import io.rapidpro.expressions.Expressions;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.RuleSet;
 import org.threeten.bp.Instant;
@@ -11,27 +13,34 @@ import java.util.Set;
 /**
  * Implementation of the flow runner
  */
-public class RunnerImpl implements Flows.Runner {
+public class Runner {
+
+    protected Expressions.TemplateEvaluator m_evaluator = Expressions.getTemplateEvaluator();
 
     protected Location.Resolver m_locationResolver;
 
-    public RunnerImpl(Location.Resolver locationResolver) {
+    public Runner(Location.Resolver locationResolver) {
         m_locationResolver = locationResolver;
     }
 
     /**
-     * @see io.rapidpro.flows.Flows.Runner#start(Org, Contact, Flow)
+     * Starts a new run
+     * @param org the org
+     * @param contact the contact
+     * @param flow the flow
+     * @return the run state
      */
-    @Override
     public RunState start(Org org, Contact contact, Flow flow) throws FlowRunException {
         RunState run = RunState.newRun(org, contact, flow);
         return resume(run, null);
     }
 
     /**
-     * @see io.rapidpro.flows.Flows.Runner#resume(RunState, Input)
+     * Resumes an existing run with new input
+     * @param run the previous run state
+     * @param input the new input
+     * @return the updated run state
      */
-    @Override
     public RunState resume(RunState run, Input input) throws FlowRunException {
         if (run.getState().equals(RunState.State.COMPLETED)) {
             throw new IllegalStateException("Cannot resume a completed run state");
@@ -102,9 +111,21 @@ public class RunnerImpl implements Flows.Runner {
     }
 
     /**
-     * @see Flows.Runner#getLocationResolver()
+     * Performs variable substitution on the the given text
+     * @param text the text, e.g. "Hi @contact.name"
+     * @param context the evaluation context
+     * @return the evaluated template, e.g. "Hi Joe"
      */
-    @Override
+    public EvaluatedTemplate substituteVariables(String text, EvaluationContext context) {
+        // TODO update context when necessary
+
+        return m_evaluator.evaluateTemplate(text, context);
+    }
+
+    /**
+     * Gets the location resolver used by this runner
+     * @return the resolver
+     */
     public Location.Resolver getLocationResolver() {
         return m_locationResolver;
     }

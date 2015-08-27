@@ -3,7 +3,7 @@ package io.rapidpro.flows.definition.tests.date;
 import io.rapidpro.expressions.EvaluatedTemplate;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.evaluator.Conversions;
-import io.rapidpro.flows.runner.RunState;
+import io.rapidpro.flows.runner.Runner;
 import org.threeten.bp.LocalDate;
 
 /**
@@ -18,11 +18,11 @@ public abstract class DateComparisonTest extends DateTest {
     }
 
     /**
-     * @see DateTest#evaluateAgainstDate(RunState, EvaluationContext, LocalDate)
+     * @see DateTest#evaluateAgainstDate(Runner, EvaluationContext, LocalDate)
      */
     @Override
-    protected boolean evaluateAgainstDate(RunState run, EvaluationContext context, LocalDate input) {
-        EvaluatedTemplate test = run.substituteVariables(m_test, context);
+    protected boolean evaluateAgainstDate(Runner runner, EvaluationContext context, LocalDate input) {
+        EvaluatedTemplate test = runner.substituteVariables(m_test, context);
 
         if (!test.hasErrors()) {
             try {
