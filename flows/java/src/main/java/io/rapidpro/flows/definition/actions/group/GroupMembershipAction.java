@@ -1,9 +1,10 @@
-package io.rapidpro.flows.definition.actions;
+package io.rapidpro.flows.definition.actions.group;
 
 import com.google.gson.annotations.SerializedName;
 import io.rapidpro.expressions.EvaluatedTemplate;
 import io.rapidpro.expressions.EvaluationContext;
-import io.rapidpro.flows.definition.Group;
+import io.rapidpro.flows.definition.GroupRef;
+import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.runner.Runner;
@@ -12,17 +13,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Adds the contact to one or more groups
+ * Base class for actions which operate on a list of groups
  */
-public class AddToGroupAction extends Action {
-
-    protected static final String TYPE = "add_group";
+public abstract class GroupMembershipAction extends Action {
 
     @SerializedName("groups")
-    protected List<Group> m_groups;
+    protected List<GroupRef> m_groups;
 
-    public AddToGroupAction(List<Group> groups) {
-        super(TYPE);
+    public GroupMembershipAction(String type, List<GroupRef> groups) {
+        super(type);
         m_groups = groups;
     }
 
@@ -32,29 +31,28 @@ public class AddToGroupAction extends Action {
     @Override
     public Result execute(Runner runner, RunState run, Input input) {
         EvaluationContext context = run.buildContext(input);
-        List<Group> groups = new ArrayList<>();
+        List<GroupRef> groups = new ArrayList<>();
         List<String> errors = new ArrayList<>();
 
-        for (Group group : m_groups) {
+        for (GroupRef group : m_groups) {
             if (group.getId() == null) {
                 EvaluatedTemplate template = runner.substituteVariables(group.getName(), context);
                 if (!template.hasErrors()) {
-                    run.getContact().getGroups().add(template.getOutput());
-                    groups.add(new Group(template.getOutput()));
+                    groups.add(new GroupRef(template.getOutput()));
                 } else {
-                    errors.add(group.getName());
+                    errors.addAll(template.getErrors());
                 }
             } else {
-                run.getContact().getGroups().add(group.getName());
                 groups.add(group);
             }
         }
 
-        Action performed = groups.size() > 0 ? new AddToGroupAction(groups) : null;
-        return new Result(performed, errors);
+        return executeWithGroups(runner, run, groups, errors);
     }
 
-    public List<Group> getGroups() {
+    protected abstract Result executeWithGroups(Runner runner, RunState run, List<GroupRef> groups, List<String> errors);
+
+    public List<GroupRef> getGroups() {
         return m_groups;
     }
 }

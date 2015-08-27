@@ -45,15 +45,14 @@ public class Input {
      * @param container the evaluation context
      * @return the context
      */
-    public Map<String, String> buildContext(EvaluationContext container) {
-        Map<String, String> context = new HashMap<>();
+    public Map<String, Object> buildContext(EvaluationContext container, Map<String, String> contactContext) {
+        Map<String, Object> context = new HashMap<>();
         String asText = getValueAsText(container);
 
         context.put("*", asText);
         context.put("value", asText);
         context.put("time", Conversions.toString(m_time.atZone(container.getTimezone()), container));
-
-        // TODO include step.contact
+        context.put("contact", contactContext);
 
         return context;
     }

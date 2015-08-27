@@ -94,12 +94,14 @@ public class RunState {
     public EvaluationContext buildContext(Input input) {
         EvaluationContext context = new EvaluationContext(new HashMap<String, Object>(), m_org.getTimezone(), m_org.getDateStyle());
 
+        Map<String, String> contactContext = m_contact.buildContext(m_org);
+
         if (input != null) {
-            context.putVariable("step", input.buildContext(context));
+            context.putVariable("step", input.buildContext(context, contactContext));
         }
 
         context.putVariable("date", buildDateContext(context, Instant.now()));
-        context.putVariable("contact", m_contact.buildContext(m_org));
+        context.putVariable("contact", contactContext);
         context.putVariable("extra", m_extra);
 
         Map<String, Object> flowContext = new HashMap<>();

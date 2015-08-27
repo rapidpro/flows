@@ -1,8 +1,9 @@
 package io.rapidpro.flows.definition;
 
 import io.rapidpro.flows.BaseFlowsTest;
-import io.rapidpro.flows.definition.actions.AddToGroupAction;
-import io.rapidpro.flows.definition.actions.ReplyAction;
+import io.rapidpro.flows.definition.actions.group.AddToGroupsAction;
+import io.rapidpro.flows.definition.actions.group.RemoveFromGroupsAction;
+import io.rapidpro.flows.definition.actions.message.ReplyAction;
 import io.rapidpro.flows.definition.tests.logic.TrueTest;
 import io.rapidpro.flows.definition.tests.text.ContainsAnyTest;
 import org.junit.Test;
@@ -42,9 +43,10 @@ public class FlowTest extends BaseFlowsTest {
         ActionSet as2 = (ActionSet) rs1Rule1.getDestination();
 
         assertThat(as2.getUuid(), is("6d12cde9-dbbf-4673-acd7-afa1776d382b"));
-        assertThat(as2.getActions(), hasSize(1));
+        assertThat(as2.getActions(), hasSize(2));
         assertThat(as2.getActions().get(0), instanceOf(ReplyAction.class));
-        assertThat(as2.getDestination(), nullValue());
+        assertThat(as2.getActions().get(1), instanceOf(RemoveFromGroupsAction.class));
+        assertThat(as2.getDestination().getUuid(), is("dc495df8-8a4d-4cec-951a-56b321a0c828"));
 
         Rule rs1Rule2 = rs1.getRules().get(1);
 
@@ -56,13 +58,13 @@ public class FlowTest extends BaseFlowsTest {
         assertThat(as3.getUuid(), is("4ef2b232-1484-4db7-b470-98af1a2349d3"));
         assertThat(as3.getActions(), hasSize(2));
         assertThat(as3.getActions().get(0), instanceOf(ReplyAction.class));
-        assertThat(as3.getActions().get(1), instanceOf(AddToGroupAction.class));
-        assertThat(as3.getDestination(), nullValue());
+        assertThat(as3.getActions().get(1), instanceOf(AddToGroupsAction.class));
+        assertThat(as3.getDestination().getUuid(), is("dc495df8-8a4d-4cec-951a-56b321a0c828"));
 
         Rule rs1Rule3 = rs1.getRules().get(2);
 
         assertThat(rs1Rule3.getTest(), instanceOf(TrueTest.class));
-        assertThat(rs1Rule3.getCategory(), is(new TranslatableText("base", "All Responses", "eng", "Other", "fre", "Autre")));
+        assertThat(rs1Rule3.getCategory(), is(new TranslatableText("base", "Other", "eng", "Other", "fre", "Autre")));
 
         ActionSet as4 = (ActionSet) rs1Rule3.getDestination();
 

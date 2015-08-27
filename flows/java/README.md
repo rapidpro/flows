@@ -17,6 +17,8 @@ Runner runner = new RunnerBuilder()
 
 RunState run = runner.start(org, contact, flow);
 
+List<Step> steps = run.getCompletedSteps();
+
 runner.resume(run, Input.of("Yes"));
 
 String json = run.toJson(); // run state can be serialized as JSON

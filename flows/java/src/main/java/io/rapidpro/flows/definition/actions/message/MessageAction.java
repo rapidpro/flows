@@ -1,25 +1,24 @@
-package io.rapidpro.flows.definition.actions;
+package io.rapidpro.flows.definition.actions.message;
 
 import com.google.gson.annotations.SerializedName;
-import io.rapidpro.expressions.EvaluatedTemplate;
+import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.flows.definition.TranslatableText;
+import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.runner.Runner;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Sends a message to the contact
+ * Base class for actions which send a message
  */
-public class ReplyAction extends Action {
-
-    protected static final String TYPE = "reply";
+public abstract class MessageAction extends Action {
 
     @SerializedName("msg")
     protected TranslatableText m_msg;
 
-    public ReplyAction(TranslatableText msg) {
-        super(TYPE);
+    public MessageAction(String type, TranslatableText msg) {
+        super(type);
         m_msg = msg;
     }
 
@@ -30,12 +29,13 @@ public class ReplyAction extends Action {
     public Result execute(Runner runner, RunState run, Input input) {
         String msg = m_msg.getLocalized(run);
         if (StringUtils.isNotEmpty(msg)) {
-            EvaluatedTemplate template = runner.substituteVariables(msg, run.buildContext(input));
-            Action performed = new ReplyAction(new TranslatableText(template.getOutput()));
-            return new Result(performed, template.getErrors());
+            EvaluationContext context = run.buildContext(input);
+            return executeWithMessage(runner, context, msg);
         }
         return Result.NOOP;
     }
+
+    protected abstract Result executeWithMessage(Runner runner, EvaluationContext context, String message);
 
     public TranslatableText getMsg() {
         return m_msg;

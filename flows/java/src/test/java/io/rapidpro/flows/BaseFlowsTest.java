@@ -1,11 +1,11 @@
 package io.rapidpro.flows;
 
 import io.rapidpro.expressions.dates.DateStyle;
-import io.rapidpro.flows.definition.Group;
+import io.rapidpro.flows.definition.GroupRef;
 import io.rapidpro.flows.definition.TranslatableText;
 import io.rapidpro.flows.definition.actions.Action;
-import io.rapidpro.flows.definition.actions.AddToGroupAction;
-import io.rapidpro.flows.definition.actions.ReplyAction;
+import io.rapidpro.flows.definition.actions.group.AddToGroupsAction;
+import io.rapidpro.flows.definition.actions.message.ReplyAction;
 import io.rapidpro.flows.runner.Contact;
 import io.rapidpro.flows.runner.ContactUrn;
 import io.rapidpro.flows.runner.Location;
@@ -80,10 +80,10 @@ public abstract class BaseFlowsTest {
     }
 
     protected void assertAddToGroup(Action action, String... groupNames) {
-        assertThat(action, instanceOf(AddToGroupAction.class));
+        assertThat(action, instanceOf(AddToGroupsAction.class));
 
         List<String> names = new ArrayList<>();
-        for (Group group : ((AddToGroupAction) action).getGroups()) {
+        for (GroupRef group : ((AddToGroupsAction) action).getGroups()) {
             names.add(group.getName());
         }
         assertThat(names, is(Arrays.asList(groupNames)));

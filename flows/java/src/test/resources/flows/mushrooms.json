@@ -28,9 +28,9 @@
         ]
       },
       {
-        "y": 250,
-        "x": 136,
-        "destination": null,
+        "y": 251,
+        "x": 117,
+        "destination": "dc495df8-8a4d-4cec-951a-56b321a0c828",
         "uuid": "6d12cde9-dbbf-4673-acd7-afa1776d382b",
         "actions": [
           {
@@ -39,13 +39,22 @@
               "eng": "You should reconsider"
             },
             "type": "reply"
+          },
+          {
+            "type": "del_group",
+            "groups": [
+              {
+                "name": "Approved",
+                "id": 11106
+              }
+            ]
           }
         ]
       },
       {
         "y": 251,
-        "x": 364,
-        "destination": null,
+        "x": 384,
+        "destination": "dc495df8-8a4d-4cec-951a-56b321a0c828",
         "uuid": "4ef2b232-1484-4db7-b470-98af1a2349d3",
         "actions": [
           {
@@ -80,9 +89,52 @@
             "type": "reply"
           }
         ]
+      },
+      {
+        "y": 405,
+        "x": 253,
+        "destination": null,
+        "uuid": "dc495df8-8a4d-4cec-951a-56b321a0c828",
+        "actions": [
+          {
+            "msg": {
+              "eng": "Hi @contact, please note that @step.contact.name replied with @flow.response_1.text"
+            },
+            "variables": [
+              {
+                "id": "@contact.chw"
+              }
+            ],
+            "type": "send",
+            "groups": [
+              {
+                "name": "Group Chat",
+                "id": 483
+              }
+            ],
+            "contacts": [
+              {
+                "urns": [
+                  {
+                    "priority": 90,
+                    "path": "kinyarwandanet",
+                    "scheme": "twitter"
+                  },
+                  {
+                    "priority": 50,
+                    "path": "+250783835665",
+                    "scheme": "tel"
+                  }
+                ],
+                "name": "Kinya",
+                "id": 126238
+              }
+            ]
+          }
+        ]
       }
     ],
-    "last_saved": "2015-08-21T11:12:45.511947Z",
+    "last_saved": "2015-08-27T09:05:59.435453Z",
     "entry": "32cf414b-35e3-4c75-8a78-d5f4de925e13",
     "rule_sets": [
       {
@@ -127,7 +179,7 @@
           },
           {
             "category": {
-              "base": "All Responses",
+              "base": "Other",
               "fre": "Autre",
               "eng": "Other"
             },

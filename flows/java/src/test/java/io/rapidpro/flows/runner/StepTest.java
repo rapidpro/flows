@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import io.rapidpro.flows.BaseFlowsTest;
 import io.rapidpro.flows.definition.*;
 import io.rapidpro.flows.definition.actions.Action;
-import io.rapidpro.flows.definition.actions.ReplyAction;
+import io.rapidpro.flows.definition.actions.message.ReplyAction;
 import org.junit.Test;
 import org.threeten.bp.Instant;
 import org.threeten.bp.ZoneId;

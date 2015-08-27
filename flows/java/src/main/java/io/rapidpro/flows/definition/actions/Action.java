@@ -3,6 +3,10 @@ package io.rapidpro.flows.definition.actions;
 import com.google.gson.*;
 import com.google.gson.annotations.SerializedName;
 import io.rapidpro.flows.definition.FlowParseException;
+import io.rapidpro.flows.definition.actions.group.AddToGroupsAction;
+import io.rapidpro.flows.definition.actions.group.RemoveFromGroupsAction;
+import io.rapidpro.flows.definition.actions.message.ReplyAction;
+import io.rapidpro.flows.definition.actions.message.SendAction;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.runner.Runner;
@@ -21,7 +25,9 @@ public abstract class Action {
     protected static Map<String, Class<? extends Action>> s_classByType = new HashMap<>();
     static {
         s_classByType.put(ReplyAction.TYPE, ReplyAction.class);
-        s_classByType.put(AddToGroupAction.TYPE, AddToGroupAction.class);
+        s_classByType.put(SendAction.TYPE, SendAction.class);
+        s_classByType.put(AddToGroupsAction.TYPE, AddToGroupsAction.class);
+        s_classByType.put(RemoveFromGroupsAction.TYPE, RemoveFromGroupsAction.class);
     }
 
     @SerializedName("type")

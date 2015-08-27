@@ -46,6 +46,7 @@ public class RunnerTest extends BaseFlowsTest {
         assertThat(run.getSteps().get(1).getArrivedOn(), notNullValue());
         assertThat(run.getSteps().get(1).getLeftOn(), nullValue());
         assertThat(run.getSteps().get(1).getRuleResult(), nullValue());
+        assertThat(run.getCompletedSteps(), hasSize(1));
 
         assertThat(run.getValues().size(), is(0));
 
@@ -73,6 +74,7 @@ public class RunnerTest extends BaseFlowsTest {
         assertThat(run.getSteps().get(2).getNode().getUuid(), is("1e318293-4730-481c-b455-daaaf86b2e6c"));
         assertThat(run.getSteps().get(2).getArrivedOn(), notNullValue());
         assertThat(run.getSteps().get(2).getLeftOn(), nullValue());
+        assertThat(run.getCompletedSteps(), hasSize(2));
 
         assertThat(run.getValues().size(), is(1));
         assertThat(run.getValues().get("response_1").getValue(), is("YUCK!"));
@@ -88,7 +90,7 @@ public class RunnerTest extends BaseFlowsTest {
 
         assertThat(run.getContact().getGroups(), containsInAnyOrder("Testers", "Developers", "Approved")); // added to group
 
-        assertThat(run.getSteps(), hasSize(2));
+        assertThat(run.getSteps(), hasSize(3));
         assertThat(run.getSteps().get(0).getNode().getUuid(), is("1e318293-4730-481c-b455-daaaf86b2e6c"));
         assertThat(run.getSteps().get(0).getArrivedOn(), is(lastStepLeftOn));
         assertThat(run.getSteps().get(0).getLeftOn(), notNullValue());
@@ -97,11 +99,17 @@ public class RunnerTest extends BaseFlowsTest {
         assertThat(run.getSteps().get(0).getRuleResult().getValue(), is("no"));
         assertThat(run.getSteps().get(1).getNode().getUuid(), is("4ef2b232-1484-4db7-b470-98af1a2349d3"));
         assertThat(run.getSteps().get(1).getArrivedOn(), notNullValue());
-        assertThat(run.getSteps().get(1).getLeftOn(), nullValue());
+        assertThat(run.getSteps().get(1).getLeftOn(), notNullValue());
         assertThat(run.getSteps().get(1).getRuleResult(), nullValue());
         assertThat(run.getSteps().get(1).getActions(), hasSize(2));
         assertReply(run.getSteps().get(1).getActions().get(0), "That was the right answer.");
         assertAddToGroup(run.getSteps().get(1).getActions().get(1), "Approved");
+        assertThat(run.getSteps().get(2).getNode().getUuid(), is("dc495df8-8a4d-4cec-951a-56b321a0c828"));
+        assertThat(run.getSteps().get(2).getArrivedOn(), notNullValue());
+        assertThat(run.getSteps().get(2).getLeftOn(), nullValue());
+        assertThat(run.getSteps().get(2).getRuleResult(), nullValue());
+        assertThat(run.getSteps().get(2).getActions(), hasSize(1));
+        assertThat(run.getCompletedSteps(), hasSize(2));
 
         assertThat(run.getValues().size(), is(1));
         assertThat(run.getValues().get("response_1").getValue(), is("no"));

@@ -19,12 +19,9 @@ import java.util.Map;
  */
 public class EvaluationContext {
 
-    protected static Gson s_gson;
-    static {
-        s_gson = new GsonBuilder()
+    protected static Gson s_gson = new GsonBuilder()
                 .registerTypeAdapter(EvaluationContext.class, new Deserializer())
                 .create();
-    }
 
     protected Map<String, Object> m_variables;
 
@@ -48,8 +45,15 @@ public class EvaluationContext {
         return s_gson.fromJson(json, EvaluationContext.class);
     }
 
+    public Map<String, Object> getVariables() {
+        return m_variables;
+    }
+
     /**
      * Returns a named variable, e.g. contact, contact.name
+     * @param path the dot notation variable path
+     * @return the variable value
+     * @throws EvaluationError if variable is not defined
      */
     public Object resolveVariable(String path) {
         return resolveVariableInContainer(m_variables, path.toLowerCase(), path);
