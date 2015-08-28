@@ -3,7 +3,7 @@ package io.rapidpro.expressions.evaluator;
 import io.rapidpro.expressions.EvaluatedTemplate;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.EvaluationError;
-import io.rapidpro.expressions.Expressions;
+import io.rapidpro.expressions.EvaluatorBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -14,11 +14,11 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests for {@link TemplateEvaluatorImpl}
+ * Tests for {@link TemplateEvaluator}
  */
-public class TemplateEvaluatorImplTest {
+public class TemplateEvaluatorTest {
 
-    private Expressions.TemplateEvaluator m_evaluator = new TemplateEvaluatorImpl();
+    private TemplateEvaluator m_evaluator = new EvaluatorBuilder().build();
 
     @Test
     public void evaluateTemplate() {

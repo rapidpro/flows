@@ -48,6 +48,13 @@
     "errors": []
   },
   {
+    "template": "Hi @flow.response_1.text",
+    "context": {"vars": {"flow": {"response_1": {"text": "Jim"}}}, "tz": "UTC", "day_first": true},
+    "url_encode": false,
+    "output": "Hi Jim",
+    "errors": []
+  },
+  {
     "template": "@(X + Y + Z)",
     "context": {"vars": {"x": 1.23, "y": 2, "z": "3"}, "tz": "UTC", "day_first": true},
     "url_encode": false,

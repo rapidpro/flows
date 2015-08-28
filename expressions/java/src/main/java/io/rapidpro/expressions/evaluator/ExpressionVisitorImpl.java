@@ -237,7 +237,8 @@ public class ExpressionVisitorImpl extends ExcellentBaseVisitor<Object> {
     @Override
     public Object visitContextReference(ExcellentParser.ContextReferenceContext ctx) {
         String identifier = ctx.NAME().getText();
-        return m_evalContext.resolveVariable(identifier);
+        Object value = m_evalContext.resolveVariable(identifier);
+        return value != null ? value : "";  // return empty string rather than null
     }
 
     /**

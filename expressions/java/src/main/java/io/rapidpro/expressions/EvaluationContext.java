@@ -116,11 +116,8 @@ public class EvaluationContext {
             else {
                 throw new RuntimeException("Context contains map without default key");
             }
-        } else if (value != null) {
+        } else {
             return value;
-        }
-        else {
-            return "";  // return empty string rather than null
         }
     }
 

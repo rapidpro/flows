@@ -3,6 +3,7 @@ package io.rapidpro.expressions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
+import io.rapidpro.expressions.evaluator.TemplateEvaluator;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
@@ -11,23 +12,16 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 /**
- * Tests for {@link Expressions}
+ * Template tests
  */
 public class ExpressionsTest {
 
     @Test
-    public void getTemplateEvaluator() {
-        assertThat(Expressions.getTemplateEvaluator(), instanceOf(Expressions.TemplateEvaluator.class));
-    }
-
-    @Test
     public void templateTests() throws Exception {
-        Expressions.TemplateEvaluator evaluator = Expressions.getTemplateEvaluator();
+        TemplateEvaluator evaluator = new EvaluatorBuilder().build();
 
         InputStream in = ExpressionsTest.class.getClassLoader().getResourceAsStream("template_tests.json");
 
@@ -77,7 +71,7 @@ public class ExpressionsTest {
         String actualOutput;
         List<String> actualErrors;
 
-        public boolean run(Expressions.TemplateEvaluator evaluator) {
+        public boolean run(TemplateEvaluator evaluator) {
             EvaluatedTemplate evaluated = evaluator.evaluateTemplate(template, context, urlEncode);
             this.actualOutput = evaluated.getOutput();
             this.actualErrors = evaluated.getErrors();

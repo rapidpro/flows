@@ -43,6 +43,8 @@ public class EvaluationContextTest {
         contact.put("*", "Bob");
         contact.put("name", "Bob");
         contact.put("age", 33);
+        contact.put("join_date_1", "28-08-2015 13:06");
+        contact.put("isnull", null);
 
         EvaluationContext context = new EvaluationContext();
         context.putVariable("foo", 123);
@@ -52,7 +54,9 @@ public class EvaluationContextTest {
         assertThat(context.resolveVariable("FOO"), is((Object) 123));
         assertThat(context.resolveVariable("contact"), is((Object) "Bob"));
         assertThat(context.resolveVariable("contact.name"), is((Object) "Bob"));
-        assertThat(context.resolveVariable("Contact.Age"), is((Object) 33));
+        assertThat(context.resolveVariable("Contact.AGE"), is((Object) 33));
+        assertThat(context.resolveVariable("Contact.join_date_1"), is((Object) "28-08-2015 13:06"));
+        assertThat(context.resolveVariable("Contact.isnull"), is((Object) null));
     }
 
     @Test(expected = RuntimeException.class)

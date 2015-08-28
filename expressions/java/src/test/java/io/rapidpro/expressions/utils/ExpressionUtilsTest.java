@@ -5,10 +5,9 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static io.rapidpro.expressions.utils.ExpressionUtils.*;
-import static org.hamcrest.Matchers.arrayContaining;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.empty;
+import static io.rapidpro.expressions.utils.ExpressionUtils.slice;
+import static io.rapidpro.expressions.utils.ExpressionUtils.tokenize;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 /**

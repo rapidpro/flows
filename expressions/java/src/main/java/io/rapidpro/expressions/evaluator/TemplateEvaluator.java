@@ -1,8 +1,6 @@
 package io.rapidpro.expressions.evaluator;
 
 import io.rapidpro.expressions.*;
-import io.rapidpro.expressions.functions.CustomFunctions;
-import io.rapidpro.expressions.functions.ExcelFunctions;
 import io.rapidpro.expressions.functions.FunctionManager;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.BailErrorStrategy;
@@ -19,17 +17,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Implementation of the template evaluator
+ * The template evaluator
  */
-public class TemplateEvaluatorImpl implements Expressions.TemplateEvaluator {
+public class TemplateEvaluator {
 
-    protected static Logger logger = LoggerFactory.getLogger(TemplateEvaluatorImpl.class);
+    protected static Logger logger = LoggerFactory.getLogger(TemplateEvaluator.class);
 
     private FunctionManager m_functionManager = new FunctionManager();
 
-    public TemplateEvaluatorImpl() {
-        m_functionManager.addLibrary(ExcelFunctions.class);
-        m_functionManager.addLibrary(CustomFunctions.class);
+    private char m_expressionPrefix;
+
+    public TemplateEvaluator(char expressionPrefix, List<Class<?>> functionLibraries) {
+        m_expressionPrefix = expressionPrefix;
+
+        for (Class<?> functionLibrary : functionLibraries) {
+            m_functionManager.addLibrary(functionLibrary);
+        }
     }
 
     /**
@@ -50,21 +53,26 @@ public class TemplateEvaluatorImpl implements Expressions.TemplateEvaluator {
      * Determines whether the given character is a word character, i.e. \w in a regex
      */
     private static boolean isWordChar(char ch) {
-        return Character.isAlphabetic(ch) || ch == '_';
+        return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || (ch >= '0' && ch <= '9') || ch == '_';
     }
 
     /**
-     * @see Expressions.TemplateEvaluator#evaluateTemplate(String, EvaluationContext)
+     * Evaluates a template string, e.g. "Hello @contact.name you have @(contact.reports * 2) reports"
+     * @param template the template string
+     * @param context the evaluation context
+     * @return a tuple of the evaluated template and a list of evaluation errors
      */
-    @Override
     public EvaluatedTemplate evaluateTemplate(String template, EvaluationContext context) {
         return evaluateTemplate(template, context, false);
     }
 
     /**
-     * @see Expressions.TemplateEvaluator#evaluateTemplate(String, EvaluationContext, boolean)
+     * Evaluates a template string, e.g. "Hello @contact.name you have @(contact.reports * 2) reports"
+     * @param template the template string
+     * @param context the evaluation context
+     * @param urlEncode whether or not values should be URL encoded
+     * @return a tuple of the evaluated template and a list of evaluation errors
      */
-    @Override
     public EvaluatedTemplate evaluateTemplate(String template, EvaluationContext context, boolean urlEncode) {
         char[] inputChars = template.toCharArray();
         StringBuilder output = new StringBuilder();
@@ -73,7 +81,6 @@ public class TemplateEvaluatorImpl implements Expressions.TemplateEvaluator {
         StringBuilder currentExpression = new StringBuilder();
         boolean currentExpressionTerminated = false;
         int parenthesesLevel = 0;
-        char prevCh = 0;
 
         for (int pos = 0; pos < inputChars.length; pos++) {
             char ch = inputChars[pos];
@@ -84,10 +91,10 @@ public class TemplateEvaluatorImpl implements Expressions.TemplateEvaluator {
             char nextNextCh = (pos < (inputChars.length - 2)) ? inputChars[pos + 2] : 0;
 
             if (state == State.BODY) {
-                if (ch == '@' && (isWordChar(nextCh) || nextCh == '(')) {
+                if (ch == m_expressionPrefix && (isWordChar(nextCh) || nextCh == '(')) {
                     state = State.PREFIX;
                     currentExpression = new StringBuilder("" + ch);
-                } else if (ch == '@' && nextCh == '@') {
+                } else if (ch == m_expressionPrefix && nextCh == m_expressionPrefix) {
                     state = State.ESCAPED_PREFIX;
                 } else {
                     output.append(ch);
@@ -150,8 +157,6 @@ public class TemplateEvaluatorImpl implements Expressions.TemplateEvaluator {
                 currentExpressionTerminated = false;
                 state = State.BODY;
             }
-
-            prevCh = ch;
         }
 
         // if last expression didn't terminate - add to output as is
@@ -185,9 +190,12 @@ public class TemplateEvaluatorImpl implements Expressions.TemplateEvaluator {
     }
 
     /**
-     * @see Expressions.TemplateEvaluator#evaluateExpression(String, EvaluationContext)
+     * Evaluates a single expression, e.g. "contact.reports * 2"
+     * @param expression the expression string
+     * @param context the evaluation context
+     * @return the evaluated expression value
+     * @throws EvaluationError if an error occurs during evaluation
      */
-    @Override
     public Object evaluateExpression(String expression, EvaluationContext context) throws EvaluationError {
         ExcellentLexer lexer = new ExcellentLexer(new ANTLRInputStream(expression));
         CommonTokenStream tokens = new CommonTokenStream(lexer);

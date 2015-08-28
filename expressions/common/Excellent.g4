@@ -26,7 +26,7 @@ STRING     : '"' (~["] | '""')* '"';
 TRUE       : [Tt][Rr][Uu][Ee];
 FALSE      : [Ff][Aa][Ll][Ss][Ee];
 
-NAME       : [a-zA-Z_][a-zA-Z0-9_\.]*;    // variable names, e.g. contact.name or function names, e.g. SUM
+NAME       : [a-zA-Z][a-zA-Z0-9_\.]*;    // variable names, e.g. contact.name or function names, e.g. SUM
 
 WS         : [ \t\n\r]+ -> skip;  // ignore whitespace
 
