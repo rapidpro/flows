@@ -165,13 +165,13 @@ public class RunState {
     }
 
     /**
-     * Gets the completed steps, i.e. those where the contact left the node
+     * Gets the completed steps, i.e. those where the contact left the node or a terminal node
      * @return the completed steps
      */
     public List<Step> getCompletedSteps() {
         List<Step> completed = new ArrayList<>();
         for (Step step : m_steps) {
-            if (step.isCompleted()) {
+            if (step.isCompleted() || m_state == State.COMPLETED) {
                 completed.add(step);
             }
         }

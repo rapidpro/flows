@@ -48,7 +48,7 @@ public class RunStateTest extends BaseFlowsTest {
 
     @Test
     public void toAndFromJson() throws Exception {
-        Flow flow = Flow.fromJson(readResource("flows/mushrooms.json"));
+        Flow flow = Flow.fromJson(readResource("test_flows/mushrooms.json"));
         Runner runner = new RunnerBuilder().build();
         RunState run = runner.start(getOrg(), getContact(), flow);
 

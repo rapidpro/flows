@@ -27,8 +27,8 @@ public class FlowsTest extends BaseFlowsTest {
 
     @Test
     public void interactionTests() throws Exception {
-        runInteractionTests("flows/mushrooms.json", "mushrooms_interactions.json");
-        runInteractionTests("flows/registration.json", "registration_interactions.json");
+        runInteractionTests("test_flows/mushrooms.json", "test_runs/mushrooms_runs.json");
+        runInteractionTests("test_flows/registration.json", "test_runs/registration_runs.json");
     }
 
     protected void runInteractionTests(String flowFile, String interactionsFile) throws Exception {
@@ -67,7 +67,7 @@ public class FlowsTest extends BaseFlowsTest {
                 runner.resume(run, Input.of(message.m_msg));
             }
 
-            for (Step step : run.getSteps()) {
+            for (Step step : run.getCompletedSteps()) {
                 for (Action action : step.getActions()) {
                     if (action instanceof ReplyAction) {
                         String msg = ((ReplyAction) action).getMsg().getLocalized(run);

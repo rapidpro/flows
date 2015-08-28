@@ -26,7 +26,7 @@ public abstract class BaseActionTest extends BaseFlowsTest {
 
     @Before
     public void setupRunState() throws Exception {
-        String flowJson = IOUtils.toString(BaseActionTest.class.getClassLoader().getResourceAsStream("flows/mushrooms.json"));
+        String flowJson = IOUtils.toString(BaseActionTest.class.getClassLoader().getResourceAsStream("test_flows/mushrooms.json"));
 
         Flow flow = Flow.fromJson(flowJson);
 

@@ -23,7 +23,7 @@ public class StepTest extends BaseFlowsTest {
 
     @Test
     public void toAndFromJson() throws Exception {
-        Flow flow = Flow.fromJson(readResource("flows/mushrooms.json"));
+        Flow flow = Flow.fromJson(readResource("test_flows/mushrooms.json"));
         Instant arrivedOn = Instant.from(ZonedDateTime.of(2015, 8, 25, 11, 59, 30, 88 * 1000000, ZoneId.of("UTC")));
         Step step = new Step(flow.getEntry(), arrivedOn);
 

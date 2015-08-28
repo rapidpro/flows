@@ -18,7 +18,7 @@ public class FlowTest extends BaseFlowsTest {
 
     @Test
     public void fromJson() throws Exception {
-        Flow flow = Flow.fromJson(readResource("flows/mushrooms.json"));
+        Flow flow = Flow.fromJson(readResource("test_flows/mushrooms.json"));
 
         assertThat(flow.getBaseLanguage(), is("eng"));
 
@@ -76,7 +76,7 @@ public class FlowTest extends BaseFlowsTest {
 
     @Test
     public void fromJson_withEmptyFlow() throws Exception {
-        Flow flow = Flow.fromJson(readResource("flows/empty.json"));
+        Flow flow = Flow.fromJson(readResource("test_flows/empty.json"));
 
         assertThat(flow.getBaseLanguage(), is("eng"));
         assertThat(flow.getEntry(), nullValue());

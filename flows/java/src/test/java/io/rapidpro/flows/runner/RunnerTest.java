@@ -20,7 +20,7 @@ public class RunnerTest extends BaseFlowsTest {
 
     @Test
     public void startAndResume_mushrooms() throws Exception {
-        Flow flow = Flow.fromJson(readResource("flows/mushrooms.json"));
+        Flow flow = Flow.fromJson(readResource("test_flows/mushrooms.json"));
 
         RunState run = m_runner.start(getOrg(), getContact(), flow);
 
@@ -109,7 +109,7 @@ public class RunnerTest extends BaseFlowsTest {
         assertThat(run.getSteps().get(2).getLeftOn(), nullValue());
         assertThat(run.getSteps().get(2).getRuleResult(), nullValue());
         assertThat(run.getSteps().get(2).getActions(), hasSize(1));
-        assertThat(run.getCompletedSteps(), hasSize(2));
+        assertThat(run.getCompletedSteps(), hasSize(3));
 
         assertThat(run.getValues().size(), is(1));
         assertThat(run.getValues().get("response_1").getValue(), is("no"));
@@ -122,7 +122,7 @@ public class RunnerTest extends BaseFlowsTest {
 
     @Test
     public void startAndResume_mushroomsInFrench() throws Exception {
-        Flow flow = Flow.fromJson(readResource("flows/mushrooms.json"));
+        Flow flow = Flow.fromJson(readResource("test_flows/mushrooms.json"));
 
         Contact jean = new Contact("1234-1234", "Jean D'Amour", ContactUrn.fromString("tel:+260964153686"), "fre");
 
@@ -162,7 +162,7 @@ public class RunnerTest extends BaseFlowsTest {
 
     @Test
     public void startAndResume_greatwall() throws Exception {
-        Flow flow = Flow.fromJson(readResource("flows/greatwall.json"));
+        Flow flow = Flow.fromJson(readResource("test_flows/greatwall.json"));
 
         RunState run = m_runner.start(getOrg(), getContact(), flow);
 
@@ -206,7 +206,7 @@ public class RunnerTest extends BaseFlowsTest {
 
     @Test(expected = FlowRunException.class)
     public void start_emptyFlow() throws Exception {
-        Flow flow = Flow.fromJson(readResource("flows/empty.json"));
+        Flow flow = Flow.fromJson(readResource("test_flows/empty.json"));
         m_runner.start(getOrg(), getContact(), flow);
     }
 }
