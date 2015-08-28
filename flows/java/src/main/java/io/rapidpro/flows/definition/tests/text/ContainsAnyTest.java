@@ -2,6 +2,7 @@ package io.rapidpro.flows.definition.tests.text;
 
 import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluationContext;
+import io.rapidpro.expressions.utils.ExpressionUtils;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.definition.TranslatableText;
@@ -12,7 +13,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * Test that returns whether the text contains any of the given words
@@ -38,12 +38,11 @@ public class ContainsAnyTest extends ContainsTest {
         localizedTest = runner.substituteVariables(localizedTest, context).getOutput();
 
         // tokenize our test
-        Pattern pattern = Pattern.compile("\\W+", Pattern.UNICODE_CHARACTER_CLASS);
-        String[] tests = pattern.split(localizedTest.toLowerCase());
+        String[] tests = ExpressionUtils.tokenize(localizedTest.toLowerCase());
 
         // tokenize our input
-        String[] words = pattern.split(text.toLowerCase());
-        String[] rawWords = pattern.split(text);
+        String[] words = ExpressionUtils.tokenize(text.toLowerCase());
+        String[] rawWords = ExpressionUtils.tokenize(text);
 
         // run through each of our tests
         List<String> matches = new ArrayList<>();

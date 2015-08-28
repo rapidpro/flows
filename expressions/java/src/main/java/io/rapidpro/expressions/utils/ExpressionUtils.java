@@ -1,9 +1,11 @@
 package io.rapidpro.expressions.utils;
 
 import io.rapidpro.expressions.dates.DateStyle;
+import org.apache.commons.lang3.ArrayUtils;
 import org.threeten.bp.format.DateTimeFormatter;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -68,5 +70,41 @@ public class ExpressionUtils {
      */
     public static <K, V> V getOrDefault(Map<K, V> map, K key, V defaultValue) {
         return map.containsKey(key) ? map.get(key) : defaultValue;
+    }
+
+    /**
+     * Tokenizes a string by splitting on non-word characters. This should be equivalent to splitting on \W+ in Python.
+     * The meaning of \W is different in Android, Java 7, Java 8 hence the non-use of regular expressions.
+     * @param str the input string
+     * @return the string tokens
+     */
+    public static String[] tokenize(String str) {
+        if (str == null) {
+            return null;
+        }
+        final int len = str.length();
+        if (len == 0) {
+            return ArrayUtils.EMPTY_STRING_ARRAY;
+        }
+        final List<String> list = new ArrayList<>();
+        int i = 0, start = 0;
+        boolean match = false;
+        while (i < len) {
+            int ch = str.codePointAt(i);
+            if (!(Character.isDigit(ch) || ch == '_' || Character.isAlphabetic(ch))) {
+                if (match) {
+                    list.add(str.substring(start, i));
+                    match = false;
+                }
+                start = ++i;
+                continue;
+            }
+            match = true;
+            i++;
+        }
+        if (match) {
+            list.add(str.substring(start, i));
+        }
+        return list.toArray(new String[list.size()]);
     }
 }

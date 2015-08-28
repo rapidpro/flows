@@ -9,8 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * Library of supported custom functions.
@@ -136,15 +136,17 @@ public class CustomFunctions {
      * @return the words as a list of strings
      */
     private static List<String> getWords(String text, boolean bySpaces) {
-        Pattern pattern = Pattern.compile(bySpaces ? "\\s+" : "\\W+", Pattern.MULTILINE|Pattern.UNICODE_CHARACTER_CLASS);
-
-        List<String> words = new ArrayList<>();
-        for (String split : pattern.split(text)) {
-            if (StringUtils.isNotEmpty(split)) {
-                words.add(split);
+        if (bySpaces) {
+            List<String> words = new ArrayList<>();
+            for (String split : text.split("\\s+")) {
+                if (StringUtils.isNotEmpty(split)) {
+                    words.add(split);
+                }
             }
+            return words;
+        } else {
+            return Arrays.asList(ExpressionUtils.tokenize(text));
         }
-        return words;
     }
 
     /**

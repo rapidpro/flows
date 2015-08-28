@@ -9,6 +9,7 @@ import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.runner.Runner;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -41,7 +42,8 @@ public class RegexTest extends TranslatableTest {
             Map<String, String> groupNames = new HashMap<>();
             String javaRegex = pythonToJavaRegex(localizedTest, groupNames);
 
-            Pattern regex = Pattern.compile(javaRegex, Pattern.UNICODE_CHARACTER_CLASS | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+            int flags = getPatternUnicodeFlag() | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE;
+            Pattern regex = Pattern.compile(javaRegex, flags);
             Matcher matcher = regex.matcher(text);
 
             if (matcher.find()) {
@@ -100,5 +102,18 @@ public class RegexTest extends TranslatableTest {
 
         namedGroups.appendTail(javaStyle);
         return javaStyle.toString();
+    }
+
+    /**
+     * Gets the value of UNICODE_CHARACTER_CLASS if it exists (Java SE) or zero if it's implied and isn't defined (Android)
+     * @return the field value or zero
+     */
+    protected static int getPatternUnicodeFlag() {
+        try {
+            Field field = Pattern.class.getField("UNICODE_CHARACTER_CLASS");
+            return field.getInt(null);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            return 0;
+        }
     }
 }
