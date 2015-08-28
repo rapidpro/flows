@@ -38,7 +38,7 @@ public class ContainsAnyTest extends ContainsTest {
         localizedTest = runner.substituteVariables(localizedTest, context).getOutput();
 
         // tokenize our test
-        Pattern pattern = Pattern.compile("\\W+", Pattern.UNICODE_CHARACTER_CLASS);
+        Pattern pattern = Pattern.compile("\\W+"); //, Pattern.UNICODE_CHARACTER_CLASS);
         String[] tests = pattern.split(localizedTest.toLowerCase());
 
         // tokenize our input
