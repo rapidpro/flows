@@ -1,0 +1,45 @@
+[
+  {
+    "org": { "country": "NG", "primary_language": "eng", "timezone": "Africa/Lagos", "date_style": "day_first", "anon": true },
+    "contact_initial": { "uuid": "1234", "name": null, "urns": [], "groups": [], "fields": {}, "language": null },
+    "messages": [
+      { "type": "reply", "msg": "Welcome to U-report! Please type A for ENGLISH; B for PIDGIN; C for HAUSA; D for Yoruba and E for Igbo" },
+      { "type": "input", "msg": "a" },
+      { "type": "reply", "msg": "Please reply with Ur NAME or NICKNAME,for example \"Tolu\" or \"Tom\" or \"Ahmed\".  If U want to remain anonymous use any letters or numbers ALL MESSAGES ARE FREE !" },
+      { "type": "input", "msg": "Jim" },
+      { "type": "reply", "msg": "Ok, I have your NAME as \"Jim\". If this is not right, reply with \"undo\", otherwise reply with what YEAR were you born." },
+      { "type": "input", "msg": "UNDO " },
+      { "type": "reply", "msg": "Sorry I got that wrong. Ok, please reply with just your name. For example: \"Thomas\"" },
+      { "type": "input", "msg": "Jimmy" },
+      { "type": "reply", "msg": "Ok, I have your NAME as \"Jimmy\". If this is not right, reply with \"undo\", otherwise reply with what YEAR were you born." },
+      { "type": "input", "msg": "I was born in 1981" },
+      { "type": "reply", "msg": "Great, we are looking forward to hearing from our youth. Youth are our future. What GENDER are you? Reply with M for Male or F for Female." },
+      { "type": "input", "msg": "m " },
+      { "type": "reply", "msg": "Excellent, we need leaders like U on U-report. What STATE are U living in currently? " },
+      { "type": "input", "msg": "Xen" },
+      { "type": "reply", "msg": "Sorry, we don't recognize that state, please respond with the Nigerian state you currently live in." },
+      { "type": "input", "msg": "Lagos" },
+      { "type": "reply", "msg": "From which LGA will you be reporting from?" },
+      { "type": "input", "msg": "Xen!" },
+      { "type": "reply", "msg": "Sorry, we don't recognize that LGA, please respond with the LGA in Lagos you currently live in." },
+      { "type": "input", "msg": "Oyo" },
+      { "type": "reply", "msg": "Welldon you are almost fully registered. What WARD are U living in? " },
+      { "type": "input", "msg": "Ibadan" },
+      { "type": "reply", "msg": "Thumbs up! You are almost there! What SETTLMENT are U currently living in. If you are not sure please reply with your Ward. " },
+      { "type": "input", "msg": "London" },
+      { "type": "reply", "msg": "What is Ur OCCUPATION, choose one: a)Health b)Education c)Business d)Self Employed e)Student f)Uniformed Service g)Agriculture h)Social Worker i)Other j)Corpers" },
+      { "type": "input", "msg": "x" },
+      { "type": "reply", "msg": "i didnt get that please choose one: a)Health b)Education c)Business d)Self Employed e)Student f)Uniformed Service g)Agriculture h)Social Worker i)Other j)Corpers" },
+      { "type": "input", "msg": "c" },
+      { "type": "reply", "msg": "Congratulations,U will be able to share Ur views and get feedback. Please encourage your friends to sign up. Ur voice matters!! http://nigeria.ureport.in" }
+    ],
+    "contact_final": {
+      "uuid": "1234",
+      "name": "Jimmy",
+      "urns": [],
+      "groups": ["UReporters", "UReport English", "UReport Youth", "UReport Males"],
+      "fields": {"registration_date": "[[NOW]]", "born": "1981", "gender": "Male", "state": "Lagos", "lga": "Oyo", "ward": "Ibadan", "settlement": "London", "occupation": "Business"},
+      "language": "eng"
+    }
+  }
+]

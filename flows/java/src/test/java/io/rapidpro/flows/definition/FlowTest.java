@@ -46,7 +46,7 @@ public class FlowTest extends BaseFlowsTest {
         assertThat(as2.getActions(), hasSize(2));
         assertThat(as2.getActions().get(0), instanceOf(ReplyAction.class));
         assertThat(as2.getActions().get(1), instanceOf(RemoveFromGroupsAction.class));
-        assertThat(as2.getDestination().getUuid(), is("dc495df8-8a4d-4cec-951a-56b321a0c828"));
+        assertThat(as2.getDestination().getUuid(), is("6891e592-1e29-426b-b227-e3ae466662ab"));
 
         Rule rs1Rule2 = rs1.getRules().get(1);
 
@@ -59,7 +59,7 @@ public class FlowTest extends BaseFlowsTest {
         assertThat(as3.getActions(), hasSize(2));
         assertThat(as3.getActions().get(0), instanceOf(ReplyAction.class));
         assertThat(as3.getActions().get(1), instanceOf(AddToGroupsAction.class));
-        assertThat(as3.getDestination().getUuid(), is("dc495df8-8a4d-4cec-951a-56b321a0c828"));
+        assertThat(as3.getDestination().getUuid(), is("6891e592-1e29-426b-b227-e3ae466662ab"));
 
         Rule rs1Rule3 = rs1.getRules().get(2);
 

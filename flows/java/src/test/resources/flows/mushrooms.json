@@ -30,7 +30,7 @@
       {
         "y": 251,
         "x": 117,
-        "destination": "dc495df8-8a4d-4cec-951a-56b321a0c828",
+        "destination": "6891e592-1e29-426b-b227-e3ae466662ab",
         "uuid": "6d12cde9-dbbf-4673-acd7-afa1776d382b",
         "actions": [
           {
@@ -54,7 +54,7 @@
       {
         "y": 251,
         "x": 384,
-        "destination": "dc495df8-8a4d-4cec-951a-56b321a0c828",
+        "destination": "6891e592-1e29-426b-b227-e3ae466662ab",
         "uuid": "4ef2b232-1484-4db7-b470-98af1a2349d3",
         "actions": [
           {
@@ -91,50 +91,21 @@
         ]
       },
       {
-        "y": 405,
-        "x": 253,
+        "y": 409,
+        "x": 249,
         "destination": null,
-        "uuid": "dc495df8-8a4d-4cec-951a-56b321a0c828",
+        "uuid": "6891e592-1e29-426b-b227-e3ae466662ab",
         "actions": [
           {
-            "msg": {
-              "eng": "Hi @contact, please note that @step.contact.name replied with @flow.response_1.text"
-            },
-            "variables": [
-              {
-                "id": "@contact.chw"
-              }
-            ],
-            "type": "send",
-            "groups": [
-              {
-                "name": "Group Chat",
-                "id": 483
-              }
-            ],
-            "contacts": [
-              {
-                "urns": [
-                  {
-                    "priority": 90,
-                    "path": "kinyarwandanet",
-                    "scheme": "twitter"
-                  },
-                  {
-                    "priority": 50,
-                    "path": "+250783835665",
-                    "scheme": "tel"
-                  }
-                ],
-                "name": "Kinya",
-                "id": 126238
-              }
-            ]
+            "field": "preference",
+            "type": "save",
+            "value": "@flow.response_1.category",
+            "label": "preference"
           }
         ]
       }
     ],
-    "last_saved": "2015-08-27T09:05:59.435453Z",
+    "last_saved": "2015-08-28T10:55:56.380349Z",
     "entry": "32cf414b-35e3-4c75-8a78-d5f4de925e13",
     "rule_sets": [
       {

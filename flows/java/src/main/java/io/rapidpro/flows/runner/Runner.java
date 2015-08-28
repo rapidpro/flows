@@ -2,7 +2,7 @@ package io.rapidpro.flows.runner;
 
 import io.rapidpro.expressions.EvaluatedTemplate;
 import io.rapidpro.expressions.EvaluationContext;
-import io.rapidpro.expressions.Expressions;
+import io.rapidpro.expressions.evaluator.TemplateEvaluator;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.RuleSet;
 import org.threeten.bp.Instant;
@@ -15,11 +15,12 @@ import java.util.Set;
  */
 public class Runner {
 
-    protected Expressions.TemplateEvaluator m_evaluator = Expressions.getTemplateEvaluator();
+    protected TemplateEvaluator m_templateEvaluator;
 
     protected Location.Resolver m_locationResolver;
 
-    public Runner(Location.Resolver locationResolver) {
+    public Runner(TemplateEvaluator templateEvaluator, Location.Resolver locationResolver) {
+        m_templateEvaluator = templateEvaluator;
         m_locationResolver = locationResolver;
     }
 
@@ -117,7 +118,11 @@ public class Runner {
      * @return the evaluated template, e.g. "Hi Joe"
      */
     public EvaluatedTemplate substituteVariables(String text, EvaluationContext context) {
-        return m_evaluator.evaluateTemplate(text, context);
+        return m_templateEvaluator.evaluateTemplate(text, context);
+    }
+
+    public TemplateEvaluator getTemplateEvaluator() {
+        return m_templateEvaluator;
     }
 
     /**

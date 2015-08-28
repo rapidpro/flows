@@ -104,7 +104,7 @@ public class RunnerTest extends BaseFlowsTest {
         assertThat(run.getSteps().get(1).getActions(), hasSize(2));
         assertReply(run.getSteps().get(1).getActions().get(0), "That was the right answer.");
         assertAddToGroup(run.getSteps().get(1).getActions().get(1), "Approved");
-        assertThat(run.getSteps().get(2).getNode().getUuid(), is("dc495df8-8a4d-4cec-951a-56b321a0c828"));
+        assertThat(run.getSteps().get(2).getNode().getUuid(), is("6891e592-1e29-426b-b227-e3ae466662ab"));
         assertThat(run.getSteps().get(2).getArrivedOn(), notNullValue());
         assertThat(run.getSteps().get(2).getLeftOn(), nullValue());
         assertThat(run.getSteps().get(2).getRuleResult(), nullValue());
