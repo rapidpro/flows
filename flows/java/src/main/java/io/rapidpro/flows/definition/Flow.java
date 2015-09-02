@@ -3,6 +3,8 @@ package io.rapidpro.flows.definition;
 import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import io.rapidpro.flows.definition.actions.Action;
+import io.rapidpro.flows.definition.actions.message.MessageAction;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.runner.Runner;
@@ -11,7 +13,9 @@ import io.rapidpro.flows.utils.JsonUtils;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A flow definition, typically loaded from JSON
@@ -27,6 +31,8 @@ public class Flow {
     protected Type m_type;
 
     protected String m_baseLanguage;
+
+    protected Set<String> m_languages;
 
     protected Node m_entry;
 
@@ -53,15 +59,31 @@ public class Flow {
             flow.m_type = Type.MESSAGE;  // TODO flow type should be included in the JSON
             flow.m_baseLanguage = obj.get("base_language").getAsString();
 
+            // keep an exhaustive list of all languages in our flow definition
+            Set<String> languages = new HashSet<>();
+
             DeserializationContext context = new DeserializationContext(flow);
 
             for (JsonElement asElem : obj.get("action_sets").getAsJsonArray()) {
                 ActionSet actionSet = ActionSet.fromJson(asElem.getAsJsonObject(), context, jsonContext);
+
+                // see what translations are set on this actionset
+                for (Action action : actionSet.getActions()) {
+                    if (action instanceof MessageAction) {
+                        languages.addAll(((MessageAction)action).getMsg().m_translations.keySet());
+                    }
+                }
+
                 flow.m_elementsByUuid.put(actionSet.m_uuid, actionSet);
             }
 
             for (JsonElement rsElem : obj.get("rule_sets").getAsJsonArray()) {
                 RuleSet ruleSet = RuleSet.fromJson(rsElem.getAsJsonObject(), context);
+
+                // see what translations are set on this ruleset
+                for(Rule rule : ruleSet.getRules()) {
+                    languages.addAll(rule.getCategory().m_translations.keySet());
+                }
                 flow.m_elementsByUuid.put(ruleSet.m_uuid, ruleSet);
             }
 
@@ -71,8 +93,15 @@ public class Flow {
                 start.setDestination((Node) flow.getElementByUuid(entry.getValue()));
             }
 
-            flow.m_entry = flow.getElementByUuid(JsonUtils.getAsString(obj, "entry"));
+            // only accept languages that are ISO 639-2 (alpha3)
+            flow.m_languages = new HashSet<>();
+            for (String language : languages) {
+                if (language.length() == 3) {
+                    flow.m_languages.add(language);
+                }
+            }
 
+            flow.m_entry = flow.getElementByUuid(JsonUtils.getAsString(obj, "entry"));
             return flow;
         }
     }
@@ -178,6 +207,13 @@ public class Flow {
         Node getDestination();
 
         void setDestination(Node destination);
+    }
+
+    /**
+     * Gets all the languages present in the flow definition
+     */
+    public Set<String> getLanguages() {
+        return m_languages;
     }
 
     public String getBaseLanguage() {
