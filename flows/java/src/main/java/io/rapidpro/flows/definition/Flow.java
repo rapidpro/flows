@@ -51,7 +51,7 @@ public class Flow {
 
             Flow flow = new Flow();
             flow.m_type = Type.MESSAGE;  // TODO flow type should be included in the JSON
-            flow.m_baseLanguage = obj.get("base_language").getAsString();
+            flow.m_baseLanguage = JsonUtils.getAsString(obj, "base_language");
 
             DeserializationContext context = new DeserializationContext(flow);
 
