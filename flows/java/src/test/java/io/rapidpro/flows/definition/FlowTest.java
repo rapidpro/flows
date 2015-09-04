@@ -24,6 +24,7 @@ public class FlowTest extends BaseFlowsTest {
         Flow flow = Flow.fromJson(readResource("test_flows/mushrooms.json"));
 
         assertThat(flow.getBaseLanguage(), is("eng"));
+        assertThat(flow.getLanguages(), contains("eng", "fre"));
 
         ActionSet as1 = (ActionSet) flow.getEntry();
 
@@ -75,12 +76,6 @@ public class FlowTest extends BaseFlowsTest {
         assertThat(as4.getActions(), hasSize(1));
         assertThat(as4.getActions().get(0), instanceOf(ReplyAction.class));
         assertThat(as4.getDestination(), is((Flow.Node) rs1));
-
-        Set<String> languages = new HashSet<>();
-        languages.add("eng");
-        languages.add("fre");
-        assertThat(flow.getLanguages(), is(languages));
-
     }
 
     @Test

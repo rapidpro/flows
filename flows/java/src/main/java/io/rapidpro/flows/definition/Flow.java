@@ -81,7 +81,7 @@ public class Flow {
                 RuleSet ruleSet = RuleSet.fromJson(rsElem.getAsJsonObject(), context);
 
                 // see what translations are set on this ruleset
-                for(Rule rule : ruleSet.getRules()) {
+                for (Rule rule : ruleSet.getRules()) {
                     languages.addAll(rule.getCategory().m_translations.keySet());
                 }
                 flow.m_elementsByUuid.put(ruleSet.m_uuid, ruleSet);
