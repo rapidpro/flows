@@ -144,4 +144,18 @@ public class ConversionsTest {
 
         assertThat(Conversions.toTime(ZonedDateTime.of(2015, 8, 14, 9, 12, 0, 0, ZoneId.of("Africa/Kigali")), m_context), is(OffsetTime.of(9, 12, 0, 0, ZoneOffset.ofHours(2))));
     }
+
+    @Test
+    public void test_toRepr() {
+        assertThat(Conversions.toRepr(false, m_context), is("FALSE"));
+        assertThat(Conversions.toRepr(true, m_context), is("TRUE"));
+
+        assertThat(Conversions.toRepr(new BigDecimal("123.45"), m_context), is("123.45"));
+
+        assertThat(Conversions.toRepr("x\"y", m_context), is("\"x\"\"y\""));
+
+        assertThat(Conversions.toRepr(OffsetTime.of(9, 12, 0, 0, ZoneOffset.ofHours(2)), m_context), is("\"09:12\""));
+
+        assertThat(Conversions.toRepr(ZonedDateTime.of(2015, 8, 14, 9, 12, 0, 0, ZoneId.of("Africa/Kigali")), m_context), is("\"14-08-2015 09:12\""));
+    }
 }

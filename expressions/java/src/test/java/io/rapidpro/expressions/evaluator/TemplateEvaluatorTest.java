@@ -4,10 +4,14 @@ import io.rapidpro.expressions.EvaluatedTemplate;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.EvaluationError;
 import io.rapidpro.expressions.EvaluatorBuilder;
+import io.rapidpro.expressions.dates.DateStyle;
 import org.junit.Assert;
 import org.junit.Test;
+import org.threeten.bp.ZoneId;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
@@ -79,6 +83,24 @@ public class TemplateEvaluatorTest {
         assertThat(m_evaluator.evaluateExpression("FIXED(1234.5678)", new EvaluationContext()), is((Object) "1,234.57"));
         assertThat(m_evaluator.evaluateExpression("FIXED(1234.5678, 1)", new EvaluationContext()), is((Object) "1,234.6"));
         assertThat(m_evaluator.evaluateExpression("FIXED(1234.5678, 1, True)", new EvaluationContext()), is((Object) "1234.6"));
+    }
+
+    @Test
+    public void evaluateTemplate_withResolveAvailableStrategy() {
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("foo", 5);
+        variables.put("bar", "x");
+
+        EvaluationContext context = new EvaluationContext(variables, ZoneId.of("UTC"), DateStyle.DAY_FIRST);
+
+        EvaluatedTemplate evaluated = m_evaluator.evaluateTemplate("@(1 + 2)", context, false, TemplateEvaluator.EvaluationStrategy.RESOLVE_AVAILABLE);
+        assertThat(evaluated.getOutput(), is("3"));
+
+        evaluated = m_evaluator.evaluateTemplate("Hi @contact.name", context, false, TemplateEvaluator.EvaluationStrategy.RESOLVE_AVAILABLE);
+        assertThat(evaluated.getOutput(), is("Hi @contact.name"));
+
+        evaluated = m_evaluator.evaluateTemplate("@(foo + contact.name + bar)", context, false, TemplateEvaluator.EvaluationStrategy.RESOLVE_AVAILABLE);
+        assertThat(evaluated.getOutput(), is("@(5+contact.name+\"x\")"));
     }
 
     @Test
