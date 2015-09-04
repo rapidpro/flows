@@ -75,7 +75,11 @@ public class RunState {
         try {
             Flow.DeserializationContext context = new Flow.DeserializationContext(flow);
             JsonUtils.setDeserializationContext(context);
-            return JsonUtils.getGson().fromJson(json, RunState.class);
+
+            RunState runState = JsonUtils.getGson().fromJson(json, RunState.class);
+            runState.m_flow = flow;
+
+            return runState;
         }
         finally {
             JsonUtils.clearDeserializationContext();

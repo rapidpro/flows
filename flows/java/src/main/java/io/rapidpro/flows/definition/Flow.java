@@ -145,7 +145,9 @@ public class Flow {
         public class RefAdapter extends TypeAdapter<Element> {
             @Override
             public void write(JsonWriter out, Element element) throws IOException {
-                out.value(element.getUuid());
+                if (element != null) {
+                    out.value(element.getUuid());
+                }
             }
             @Override
             public Element read(JsonReader in) throws IOException {

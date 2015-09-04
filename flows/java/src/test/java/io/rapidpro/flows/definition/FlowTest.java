@@ -76,10 +76,7 @@ public class FlowTest extends BaseFlowsTest {
         assertThat(as4.getActions().get(0), instanceOf(ReplyAction.class));
         assertThat(as4.getDestination(), is((Flow.Node) rs1));
 
-        Set<String> languages = new HashSet<>();
-        languages.add("eng");
-        languages.add("fre");
-        assertThat(flow.getLanguages(), is(languages));
+        assertThat(flow.getLanguages(), contains("eng", "fre"));
 
     }
 
