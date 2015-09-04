@@ -121,6 +121,16 @@ public class Runner {
         return m_templateEvaluator.evaluateTemplate(text, context);
     }
 
+    /**
+     * Performs variable substitution on the the given text
+     * @param text the text, e.g. "Hi @contact.name"
+     * @param context the evaluation context
+     * @return the evaluated template, e.g. "Hi Joe"
+     */
+    public EvaluatedTemplate substituteVariablesIfAvailable(String text, EvaluationContext context) {
+        return m_templateEvaluator.evaluateTemplate(text, context, false, TemplateEvaluator.EvaluationStrategy.RESOLVE_AVAILABLE);
+    }
+
     public TemplateEvaluator getTemplateEvaluator() {
         return m_templateEvaluator;
     }

@@ -2,9 +2,7 @@ package io.rapidpro.expressions.evaluator;
 
 import io.rapidpro.expressions.*;
 import io.rapidpro.expressions.functions.FunctionManager;
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.BailErrorStrategy;
-import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.commons.lang3.StringUtils;
@@ -14,7 +12,9 @@ import org.slf4j.LoggerFactory;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The template evaluator
@@ -26,6 +26,11 @@ public class TemplateEvaluator {
     private FunctionManager m_functionManager = new FunctionManager();
 
     private char m_expressionPrefix;
+
+    public enum EvaluationStrategy {
+        COMPLETE,              // evaluate all expressions completely
+        RESOLVE_AVAILABLE      // if expression contains missing context references, just substitute what variables we have
+    }
 
     public TemplateEvaluator(char expressionPrefix, List<Class<?>> functionLibraries) {
         m_expressionPrefix = expressionPrefix;
@@ -74,6 +79,18 @@ public class TemplateEvaluator {
      * @return a tuple of the evaluated template and a list of evaluation errors
      */
     public EvaluatedTemplate evaluateTemplate(String template, EvaluationContext context, boolean urlEncode) {
+        return evaluateTemplate(template, context, urlEncode, EvaluationStrategy.COMPLETE);
+    }
+
+    /**
+     * Evaluates a template string, e.g. "Hello @contact.name you have @(contact.reports * 2) reports"
+     * @param template the template string
+     * @param context the evaluation context
+     * @param urlEncode whether or not values should be URL encoded
+     * @param strategy the evaluation strategy
+     * @return a tuple of the evaluated template and a list of evaluation errors
+     */
+    public EvaluatedTemplate evaluateTemplate(String template, EvaluationContext context, boolean urlEncode, EvaluationStrategy strategy) {
         char[] inputChars = template.toCharArray();
         StringBuilder output = new StringBuilder();
         List<String> errors = new ArrayList<>();
@@ -152,7 +169,7 @@ public class TemplateEvaluator {
             }
 
             if (currentExpressionTerminated) {
-                output.append(resolveExpression(currentExpression.toString(), context, urlEncode, errors));
+                output.append(resolveExpression(currentExpression.toString(), context, urlEncode, strategy, errors));
                 currentExpression = null;
                 currentExpressionTerminated = false;
                 state = State.BODY;
@@ -170,10 +187,10 @@ public class TemplateEvaluator {
     /**
      * Resolves an expression found in the template. If an evaluation error occurs, expression is returned as is.
      */
-    private String resolveExpression(String expression, EvaluationContext context, boolean urlEncode, List<String> errors) {
+    protected String resolveExpression(String expression, EvaluationContext context, boolean urlEncode, EvaluationStrategy strategy, List<String> errors) {
         try {
             String cleaned = expression.substring(1); // strip @ prefix
-            Object evaluated = evaluateExpression(cleaned, context);
+            Object evaluated = evaluateExpression(cleaned, context, strategy);
 
             String rendered = Conversions.toString(evaluated, context); // render result as string
             return urlEncode ? URLEncoder.encode(rendered, "UTF-8") : rendered;
@@ -197,6 +214,18 @@ public class TemplateEvaluator {
      * @throws EvaluationError if an error occurs during evaluation
      */
     public Object evaluateExpression(String expression, EvaluationContext context) throws EvaluationError {
+        return evaluateExpression(expression, context, EvaluationStrategy.COMPLETE);
+    }
+
+    /**
+     * Evaluates a single expression, e.g. "contact.reports * 2"
+     * @param expression the expression string
+     * @param context the evaluation context
+     * @param strategy the evaluation strategy
+     * @return the evaluated expression value
+     * @throws EvaluationError if an error occurs during evaluation
+     */
+    public Object evaluateExpression(String expression, EvaluationContext context, EvaluationStrategy strategy) throws EvaluationError {
         ExcellentLexer lexer = new ExcellentLexer(new ANTLRInputStream(expression));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
 
@@ -215,7 +244,63 @@ public class TemplateEvaluator {
             throw new EvaluationError("Expression is invalid", ex);
         }
 
+        if (strategy == EvaluationStrategy.RESOLVE_AVAILABLE) {
+            String resolved = resolveAvailable(tokens, context);
+            if (resolved != null) {
+                return resolved;
+            }
+        }
+
         ExcellentVisitor visitor = new ExpressionVisitorImpl(m_functionManager, context);
         return visitor.visit(tree);
+    }
+
+    /**
+     * Checks the token stream for context references and if there are missing references - substitutes available
+     * references and returns a partially evaluated expression.
+     * @param tokens the token stream (all tokens fetched)
+     * @param context the evaluation context
+     * @return the partially evaluated expression or null if expression can be fully evaluated
+     */
+    protected String resolveAvailable(CommonTokenStream tokens, EvaluationContext context) {
+        boolean hasMissing = false;
+
+        List<Object> outputComponents = new ArrayList<>();
+
+        for (int t = 0; t < tokens.size() - 1; t++) {  // we can ignore the final EOF token
+            Token token = tokens.get(t);
+            Token nextToken = tokens.get(t + 1);
+
+            // if token is a NAME not followed by ( then it's a context reference
+            if (token.getType() == ExcellentParser.NAME && nextToken.getType() != ExcellentParser.LPAREN) {
+                try {
+                    outputComponents.add(context.resolveVariable(token.getText()));
+                } catch (EvaluationError ex) {
+                    hasMissing = true;
+                    outputComponents.add(token);
+                }
+            } else {
+                outputComponents.add(token);
+            }
+        }
+
+        // if we don't have missing context references, perform evaluation as normal
+        if (!hasMissing) {
+            return null;
+        }
+
+        // re-combine the tokens and context values back into an expression
+        StringBuilder output = new StringBuilder(String.valueOf(m_expressionPrefix));
+
+        for (Object outputComponent : outputComponents) {
+            String compVal;
+            if (outputComponent instanceof Token) {
+                compVal = ((Token) outputComponent).getText();
+            } else {
+                compVal = Conversions.toRepr(outputComponent, context);
+            }
+            output.append(compVal);
+        }
+        return output.toString();
     }
 }

@@ -48,7 +48,7 @@ public class SendActionTest extends BaseActionTest {
 
     @Test
     public void execute() {
-        SendAction action = new SendAction(new TranslatableText("Hi @contact.first_name. @step.contact said @step.value"),
+        SendAction action = new SendAction(new TranslatableText("Hi @(\"Dr\" & contact) @contact.first_name. @step.contact said @step.value"),
                 Arrays.asList(new GroupRef(123, "Testers")),
                 Arrays.asList(new ContactRef(234, "Mr Test")),
                 Arrays.asList(new RecipientVariable("@new_contact")));
@@ -56,6 +56,6 @@ public class SendActionTest extends BaseActionTest {
         Action.Result result = action.execute(m_runner, m_run, Input.of("Yes"));
         SendAction performed = (SendAction) result.getActionPerformed();
 
-        assertThat(performed.getMsg(), is(new TranslatableText("Hi @contact.first_name. Joe Flow said Yes")));
+        assertThat(performed.getMsg(), is(new TranslatableText("Hi @(\"Dr\"&contact) @contact.first_name. Joe Flow said Yes")));
     }
 }

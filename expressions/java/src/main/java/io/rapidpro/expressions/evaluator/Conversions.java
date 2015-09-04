@@ -234,6 +234,20 @@ public class Conversions {
     }
 
     /**
+     * Converts a value back to its representation form, e.g. x -> "x"
+     */
+    public static String toRepr(Object value, EvaluationContext ctx) {
+        String asString = Conversions.toString(value, ctx);
+
+        if (value instanceof String || value instanceof LocalDate || value instanceof OffsetTime || value instanceof ZonedDateTime) {
+            asString = asString.replace("\"", "\"\""); // escape quotes by doubling
+            asString = "\"" + asString + "\"";
+        }
+
+        return asString;
+    }
+
+    /**
      * Formats a decimal number using the same precision as Excel
      * @param decimal the decimal value
      * @return the formatted string value

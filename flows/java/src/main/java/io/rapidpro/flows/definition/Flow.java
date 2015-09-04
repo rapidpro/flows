@@ -57,7 +57,7 @@ public class Flow {
 
             Flow flow = new Flow();
             flow.m_type = Type.MESSAGE;  // TODO flow type should be included in the JSON
-            flow.m_baseLanguage = obj.get("base_language").getAsString();
+            flow.m_baseLanguage = JsonUtils.getAsString(obj, "base_language");
 
             // keep an exhaustive list of all languages in our flow definition
             Set<String> languages = new HashSet<>();
@@ -81,7 +81,7 @@ public class Flow {
                 RuleSet ruleSet = RuleSet.fromJson(rsElem.getAsJsonObject(), context);
 
                 // see what translations are set on this ruleset
-                for(Rule rule : ruleSet.getRules()) {
+                for (Rule rule : ruleSet.getRules()) {
                     languages.addAll(rule.getCategory().m_translations.keySet());
                 }
                 flow.m_elementsByUuid.put(ruleSet.m_uuid, ruleSet);

@@ -44,37 +44,15 @@ public class SendAction extends MessageAction {
     protected Result executeWithMessage(Runner runner, EvaluationContext context, String message) {
         // TODO evaluate variables (except @new_contact)... though what do we return them as ?
 
-        // Create a new context where the @contact.* variables will be output unresolved. Not a perfect solution as
-        // those variables could be combined with other variables in more complex expressions
-        Map<String, Object> newVars = stubContactVariables(context.getVariables());
+        // create a new context without the @contact.* variables which will remain unresolved for now
+        Map<String, Object> newVars = new HashMap<>(context.getVariables());
+        newVars.remove("contact");
         EvaluationContext contextForOtherContacts = new EvaluationContext(newVars, context.getTimezone(), context.getDateStyle());
 
-        EvaluatedTemplate template = runner.substituteVariables(message, contextForOtherContacts);
+        EvaluatedTemplate template = runner.substituteVariablesIfAvailable(message, contextForOtherContacts);
 
         Action performed = new SendAction(new TranslatableText(template.getOutput()), m_groups, m_contacts, m_variables);
         return new Result(performed, template.getErrors());
-    }
-
-    /**
-     * Copies variables from an existing context, whilst stubbing the contact values. For example, the variable
-     * "contact"."name" -> "Joe" will be replaced as "contact"."name" -> "@contact.name".
-     */
-    protected static Map<String, Object> stubContactVariables(Map<String, Object> variables) {
-        Map<String, Object> result = new HashMap<>();
-
-        for (Map.Entry<String, Object> entry : variables.entrySet()) {
-            if (entry.getKey().equals("contact")) {
-                Map<String, String> realContact = (Map<String, String>) entry.getValue();
-                Map<String, String> stubContact = new HashMap<>();
-                for (Map.Entry<String, String> e : realContact.entrySet()) {
-                    stubContact.put(e.getKey(), "@contact." + e.getKey());
-                }
-                result.put("contact", stubContact);
-            } else {
-                result.put(entry.getKey(), entry.getValue());
-            }
-        }
-        return result;
     }
 
     public List<ContactRef> getContacts() {
