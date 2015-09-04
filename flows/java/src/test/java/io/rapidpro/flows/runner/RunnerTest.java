@@ -24,12 +24,6 @@ public class RunnerTest extends BaseFlowsTest {
 
         RunState run = m_runner.start(getOrg(), getContact(), flow);
 
-        // make sure we can export
-        run = RunState.fromJson(run.toJson(), run.getFlow());
-
-        // and import an export
-        run = RunState.fromJson(run.toJson(), run.getFlow());
-
         assertThat(run.getOrg().getPrimaryLanguage(), is("eng"));
         assertThat(run.getOrg().getTimezone(), is(ZoneId.of("Africa/Kigali")));
         assertThat(run.getOrg().getDateStyle(), is(DateStyle.DAY_FIRST));

@@ -5,6 +5,7 @@ import io.rapidpro.expressions.dates.DateStyle;
 import io.rapidpro.flows.BaseFlowsTest;
 import io.rapidpro.flows.RunnerBuilder;
 import io.rapidpro.flows.definition.Flow;
+import io.rapidpro.flows.utils.JsonUtils;
 import org.junit.Test;
 import org.threeten.bp.Instant;
 import org.threeten.bp.ZoneId;
@@ -52,10 +53,14 @@ public class RunStateTest extends BaseFlowsTest {
         Runner runner = new RunnerBuilder().build();
         RunState run = runner.start(getOrg(), getContact(), flow);
 
-        String json = run.toJson();
+        // send our first message through so we have references to rules
+        runner.resume(run, Input.of("Yes"));
 
+        // export to json and reimport
+        String json = run.toJson();
         RunState restored = RunState.fromJson(json, flow);
 
+        // json should be the same
         assertThat(restored.toJson(), is(json));
     }
 }

@@ -85,6 +85,10 @@ public class Flow {
                     languages.addAll(rule.getCategory().m_translations.keySet());
                 }
                 flow.m_elementsByUuid.put(ruleSet.m_uuid, ruleSet);
+
+                for (Rule rule : ruleSet.getRules()) {
+                    flow.m_elementsByUuid.put(rule.getUuid(), rule);
+                }
             }
 
             // lookup and set destination nodes
@@ -145,9 +149,8 @@ public class Flow {
         public class RefAdapter extends TypeAdapter<Element> {
             @Override
             public void write(JsonWriter out, Element element) throws IOException {
-                if (element != null) {
-                    out.value(element.getUuid());
-                }
+                out.value(element.getUuid());
+
             }
             @Override
             public Element read(JsonReader in) throws IOException {
