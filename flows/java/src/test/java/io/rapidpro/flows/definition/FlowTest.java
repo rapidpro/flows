@@ -8,9 +8,6 @@ import io.rapidpro.flows.definition.tests.logic.TrueTest;
 import io.rapidpro.flows.definition.tests.text.ContainsAnyTest;
 import org.junit.Test;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -76,8 +73,6 @@ public class FlowTest extends BaseFlowsTest {
         assertThat(as4.getActions(), hasSize(1));
         assertThat(as4.getActions().get(0), instanceOf(ReplyAction.class));
         assertThat(as4.getDestination(), is((Flow.Node) rs1));
-
-        assertThat(flow.getLanguages(), contains("eng", "fre"));
     }
 
     @Test
