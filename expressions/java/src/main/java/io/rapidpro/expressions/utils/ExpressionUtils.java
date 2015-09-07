@@ -4,7 +4,9 @@ import io.rapidpro.expressions.dates.DateStyle;
 import org.apache.commons.lang3.ArrayUtils;
 import org.threeten.bp.format.DateTimeFormatter;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -52,6 +54,19 @@ public class ExpressionUtils {
      */
     public static BigDecimal pow(BigDecimal number, BigDecimal power) {
         return new BigDecimal(Math.pow(number.doubleValue(), power.doubleValue()));
+    }
+
+    /**
+     * Encodes text for inclusion in a URL query string. Should be equivalent to Django's urlquote function.
+     * @param text the text to encode
+     * @return the encoded text
+     */
+    public static String urlquote(String text) {
+        try {
+            return URLEncoder.encode(text, "UTF-8").replace("+", "%20");
+        } catch (UnsupportedEncodingException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     /**

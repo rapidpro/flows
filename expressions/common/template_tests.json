@@ -322,6 +322,16 @@
     "errors": []
   },
 
+  /* URL encoding */
+
+  { /* unbalanced parenthesis */
+    "template": "http://example.com/do.php?contact=@contact",
+    "context": {"vars": { "contact": { "*": "Joe Flow" }}, "tz": "UTC", "day_first": true},
+    "url_encode": true,
+    "output": "http://example.com/do.php?contact=Joe%20Flow",
+    "errors": []
+  },
+
   /* syntax errors */
 
   { /* unbalanced parenthesis */

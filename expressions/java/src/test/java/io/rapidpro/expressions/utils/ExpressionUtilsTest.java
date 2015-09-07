@@ -7,6 +7,7 @@ import java.util.Collections;
 
 import static io.rapidpro.expressions.utils.ExpressionUtils.slice;
 import static io.rapidpro.expressions.utils.ExpressionUtils.tokenize;
+import static io.rapidpro.expressions.utils.ExpressionUtils.urlquote;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -26,6 +27,12 @@ public class ExpressionUtilsTest {
         assertThat(slice(Arrays.asList(1, 2, 3, 4), 1, 3), contains(2, 3));
         assertThat(slice(Arrays.asList(1, 2, 3, 4), 1, -1), contains(2, 3));
         assertThat(slice(Arrays.asList(1, 2, 3, 4), -3, -1), contains(2, 3));
+    }
+
+    @Test
+    public void _urlquote() {
+        assertThat(urlquote(""), is(""));
+        assertThat(urlquote("?!=Jow&Flow"), is("%3F%21%3DJow%26Flow"));
     }
 
     @Test

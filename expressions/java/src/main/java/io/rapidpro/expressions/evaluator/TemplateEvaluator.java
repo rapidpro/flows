@@ -2,6 +2,7 @@ package io.rapidpro.expressions.evaluator;
 
 import io.rapidpro.expressions.*;
 import io.rapidpro.expressions.functions.FunctionManager;
+import io.rapidpro.expressions.utils.ExpressionUtils;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -193,16 +194,13 @@ public class TemplateEvaluator {
             Object evaluated = evaluateExpression(cleaned, context, strategy);
 
             String rendered = Conversions.toString(evaluated, context); // render result as string
-            return urlEncode ? URLEncoder.encode(rendered, "UTF-8") : rendered;
+            return urlEncode ? ExpressionUtils.urlquote(rendered) : rendered;
         }
         catch (EvaluationError ex) {
             logger.debug("Unable to evaluate expression", ex);
             errors.add(ex.getMessage());
 
             return expression; // if we can't evaluate expression, include it as is in the output
-        }
-        catch (UnsupportedEncodingException ex) {
-            throw new RuntimeException(ex);
         }
     }
 
