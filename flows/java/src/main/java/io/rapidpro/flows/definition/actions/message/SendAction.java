@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import io.rapidpro.expressions.EvaluatedTemplate;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.flows.definition.ContactRef;
-import io.rapidpro.flows.definition.GroupRef;
+import io.rapidpro.flows.definition.LabelRef;
 import io.rapidpro.flows.definition.RecipientVariable;
 import io.rapidpro.flows.definition.TranslatableText;
 import io.rapidpro.flows.definition.actions.Action;
@@ -25,12 +25,12 @@ public class SendAction extends MessageAction {
     protected List<ContactRef> m_contacts;
 
     @SerializedName("groups")
-    protected List<GroupRef> m_groups;
+    protected List<LabelRef> m_groups;
 
     @SerializedName("variables")
     protected List<RecipientVariable> m_variables;
 
-    public SendAction(TranslatableText msg, List<GroupRef> groups, List<ContactRef> contacts, List<RecipientVariable> variables) {
+    public SendAction(TranslatableText msg, List<LabelRef> groups, List<ContactRef> contacts, List<RecipientVariable> variables) {
         super(TYPE, msg);
         m_contacts = contacts;
         m_groups = groups;
@@ -59,7 +59,7 @@ public class SendAction extends MessageAction {
         return m_contacts;
     }
 
-    public List<GroupRef> getGroups() {
+    public List<LabelRef> getGroups() {
         return m_groups;
     }
 

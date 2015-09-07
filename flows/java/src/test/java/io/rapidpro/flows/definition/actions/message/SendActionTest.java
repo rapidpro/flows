@@ -1,7 +1,7 @@
 package io.rapidpro.flows.definition.actions.message;
 
 import io.rapidpro.flows.definition.ContactRef;
-import io.rapidpro.flows.definition.GroupRef;
+import io.rapidpro.flows.definition.LabelRef;
 import io.rapidpro.flows.definition.RecipientVariable;
 import io.rapidpro.flows.definition.TranslatableText;
 import io.rapidpro.flows.definition.actions.Action;
@@ -49,7 +49,7 @@ public class SendActionTest extends BaseActionTest {
     @Test
     public void execute() {
         SendAction action = new SendAction(new TranslatableText("Hi @(\"Dr\" & contact) @contact.first_name. @step.contact said @step.value"),
-                Arrays.asList(new GroupRef(123, "Testers")),
+                Arrays.asList(new LabelRef(123, "Testers")),
                 Arrays.asList(new ContactRef(234, "Mr Test")),
                 Arrays.asList(new RecipientVariable("@new_contact")));
 

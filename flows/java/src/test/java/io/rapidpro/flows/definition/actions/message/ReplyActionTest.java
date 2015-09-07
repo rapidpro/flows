@@ -3,7 +3,6 @@ package io.rapidpro.flows.definition.actions.message;
 import io.rapidpro.flows.definition.TranslatableText;
 import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.definition.actions.BaseActionTest;
-import io.rapidpro.flows.definition.actions.SetLanguageAction;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.utils.JsonUtils;
 import org.junit.Test;

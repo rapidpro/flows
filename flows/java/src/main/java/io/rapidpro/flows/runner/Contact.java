@@ -2,9 +2,7 @@ package io.rapidpro.flows.runner;
 
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
-import io.rapidpro.expressions.utils.ExpressionUtils;
 import io.rapidpro.flows.utils.JsonUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;

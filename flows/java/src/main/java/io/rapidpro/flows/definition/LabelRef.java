@@ -5,9 +5,9 @@ import com.google.gson.*;
 import java.lang.reflect.Type;
 
 /**
- * Reference to a contact group which can be an object like {"id":123,"name":"Testers"} or an expression string
+ * Reference to a label which can be an object like {"id":123,"name":"Testing"} or an expression string
  */
-public class GroupRef {
+public class LabelRef {
 
     protected Integer m_id;
 
@@ -21,30 +21,30 @@ public class GroupRef {
         return m_name;
     }
 
-    public GroupRef(String name) {
+    public LabelRef(String name) {
         m_name = name;
     }
 
-    public GroupRef(Integer id, String name) {
+    public LabelRef(Integer id, String name) {
         m_id = id;
         m_name = name;
     }
 
-    public static class Deserializer implements JsonDeserializer<GroupRef> {
+    public static class Deserializer implements JsonDeserializer<LabelRef> {
         @Override
-        public GroupRef deserialize(JsonElement elem, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+        public LabelRef deserialize(JsonElement elem, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             if (elem.isJsonObject()) {
                 JsonObject obj = elem.getAsJsonObject();
-                return new GroupRef(obj.get("id").getAsInt(), obj.get("name").getAsString());
+                return new LabelRef(obj.get("id").getAsInt(), obj.get("name").getAsString());
             } else {
-                return new GroupRef(elem.getAsString());
+                return new LabelRef(elem.getAsString());
             }
         }
     }
 
-    public static class Serializer implements JsonSerializer<GroupRef> {
+    public static class Serializer implements JsonSerializer<LabelRef> {
         @Override
-        public JsonElement serialize(GroupRef group, Type type, JsonSerializationContext context) {
+        public JsonElement serialize(LabelRef group, Type type, JsonSerializationContext context) {
             if (group.m_id != null) {
                 JsonObject obj = new JsonObject();
                 obj.addProperty("id", group.m_id);
@@ -59,7 +59,7 @@ public class GroupRef {
 
     @Override
     public String toString() {
-        return "GroupRef{id=" + m_id + ", name=\"" + m_name + "\"}";
+        return "LabelRef{id=" + m_id + ", name=\"" + m_name + "\"}";
     }
 
     @Override
@@ -67,7 +67,7 @@ public class GroupRef {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        GroupRef ref = (GroupRef) o;
+        LabelRef ref = (LabelRef) o;
 
         if (m_id != null ? !m_id.equals(ref.m_id) : ref.m_id != null) return false;
         return m_name.equals(ref.m_name);

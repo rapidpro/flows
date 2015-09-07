@@ -3,8 +3,11 @@ package io.rapidpro.flows.definition.actions;
 import com.google.gson.*;
 import com.google.gson.annotations.SerializedName;
 import io.rapidpro.flows.definition.FlowParseException;
+import io.rapidpro.flows.definition.actions.contact.SaveToContactAction;
+import io.rapidpro.flows.definition.actions.contact.SetLanguageAction;
 import io.rapidpro.flows.definition.actions.group.AddToGroupsAction;
 import io.rapidpro.flows.definition.actions.group.RemoveFromGroupsAction;
+import io.rapidpro.flows.definition.actions.label.AddLabelAction;
 import io.rapidpro.flows.definition.actions.message.ReplyAction;
 import io.rapidpro.flows.definition.actions.message.SendAction;
 import io.rapidpro.flows.runner.Input;
@@ -30,6 +33,7 @@ public abstract class Action {
         s_classByType.put(SendAction.TYPE, SendAction.class);
         s_classByType.put(AddToGroupsAction.TYPE, AddToGroupsAction.class);
         s_classByType.put(RemoveFromGroupsAction.TYPE, RemoveFromGroupsAction.class);
+        s_classByType.put(AddLabelAction.TYPE, AddLabelAction.class);
     }
 
     @SerializedName("type")

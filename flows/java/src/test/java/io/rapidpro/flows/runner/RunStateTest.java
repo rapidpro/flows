@@ -5,7 +5,6 @@ import io.rapidpro.expressions.dates.DateStyle;
 import io.rapidpro.flows.BaseFlowsTest;
 import io.rapidpro.flows.RunnerBuilder;
 import io.rapidpro.flows.definition.Flow;
-import io.rapidpro.flows.utils.JsonUtils;
 import org.junit.Test;
 import org.threeten.bp.Instant;
 import org.threeten.bp.ZoneId;

@@ -1,5 +1,7 @@
-package io.rapidpro.flows.definition.actions;
+package io.rapidpro.flows.definition.actions.contact;
 
+import io.rapidpro.flows.definition.actions.Action;
+import io.rapidpro.flows.definition.actions.BaseActionTest;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.utils.JsonUtils;
 import org.junit.Test;

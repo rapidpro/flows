@@ -5,6 +5,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.GroupRef;
+import io.rapidpro.flows.definition.LabelRef;
 import io.rapidpro.flows.definition.actions.Action;
 import org.threeten.bp.Instant;
 import org.threeten.bp.LocalDateTime;
@@ -25,6 +26,8 @@ public class JsonUtils {
             .registerTypeAdapter(Flow.class, new Flow.Deserializer())
             .registerTypeAdapter(Action.class, new Action.Serializer())
             .registerTypeAdapter(Action.class, new Action.Deserializer())
+            .registerTypeAdapter(LabelRef.class, new LabelRef.Serializer())
+            .registerTypeAdapter(LabelRef.class, new LabelRef.Deserializer())
             .registerTypeAdapter(GroupRef.class, new GroupRef.Serializer())
             .registerTypeAdapter(GroupRef.class, new GroupRef.Deserializer())
             .create();
