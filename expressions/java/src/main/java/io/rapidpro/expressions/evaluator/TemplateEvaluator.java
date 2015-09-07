@@ -232,7 +232,7 @@ public class TemplateEvaluator {
         ParseTree tree;
 
         try {
-            tree = parser.input();
+            tree = parser.parse();
 
             if (logger.isDebugEnabled()) {
                 logger.info("Expression '{}' parsed as {}", expression, tree.toStringTree());

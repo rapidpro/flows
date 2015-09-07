@@ -13,7 +13,8 @@ public class DateParserTest {
 
     @Test
     public void auto() {
-        DateParser parser = new DateParser(LocalDate.of(2015, 8, 12), ZoneId.of("Africa/Kigali"), DateStyle.DAY_FIRST);
+        ZoneId tz = ZoneId.of("Africa/Kigali");
+        DateParser parser = new DateParser(LocalDate.of(2015, 8, 12), tz, DateStyle.DAY_FIRST);
 
         Object[][] tests = {
                 { "1/2/34", LocalDate.of(2034, 2, 1) },
@@ -27,13 +28,13 @@ public class DateParserTest {
                 { "1 feb", LocalDate.of(2015, 2, 1) }, // year can be omitted
                 { "Feb 1st", LocalDate.of(2015, 2, 1) },
                 { "1 feb 9999999", LocalDate.of(2015, 2, 1) }, // ignore invalid values
-                { "1/2/34 14:55", ZonedDateTime.of(2034, 2, 1, 14, 55, 0, 0, ZoneId.of("Africa/Kigali")) },
-                { "1-2-34 2:55PM", ZonedDateTime.of(2034, 2, 1, 14, 55, 0, 0, ZoneId.of("Africa/Kigali")) },
-                { "01 02 34 1455", ZonedDateTime.of(2034, 2, 1, 14, 55, 0, 0, ZoneId.of("Africa/Kigali")) },
-                { "1 Feb 34 02:55 PM", ZonedDateTime.of(2034, 2, 1, 14, 55, 0, 0, ZoneId.of("Africa/Kigali")) },
-                { "1. 2 '34 02:55pm", ZonedDateTime.of(2034, 2, 1, 14, 55, 0, 0, ZoneId.of("Africa/Kigali")) },
-                { "1st february 2034 14.55", ZonedDateTime.of(2034, 2, 1, 14, 55, 0, 0, ZoneId.of("Africa/Kigali"))},
-                {"1er février 2034 1455h", ZonedDateTime.of(2034, 2, 1, 14, 55, 0, 0, ZoneId.of("Africa/Kigali")) }
+                { "1/2/34 14:55", ZonedDateTime.of(2034, 2, 1, 14, 55, 0, 0, tz) },
+                { "1-2-34 2:55PM", ZonedDateTime.of(2034, 2, 1, 14, 55, 0, 0, tz) },
+                { "01 02 34 1455", ZonedDateTime.of(2034, 2, 1, 14, 55, 0, 0, tz) },
+                { "1 Feb 34 02:55 PM", ZonedDateTime.of(2034, 2, 1, 14, 55, 0, 0, tz) },
+                { "1. 2 '34 02:55pm", ZonedDateTime.of(2034, 2, 1, 14, 55, 0, 0, tz) },
+                { "1st february 2034 14.55", ZonedDateTime.of(2034, 2, 1, 14, 55, 0, 0, tz)},
+                {"1er février 2034 1455h", ZonedDateTime.of(2034, 2, 1, 14, 55, 0, 0, tz) }
         };
         for (Object[] test : tests) {
             assertThat("Parse error for " + test[0], parser.auto((String) test[0]), is(test[1]));
@@ -42,7 +43,8 @@ public class DateParserTest {
 
     @Test
     public void time() {
-        DateParser parser = new DateParser(LocalDate.of(2015, 8, 12), ZoneId.of("Africa/Kigali"), DateStyle.DAY_FIRST);
+        ZoneId tz = ZoneId.of("Africa/Kigali");
+        DateParser parser = new DateParser(LocalDate.of(2015, 8, 12), tz, DateStyle.DAY_FIRST);
 
         Object[][] tests = {
                 { "2:55", OffsetTime.of(2, 55, 0, 0, ZoneOffset.ofHours(2)) },

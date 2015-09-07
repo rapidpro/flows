@@ -19,10 +19,10 @@ import java.util.regex.Pattern;
  */
 public class DateParser {
 
-    protected static final Map<String, Integer> monthsByAlias;
+    protected static final Map<String, Integer> MONTHS_BY_ALIAS;
     static {
         try {
-            monthsByAlias = loadMonthAliases("month.aliases");
+            MONTHS_BY_ALIAS = loadMonthAliases("month.aliases");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -49,29 +49,29 @@ public class DateParser {
         AM_PM
     }
 
-    protected static final Component[][] s_dateSequencesDayFirst = new Component[][] {
+    protected static final Component[][] DATE_SEQUENCES_DAY_FIRST = new Component[][] {
             { Component.DAY, Component.MONTH, Component.YEAR },
             { Component.MONTH, Component.DAY, Component.YEAR },
-            { Component.YEAR , Component.MONTH, Component.DAY, },
+            { Component.YEAR , Component.MONTH, Component.DAY },
             { Component.DAY, Component.MONTH },
             { Component.MONTH, Component.DAY },
             { Component.MONTH, Component.YEAR },
     };
 
-    protected static final Component[][] s_dateSequencesMonthFirst = new Component[][] {
+    protected static final Component[][] DATE_SEQUENCES_MONTH_FIRST = new Component[][] {
             { Component.MONTH, Component.DAY, Component.YEAR },
             { Component.DAY, Component.MONTH, Component.YEAR },
-            { Component.YEAR , Component.MONTH, Component.DAY, },
+            { Component.YEAR, Component.MONTH, Component.DAY },
             { Component.MONTH, Component.DAY },
             { Component.DAY, Component.MONTH },
             { Component.MONTH, Component.YEAR },
     };
 
-    protected static final Component[][] s_timeSequences = new Component[][] {
+    protected static final Component[][] TIME_SEQUENCES = new Component[][] {
             { Component.HOUR_AND_MINUTE },
             { Component.HOUR, Component.MINUTE },
             { Component.HOUR, Component.MINUTE, Component.AM_PM },
-            { Component.HOUR, Component.MINUTE, Component.SECOND},
+            { Component.HOUR, Component.MINUTE, Component.SECOND },
             { Component.HOUR, Component.MINUTE, Component.SECOND, Component.AM_PM },
     };
 
@@ -84,6 +84,7 @@ public class DateParser {
     /**
      * Creates a new date parser
      * @param now the now which parsing happens relative to
+     * @param timezone the timezone in which times are interpreted
      * @param dateStyle whether dates are usually entered day first or month first
      */
     public DateParser(LocalDate now, ZoneId timezone, DateStyle dateStyle) {
@@ -94,6 +95,7 @@ public class DateParser {
 
     /**
      * Returns a date or datetime depending on what information is available
+     * @param text the text to parse
      * @return the parsed date or datetime
      */
     public Temporal auto(String text) {
@@ -102,7 +104,7 @@ public class DateParser {
 
     /**
      * Tries to parse a time value from the given text
-     * @param text the text
+     * @param text the text to parse
      * @return the parsed time
      */
     public OffsetTime time(String text) {
@@ -110,8 +112,7 @@ public class DateParser {
     }
 
     /**
-     * Returns a date or datetime depending on what information is available
-     * @return the parsed date or datetime
+     * Returns a date, datetime or time depending on what information is available
      */
     protected Temporal parse(String text, Mode mode) {
         if (StringUtils.isBlank(text)) {
@@ -175,7 +176,7 @@ public class DateParser {
      */
     protected static List<Component[]> getPossibleSequences(Mode mode, int length, DateStyle dateStyle) {
         List<Component[]> sequences = new ArrayList<>();
-        Component[][] dateSequences = dateStyle.equals(DateStyle.DAY_FIRST) ? s_dateSequencesDayFirst : s_dateSequencesMonthFirst;
+        Component[][] dateSequences = dateStyle.equals(DateStyle.DAY_FIRST) ? DATE_SEQUENCES_DAY_FIRST : DATE_SEQUENCES_MONTH_FIRST;
 
         if (mode == Mode.DATE || mode == Mode.AUTO) {
             for (Component[] seq : dateSequences) {
@@ -185,7 +186,7 @@ public class DateParser {
             }
 
         } else if (mode == Mode.TIME) {
-            for (Component[] seq : s_timeSequences) {
+            for (Component[] seq : TIME_SEQUENCES) {
                 if (seq.length == length) {
                     sequences.add(seq);
                 }
@@ -194,7 +195,7 @@ public class DateParser {
 
         if (mode == Mode.DATETIME || mode == Mode.AUTO) {
             for (Component[] dateSeq : dateSequences) {
-                for (Component[] timeSeq : s_timeSequences) {
+                for (Component[] timeSeq : TIME_SEQUENCES) {
                     if (dateSeq.length + timeSeq.length == length) {
                         sequences.add(ArrayUtils.addAll(dateSeq, timeSeq));
                     }
@@ -251,7 +252,7 @@ public class DateParser {
         catch (NumberFormatException ex) {
             if (mode != Mode.TIME) {
                 // could it be a month alias?
-                Integer month = monthsByAlias.get(token);
+                Integer month = MONTHS_BY_ALIAS.get(token);
                 if (month != null) {
                     possibilities.put(Component.MONTH, month);
                 }

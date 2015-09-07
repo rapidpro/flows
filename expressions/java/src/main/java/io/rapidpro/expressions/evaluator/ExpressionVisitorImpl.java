@@ -34,7 +34,7 @@ public class ExpressionVisitorImpl extends ExcellentBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitInput(ExcellentParser.InputContext ctx) {
+    public Object visitParse(ExcellentParser.ParseContext ctx) {
         return visit(ctx.expression());
     }
 
