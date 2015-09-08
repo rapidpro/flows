@@ -3,6 +3,7 @@ coverage
 enum34
 mock
 nose
+python-dateutil
 pytz
 regex
 requests

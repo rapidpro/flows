@@ -165,11 +165,11 @@ public class Conversions {
             return ((ZonedDateTime) value).withZoneSameInstant(ctx.getTimezone());
         }
 
-        throw new EvaluationError("Can't convert '" + value + "' to a string");
+        throw new EvaluationError("Can't convert '" + value + "' to a datetime");
     }
 
     /**
-     * Tries conversion of any value to a date
+     * Tries conversion of any value to a date or a datetime
      */
     public static Temporal toDateOrDateTime(Object value, EvaluationContext ctx) {
         if (value instanceof String) {

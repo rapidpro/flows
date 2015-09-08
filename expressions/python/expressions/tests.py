@@ -4,12 +4,13 @@ from __future__ import absolute_import, unicode_literals
 import pytz
 import unittest
 
-# from .evaluator import get_te
-# from temba.utils.parser import EvaluationContext, evaluate_template
-
-
 from datetime import datetime, date, time
-from .dates.parser import DateParser, DateStyle
+from decimal import Decimal
+from . import conversions, EvaluationError
+from .dates import DateParser, DateStyle
+from .evaluator import TemplateEvaluator, EvaluationContext
+from .functions import excel, custom
+from .utils import urlquote
 
 
 class DateParserTest(unittest.TestCase):
@@ -72,6 +73,397 @@ class DateParserTest(unittest.TestCase):
         self.assertEqual(DateParser._year_from_2digits(41, 1990), 1941)
         self.assertEqual(DateParser._year_from_2digits(99, 1990), 1999)
 
+
+class ConversionsTests(unittest.TestCase):
+
+    def setUp(self):
+        self.context = EvaluationContext({}, timezone=pytz.timezone("Africa/Kigali"))
+
+    def test_to_boolean(self):
+        self.assertEqual(conversions.to_boolean(True, self.context), True)
+        self.assertEqual(conversions.to_boolean(False, self.context), False)
+
+        self.assertEqual(conversions.to_boolean(1, self.context), True)
+        self.assertEqual(conversions.to_boolean(0, self.context), False)
+        self.assertEqual(conversions.to_boolean(-1, self.context), True)
+
+        self.assertEqual(conversions.to_boolean(Decimal(0.5), self.context), True)
+        self.assertEqual(conversions.to_boolean(Decimal(0.0), self.context), False)
+        self.assertEqual(conversions.to_boolean(Decimal(-0.5), self.context), True)
+
+        self.assertEqual(conversions.to_boolean("trUE", self.context), True)
+        self.assertEqual(conversions.to_boolean("faLSE", self.context), False)
+        self.assertEqual(conversions.to_boolean("faLSE", self.context), False)
+
+        self.assertEqual(conversions.to_boolean(date(2012, 3, 4), self.context), True)
+        self.assertEqual(conversions.to_boolean(time(12, 34, 0), self.context), True)
+        self.assertEqual(conversions.to_boolean(datetime(2012, 3, 4, 5, 6, 7, 8, pytz.UTC), self.context), True)
+
+        self.assertRaises(EvaluationError, conversions.to_boolean, 'x', self.context)
+
+    def test_to_integer(self):
+        self.assertEqual(conversions.to_integer(True, self.context), 1)
+        self.assertEqual(conversions.to_integer(False, self.context), 0)
+
+        self.assertEqual(conversions.to_integer(1234567890, self.context), 1234567890)
+
+        self.assertEqual(conversions.to_integer(Decimal("1234"), self.context), 1234)
+        self.assertEqual(conversions.to_integer(Decimal("1234.5678"), self.context), 1235)
+        self.assertEqual(conversions.to_integer(Decimal("0.001"), self.context), 0)
+
+        self.assertEqual(conversions.to_integer("1234", self.context), 1234)
+
+        self.assertRaises(EvaluationError, conversions.to_integer, 'x', self.context)
+        self.assertRaises(EvaluationError, conversions.to_integer, Decimal("12345678901234567890"), self.context)
+
+    def test_to_decimal(self):
+        self.assertEqual(conversions.to_decimal(True, self.context), Decimal(1))
+        self.assertEqual(conversions.to_decimal(False, self.context), Decimal(0))
+
+        self.assertEqual(conversions.to_decimal(123, self.context), Decimal(123))
+        self.assertEqual(conversions.to_decimal(-123, self.context), Decimal(-123))
+
+        self.assertEqual(conversions.to_decimal(Decimal("1234.5678"), self.context), Decimal("1234.5678"))
+
+        self.assertEqual(conversions.to_decimal("1234.5678", self.context), Decimal("1234.5678"))
+
+        self.assertRaises(EvaluationError, conversions.to_decimal, 'x', self.context)
+
+    def test_to_string(self):
+        self.assertEqual(conversions.to_string(True, self.context), "TRUE")
+        self.assertEqual(conversions.to_string(False, self.context), "FALSE")
+
+        self.assertEqual(conversions.to_string(-1, self.context), "-1")
+        self.assertEqual(conversions.to_string(1234567890, self.context), "1234567890")
+
+        self.assertEqual(conversions.to_string(Decimal("0.4440000"), self.context), "0.444")
+        self.assertEqual(conversions.to_string(Decimal("1234567890.5"), self.context), "1234567891")
+        self.assertEqual(conversions.to_string(Decimal("33.333333333333"), self.context), "33.33333333")
+        self.assertEqual(conversions.to_string(Decimal("66.666666666666"), self.context), "66.66666667")
+
+        self.assertEqual(conversions.to_string("hello", self.context), "hello")
+
+        self.assertEqual(conversions.to_string(date(2012, 3, 4), self.context), "04-03-2012")
+        self.assertEqual(conversions.to_string(time(12, 34, 0), self.context), "12:34")
+        self.assertEqual(conversions.to_string(datetime(2012, 3, 4, 5, 6, 7, 8, pytz.timezone("Africa/Kigali")), self.context), "04-03-2012 05:06")
+
+        self.context.date_style = DateStyle.MONTH_FIRST
+
+        self.assertEqual(conversions.to_string(date(2012, 3, 4), self.context), "03-04-2012")
+        self.assertEqual(conversions.to_string(datetime(2012, 3, 4, 5, 6, 7, 8, pytz.timezone("Africa/Kigali")), self.context), "03-04-2012 05:06")
+
+    def test_to_date(self):
+        self.assertEqual(conversions.to_date("14th Aug 2015", self.context), date(2015, 8, 14))
+        self.assertEqual(conversions.to_date("14/8/15", self.context), date(2015, 8, 14))
+
+        self.assertEqual(conversions.to_date(date(2015, 8, 14), self.context), date(2015, 8, 14))
+
+        self.assertEqual(conversions.to_date(datetime(2015, 8, 14, 9, 12, 0, 0, pytz.timezone("Africa/Kigali")), self.context), date(2015, 8, 14))
+
+        self.context.date_style = DateStyle.MONTH_FIRST
+
+        self.assertEqual(conversions.to_date("12/8/15", self.context), date(2015, 12, 8))
+        self.assertEqual(conversions.to_date("14/8/15", self.context), date(2015, 8, 14))  # ignored because doesn't make sense
+
+    def test_to_datetime(self):
+        self.assertEqual(conversions.to_datetime("14th Aug 2015 09:12", self.context), datetime(2015, 8, 14, 9, 12, 0, 0, pytz.timezone("Africa/Kigali")))
+
+        self.assertEqual(conversions.to_datetime(date(2015, 8, 14), self.context), datetime(2015, 8, 14, 0, 0, 0, 0, pytz.timezone("Africa/Kigali")))
+
+        self.assertEqual(conversions.to_datetime(datetime(2015, 8, 14, 9, 12, 0, 0, pytz.timezone("Africa/Kigali")), self.context), datetime(2015, 8, 14, 9, 12, 0, 0, pytz.timezone("Africa/Kigali")))
+
+    def test_to_time(self):
+        self.assertEqual(conversions.to_time("9:12", self.context), time(9, 12, 0))
+        self.assertEqual(conversions.to_time("0912", self.context), time(9, 12, 0))
+        self.assertEqual(conversions.to_time("09.12am", self.context), time(9, 12, 0))
+
+        self.assertEqual(conversions.to_time(time(9, 12, 0), self.context), time(9, 12, 0))
+
+        self.assertEqual(conversions.to_time(datetime(2015, 8, 14, 9, 12, 0, 0, pytz.timezone("Africa/Kigali")), self.context), time(9, 12, 0))
+
+    def test_to_repr(self):
+        self.assertEqual(conversions.to_repr(False, self.context), 'FALSE')
+        self.assertEqual(conversions.to_repr(True, self.context), 'TRUE')
+
+        self.assertEqual(conversions.to_repr(Decimal("123.45"), self.context), '123.45')
+
+        self.assertEqual(conversions.to_repr('x"y', self.context), '"x""y"')
+
+        self.assertEqual(conversions.to_repr(time(9, 12, 0), self.context), '"09:12"')
+
+        self.assertEqual(conversions.to_repr(datetime(2015, 8, 14, 9, 12, 0, 0, pytz.timezone("Africa/Kigali")), self.context), '"14-08-2015 09:12"')
+
+
+class EvaluatorTests(unittest.TestCase):
+
+    def setUp(self):
+        self.evaluator = TemplateEvaluator()
+
+    def test_evaluate_template(self):
+        output, errors = self.evaluator.evaluate_template("Answer is @(2 + 3)", EvaluationContext())
+        self.assertEqual(output, "Answer is 5")
+        self.assertEqual(errors, [])
+
+        # with unbalanced expression
+        output, errors = self.evaluator.evaluate_template("Answer is @(2 + 3", EvaluationContext())
+        self.assertEqual(output, "Answer is @(2 + 3")
+        self.assertEqual(errors, [])
+
+    def test_evaluate_expression(self):
+        context = EvaluationContext()
+        context.put_variable("foo", 5)
+        context.put_variable("bar", 3)
+
+        self.assertEqual(self.evaluator.evaluate_expression("true", context), True)
+        self.assertEqual(self.evaluator.evaluate_expression("FALSE", context), False)
+
+        self.assertEqual(self.evaluator.evaluate_expression("10", context), Decimal(10))
+        self.assertEqual(self.evaluator.evaluate_expression("1234.5678", context), Decimal("1234.5678"))
+
+        self.assertEqual(self.evaluator.evaluate_expression("\"\"", context), "")
+        self.assertEqual(self.evaluator.evaluate_expression("\"سلام\"", context), "سلام")
+        self.assertEqual(self.evaluator.evaluate_expression("\"He said \"\"hi\"\" \"", context), "He said \"hi\" ")
+
+        self.assertEqual(self.evaluator.evaluate_expression("-10", context), Decimal(-10))
+        self.assertEqual(self.evaluator.evaluate_expression("1 + 2", context), Decimal(3))
+        self.assertEqual(self.evaluator.evaluate_expression("1.3 + 2.2", context), Decimal("3.5"))
+        self.assertEqual(self.evaluator.evaluate_expression("1.3 - 2.2", context), Decimal("-0.9"))
+        self.assertEqual(self.evaluator.evaluate_expression("4 * 2", context), Decimal(8))
+        self.assertEqual(self.evaluator.evaluate_expression("4 / 2", context), Decimal("2.0000000000"))
+        self.assertEqual(self.evaluator.evaluate_expression("4 ^ 2", context), Decimal(16))
+        self.assertEqual(self.evaluator.evaluate_expression("4 ^ 0.5", context), Decimal(2))
+        self.assertEqual(self.evaluator.evaluate_expression("4 ^ -1", context), Decimal("0.25"))
+
+        self.assertEqual(self.evaluator.evaluate_expression("\"foo\" & \"bar\"", context), "foobar")
+        self.assertEqual(self.evaluator.evaluate_expression("2 & 3 & 4", context), "234")
+
+        # check precedence
+        self.assertEqual(self.evaluator.evaluate_expression("2 + 3 / 4 - 5 * 6", context), Decimal("-27.2500000000"))
+        self.assertEqual(self.evaluator.evaluate_expression("2 & 3 + 4 & 5", context), "275")
+
+        # check associativity
+        self.assertEqual(self.evaluator.evaluate_expression("2 - -2 + 7", context), Decimal(11))
+        self.assertEqual(self.evaluator.evaluate_expression("2 ^ 3 ^ 4", context), Decimal(4096))
+
+        self.assertEqual(self.evaluator.evaluate_expression("FOO", context), 5)
+        self.assertEqual(self.evaluator.evaluate_expression("foo + bar", context), Decimal(8))
+
+        self.assertEqual(self.evaluator.evaluate_expression("len(\"abc\")", context), 3)
+        self.assertEqual(self.evaluator.evaluate_expression("SUM(1, 2, 3)", context), Decimal(6))
+
+        self.assertEqual(self.evaluator.evaluate_expression("FIXED(1234.5678)", context), "1,234.57")
+        self.assertEqual(self.evaluator.evaluate_expression("FIXED(1234.5678, 1)", context), "1,234.6")
+        self.assertEqual(self.evaluator.evaluate_expression("FIXED(1234.5678, 1, True)", context), "1234.6")
+        
+        
+class FunctionsTests(unittest.TestCase):
+    
+    def test_excel(self):
+        variables = {'date': {'now': '01-02-2014 03:55', 'today': '01-02-2014'}}
+        context = EvaluationContext(variables, pytz.timezone("Africa/Kigali"), DateStyle.DAY_FIRST)
+
+        # text functions
+        self.assertEqual('\t', excel.char(context, 9))
+        self.assertEqual('\n', excel.char(context, 10))
+        self.assertEqual('\r', excel.char(context, 13))
+        self.assertEqual(' ', excel.char(context, 32))
+        self.assertEqual('A', excel.char(context, 65))
+
+        self.assertEqual('Hello world', excel.clean(context, 'Hello \nwo\trl\rd'))
+
+        self.assertEqual(9, excel.code(context, '\t'))
+        self.assertEqual(10, excel.code(context, '\n'))
+
+        self.assertEqual('Hello4\n', excel.concatenate(context, 'Hello', 4, '\n'))
+        self.assertEqual('واحد إثنان ثلاثة', excel.concatenate(context, 'واحد', ' ', 'إثنان', ' ', 'ثلاثة'))
+
+        self.assertEqual('1,234.57', excel.fixed(context, Decimal('1234.5678')))  # default is 2 decimal places with commas
+        self.assertEqual('1,234.6', excel.fixed(context, '1234.5678', 1))
+        self.assertEqual('1234.568', excel.fixed(context, '1234.5678', 3, True))
+        self.assertEqual('1,200', excel.fixed(context, '1234.5678', -2))
+        self.assertEqual('1200', excel.fixed(context, '1234.5678', -2, True))
+
+        self.assertEqual('ab', excel.left(context, 'abcdef', 2))
+        self.assertEqual('وا', excel.left(context, 'واحد', 2))
+        self.assertRaises(ValueError, excel.left, context, 'abcd', -1)  # exception for negative char count
+
+        self.assertEqual(0, excel._len(context, ''))
+        self.assertEqual(3, excel._len(context, 'abc'))
+        self.assertEqual(4, excel._len(context, 'واحد'))
+
+        self.assertEqual('abcd', excel.lower(context, 'aBcD'))
+        self.assertEqual('a واحد', excel.lower(context, 'A واحد'))
+
+        self.assertEqual('First-Second Third', excel.proper(context, 'first-second third'))
+        self.assertEqual('واحد Abc ثلاثة', excel.proper(context, 'واحد abc ثلاثة'))
+
+        self.assertEqual('abcabcabc', excel.rept(context, 'abc', 3))
+        self.assertEqual('واحدواحدواحد', excel.rept(context, 'واحد', 3))
+
+        self.assertEqual('ef', excel.right(context, 'abcdef', 2))
+        self.assertEqual('حد', excel.right(context, 'واحد', 2))
+        self.assertRaises(ValueError, excel.right, context, 'abcd', -1)  # exception for negative char count
+
+        self.assertEqual('bonjour Hello world', excel.substitute(context, 'hello Hello world', 'hello', 'bonjour'))  # case-sensitive
+        self.assertEqual('bonjour bonjour world', excel.substitute(context, 'hello hello world', 'hello', 'bonjour'))  # all instances
+        self.assertEqual('hello bonjour world', excel.substitute(context, 'hello hello world', 'hello', 'bonjour', 2))  # specific instance
+        self.assertEqual('إثنان إثنان ثلاثة', excel.substitute(context, 'واحد إثنان ثلاثة', 'واحد', 'إثنان'))
+
+        self.assertEqual('A', excel.unichar(context, 65))
+        self.assertEqual('ا', excel.unichar(context, 1575))
+
+        self.assertEqual(excel._unicode(context, '\t'), 9)
+        self.assertEqual(excel._unicode(context, '\u04d2'), 1234)
+        self.assertEqual(excel._unicode(context, 'ا'), 1575)
+        self.assertRaises(ValueError, excel._unicode, context, '')  # exception for empty string
+
+        self.assertEqual(excel.upper(context, 'aBcD'), 'ABCD')
+        self.assertEqual(excel.upper(context, 'a واحد'), 'A واحد')
+
+        # date functions
+        self.assertEqual(excel.date(context, 2012, "3", Decimal(2.0)), date(2012, 3, 2))
+
+        self.assertEqual(excel.datevalue(context, "2-3-13"), date(2013, 3, 2))
+
+        self.assertEqual(excel.day(context, date(2012, 3, 2)), 2)
+
+        self.assertEqual(excel.edate(context, date(2013, 3, 2), 1), date(2013, 4, 2))
+        self.assertEqual(excel.edate(context, '01-02-2014', -2), date(2013, 12, 1))
+
+        self.assertEqual(excel.hour(context, '01-02-2014 03:55'), 3)
+
+        self.assertEqual(excel.minute(context, '01-02-2014 03:55'), 55)
+
+        self.assertEqual(excel.now(context), datetime(2014, 2, 1, 3, 55, 0, 0, pytz.timezone("Africa/Kigali")))
+
+        self.assertEqual(excel.second(context, '01-02-2014 03:55:30'), 30)
+
+        self.assertEqual(excel.time(context, 1, 30, 15), time(1, 30, 15))
+
+        self.assertEqual(excel.timevalue(context, '1:30:15'), time(1, 30, 15))
+
+        self.assertEqual(excel.today(context), date(2014, 2, 1))
+
+        self.assertEqual(excel.weekday(context, date(2015, 8, 15)), 7)  # Sat = 7
+        self.assertEqual(excel.weekday(context, "16th Aug 2015"), 1)  # Sun = 1
+
+        self.assertEqual(excel.year(context, date(2012, 3, 2)), 2012)
+
+        # math functions
+        self.assertEqual(excel._abs(context, 1), 1)
+        self.assertEqual(excel._abs(context, -1), 1)
+
+        self.assertEqual(1, excel._max(context, 1))
+        self.assertEqual(3, excel._max(context, 1, 3, 2, -5))
+        self.assertEqual(-2, excel._max(context, -2, -5))
+
+        self.assertEqual(1, excel._min(context, 1))
+        self.assertEqual(-3, excel._min(context, -1, -3, -2, 5))
+        self.assertEqual(-5, excel._min(context, -2, -5))
+
+        self.assertEqual(Decimal('16'), excel._power(context, '4', '2'))
+        self.assertEqual(Decimal('2'), excel._power(context, '4', '0.5'))
+
+        self.assertEqual(1, excel._sum(context, 1))
+        self.assertEqual(6, excel._sum(context, 1, 2, 3))
+
+        # logical functions
+        self.assertEqual(False, excel._and(context, False))
+        self.assertEqual(True, excel._and(context, True))
+        self.assertEqual(True, excel._and(context, 1, True, "true"))
+        self.assertEqual(False, excel._and(context, 1, True, "true", 0))
+
+        self.assertEqual(False, excel.false())
+
+        self.assertEqual(0, excel._if(context, True))
+        self.assertEqual('x', excel._if(context, True, 'x', 'y'))
+        self.assertEqual('x', excel._if(context, 'true', 'x', 'y'))
+        self.assertEqual(False, excel._if(context, False))
+        self.assertEqual('y', excel._if(context, False, 'x', 'y'))
+        self.assertEqual('y', excel._if(context, 0, 'x', 'y'))
+
+        self.assertEqual(False, excel._or(context, False))
+        self.assertEqual(True, excel._or(context, True))
+        self.assertEqual(True, excel._or(context, 1, False, "false"))
+        self.assertEqual(True, excel._or(context, 0, True, "false"))
+
+        self.assertEqual(True, excel.true())
+        
+    def test_custom(self):
+        context = EvaluationContext({}, pytz.timezone("Africa/Kigali"), DateStyle.DAY_FIRST)
+
+        self.assertEqual('', custom.first_word(context, '  '))
+        self.assertEqual('abc', custom.first_word(context, ' abc '))
+        self.assertEqual('abc', custom.first_word(context, ' abc '))
+        self.assertEqual('abc', custom.first_word(context, ' abc def ghi'))
+        self.assertEqual('واحد', custom.first_word(context, ' واحد '))
+        self.assertEqual('واحد', custom.first_word(context, ' واحد إثنان ثلاثة '))
+
+        self.assertEqual('25%', custom.percent(context, '0.25321'))
+        self.assertEqual('33%', custom.percent(context, Decimal('0.33')))
+
+        self.assertEqual('1 2 3 4 , 5 6 7 8 , 9 0 1 2 , 3 4 5 6', custom.read_digits(context, '1234567890123456'))  # credit card
+        self.assertEqual('1 2 3 , 4 5 6 , 7 8 9 , 0 1 2', custom.read_digits(context, '+123456789012'))  # phone number
+        self.assertEqual('1 2 3 , 4 5 6', custom.read_digits(context, '123456'))  # triplets
+        self.assertEqual('1 2 3 , 4 5 , 6 7 8 9', custom.read_digits(context, '123456789'))  # soc security
+        self.assertEqual('1,2,3,4,5', custom.read_digits(context, '12345'))  # regular number, street address, etc
+        self.assertEqual('1,2,3', custom.read_digits(context, '123'))  # regular number, street address, etc
+        self.assertEqual('', custom.read_digits(context, ''))  # empty
+
+        self.assertEqual('', custom.remove_first_word(context, 'abc'))
+        self.assertEqual('', custom.remove_first_word(context, ' abc '))
+        self.assertEqual('def-ghi ', custom.remove_first_word(context, ' abc def-ghi '))  # should preserve remainder of text
+        self.assertEqual('', custom.remove_first_word(context, ' واحد '))
+        self.assertEqual('إثنان ثلاثة ', custom.remove_first_word(context, ' واحد إثنان ثلاثة '))
+
+        self.assertEqual('abc', custom.word(context, ' abc def ghi', 1))
+        self.assertEqual('ghi', custom.word(context, 'abc-def  ghi  jkl', 3))
+        self.assertEqual('jkl', custom.word(context, 'abc-def  ghi  jkl', 3, True))
+        self.assertEqual('jkl', custom.word(context, 'abc-def  ghi  jkl', '3', 'TRUE'))  # string args only
+        self.assertEqual('jkl', custom.word(context, 'abc-def  ghi  jkl', -1))  # negative index
+        self.assertEqual('', custom.word(context, ' abc def   ghi', 6))  # out of range
+        self.assertEqual('', custom.word(context, '', 1))
+        self.assertEqual('واحد', custom.word(context, ' واحد إثنان ثلاثة ', 1))
+        self.assertEqual('ثلاثة', custom.word(context, ' واحد إثنان ثلاثة ', -1))
+        self.assertRaises(ValueError, custom.word, context, '', 0)  # number cannot be zero
+
+        self.assertEqual(0, custom.word_count(context, ''))
+        self.assertEqual(4, custom.word_count(context, ' abc-def  ghi  jkl'))
+        self.assertEqual(4, custom.word_count(context, ' abc-def  ghi  jkl', False))
+        self.assertEqual(3, custom.word_count(context, ' abc-def  ghi  jkl', True))
+        self.assertEqual(3, custom.word_count(context, ' واحد إثنان-ثلاثة ', False))
+        self.assertEqual(2, custom.word_count(context, ' واحد إثنان-ثلاثة ', True))
+
+        self.assertEqual('abc def', custom.word_slice(context, ' abc  def ghi-jkl ', 1, 3))
+        self.assertEqual('ghi jkl', custom.word_slice(context, ' abc  def ghi-jkl ', 3, 0))
+        self.assertEqual('ghi-jkl', custom.word_slice(context, ' abc  def ghi-jkl ', 3, 0, True))
+        self.assertEqual('ghi jkl', custom.word_slice(context, ' abc  def ghi-jkl ', '3', '0', 'false'))  # string args only
+        self.assertEqual('ghi jkl', custom.word_slice(context, ' abc  def ghi-jkl ', 3))
+        self.assertEqual('def ghi', custom.word_slice(context, ' abc  def ghi-jkl ', 2, -1))
+        self.assertEqual('jkl', custom.word_slice(context, ' abc  def ghi-jkl ', -1))
+        self.assertEqual('def', custom.word_slice(context, ' abc  def ghi-jkl ', 2, -1, True))
+        self.assertEqual('واحد إثنان', custom.word_slice(context, ' واحد إثنان ثلاثة ', 1, 3))
+        self.assertRaises(ValueError, custom.word_slice, context, ' abc  def ghi-jkl ', 0)  # start can't be zero
+
+        self.assertEqual('15', custom.field(context, '15+M+Seattle', 1, '+'))
+        self.assertEqual('15', custom.field(context, '15 M Seattle', 1))
+        self.assertEqual('M', custom.field(context, '15+M+Seattle', 2, '+'))
+        self.assertEqual('Seattle', custom.field(context, '15+M+Seattle', 3, '+'))
+        self.assertEqual('', custom.field(context, '15+M+Seattle', 4, '+'))
+        self.assertEqual('M', custom.field(context, '15    M  Seattle', 2))
+        self.assertEqual('واحد', custom.field(context, ' واحد إثنان-ثلاثة ', 1))
+        self.assertRaises(ValueError, custom.field, context, '15+M+Seattle', 0)
+
+
+class UtilsTests(unittest.TestCase):
+
+    def test_urlquote(self):
+        self.assertEqual(urlquote(""), "")
+        self.assertEqual(urlquote("?!=Jow&Flow"), "%3F%21%3DJow%26Flow")
+
+
+
+# TODO run std template tests
 
 # class ExistingTembaSystemTest(unittest.TestCase):
 #

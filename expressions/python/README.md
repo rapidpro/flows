@@ -8,11 +8,11 @@ Usage
 
 ```python
 context = new EvaluationContext()
-context.putVariable("name", "bob jones")
+context.put_variable("name", "bob jones")
 
-TemplateEvaluator evaluator = get_template_evaluator()
-EvaluatedTemplate evaluated = evaluator.evaluate_template("Hi @(PROPER(name))", context, False)
+TemplateEvaluator evaluator = TemplateEvaluator()
+output, errors = evaluator.evaluate_template("Hi @(PROPER(name))", context, False)
 
-assert evaluated.output == "Hi Bob Jones"
-assert len(evaluated.errors) == 0
+assert output == "Hi Bob Jones"
+assert len(errors) == 0
 ```

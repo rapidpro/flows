@@ -368,7 +368,7 @@ public class ExcelFunctions {
     public static BigDecimal power(EvaluationContext ctx, Object number, Object power) {
         BigDecimal _number = Conversions.toDecimal(number, ctx);
         BigDecimal _power = Conversions.toDecimal(power, ctx);
-        return ExpressionUtils.pow(_number, _power);
+        return ExpressionUtils.decimalPow(_number, _power);
     }
 
     /**

@@ -52,7 +52,7 @@ public class ExpressionUtils {
     /**
      * Pow for two decimals
      */
-    public static BigDecimal pow(BigDecimal number, BigDecimal power) {
+    public static BigDecimal decimalPow(BigDecimal number, BigDecimal power) {
         return new BigDecimal(Math.pow(number.doubleValue(), power.doubleValue()));
     }
 

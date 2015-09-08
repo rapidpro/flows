@@ -5,10 +5,8 @@ from antlr4 import *
 from io import StringIO
 package = globals().get("__package__", None)
 ischild = len(package)>0 if package is not None else False
-if ischild:
-    from .ExcellentVisitor import ExcellentVisitor
-else:
-    from ExcellentVisitor import ExcellentVisitor
+
+from expressions.evaluator import ExcellentVisitor
 
 def serializedATN():
     with StringIO() as buf:

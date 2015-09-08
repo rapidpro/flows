@@ -120,9 +120,9 @@ public class TemplateEvaluator {
             }
             else if (state == State.PREFIX) {
                 if (isWordChar(ch)) {
-                    state = State.IDENTIFIER; // we're parsing an expression like =XXX
+                    state = State.IDENTIFIER; // we're parsing an expression like @XXX
                 } else if (ch == '(') {
-                    // we're parsing an expression like =(1 + 2)
+                    // we're parsing an expression like @(1 + 2)
                     state = State.BALANCED;
                     parenthesesLevel += 1;
                 }
@@ -164,7 +164,7 @@ public class TemplateEvaluator {
             //  2. next char is not a word character or period
             //  3. next char is a period, but it's not followed by a word character
             if (state == State.IDENTIFIER) {
-                if (nextCh == 0  || (!isWordChar(nextCh) && nextCh != '.') || (nextCh == '.' && ! isWordChar(nextNextCh))) {
+                if (nextCh == 0  || (!isWordChar(nextCh) && nextCh != '.') || (nextCh == '.' && !isWordChar(nextNextCh))) {
                     currentExpressionTerminated = true;
                 }
             }
@@ -190,7 +190,7 @@ public class TemplateEvaluator {
      */
     protected String resolveExpression(String expression, EvaluationContext context, boolean urlEncode, EvaluationStrategy strategy, List<String> errors) {
         try {
-            String cleaned = expression.substring(1); // strip @ prefix
+            String cleaned = expression.substring(1); // strip prefix
             Object evaluated = evaluateExpression(cleaned, context, strategy);
 
             String rendered = Conversions.toString(evaluated, context); // render result as string
@@ -235,7 +235,7 @@ public class TemplateEvaluator {
             tree = parser.parse();
 
             if (logger.isDebugEnabled()) {
-                logger.info("Expression '{}' parsed as {}", expression, tree.toStringTree());
+                logger.debug("Expression '{}' parsed as {}", expression, tree.toStringTree());
             }
         }
         catch (ParseCancellationException ex) {

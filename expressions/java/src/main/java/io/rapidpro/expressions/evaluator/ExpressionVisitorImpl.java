@@ -80,7 +80,7 @@ public class ExpressionVisitorImpl extends ExcellentBaseVisitor<Object> {
     public Object visitExponentExpression(ExcellentParser.ExponentExpressionContext ctx) {
         BigDecimal arg1 = Conversions.toDecimal(visit(ctx.expression(0)), m_evalContext);
         BigDecimal arg2 = Conversions.toDecimal(visit(ctx.expression(1)), m_evalContext);
-        return ExpressionUtils.pow(arg1, arg2);
+        return ExpressionUtils.decimalPow(arg1, arg2);
     }
 
     /**
@@ -194,7 +194,9 @@ public class ExpressionVisitorImpl extends ExcellentBaseVisitor<Object> {
      */
     @Override
     public Object visitConcatenation(ExcellentParser.ConcatenationContext ctx) {
-        return Conversions.toString(visit(ctx.expression(0)), m_evalContext) + Conversions.toString(visit(ctx.expression(1)), m_evalContext);
+        String arg1 = Conversions.toString(visit(ctx.expression(0)), m_evalContext);
+        String arg2 = Conversions.toString(visit(ctx.expression(1)), m_evalContext);
+        return arg1 + arg2;
     }
 
     /**

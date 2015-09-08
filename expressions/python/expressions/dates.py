@@ -1,11 +1,11 @@
 from __future__ import absolute_import, unicode_literals
 
 import datetime
+import pkg_resources
 import regex
 
 from collections import OrderedDict
 from enum import Enum
-from . import MONTHS_BY_ALIAS
 
 
 class DateStyle(Enum):
@@ -280,3 +280,17 @@ class DateParser(object):
                 else:
                     return short_year - 100
         return short_year
+
+
+def load_month_aliases(filename):
+    alias_file = pkg_resources.resource_string(__name__, filename).decode('UTF-8', 'replace')
+    aliases = {}
+    month = 1
+    for line in alias_file.split('\n'):
+        for alias in line.split(','):
+            aliases[alias] = month
+        month += 1
+    return aliases
+
+
+MONTHS_BY_ALIAS = load_month_aliases('month.aliases')

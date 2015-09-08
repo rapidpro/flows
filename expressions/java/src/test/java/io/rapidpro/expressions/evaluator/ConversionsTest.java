@@ -135,6 +135,15 @@ public class ConversionsTest {
     }
 
     @Test
+    public void test_toDateTime() {
+        assertThat(Conversions.toDateTime("14th Aug 2015 09:12", m_context), is(ZonedDateTime.of(2015, 8, 14, 9, 12, 0, 0, ZoneId.of("Africa/Kigali"))));
+
+        assertThat(Conversions.toDateTime(LocalDate.of(2015, 8, 14), m_context), is(ZonedDateTime.of(2015, 8, 14, 0, 0, 0, 0, ZoneId.of("Africa/Kigali"))));
+
+        assertThat(Conversions.toDateTime(ZonedDateTime.of(2015, 8, 14, 9, 12, 0, 0, ZoneId.of("Africa/Kigali")), m_context), is(ZonedDateTime.of(2015, 8, 14, 9, 12, 0, 0, ZoneId.of("Africa/Kigali"))));
+    }
+
+    @Test
     public void test_toTime() {
         assertThat(Conversions.toTime("9:12", m_context), is(OffsetTime.of(9, 12, 0, 0, ZoneOffset.ofHours(2))));
         assertThat(Conversions.toTime("0912", m_context), is(OffsetTime.of(9, 12, 0, 0, ZoneOffset.ofHours(2))));
