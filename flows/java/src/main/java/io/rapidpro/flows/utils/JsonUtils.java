@@ -22,18 +22,23 @@ import java.lang.reflect.Method;
  */
 public class JsonUtils {
 
-    protected static Gson s_gson = new GsonBuilder()
+    protected static GsonBuilder s_gsonBuilder = new GsonBuilder()
             .registerTypeAdapter(Flow.class, new Flow.Deserializer())
             .registerTypeAdapter(Action.class, new Action.Serializer())
             .registerTypeAdapter(Action.class, new Action.Deserializer())
             .registerTypeAdapter(LabelRef.class, new LabelRef.Serializer())
             .registerTypeAdapter(LabelRef.class, new LabelRef.Deserializer())
             .registerTypeAdapter(GroupRef.class, new GroupRef.Serializer())
-            .registerTypeAdapter(GroupRef.class, new GroupRef.Deserializer())
-            .create();
+            .registerTypeAdapter(GroupRef.class, new GroupRef.Deserializer());
+
+    protected static Gson s_gson = s_gsonBuilder.create();
 
     protected static ThreadLocal<Flow.DeserializationContext> s_deserializationContext = new ThreadLocal<>();
 
+    public static GsonBuilder getGsonBuilder() {
+        return s_gsonBuilder;
+    }
+    
     public static Gson getGson() {
         return s_gson;
     }
