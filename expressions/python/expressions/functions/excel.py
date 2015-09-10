@@ -1,5 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 
+import random
+
 from datetime import date as _date, time as _time, datetime as _datetime
 from dateutil.relativedelta import relativedelta
 from decimal import Decimal
@@ -46,6 +48,8 @@ def fixed(ctx, number, decimals=2, no_commas=False):
     Formats the given number in decimal format using a period and commas
     """
     number = conversions.to_decimal(number, ctx)
+    decimals = conversions.to_integer(decimals, ctx)
+
     if decimals < 0:
         number = round(number, decimals)
         decimals = 0
@@ -58,9 +62,10 @@ def left(ctx, text, num_chars):
     """
     Returns the first characters in a text string
     """
+    num_chars = conversions.to_integer(num_chars, ctx)
     if num_chars < 0:
         raise ValueError("Number of chars can't be negative")
-    return conversions.to_string(text, ctx)[0:conversions.to_integer(num_chars, ctx)]
+    return conversions.to_string(text, ctx)[0:num_chars]
 
 
 def _len(ctx, text):
@@ -97,9 +102,13 @@ def right(ctx, text, num_chars):
     """
     Returns the last characters in a text string
     """
+    num_chars = conversions.to_integer(num_chars, ctx)
     if num_chars < 0:
         raise ValueError("Number of chars can't be negative")
-    return conversions.to_string(text, ctx)[-conversions.to_integer(num_chars, ctx):]
+    elif num_chars == 0:
+        return ''
+    else:
+        return conversions.to_string(text, ctx)[-num_chars:]
 
 
 def substitute(ctx, text, old_text, new_text, instance_num=-1):
@@ -295,6 +304,22 @@ def _power(ctx, number, power):
     Returns the result of a number raised to a power
     """
     return decimal_pow(conversions.to_decimal(number, ctx), conversions.to_decimal(power, ctx))
+
+
+def rand():
+    """
+    Returns an evenly distributed random real number greater than or equal to 0 and less than 1
+    """
+    return Decimal(str(random.random()))
+
+
+def randbetween(ctx, bottom, top):
+    """
+    Returns a random integer number between the numbers you specify
+    """
+    bottom = conversions.to_integer(bottom, ctx)
+    top = conversions.to_integer(top, ctx)
+    return random.randint(bottom, top)
 
 
 def _sum(ctx, *args):

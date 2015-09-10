@@ -55,25 +55,25 @@ class FunctionManager(object):
         call_args = []
         passed_args = list(arguments)
 
+        for arg in args:
+            if arg == 'ctx':
+                call_args.append(ctx)
+            elif passed_args:
+                call_args.append(passed_args.pop(0))
+            elif arg in defaults:
+                call_args.append(defaults[arg])
+            else:
+                raise EvaluationError("Too few arguments provided for function %s" % name)
+
+        if varargs is not None:
+            call_args.extend(passed_args)
+            passed_args = []
+
+        # any unused arguments?
+        if passed_args:
+            raise EvaluationError("Too many arguments provided for function %s" % name)
+
         try:
-            for arg in args:
-                if arg == 'ctx':
-                    call_args.append(ctx)
-                elif passed_args:
-                    call_args.append(passed_args.pop(0))
-                elif arg in defaults:
-                    call_args.append(defaults[arg])
-                else:
-                    raise TypeError("Missing argument in call to %s(): %s" % (func.__name__, arg))
-
-            if varargs is not None:
-                call_args.extend(passed_args)
-                passed_args = []
-
-            # any unused arguments?
-            if passed_args:
-                raise TypeError("Function %s cannot be called with %d arguments" % (func.__name__, len(arguments)))
-
             return func(*call_args)
         except Exception, e:
             pretty_args = []

@@ -3,15 +3,26 @@ package io.rapidpro.expressions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
+import io.rapidpro.expressions.dates.DateParser;
 import io.rapidpro.expressions.evaluator.TemplateEvaluator;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
+import org.threeten.bp.Instant;
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.ZonedDateTime;
+import org.threeten.bp.temporal.ChronoUnit;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 /**
@@ -51,7 +62,11 @@ public class ExpressionsTest {
             for (TemplateTest test : failures) {
                 System.out.println("========================================");
                 System.out.println("Template: " + test.template);
-                System.out.println("Expected output: " + test.expectedOutput);
+                if (test.expectedOutput != null) {
+                    System.out.println("Expected output: " + test.expectedOutput);
+                } else {
+                    System.out.println("Expected output regex: " + test.expectedOutputRegex);
+                }
                 System.out.println("Actual output: " + test.actualOutput);
                 System.out.println("Expected errors: " + StringUtils.join(test.expectedErrors, ", "));
                 System.out.println("Actual errors: " + StringUtils.join(test.actualErrors, ", "));
@@ -66,6 +81,7 @@ public class ExpressionsTest {
         @SerializedName("context") EvaluationContext context;
         @SerializedName("url_encode") boolean urlEncode;
         @SerializedName("output") String expectedOutput;
+        @SerializedName("output_regex") String expectedOutputRegex;
         @SerializedName("errors") String[] expectedErrors;
 
         String actualOutput;
@@ -76,9 +92,16 @@ public class ExpressionsTest {
             this.actualOutput = evaluated.getOutput();
             this.actualErrors = evaluated.getErrors();
 
-            if (!expectedOutput.equals(actualOutput)) {
-                return false;
+            if (expectedOutput != null) {
+                if (!expectedOutput.equals(actualOutput)) {
+                    return false;
+                }
+            } else {
+                if (!Pattern.compile(expectedOutputRegex).matcher(actualOutput).matches()) {
+                    return false;
+                }
             }
+
             if (expectedErrors.length != actualErrors.size()) {
                 return false;
             }

@@ -19,7 +19,7 @@ public class EvaluationContextTest {
 
     @Test
     public void fromJson() {
-        EvaluationContext context = EvaluationContext.fromJson("{\"vars\":{\"name\":\"Bob\", \"age\":32, \"weight\":91.6, \"registered\":true, \"icon\":null, \"address\":{\"city\":\"Kigali\", \"plot\":14}, \"groups\":[\"Testers\", \"Developers\"]}, \"tz\": \"UTC\", \"day_first\": true}");
+        EvaluationContext context = EvaluationContext.fromJson("{\"variables\":{\"name\":\"Bob\", \"age\":32, \"weight\":91.6, \"registered\":true, \"icon\":null, \"address\":{\"city\":\"Kigali\", \"plot\":14}, \"groups\":[\"Testers\", \"Developers\"]}, \"timezone\": \"UTC\", \"date_style\": \"day_first\"}");
         assertThat(context.getTimezone(), is(ZoneId.of("UTC")));
         assertThat(context.getDateStyle(), is(DateStyle.DAY_FIRST));
 

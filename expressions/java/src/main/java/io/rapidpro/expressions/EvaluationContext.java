@@ -128,9 +128,9 @@ public class EvaluationContext {
         @Override
         public EvaluationContext deserialize(JsonElement node, Type type, JsonDeserializationContext context) throws JsonParseException {
             JsonObject rootObj = node.getAsJsonObject();
-            JsonObject varsObj = rootObj.get("vars").getAsJsonObject();
-            ZoneId timezone = ZoneId.of(rootObj.get("tz").getAsString());
-            boolean dayFirst = rootObj.get("day_first").getAsBoolean();
+            JsonObject varsObj = rootObj.get("variables").getAsJsonObject();
+            ZoneId timezone = ZoneId.of(rootObj.get("timezone").getAsString());
+            boolean dayFirst = rootObj.get("date_style").getAsString().equals("day_first");
             DateStyle dateStyle = dayFirst ? DateStyle.DAY_FIRST : DateStyle.MONTH_FIRST;
 
             Map<String, Object> variables = new HashMap<>();

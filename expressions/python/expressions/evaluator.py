@@ -31,6 +31,13 @@ class EvaluationContext(object):
         self.timezone = timezone
         self.date_style = date_style
 
+    @classmethod
+    def from_json(cls, json_obj):
+        variables = json_obj['variables']
+        timezone = pytz.timezone(json_obj['timezone'])
+        date_style = DateStyle.DAY_FIRST if json_obj['date_style'] == 'day_first' else DateStyle.MONTH_FIRST
+        return EvaluationContext(variables, timezone, date_style)
+
     def resolve_variable(self, path):
         return self._resolve_variable_in_container(self.variables, path.lower(), path)
 
@@ -70,7 +77,9 @@ class EvaluationContext(object):
             return self._resolve_variable_in_container(value, remaining_path, original_path)
 
         elif isinstance(value, dict):
-            if '__default__' in value:
+            if '*' in value:
+                return value['*']
+            elif '__default__' in value:
                 return value['__default__']
             else:
                 raise ValueError("Context contains map without default key")

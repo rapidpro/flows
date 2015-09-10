@@ -1,19 +1,23 @@
 # coding=utf-8
 from __future__ import absolute_import, unicode_literals
 
+import codecs
+import json
 import pytz
+import regex
 import unittest
 
 from datetime import datetime, date, time
 from decimal import Decimal
+from time import clock
 from . import conversions, EvaluationError
 from .dates import DateParser, DateStyle
 from .evaluator import TemplateEvaluator, EvaluationContext
 from .functions import excel, custom
-from .utils import urlquote
+from .utils import urlquote, decimal_pow
 
 
-class DateParserTest(unittest.TestCase):
+class DateParserTests(unittest.TestCase):
 
     def test_auto(self):
         tz = pytz.timezone('Africa/Kigali')
@@ -263,54 +267,63 @@ class FunctionsTests(unittest.TestCase):
         context = EvaluationContext(variables, pytz.timezone("Africa/Kigali"), DateStyle.DAY_FIRST)
 
         # text functions
-        self.assertEqual('\t', excel.char(context, 9))
-        self.assertEqual('\n', excel.char(context, 10))
-        self.assertEqual('\r', excel.char(context, 13))
-        self.assertEqual(' ', excel.char(context, 32))
-        self.assertEqual('A', excel.char(context, 65))
+        self.assertEqual(excel.char(context, 9), '\t')
+        self.assertEqual(excel.char(context, 10), '\n')
+        self.assertEqual(excel.char(context, 13), '\r')
+        self.assertEqual(excel.char(context, 32), ' ')
+        self.assertEqual(excel.char(context, 65), 'A')
 
-        self.assertEqual('Hello world', excel.clean(context, 'Hello \nwo\trl\rd'))
+        self.assertEqual(excel.clean(context, 'Hello \nwo\trl\rd'), 'Hello world')
 
-        self.assertEqual(9, excel.code(context, '\t'))
-        self.assertEqual(10, excel.code(context, '\n'))
+        self.assertEqual(excel.code(context, '\t'), 9)
+        self.assertEqual(excel.code(context, '\n'), 10)
 
-        self.assertEqual('Hello4\n', excel.concatenate(context, 'Hello', 4, '\n'))
-        self.assertEqual('واحد إثنان ثلاثة', excel.concatenate(context, 'واحد', ' ', 'إثنان', ' ', 'ثلاثة'))
+        self.assertEqual(excel.concatenate(context, 'Hello', 4, '\n'), 'Hello4\n')
+        self.assertEqual(excel.concatenate(context, 'واحد', ' ', 'إثنان', ' ', 'ثلاثة'), 'واحد إثنان ثلاثة')
 
-        self.assertEqual('1,234.57', excel.fixed(context, Decimal('1234.5678')))  # default is 2 decimal places with commas
-        self.assertEqual('1,234.6', excel.fixed(context, '1234.5678', 1))
-        self.assertEqual('1234.568', excel.fixed(context, '1234.5678', 3, True))
-        self.assertEqual('1,200', excel.fixed(context, '1234.5678', -2))
-        self.assertEqual('1200', excel.fixed(context, '1234.5678', -2, True))
+        self.assertEqual(excel.fixed(context, Decimal('1234.5678')), '1,234.57')  # default is 2 decimal places w/ comma
+        self.assertEqual(excel.fixed(context, '1234.5678', 1), '1,234.6')
+        self.assertEqual(excel.fixed(context, '1234.5678', 2), '1,234.57')
+        self.assertEqual(excel.fixed(context, '1234.5678', 3), '1,234.568')
+        self.assertEqual(excel.fixed(context, '1234.5678', 4), '1,234.5678')
+        self.assertEqual(excel.fixed(context, '1234.5678', 0), '1,235')
+        self.assertEqual(excel.fixed(context, '1234.5678', -1), '1,230')
+        self.assertEqual(excel.fixed(context, '1234.5678', -2), '1,200')
+        self.assertEqual(excel.fixed(context, '1234.5678', -3), '1,000')
+        self.assertEqual(excel.fixed(context, '1234.5678', -4), '0')
+        self.assertEqual(excel.fixed(context, '1234.5678', 3, True), '1234.568')
+        self.assertEqual(excel.fixed(context, '1234.5678', -2, True), '1200')
 
-        self.assertEqual('ab', excel.left(context, 'abcdef', 2))
-        self.assertEqual('وا', excel.left(context, 'واحد', 2))
+        self.assertEqual(excel.left(context, 'abcdef', 0), '')
+        self.assertEqual(excel.left(context, 'abcdef', 2), 'ab')
+        self.assertEqual(excel.left(context, 'واحد', 2), 'وا')
         self.assertRaises(ValueError, excel.left, context, 'abcd', -1)  # exception for negative char count
 
-        self.assertEqual(0, excel._len(context, ''))
-        self.assertEqual(3, excel._len(context, 'abc'))
-        self.assertEqual(4, excel._len(context, 'واحد'))
+        self.assertEqual(excel._len(context, ''), 0)
+        self.assertEqual(excel._len(context, 'abc'), 3)
+        self.assertEqual(excel._len(context, 'واحد'), 4)
 
-        self.assertEqual('abcd', excel.lower(context, 'aBcD'))
-        self.assertEqual('a واحد', excel.lower(context, 'A واحد'))
+        self.assertEqual(excel.lower(context, 'aBcD'), 'abcd')
+        self.assertEqual(excel.lower(context, 'A واحد'), 'a واحد')
 
-        self.assertEqual('First-Second Third', excel.proper(context, 'first-second third'))
-        self.assertEqual('واحد Abc ثلاثة', excel.proper(context, 'واحد abc ثلاثة'))
+        self.assertEqual(excel.proper(context, 'first-second third'), 'First-Second Third')
+        self.assertEqual(excel.proper(context, 'واحد abc ثلاثة'), 'واحد Abc ثلاثة')
 
-        self.assertEqual('abcabcabc', excel.rept(context, 'abc', 3))
-        self.assertEqual('واحدواحدواحد', excel.rept(context, 'واحد', 3))
+        self.assertEqual(excel.rept(context, 'abc', 3), 'abcabcabc')
+        self.assertEqual(excel.rept(context, 'واحد', 3), 'واحدواحدواحد')
 
-        self.assertEqual('ef', excel.right(context, 'abcdef', 2))
-        self.assertEqual('حد', excel.right(context, 'واحد', 2))
+        self.assertEqual(excel.right(context, 'abcdef', 0), '')
+        self.assertEqual(excel.right(context, 'abcdef', 2), 'ef')
+        self.assertEqual(excel.right(context, 'واحد', 2), 'حد')
         self.assertRaises(ValueError, excel.right, context, 'abcd', -1)  # exception for negative char count
 
-        self.assertEqual('bonjour Hello world', excel.substitute(context, 'hello Hello world', 'hello', 'bonjour'))  # case-sensitive
-        self.assertEqual('bonjour bonjour world', excel.substitute(context, 'hello hello world', 'hello', 'bonjour'))  # all instances
-        self.assertEqual('hello bonjour world', excel.substitute(context, 'hello hello world', 'hello', 'bonjour', 2))  # specific instance
-        self.assertEqual('إثنان إثنان ثلاثة', excel.substitute(context, 'واحد إثنان ثلاثة', 'واحد', 'إثنان'))
+        self.assertEqual(excel.substitute(context, 'hello Hello world', 'hello', 'bonjour'), 'bonjour Hello world')  # case-sensitive
+        self.assertEqual(excel.substitute(context, 'hello hello world', 'hello', 'bonjour'), 'bonjour bonjour world')  # all instances
+        self.assertEqual(excel.substitute(context, 'hello hello world', 'hello', 'bonjour', 2), 'hello bonjour world')  # specific instance
+        self.assertEqual(excel.substitute(context, 'واحد إثنان ثلاثة', 'واحد', 'إثنان'), 'إثنان إثنان ثلاثة')
 
-        self.assertEqual('A', excel.unichar(context, 65))
-        self.assertEqual('ا', excel.unichar(context, 1575))
+        self.assertEqual(excel.unichar(context, 65), 'A')
+        self.assertEqual(excel.unichar(context, 1575), 'ا')
 
         self.assertEqual(excel._unicode(context, '\t'), 9)
         self.assertEqual(excel._unicode(context, '\u04d2'), 1234)
@@ -461,32 +474,87 @@ class UtilsTests(unittest.TestCase):
         self.assertEqual(urlquote(""), "")
         self.assertEqual(urlquote("?!=Jow&Flow"), "%3F%21%3DJow%26Flow")
 
+    def test_decimal_pow(self):
+        self.assertEqual(decimal_pow(Decimal(4), Decimal(2)), Decimal(16))
+        self.assertEqual(decimal_pow(Decimal(4), Decimal('0.5')), Decimal(2))
+        self.assertEqual(decimal_pow(Decimal(2), Decimal(-2)), Decimal('0.25'))
 
 
-# TODO run std template tests
+class TemplateTests(unittest.TestCase):
 
-# class ExistingTembaSystemTest(unittest.TestCase):
-#
-#    def test_templates(self):
-#        evaluator = Excellent.get_template_evaluator()
+    def test_templates(self):
+        evaluator = TemplateEvaluator()
+
+        with codecs.open('test_files/template_tests.json', 'r', 'utf-8') as tests_file:
+            tests_json = json_strip_comments(tests_file.read())
+            tests_json = json.loads(tests_json, parse_float=Decimal)
+            tests = []
+            for test_json in tests_json:
+                tests.append(TemplateTest(test_json))
+
+        failures = []
+        start = int(round(clock() * 1000))
+
+        for test in tests:
+            if not test.run(evaluator):
+                failures.append(test)
+
+        duration = int(round(clock() * 1000)) - start
+
+        print("Completed %d template tests in %dms (failures=%d)" % (len(tests), duration, len(failures)))
+
+        if failures:
+            print("Failed tests:")
+
+            for test in failures:
+                print("========================================\n")
+                print("Template: " + test.template)
+                if test.expected_output is not None:
+                    print("Expected output: " + test.expected_output)
+                else:
+                    print("Expected output regex: " + test.expected_output_regex)
+                print("Actual output: " + test.actual_output)
+                print("Expected errors: " + ', '.join(test.expected_errors))
+                print("Actual errors: " + ', '.join(test.actual_errors))
+
+            self.fail("There were failures in the template tests")  # fail unit test if there were any errors
 
 
 class TemplateTest(object):
 
-    def __init__(self, json):
-        self.template = json['template']
-        # self.context = EvaluationContext(json['context']['vars'], {'tz': json['context']['tz'],
-        #                                                            'day_first': json['context']['day_first']})
-        # self.url_encode = json['url_encode']
-        self.expected_output = json['output']
-        self.expected_errors = json['errors']
+    def __init__(self, json_obj):
+        self.template = json_obj['template']
+        self.context = EvaluationContext.from_json(json_obj['context'])
+        self.url_encode = json_obj['url_encode']
+        self.expected_output = json_obj.get('output', None)
+        self.expected_output_regex = json_obj.get('output_regex', None)
+        self.expected_errors = json_obj['errors']
 
         self.actual_output = None
         self.actual_errors = None
 
     def run(self, evaluator):
-        evaluated = evaluator.evaluate_template(self.template, self.context, self.url_encode)
-        self.actual_output = evaluated.output
-        self.actual_errors = evaluated.errors
+        output, errors = evaluator.evaluate_template(self.template, self.context, self.url_encode)
+        self.actual_output = output
+        self.actual_errors = errors
 
-        return self.expected_output == self.actual_output and self.expected_errors == self.actual_errors
+        if self.expected_output is not None:
+            if self.expected_output != self.actual_output:
+                return False
+        else:
+            if not regex.compile(self.expected_output_regex).fullmatch(self.actual_output):
+                return False
+
+        return self.expected_errors == self.actual_errors
+
+
+def json_strip_comments(text):
+    """
+    Strips /* ... */ style comments from JSON
+    """
+    pattern = regex.compile(r'/\*[^\*]+\*/', regex.DOTALL|regex.MULTILINE|regex.UNICODE)
+    match = pattern.search(text)
+    while match:
+        text = text[:match.start()] + text[match.end():]
+        match = pattern.search(text)
+    return text
