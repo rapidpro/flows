@@ -6,10 +6,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to allow an expression function parameter to have a default boolean value
+ * Annotation to allow an expression function parameter to have a default string value
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
-public @interface BooleanDefault {
-    boolean value();
+public @interface StringDefault {
+    String value();
 }

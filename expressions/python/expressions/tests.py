@@ -366,44 +366,53 @@ class FunctionsTests(unittest.TestCase):
         self.assertEqual(excel._abs(context, 1), 1)
         self.assertEqual(excel._abs(context, -1), 1)
 
-        self.assertEqual(1, excel._max(context, 1))
-        self.assertEqual(3, excel._max(context, 1, 3, 2, -5))
-        self.assertEqual(-2, excel._max(context, -2, -5))
+        self.assertEqual(excel._max(context, 1), 1)
+        self.assertEqual(excel._max(context, 1, 3, 2, -5), 3)
+        self.assertEqual(excel._max(context, -2, -5), -2)
 
-        self.assertEqual(1, excel._min(context, 1))
-        self.assertEqual(-3, excel._min(context, -1, -3, -2, 5))
-        self.assertEqual(-5, excel._min(context, -2, -5))
+        self.assertEqual(excel._min(context, 1), 1)
+        self.assertEqual(excel._min(context, -1, -3, -2, 5), -3)
+        self.assertEqual(excel._min(context, -2, -5), -5)
 
-        self.assertEqual(Decimal('16'), excel._power(context, '4', '2'))
-        self.assertEqual(Decimal('2'), excel._power(context, '4', '0.5'))
+        self.assertEqual(excel._power(context, '4', '2'), Decimal('16'))
+        self.assertEqual(excel._power(context, '4', '0.5'), Decimal('2'))
 
-        self.assertEqual(1, excel._sum(context, 1))
-        self.assertEqual(6, excel._sum(context, 1, 2, 3))
+        self.assertEqual(excel._sum(context, 1), 1)
+        self.assertEqual(excel._sum(context, 1, 2, 3), 6)
 
         # logical functions
-        self.assertEqual(False, excel._and(context, False))
-        self.assertEqual(True, excel._and(context, True))
-        self.assertEqual(True, excel._and(context, 1, True, "true"))
-        self.assertEqual(False, excel._and(context, 1, True, "true", 0))
+        self.assertEqual(excel._and(context, False), False)
+        self.assertEqual(excel._and(context, True), True)
+        self.assertEqual(excel._and(context, 1, True, "true"), True)
+        self.assertEqual(excel._and(context, 1, True, "true", 0), False)
 
-        self.assertEqual(False, excel.false())
+        self.assertEqual(excel.false(), False)
 
-        self.assertEqual(0, excel._if(context, True))
-        self.assertEqual('x', excel._if(context, True, 'x', 'y'))
-        self.assertEqual('x', excel._if(context, 'true', 'x', 'y'))
-        self.assertEqual(False, excel._if(context, False))
-        self.assertEqual('y', excel._if(context, False, 'x', 'y'))
-        self.assertEqual('y', excel._if(context, 0, 'x', 'y'))
+        self.assertEqual(excel._if(context, True), 0)
+        self.assertEqual(excel._if(context, True, 'x', 'y'), 'x')
+        self.assertEqual(excel._if(context, 'true', 'x', 'y'), 'x')
+        self.assertEqual(excel._if(context, False), False)
+        self.assertEqual(excel._if(context, False, 'x', 'y'), 'y')
+        self.assertEqual(excel._if(context, 0, 'x', 'y'), 'y')
 
-        self.assertEqual(False, excel._or(context, False))
-        self.assertEqual(True, excel._or(context, True))
-        self.assertEqual(True, excel._or(context, 1, False, "false"))
-        self.assertEqual(True, excel._or(context, 0, True, "false"))
+        self.assertEqual(excel._or(context, False), False)
+        self.assertEqual(excel._or(context, True), True)
+        self.assertEqual(excel._or(context, 1, False, "false"), True)
+        self.assertEqual(excel._or(context, 0, True, "false"), True)
 
-        self.assertEqual(True, excel.true())
-        
+        self.assertEqual(excel.true(), True)
+
     def test_custom(self):
         context = EvaluationContext({}, pytz.timezone("Africa/Kigali"), DateStyle.DAY_FIRST)
+
+        self.assertEqual(custom.field(context, '15+M+Seattle', 1, '+'), '15')
+        self.assertEqual(custom.field(context, '15 M Seattle', 1), '15')
+        self.assertEqual(custom.field(context, '15+M+Seattle', 2, '+'), 'M')
+        self.assertEqual(custom.field(context, '15+M+Seattle', 3, '+'), 'Seattle')
+        self.assertEqual(custom.field(context, '15+M+Seattle', 4, '+'), '')
+        self.assertEqual(custom.field(context, '15    M  Seattle', 2), 'M')
+        self.assertEqual(custom.field(context, ' واحد إثنان-ثلاثة ', 1), 'واحد')
+        self.assertRaises(ValueError, custom.field, context, '15+M+Seattle', 0)
 
         self.assertEqual('', custom.first_word(context, '  '))
         self.assertEqual('abc', custom.first_word(context, ' abc '))
@@ -457,15 +466,6 @@ class FunctionsTests(unittest.TestCase):
         self.assertEqual('def', custom.word_slice(context, ' abc  def ghi-jkl ', 2, -1, True))
         self.assertEqual('واحد إثنان', custom.word_slice(context, ' واحد إثنان ثلاثة ', 1, 3))
         self.assertRaises(ValueError, custom.word_slice, context, ' abc  def ghi-jkl ', 0)  # start can't be zero
-
-        self.assertEqual('15', custom.field(context, '15+M+Seattle', 1, '+'))
-        self.assertEqual('15', custom.field(context, '15 M Seattle', 1))
-        self.assertEqual('M', custom.field(context, '15+M+Seattle', 2, '+'))
-        self.assertEqual('Seattle', custom.field(context, '15+M+Seattle', 3, '+'))
-        self.assertEqual('', custom.field(context, '15+M+Seattle', 4, '+'))
-        self.assertEqual('M', custom.field(context, '15    M  Seattle', 2))
-        self.assertEqual('واحد', custom.field(context, ' واحد إثنان-ثلاثة ', 1))
-        self.assertRaises(ValueError, custom.field, context, '15+M+Seattle', 0)
 
 
 class UtilsTests(unittest.TestCase):

@@ -2,7 +2,7 @@ from __future__ import absolute_import, unicode_literals
 
 import inspect
 
-from expressions import EvaluationError
+from expressions import EvaluationError, conversions
 
 
 class FunctionManager(object):
@@ -78,6 +78,13 @@ class FunctionManager(object):
         except Exception, e:
             pretty_args = []
             for arg in arguments:
-                pretty_args.append(('"%s"' % arg) if isinstance(arg, basestring) else unicode(arg))
-            pretty_args = ', '.join(pretty_args)
-            raise EvaluationError("Error calling function %s with arguments %s" % (name, pretty_args), e)
+                if isinstance(arg, basestring):
+                    pretty = '"%s"' % arg
+                else:
+                    try:
+                        pretty = conversions.to_string(arg, ctx)
+                    except EvaluationError:
+                        pretty = unicode(arg)
+                pretty_args.append(pretty)
+
+            raise EvaluationError("Error calling function %s with arguments %s" % (name, ', '.join(pretty_args)), e)

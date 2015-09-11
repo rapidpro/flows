@@ -4,6 +4,7 @@ import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.evaluator.Conversions;
 import io.rapidpro.expressions.functions.annotations.BooleanDefault;
 import io.rapidpro.expressions.functions.annotations.IntegerDefault;
+import io.rapidpro.expressions.functions.annotations.StringDefault;
 import io.rapidpro.expressions.utils.ExpressionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -16,6 +17,27 @@ import java.util.List;
  * Library of supported custom functions.
  */
 public class CustomFunctions {
+
+    /**
+     * Reference a field in string separated by a delimiter
+     */
+    public static String field(EvaluationContext ctx, Object text, Object index, @StringDefault(" ") Object delimiter) {
+        String _text = Conversions.toString(text, ctx);
+        int _index = Conversions.toInteger(index, ctx);
+        String _delimiter = Conversions.toString(delimiter, ctx);
+
+        String[] splits = StringUtils.splitByWholeSeparator(_text, _delimiter);
+
+        if (_index < 1) {
+            throw new RuntimeException("Field index cannot be less than 1");
+        }
+
+        if (_index <= splits.length) {
+            return splits[_index - 1];
+        } else {
+            return "";
+        }
+    }
 
     /**
      * Returns the first word in the given text string

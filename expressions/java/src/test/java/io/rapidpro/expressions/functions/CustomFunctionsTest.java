@@ -28,6 +28,22 @@ public class CustomFunctionsTest {
     }
 
     @Test
+    public void test_field() {
+        assertThat(field(m_context, "15+M+Seattle", 1, "+"), is("15"));
+        assertThat(field(m_context, "15 M Seattle", 1, " "), is("15"));
+        assertThat(field(m_context, "15+M+Seattle", 2, "+"), is("M"));
+        assertThat(field(m_context, "15+M+Seattle", 3, "+"), is("Seattle"));
+        assertThat(field(m_context, "15+M+Seattle", 4, "+"), is(""));
+        assertThat(field(m_context, "15    M  Seattle", 2, " "), is("M"));
+        assertThat(field(m_context, "واحد اثنين ثلاثة", 1, " "), is("واحد"));
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void test_field_withIndexLessThanOne() {
+        field(m_context, "15+M+Seattle", 0, " ");
+    }
+
+    @Test
     public void test_first_word() {
         assertThat(first_word(m_context, "  "), is(""));
         assertThat(first_word(m_context, " abc "), is("abc"));
@@ -66,13 +82,13 @@ public class CustomFunctionsTest {
 
     @Test
     public void test_word() {
+        assertThat(word(m_context, "", 1, false), is(""));
         assertThat(word(m_context, " abc def ghi", 1, false), is("abc"));
         assertThat(word(m_context, "abc-def  ghi  jkl", 3, false), is("ghi"));
         assertThat(word(m_context, "abc-def  ghi  jkl", 3, true), is("jkl"));
         assertThat(word(m_context, "abc-def  ghi  jkl", "3", "TRUE"), is("jkl")); // string args only
         assertThat(word(m_context, "abc-def  ghi  jkl", -1, false), is("jkl")); // negative index
         assertThat(word(m_context, " abc def   ghi", 6, false), is("")); // out of range
-        assertThat(word(m_context, "", 1, false), is(""));
         assertThat(word(m_context, "واحد اثنين ثلاثة", 1, false), is("واحد"));
         assertThat(word(m_context, "واحد اثنين ثلاثة", -1, false), is("ثلاثة"));
     }

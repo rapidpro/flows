@@ -5,6 +5,7 @@ import io.rapidpro.expressions.EvaluationError;
 import io.rapidpro.expressions.evaluator.Conversions;
 import io.rapidpro.expressions.functions.annotations.BooleanDefault;
 import io.rapidpro.expressions.functions.annotations.IntegerDefault;
+import io.rapidpro.expressions.functions.annotations.StringDefault;
 import io.rapidpro.expressions.utils.Parameter;
 import org.apache.commons.lang3.StringUtils;
 
@@ -67,8 +68,9 @@ public class FunctionManager {
 
 
         for (Parameter param : Parameter.fromMethod(func)) {
-            IntegerDefault defaultInt = param.getAnnotation(IntegerDefault.class);
             BooleanDefault defaultBool = param.getAnnotation(BooleanDefault.class);
+            IntegerDefault defaultInt = param.getAnnotation(IntegerDefault.class);
+            StringDefault defaultStr = param.getAnnotation(StringDefault.class);
 
             if (param.getType().equals(EvaluationContext.class)) {
                 parameters.add(ctx);
@@ -83,11 +85,14 @@ public class FunctionManager {
                 Object arg = remainingArgs.remove(0);
                 parameters.add(arg);
             }
+            else if (defaultBool != null) {
+                parameters.add(defaultBool.value());
+            }
             else if (defaultInt != null) {
                 parameters.add(defaultInt.value());
             }
-            else if (defaultBool != null) {
-                parameters.add(defaultBool.value());
+            else if (defaultStr != null) {
+                parameters.add(defaultStr.value());
             }
             else {
                 throw new EvaluationError("Too few arguments provided for function " + name);

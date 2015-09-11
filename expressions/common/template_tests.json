@@ -270,6 +270,20 @@
     "errors": []
   },
   {
+    "template": "@(FIELD(\"15+M+Seattle\", 1, \"+\"))|@(FIELD(\"15 M Seattle\", 2))|@(FIELD(\"15    M  Seattle\", 3))|@(FIELD(\"15 M Seattle\", 4))|@(FIELD(\"واحد اثنين ثلاثة\", 2))",
+    "context": {"variables": {}, "timezone": "UTC", "date_style": "day_first"},
+    "url_encode": false,
+    "output": "15|M|Seattle||اثنين",
+    "errors": []
+  },
+  {
+    "template": "@(FIRST_WORD(\"  \"))|@(FIRST_WORD(\" abc \"))|@(FIRST_WORD(\" abc def ghi\"))|@(FIRST_WORD(\"واحد اثنين ثلاثة\"))",
+    "context": {"variables": {}, "timezone": "UTC", "date_style": "day_first"},
+    "url_encode": false,
+    "output": "|abc|abc|واحد",
+    "errors": []
+  },
+  {
     "template": "@(FIXED(1234.5678, 1)) @(FIXED(1234.5678, 2)) @(FIXED(1234.5678, 0)) @(FIXED(1234.5678, -1)) @(FIXED(1234.5678, -4)) @(FIXED(1234.1234, 2)) @(FIXED(1234.5678, 3, TRUE))",
     "context": {"variables": {}, "timezone": "UTC", "date_style": "day_first"},
     "url_encode": false,
@@ -347,6 +361,13 @@
     "errors": []
   },
   {
+    "template": "@(PERCENT(\"0.25321\")) @(PERCENT(0.3333)) @(PERCENT(0.666666))",
+    "context": {"variables": {}, "timezone": "UTC", "date_style": "day_first"},
+    "url_encode": false,
+    "output": "25% 33% 67%",
+    "errors": []
+  },
+  {
     "template": "@(POWER(\"4\", 2)) @(POWER(4, \"0.5\"))",
     "context": {"variables": {}, "timezone": "UTC", "date_style": "day_first"},
     "url_encode": false,
@@ -379,6 +400,41 @@
     "context": {"variables": {}, "timezone": "UTC", "date_style": "day_first"},
     "url_encode": false,
     "output_regex": "(2|3|4)",
+    "errors": []
+  },
+  { /* read as credit card */
+    "template": "@(READ_DIGITS(\"1234567890123456\"))",
+    "context": {"variables": {}, "timezone": "UTC", "date_style": "day_first"},
+    "url_encode": false,
+    "output": "1 2 3 4 , 5 6 7 8 , 9 0 1 2 , 3 4 5 6",
+    "errors": []
+  },
+  { /* read as phone number */
+    "template": "@(READ_DIGITS(\"+123456789012\"))",
+    "context": {"variables": {}, "timezone": "UTC", "date_style": "day_first"},
+    "url_encode": false,
+    "output": "1 2 3 , 4 5 6 , 7 8 9 , 0 1 2",
+    "errors": []
+  },
+  { /* read as SSN */
+    "template": "@(READ_DIGITS(\"123456789\"))",
+    "context": {"variables": {}, "timezone": "UTC", "date_style": "day_first"},
+    "url_encode": false,
+    "output": "1 2 3 , 4 5 , 6 7 8 9",
+    "errors": []
+  },
+  {
+    "template": "@(READ_DIGITS(\"123456\"))|@(READ_DIGITS(\"12345\"))|@(READ_DIGITS(\"123\"))|@(READ_DIGITS(\"\"))",
+    "context": {"variables": {}, "timezone": "UTC", "date_style": "day_first"},
+    "url_encode": false,
+    "output": "1 2 3 , 4 5 6|1,2,3,4,5|1,2,3|",
+    "errors": []
+  },
+  {
+    "template": "@(REMOVE_FIRST_WORD(\"\"))|@(REMOVE_FIRST_WORD(\"abc\"))|@(REMOVE_FIRST_WORD(\" abc  \"))|@(REMOVE_FIRST_WORD(\" abc def-ghi \"))|@(REMOVE_FIRST_WORD(\"واحد اثنين ثلاثة\"))",
+    "context": {"variables": {}, "timezone": "UTC", "date_style": "day_first"},
+    "url_encode": false,
+    "output": "|||def-ghi |اثنين ثلاثة",
     "errors": []
   },
   {
@@ -473,6 +529,41 @@
     "errors": []
   },
   {
+    "template": "@(WORD(\" \", 1))|@(WORD(\" abc def ghi\", 1))|@(WORD(\"abc-def  ghi  jkl\", 3))|@(WORD(\"abc-def  ghi  jkl\", 3, TRUE))|@(WORD(\"abc-def  ghi  jkl\", \"3\", \"TRUE\"))",
+    "context": {"variables": {}, "timezone": "UTC", "date_style": "day_first"},
+    "url_encode": false,
+    "output": "|abc|ghi|jkl|jkl",
+    "errors": []
+  },
+  {
+    "template": "@(WORD(\"abc-def  ghi  jkl\", -1))|@(WORD(\" abc def   ghi\", 6))|@(WORD(\"واحد اثنين ثلاثة\", 1))",
+    "context": {"variables": {}, "timezone": "UTC", "date_style": "day_first"},
+    "url_encode": false,
+    "output": "jkl||واحد",
+    "errors": []
+  },
+  {
+    "template": "@(WORD_COUNT(\"\")) @(WORD_COUNT(\" abc-def  ghi  jkl\")) @(WORD_COUNT(\" abc-def  ghi  jkl\", TRUE)) @(WORD_COUNT(\"واحد اثنين ثلاثة\"))",
+    "context": {"variables": {}, "timezone": "UTC", "date_style": "day_first"},
+    "url_encode": false,
+    "output": "0 4 3 3",
+    "errors": []
+  },
+  {
+    "template": "@(WORD_SLICE(\" abc  def ghi-jkl \", 1, 3))|@(WORD_SLICE(\" abc  def ghi-jkl \", 3))|@(WORD_SLICE(\" abc  def ghi-jkl \", 3, 0, true))|@(WORD_SLICE(\" abc  def ghi-jkl \", \"3\", \"0\", \"true\"))",
+    "context": {"variables": {}, "timezone": "UTC", "date_style": "day_first"},
+    "url_encode": false,
+    "output": "abc def|ghi jkl|ghi-jkl|ghi-jkl",
+    "errors": []
+  },
+  {
+    "template": "@(WORD_SLICE(\" abc  def ghi-jkl \", 2, -1))|@(WORD_SLICE(\" abc  def ghi-jkl \", -1, 0))|@(WORD_SLICE(\"واحد اثنين ثلاثة\", 1, 3))|@(WORD_SLICE(\" abc  def ghi-jkl \", 0))",
+    "context": {"variables": {}, "timezone": "UTC", "date_style": "day_first"},
+    "url_encode": false,
+    "output": "def ghi|jkl|واحد اثنين|@(WORD_SLICE(\" abc  def ghi-jkl \", 0))",
+    "errors": ["Error calling function WORD_SLICE with arguments \" abc  def ghi-jkl \", 0"]
+  },
+  {
     "template": "@(YEAR(\"10-9-2015\")) @(YEAR(\"Feb 1st 99\"))",
     "context": {"variables": {}, "timezone": "UTC", "date_style": "day_first"},
     "url_encode": false,
@@ -480,11 +571,9 @@
     "errors": []
   },
 
-  /* TODO add remaining functions: sum, logical, custom etc */
-
   /* URL encoding */
 
-  { /* unbalanced parenthesis */
+  {
     "template": "http://example.com/do.php?contact=@contact",
     "context": {"variables": { "contact": { "*": "Joe Flow" }}, "timezone": "UTC", "date_style": "day_first"},
     "url_encode": true,

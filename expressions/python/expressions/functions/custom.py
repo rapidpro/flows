@@ -6,6 +6,25 @@ import regex
 from expressions import conversions
 
 
+def field(ctx, text, index, delimiter=' '):
+    """
+    Reference a field in string separated by a delimiter
+    """
+    splits = text.split(delimiter)
+
+    # remove our delimiters and whitespace
+    splits = [f for f in splits if f != delimiter and len(f.strip()) > 0]
+
+    index = conversions.to_integer(index, ctx)
+    if index < 1:
+        raise ValueError('Field index cannot be less than 1')
+
+    if index <= len(splits):
+        return splits[index-1]
+    else:
+        return ''
+
+
 def first_word(ctx, text):
     """
     Returns the first word in the given text string
@@ -18,7 +37,7 @@ def percent(ctx, number):
     """
     Formats a number as a percentage
     """
-    return '%d%%' % int(conversions.to_decimal(number, ctx) * 100)
+    return '%d%%' % int(round(conversions.to_decimal(number, ctx) * 100))
 
 
 def read_digits(ctx, text):
@@ -109,29 +128,6 @@ def word_slice(ctx, text, start, stop=0, by_spaces=False):
 
     # re-combine selected words with a single space
     return ' '.join(selection)
-
-
-def field(ctx, text, index, delimiter=' '):
-    """
-    Reference a field in string separated by a delimiter
-    :param text: the text to split
-    :param index: which index in the result to return
-    :param delimiter: the character to split by
-    """
-
-    splits = text.split(delimiter)
-
-    # remove our delimiters and whitespace
-    splits = [field for field in splits if field != delimiter and len(field.strip()) > 0]
-
-    index = conversions.to_integer(index, ctx)
-    if index < 1:
-        raise ValueError('Field index cannot be less than 1')
-
-    if index <= len(splits):
-        return splits[index-1]
-
-    return ''
 
 
 #################################### Helper (not available in expressions) ####################################
