@@ -4,7 +4,7 @@ import datetime
 import logging
 import pytz
 
-from antlr4 import InputStream, CommonTokenStream, ParseTreeVisitor
+from antlr4 import InputStream, CommonTokenStream, ParseTreeVisitor, Token
 from antlr4.error.Errors import ParseCancellationException
 from antlr4.error.ErrorStrategy import BailErrorStrategy
 from decimal import Decimal
@@ -193,7 +193,7 @@ class TemplateEvaluator:
 
             if current_expression_terminated:
                 expression = ''.join(current_expression_chars)
-                output_chars.append(self._resolve_expression(expression, context, url_encode, strategy, errors))
+                output_chars.append(self._resolve_expression_block(expression, context, url_encode, strategy, errors))
                 current_expression_chars = []
                 current_expression_terminated = False
                 state = State.BODY
@@ -205,9 +205,10 @@ class TemplateEvaluator:
         output = ''.join(output_chars)  # joining is fastest way to build strings in Python
         return output, errors
 
-    def _resolve_expression(self, expression, context, url_encode, strategy, errors):
+    def _resolve_expression_block(self, expression, context, url_encode, strategy, errors):
         """
-        Resolves an expression found in the template. If an evaluation error occurs, expression is returned as is.
+        Resolves an expression block found in the template, e.g. @(...). If an evaluation error occurs, expression is
+        returned as is.
         """
         try:
             cleaned = expression[1:]  # strip prefix
@@ -266,8 +267,40 @@ class TemplateEvaluator:
         :param context: the evaluation context
         :return: the partially evaluated expression or none if expression can be fully evaluated
         """
-        # TODO
-        raise NotImplementedError()
+        from .gen.ExcellentParser import ExcellentParser
+
+        has_missing = False
+        output_components = []
+
+        for t in range(len(tokens.tokens) - 1):  # we can ignore the final EOF token
+            token = tokens.get(t)
+            next_token = tokens.get(t + 1)
+
+            # if token is a NAME not followed by ( then it's a context reference
+            if token.type == ExcellentParser.NAME and next_token.type != ExcellentParser.LPAREN:
+                try:
+                    output_components.append(context.resolve_variable(token.text))
+                except EvaluationError:
+                    has_missing = True
+                    output_components.append(token)
+            else:
+                output_components.append(token)
+
+        # if we don't have missing context references, perform evaluation as normal
+        if not has_missing:
+            return None
+
+        # re-combine the tokens and context values back into an expression
+        output = [self._expression_prefix]
+
+        for output_component in output_components:
+            if isinstance(output_component, Token):
+                comp_val = output_component.text
+            else:
+                comp_val = conversions.to_repr(output_component, context)
+            output.append(comp_val)
+
+        return ''.join(output)
 
 
 class ExcellentVisitor(ParseTreeVisitor):

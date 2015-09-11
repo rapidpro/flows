@@ -12,7 +12,7 @@ from decimal import Decimal
 from time import clock
 from . import conversions, EvaluationError
 from .dates import DateParser, DateStyle
-from .evaluator import TemplateEvaluator, EvaluationContext
+from .evaluator import TemplateEvaluator, EvaluationContext, EvaluationStrategy
 from .functions import excel, custom
 from .utils import urlquote, decimal_pow
 
@@ -212,6 +212,20 @@ class EvaluatorTests(unittest.TestCase):
         output, errors = self.evaluator.evaluate_template("Answer is @(2 + 3", EvaluationContext())
         self.assertEqual(output, "Answer is @(2 + 3")
         self.assertEqual(errors, [])
+
+    def test_evaluate_template_with_resolve_available_strategy(self):
+        context = EvaluationContext()
+        context.put_variable("foo", 5)
+        context.put_variable("bar", "x")
+
+        output, errors = self.evaluator.evaluate_template("@(1 + 2)", context, False, EvaluationStrategy.RESOLVE_AVAILABLE)
+        self.assertEqual(output, "3")
+
+        output, errors = self.evaluator.evaluate_template("Hi @contact.name", context, False, EvaluationStrategy.RESOLVE_AVAILABLE)
+        self.assertEqual(output, "Hi @contact.name")
+
+        output, errors = self.evaluator.evaluate_template("@(foo + contact.name + bar)", context, False, EvaluationStrategy.RESOLVE_AVAILABLE)
+        self.assertEqual(output, "@(5+contact.name+\"x\")")
 
     def test_evaluate_expression(self):
         context = EvaluationContext()

@@ -10,12 +10,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * The template evaluator
@@ -170,7 +166,7 @@ public class TemplateEvaluator {
             }
 
             if (currentExpressionTerminated) {
-                output.append(resolveExpression(currentExpression.toString(), context, urlEncode, strategy, errors));
+                output.append(resolveExpressionBlock(currentExpression.toString(), context, urlEncode, strategy, errors));
                 currentExpression = null;
                 currentExpressionTerminated = false;
                 state = State.BODY;
@@ -186,9 +182,10 @@ public class TemplateEvaluator {
     }
 
     /**
-     * Resolves an expression found in the template. If an evaluation error occurs, expression is returned as is.
+     * Resolves an expression block found in the template, e.g. @(...). If an evaluation error occurs, expression is
+     * returned as is.
      */
-    protected String resolveExpression(String expression, EvaluationContext context, boolean urlEncode, EvaluationStrategy strategy, List<String> errors) {
+    protected String resolveExpressionBlock(String expression, EvaluationContext context, boolean urlEncode, EvaluationStrategy strategy, List<String> errors) {
         try {
             String cleaned = expression.substring(1); // strip prefix
             Object evaluated = evaluateExpression(cleaned, context, strategy);
@@ -262,7 +259,6 @@ public class TemplateEvaluator {
      */
     protected String resolveAvailable(CommonTokenStream tokens, EvaluationContext context) {
         boolean hasMissing = false;
-
         List<Object> outputComponents = new ArrayList<>();
 
         for (int t = 0; t < tokens.size() - 1; t++) {  // we can ignore the final EOF token
