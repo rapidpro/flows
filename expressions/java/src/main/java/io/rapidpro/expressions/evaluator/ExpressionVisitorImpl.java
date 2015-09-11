@@ -39,11 +39,11 @@ public class ExpressionVisitorImpl extends ExcellentBaseVisitor<Object> {
     }
 
     /**
-     * expression : NAME LPAREN parameters? RPAREN
+     * expression : fnname LPAREN parameters? RPAREN
      */
     @Override
     public Object visitFunctionCall(ExcellentParser.FunctionCallContext ctx) {
-        String funcName = ctx.NAME().getText();
+        String funcName = ctx.fnname().getText();
         List<Object> parameters;
         if (ctx.parameters() != null) {
             parameters = (List<Object>) visit(ctx.parameters());

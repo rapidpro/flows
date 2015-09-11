@@ -32,21 +32,26 @@ WS         : [ \t\n\r]+ -> skip;  // ignore whitespace
 
 parse      : expression EOF;
 
-expression : NAME LPAREN parameters? RPAREN              # functionCall
-           | MINUS expression                            # negation
-           | expression EXPONENT expression              # exponentExpression
-           | expression (TIMES | DIVIDE) expression      # multiplicationOrDivisionExpression
-           | expression (PLUS | MINUS) expression        # additionOrSubtractionExpression
-           | expression (LTE | LT | GTE | GT) expression # comparisonExpression
-           | expression (EQ | NEQ) expression            # equalityExpression
-           | expression AMPERSAND expression             # concatenation
-           | STRING                                      # stringLiteral
-           | DECIMAL                                     # decimalLiteral
-           | TRUE                                        # true
-           | FALSE                                       # false
-           | NAME                                        # contextReference
-           | LPAREN expression RPAREN                    # parentheses
+expression : fnname LPAREN parameters? RPAREN             # functionCall
+           | MINUS expression                             # negation
+           | expression EXPONENT expression               # exponentExpression
+           | expression (TIMES | DIVIDE) expression       # multiplicationOrDivisionExpression
+           | expression (PLUS | MINUS) expression         # additionOrSubtractionExpression
+           | expression (LTE | LT | GTE | GT) expression  # comparisonExpression
+           | expression (EQ | NEQ) expression             # equalityExpression
+           | expression AMPERSAND expression              # concatenation
+           | STRING                                       # stringLiteral
+           | DECIMAL                                      # decimalLiteral
+           | TRUE                                         # true
+           | FALSE                                        # false
+           | NAME                                         # contextReference
+           | LPAREN expression RPAREN                     # parentheses
            ;
 
-parameters : expression (COMMA expression)*              # functionParameters
+fnname     : NAME
+           | TRUE
+           | FALSE
+           ;
+
+parameters : expression (COMMA expression)*               # functionParameters
            ;

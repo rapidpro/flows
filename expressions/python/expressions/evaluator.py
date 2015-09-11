@@ -281,9 +281,9 @@ class ExcellentVisitor(ParseTreeVisitor):
 
     def visitFunctionCall(self, ctx):
         """
-        expression : NAME LPAREN parameters? RPAREN
+        expression : fnname LPAREN parameters? RPAREN
         """
-        func_name = ctx.NAME().getText()
+        func_name = ctx.fnname().getText()
 
         if ctx.parameters() is not None:
             parameters = self.visit(ctx.parameters())
