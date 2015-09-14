@@ -35,6 +35,9 @@ public class RunState {
     @SerializedName("contact")
     protected Contact m_contact;
 
+    @SerializedName("started")
+    protected Instant m_started;
+
     @SerializedName("steps")
     protected List<Step> m_steps;
 
@@ -59,10 +62,11 @@ public class RunState {
      * @param flow the flow
      * @return the run state
      */
-    public static RunState newRun(Org org, Contact contact, Flow flow) {
+    public static RunState start(Org org, Contact contact, Flow flow) {
         RunState run = new RunState();
         run.m_org = org;
         run.m_contact = contact;
+        run.m_started = Instant.now();
         run.m_steps = new ArrayList<>();
         run.m_values = new HashMap<>();
         run.m_extra = new HashMap<>();
@@ -71,6 +75,12 @@ public class RunState {
         return run;
     }
 
+    /**
+     * Restores a run state from JSON
+     * @param json the JSON containing a serialized run state
+     * @param flow the flow the run state is for
+     * @return the run state
+     */
     public static RunState fromJson(String json, Flow flow) {
         try {
             Flow.DeserializationContext context = new Flow.DeserializationContext(flow);
@@ -86,6 +96,10 @@ public class RunState {
         }
     }
 
+    /**
+     * Serializes this run state to JSON
+     * @return the JSON
+     */
     public String toJson() {
         return JsonUtils.getGson().toJson(this);
     }

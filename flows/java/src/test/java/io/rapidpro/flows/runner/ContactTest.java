@@ -38,15 +38,6 @@ public class ContactTest extends BaseFlowsTest {
         Gson gson = new GsonBuilder().create();
         String json = gson.toJson(getContact());
 
-        assertThat(json, is("{" +
-                "\"uuid\":\"1234-1234\"," +
-                "\"name\":\"Joe Flow\"," +
-                "\"urns\":[\"tel:+260964153686\",\"twitter:realJoeFlow\"]," +
-                "\"groups\":[\"Testers\",\"Developers\"]," +
-                "\"fields\":{\"age\":\"34\",\"gender\":\"M\"}," +
-                "\"language\":\"eng\"" +
-                "}"));
-
         Contact contact = gson.fromJson(json, Contact.class);
 
         assertThat(contact.getUuid(), is("1234-1234"));

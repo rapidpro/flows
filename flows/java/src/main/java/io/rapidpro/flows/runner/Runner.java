@@ -32,7 +32,7 @@ public class Runner {
      * @return the run state
      */
     public RunState start(Org org, Contact contact, Flow flow) throws FlowRunException {
-        RunState run = RunState.newRun(org, contact, flow);
+        RunState run = RunState.start(org, contact, flow);
         return resume(run, null);
     }
 

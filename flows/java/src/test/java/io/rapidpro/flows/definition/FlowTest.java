@@ -21,7 +21,7 @@ public class FlowTest extends BaseFlowsTest {
         Flow flow = Flow.fromJson(readResource("test_flows/mushrooms.json"));
 
         assertThat(flow.getBaseLanguage(), is("eng"));
-        assertThat(flow.getLanguages(), contains("eng", "fre"));
+        assertThat(flow.getLanguages(), containsInAnyOrder("eng", "fre"));
 
         ActionSet as1 = (ActionSet) flow.getEntry();
 
