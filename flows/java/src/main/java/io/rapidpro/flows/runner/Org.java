@@ -27,6 +27,9 @@ public class Org {
     @SerializedName("anon")
     protected boolean m_anon;
 
+    @SerializedName("state_field")
+    protected String m_stateField;
+
     public Org() {
     }
 
@@ -56,5 +59,13 @@ public class Org {
 
     public boolean isAnon() {
         return m_anon;
+    }
+
+    public String getStateField() {
+        return m_stateField;
+    }
+
+    public void setStateField(String stateField) {
+        m_stateField = stateField;
     }
 }

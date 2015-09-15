@@ -65,9 +65,9 @@ public abstract class BaseFlowsTest {
         @Override
         public Location resolve(String input, String country, Location.Level level, String parent) {
             if (level == Location.Level.STATE && input.trim().equalsIgnoreCase("Kigali")) {
-                return new Location("Kigali");
+                return new Location("S0001", "Kigali", Location.Level.STATE);
             } else if (level == Location.Level.DISTRICT && input.trim().equalsIgnoreCase("Gasabo") && parent.trim().equalsIgnoreCase("Kigali")) {
-                return new Location("Gasabo");
+                return new Location("D0001", "Gasabo", Location.Level.DISTRICT);
             } else {
                 return null;
             }

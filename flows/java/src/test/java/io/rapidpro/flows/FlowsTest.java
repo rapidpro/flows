@@ -42,7 +42,7 @@ public class FlowsTest extends BaseFlowsTest {
                     public Location resolve(String input, String country, Location.Level level, String parent) {
                         // for testing, accept any location that doesn't begin with the letter X
                         if (!input.trim().toLowerCase().startsWith("x")) {
-                            return new Location(input);
+                            return new Location("S0001", input, Location.Level.STATE);
                         } else {
                             return null;
                         }

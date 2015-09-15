@@ -10,10 +10,16 @@ public class Location {
         DISTRICT
     }
 
+    protected String m_osmId;
+
     protected String m_name;
 
-    public Location(String name) {
+    protected Level m_level;
+
+    public Location(String osmId, String name, Level level) {
+        m_osmId = osmId;
         m_name = name;
+        m_level = level;
     }
 
     /**
@@ -31,7 +37,15 @@ public class Location {
         Location resolve(String input, String country, Level level, String parent);
     }
 
+    public String getOsmId() {
+        return m_osmId;
+    }
+
     public String getName() {
         return m_name;
+    }
+
+    public Level getLevel() {
+        return m_level;
     }
 }

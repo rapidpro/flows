@@ -17,10 +17,13 @@ public class Runner {
 
     protected TemplateEvaluator m_templateEvaluator;
 
+    protected Field.Provider m_fieldProvider;
+
     protected Location.Resolver m_locationResolver;
 
-    public Runner(TemplateEvaluator templateEvaluator, Location.Resolver locationResolver) {
+    public Runner(TemplateEvaluator templateEvaluator, Field.Provider fieldProvider, Location.Resolver locationResolver) {
         m_templateEvaluator = templateEvaluator;
+        m_fieldProvider = fieldProvider;
         m_locationResolver = locationResolver;
     }
 
@@ -141,5 +144,45 @@ public class Runner {
      */
     public Location.Resolver getLocationResolver() {
         return m_locationResolver;
+    }
+
+    /**
+     * Updates a field on the contact for the given run
+     * @param run the current run state
+     * @param key the field key
+     * @param value the field value
+     */
+    public void updateContactField(RunState run, String key, String value) {
+        Field field = m_fieldProvider.provide(key);
+        if (field == null) {
+            field = new Field(key, null, Field.ValueType.TEXT);
+        }
+
+        String actualValue = null;
+
+        switch (field.getValueType()) {
+            case TEXT:
+            case DECIMAL:
+            case DATETIME:
+                actualValue = value;
+            case STATE: {
+                Location state = m_locationResolver.resolve(value, run.getOrg().getCountry(), Location.Level.STATE, null);
+                if (state != null) {
+                    actualValue = state.getName();
+                }
+            }
+            case DISTRICT: {
+                String stateFieldKey = run.getOrg().getStateField();
+                if (stateFieldKey != null) {
+                    String stateName = run.getContact().getFields().get(stateFieldKey);
+                    Location district = m_locationResolver.resolve(value, run.getOrg().getCountry(), Location.Level.DISTRICT, stateName);
+                    if (district != null) {
+                        actualValue = district.getName();
+                    }
+                }
+            }
+        }
+
+        run.getContact().setField(key, actualValue);
     }
 }

@@ -55,7 +55,7 @@ public class SaveToContactAction extends Action {
                 // TODO does the 255 char limit still stand?
                 value = StringUtils.substring(value, 0, 255);
                 label = m_label;
-                run.getContact().getFields().put(m_field, value);
+                runner.updateContactField(run, m_field, value);
             }
 
             return new Result(new SaveToContactAction(m_field, label, value));

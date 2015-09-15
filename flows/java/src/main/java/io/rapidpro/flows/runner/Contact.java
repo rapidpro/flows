@@ -78,6 +78,10 @@ public class Contact {
         return m_fields;
     }
 
+    public void setField(String key, String value) {
+        m_fields.put(key, value);
+    }
+
     public String getLanguage() {
         return m_language;
     }

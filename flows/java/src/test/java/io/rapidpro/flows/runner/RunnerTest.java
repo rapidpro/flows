@@ -8,6 +8,9 @@ import org.junit.Test;
 import org.threeten.bp.Instant;
 import org.threeten.bp.ZoneId;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -118,8 +121,6 @@ public class RunnerTest extends BaseFlowsTest {
         assertThat(run.getValues().get("response_1").getTime(), notNullValue());
 
         assertThat(run.getState(), is(RunState.State.COMPLETED));
-
-
     }
 
     @Test
@@ -210,5 +211,36 @@ public class RunnerTest extends BaseFlowsTest {
     public void start_emptyFlow() throws Exception {
         Flow flow = Flow.fromJson(readResource("test_flows/empty.json"));
         m_runner.start(getOrg(), getContact(), flow);
+    }
+
+    @Test
+    public void updateContactField() throws Exception {
+        final Map<String, Field> fields = new HashMap<>();
+        fields.put("district", new Field("district", "District", Field.ValueType.DISTRICT));
+        fields.put("state", new Field("state", "State", Field.ValueType.STATE));
+
+        Runner runner = new RunnerBuilder()
+                .withFieldProvider(new Field.Provider() {
+                    @Override
+                    public Field provide(String key) {
+                        return fields.get(key);
+                    }
+                })
+                .withLocationResolver(new TestLocationResolver())
+                .build();
+
+        Flow flow = Flow.fromJson(readResource("test_flows/mushrooms.json"));
+        RunState run = m_runner.start(getOrg(), getContact(), flow);
+
+        runner.updateContactField(run, "district", "Gasabo");
+
+        // can't set a district field value without a state field value
+        assertThat(run.getContact().getFields().get("district"), is(nullValue()));
+
+        run.getOrg().setStateField("state");
+        runner.updateContactField(run, "state", "kigali");
+        runner.updateContactField(run, "district", "gasabo");
+
+        assertThat(run.getContact().getFields().get("district"), is("Gasabo"));
     }
 }
