@@ -178,6 +178,10 @@ public class RunState {
         return m_flow;
     }
 
+    public Instant getStarted() {
+        return m_started;
+    }
+
     public List<Step> getSteps() {
         return m_steps;
     }
