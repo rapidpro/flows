@@ -4,7 +4,7 @@ import random
 
 from datetime import date as _date, time as _time, datetime as _datetime
 from dateutil.relativedelta import relativedelta
-from decimal import Decimal
+from decimal import Decimal, ROUND_FLOOR
 from expressions import conversions, EvaluationError
 from expressions.utils import decimal_pow
 
@@ -275,6 +275,13 @@ def _abs(ctx, number):
     return conversions.to_decimal(abs(conversions.to_decimal(number, ctx)), ctx)
 
 
+def _int(ctx, number):
+    """
+    Rounds a number down to the nearest integer
+    """
+    return conversions.to_integer(conversions.to_decimal(number, ctx).to_integral_value(ROUND_FLOOR), ctx)
+
+
 def _max(ctx, *args):
     """
     Returns the maximum value of all arguments
@@ -297,6 +304,15 @@ def _min(ctx, *args):
         if arg < result:
             result = arg
     return result
+
+
+def mod(ctx, number, divisor):
+    """
+    Returns the remainder after number is divided by divisor
+    """
+    number = conversions.to_decimal(number, ctx)
+    divisor = conversions.to_decimal(divisor, ctx)
+    return number - divisor * _int(ctx, number / divisor)
 
 
 def _power(ctx, number, power):

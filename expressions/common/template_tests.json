@@ -305,6 +305,13 @@
     "errors": []
   },
   {
+    "template": "@(INT(8.9)) @(INT(-8.9))",
+    "context": {"variables": {}, "timezone": "UTC", "date_style": "day_first"},
+    "url_encode": false,
+    "output": "8 -9",
+    "errors": []
+  },
+  {
     "template": "@(LEFT(\"abcdef\", 0))|@(LEFT(\"abcdef\", 2))|@(LEFT(\"واحد\", 2))|@(LEFT(\"err\", -1))",
     "context": {"variables": {}, "timezone": "UTC", "date_style": "day_first"},
     "url_encode": false,
@@ -344,6 +351,13 @@
     "context": {"variables": {}, "timezone": "UTC", "date_style": "day_first"},
     "url_encode": false,
     "output": "45 30",
+    "errors": []
+  },
+  {
+    "template": "@(MOD(3, 2)) @(MOD(-3, 2)) @(MOD(3, -2)) @(MOD(-3, -2)) @(MOD(3, 3)) @(MOD(2.5, 2))",
+    "context": {"variables": {}, "timezone": "UTC", "date_style": "day_first"},
+    "url_encode": false,
+    "output": "1 1 -1 -1 0 0.5",
     "errors": []
   },
   {

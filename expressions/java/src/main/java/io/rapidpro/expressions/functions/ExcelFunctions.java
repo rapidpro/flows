@@ -16,6 +16,7 @@ import org.threeten.bp.temporal.ChronoUnit;
 import org.threeten.bp.temporal.Temporal;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
@@ -331,6 +332,13 @@ public class ExcelFunctions {
     }
 
     /**
+     * Rounds a number down to the nearest integer
+     */
+    public static int _int(EvaluationContext ctx, Object number) {
+        return Conversions.toDecimal(number, ctx).setScale(0, RoundingMode.FLOOR).intValue();
+    }
+
+    /**
      * Returns the maximum of all arguments
      */
     public static BigDecimal max(EvaluationContext ctx, Object... args) {
@@ -360,6 +368,15 @@ public class ExcelFunctions {
             result = result != null ? _arg.min(result) : _arg;
         }
         return result;
+    }
+
+    /**
+     * Returns the remainder after number is divided by divisor
+     */
+    public static BigDecimal mod(EvaluationContext ctx, Object number, Object divisor) {
+        BigDecimal _number = Conversions.toDecimal(number, ctx);
+        BigDecimal _divisor = Conversions.toDecimal(divisor, ctx);
+        return _number.subtract(_divisor.multiply(new BigDecimal(_int(ctx, _number.divide(_divisor, 10, RoundingMode.HALF_UP)))));
     }
 
     /**

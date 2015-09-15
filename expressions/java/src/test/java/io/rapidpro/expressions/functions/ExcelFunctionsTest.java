@@ -290,6 +290,12 @@ public class ExcelFunctionsTest {
     }
 
     @Test
+    public void test_int() {
+        assertThat(_int(m_context, new BigDecimal(8.9)), is(8));
+        assertThat(_int(m_context, new BigDecimal(-8.9)), is(-9));
+    }
+
+    @Test
     public void test_max() {
         assertThat(max(m_context, 1), is(new BigDecimal(1)));
         assertThat(max(m_context, 1, 3, 2, -5), is(new BigDecimal(3)));
@@ -311,6 +317,14 @@ public class ExcelFunctionsTest {
     @Test(expected = RuntimeException.class)
     public void test_min_noArgs() {
         min(m_context);
+    }
+
+    @Test
+    public void test_mod() {
+        assertThat(mod(m_context, "3", 2), is(new BigDecimal(1)));
+        assertThat(mod(m_context, -3, 2), is(new BigDecimal(1)));
+        assertThat(mod(m_context, 3, -2), is(new BigDecimal(-1)));
+        assertThat(mod(m_context, -3, -2), is(new BigDecimal(-1)));
     }
 
     @Test

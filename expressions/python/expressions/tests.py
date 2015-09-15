@@ -380,6 +380,9 @@ class FunctionsTests(unittest.TestCase):
         self.assertEqual(excel._abs(context, 1), 1)
         self.assertEqual(excel._abs(context, -1), 1)
 
+        self.assertEqual(excel._int(context, Decimal('8.9')), 8)
+        self.assertEqual(excel._int(context, Decimal('-8.9')), -9)
+
         self.assertEqual(excel._max(context, 1), 1)
         self.assertEqual(excel._max(context, 1, 3, 2, -5), 3)
         self.assertEqual(excel._max(context, -2, -5), -2)
@@ -387,6 +390,11 @@ class FunctionsTests(unittest.TestCase):
         self.assertEqual(excel._min(context, 1), 1)
         self.assertEqual(excel._min(context, -1, -3, -2, 5), -3)
         self.assertEqual(excel._min(context, -2, -5), -5)
+
+        self.assertEqual(excel.mod(context, Decimal(3), 2), 1)
+        self.assertEqual(excel.mod(context, Decimal(-3), Decimal(2)), 1)
+        self.assertEqual(excel.mod(context, Decimal(3), Decimal(-2)), -1)
+        self.assertEqual(excel.mod(context, Decimal(-3), Decimal(-2)), -1)
 
         self.assertEqual(excel._power(context, '4', '2'), Decimal('16'))
         self.assertEqual(excel._power(context, '4', '0.5'), Decimal('2'))
