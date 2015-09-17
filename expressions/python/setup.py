@@ -38,6 +38,7 @@ setup(
 
     keywords='rapidpro templating',
     packages=find_packages(),
+    package_data={'expressions': ['month.aliases']},
     install_requires=required_packages,
 
     test_suite='nose.collector',
