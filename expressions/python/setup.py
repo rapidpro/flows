@@ -18,7 +18,7 @@ required_packages = _read_requirements("requirements/base.txt")
 test_packages = _read_requirements("requirements/tests.txt")
 
 setup(
-    name='expressions',
+    name='rapidpro-expressions',
     version='1.0',
     description='Python implementation of the RapidPro expression and templating system',
     url='https://github.com/rapidpro/flows',
