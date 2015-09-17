@@ -1,14 +1,27 @@
-from os import path
 from setuptools import setup
 
-here = path.abspath(path.dirname(__file__))
 
+def _is_requirement(line):
+    """Returns whether the line is a valid package requirement."""
+    line = line.strip()
+    return line and not (line.startswith("-r") or line.startswith("#"))
+
+
+def _read_requirements(filename):
+    """Returns a list of package requirements read from the file."""
+    requirements_file = open(filename).read()
+    return [line.strip() for line in requirements_file.splitlines()
+            if _is_requirement(line)]
+
+
+required_packages = _read_requirements("requirements/base.txt")
+test_packages = _read_requirements("requirements/tests.txt")
 
 setup(
-    name='excellent',
-    version='0.1',
-    description='Python implementation of the RapidPro templating system',
-    url='https://github.com/rapidpro',
+    name='expressions',
+    version='1.0',
+    description='Python implementation of the RapidPro expression and templating system',
+    url='https://github.com/rapidpro/flows',
 
     author='Nyaruka',
     author_email='code@nyaruka.com',
@@ -16,19 +29,17 @@ setup(
     license='BSD',
 
     classifiers=[
-        'Development Status :: 1 - Planning',
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Libraries',
         'License :: OSI Approved :: BSD License',
         'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
     ],
 
     keywords='rapidpro templating',
-    packages=['temba'],
-    install_requires=['pytz'],
+    packages=['expressions'],
+    install_requires=required_packages,
 
     test_suite='nose.collector',
-    tests_require=['nose', 'mock', 'coverage'],
+    tests_require=required_packages + test_packages,
 )

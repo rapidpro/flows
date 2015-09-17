@@ -1,10 +1,6 @@
 antlr4-python2-runtime
-coverage
 enum34
-mock
-nose
 python-dateutil
 pytz
 regex
-requests
 six
