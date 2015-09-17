@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 def _is_requirement(line):
@@ -37,7 +37,7 @@ setup(
     ],
 
     keywords='rapidpro templating',
-    packages=['expressions'],
+    packages=find_packages(),
     install_requires=required_packages,
 
     test_suite='nose.collector',
