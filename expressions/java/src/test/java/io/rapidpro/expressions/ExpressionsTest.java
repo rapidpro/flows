@@ -3,25 +3,17 @@ package io.rapidpro.expressions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
-import io.rapidpro.expressions.dates.DateParser;
-import io.rapidpro.expressions.evaluator.TemplateEvaluator;
+import io.rapidpro.expressions.evaluator.Evaluator;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
-import org.threeten.bp.Instant;
-import org.threeten.bp.LocalDate;
-import org.threeten.bp.ZonedDateTime;
-import org.threeten.bp.temporal.ChronoUnit;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
-import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -32,7 +24,9 @@ public class ExpressionsTest {
 
     @Test
     public void templateTests() throws Exception {
-        TemplateEvaluator evaluator = new EvaluatorBuilder().build();
+        Evaluator evaluator = new EvaluatorBuilder()
+                .withAllowedTopLevels(new String[] {"channel", "contact", "date", "extra", "flow", "step"})
+                .build();
 
         InputStream in = ExpressionsTest.class.getClassLoader().getResourceAsStream("template_tests.json");
 
@@ -87,7 +81,7 @@ public class ExpressionsTest {
         String actualOutput;
         List<String> actualErrors;
 
-        public boolean run(TemplateEvaluator evaluator) {
+        public boolean run(Evaluator evaluator) {
             EvaluatedTemplate evaluated = evaluator.evaluateTemplate(template, context, urlEncode);
             this.actualOutput = evaluated.getOutput();
             this.actualErrors = evaluated.getErrors();

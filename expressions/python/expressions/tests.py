@@ -12,7 +12,7 @@ from decimal import Decimal
 from time import clock
 from . import conversions, EvaluationError
 from .dates import DateParser, DateStyle
-from .evaluator import TemplateEvaluator, EvaluationContext, EvaluationStrategy
+from .evaluator import Evaluator, EvaluationContext, EvaluationStrategy
 from .functions import excel, custom
 from .utils import urlquote, decimal_pow
 
@@ -201,7 +201,7 @@ class ConversionsTests(unittest.TestCase):
 class EvaluatorTests(unittest.TestCase):
 
     def setUp(self):
-        self.evaluator = TemplateEvaluator()
+        self.evaluator = Evaluator()
 
     def test_evaluate_template(self):
         output, errors = self.evaluator.evaluate_template("Answer is @(2 + 3)", EvaluationContext())
@@ -505,7 +505,7 @@ class UtilsTests(unittest.TestCase):
 class TemplateTests(unittest.TestCase):
 
     def test_templates(self):
-        evaluator = TemplateEvaluator()
+        evaluator = Evaluator(allowed_top_levels=("channel", "contact", "date", "extra", "flow", "step"))
 
         with codecs.open('test_files/template_tests.json', 'r', 'utf-8') as tests_file:
             tests_json = json_strip_comments(tests_file.read())

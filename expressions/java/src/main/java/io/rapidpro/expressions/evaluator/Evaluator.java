@@ -12,25 +12,35 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
- * The template evaluator
+ * The template and expression evaluator
  */
-public class TemplateEvaluator {
+public class Evaluator {
 
-    protected static Logger logger = LoggerFactory.getLogger(TemplateEvaluator.class);
+    protected static Logger logger = LoggerFactory.getLogger(Evaluator.class);
+
+    private char m_expressionPrefix;
 
     private FunctionManager m_functionManager = new FunctionManager();
 
-    private char m_expressionPrefix;
+    private Set<String> m_allowedTopLevels;
 
     public enum EvaluationStrategy {
         COMPLETE,              // evaluate all expressions completely
         RESOLVE_AVAILABLE      // if expression contains missing context references, just substitute what variables we have
     }
 
-    public TemplateEvaluator(char expressionPrefix, List<Class<?>> functionLibraries) {
+    /**
+     * Creates a new evaluator
+     * @param expressionPrefix the prefix for expressions, e.g. @
+     * @param allowedTopLevels top-level context items allowed outside of parentheses, e.g. contact, flow
+     * @param functionLibraries the function libraries to include
+     */
+    public Evaluator(char expressionPrefix, Set<String> allowedTopLevels, List<Class<?>> functionLibraries) {
         m_expressionPrefix = expressionPrefix;
+        m_allowedTopLevels = allowedTopLevels;
 
         for (Class<?> functionLibrary : functionLibraries) {
             m_functionManager.addLibrary(functionLibrary);
@@ -187,8 +197,17 @@ public class TemplateEvaluator {
      */
     protected String resolveExpressionBlock(String expression, EvaluationContext context, boolean urlEncode, EvaluationStrategy strategy, List<String> errors) {
         try {
-            String cleaned = expression.substring(1); // strip prefix
-            Object evaluated = evaluateExpression(cleaned, context, strategy);
+            String body = expression.substring(1); // strip prefix
+
+            // if expression doesn't start with ( then check it's an allowed top level context reference
+            if (!body.startsWith("(")) {
+                String topLevel = StringUtils.split(body, '.')[0].toLowerCase();
+                if (!m_allowedTopLevels.contains(topLevel)) {
+                    return expression;
+                }
+            }
+
+            Object evaluated = evaluateExpression(body, context, strategy);
 
             String rendered = Conversions.toString(evaluated, context); // render result as string
             return urlEncode ? ExpressionUtils.urlquote(rendered) : rendered;

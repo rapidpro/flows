@@ -10,7 +10,7 @@ Usage
 context = new EvaluationContext()
 context.put_variable("name", "bob jones")
 
-TemplateEvaluator evaluator = TemplateEvaluator()
+evaluator = Evaluator()
 output, errors = evaluator.evaluate_template("Hi @(PROPER(name))", context, False)
 
 assert output == "Hi Bob Jones"

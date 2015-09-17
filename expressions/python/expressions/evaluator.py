@@ -106,10 +106,17 @@ class State(Enum):
     ESCAPED_PREFIX = 5  # a '@' prefix preceded by another '@'
 
 
-class TemplateEvaluator:
+class Evaluator(object):
 
-    def __init__(self, expression_prefix='@', function_manager=DEFAULT_FUNCTION_MANAGER):
+    def __init__(self, expression_prefix='@', allowed_top_levels=(), function_manager=DEFAULT_FUNCTION_MANAGER):
+        """
+        Creates a new evaluator
+        :param expression_prefix: the prefix for expressions, e.g. @
+        :param allowed_top_levels: top-level context items allowed outside of parentheses, e.g. contact, flow
+        :param function_manager: the function manager to use
+        """
         self._expression_prefix = expression_prefix
+        self._allowed_top_levels = set(allowed_top_levels)
         self._function_manager = function_manager
 
     def evaluate_template(self, template, context, url_encode=False, strategy=EvaluationStrategy.COMPLETE):
@@ -211,8 +218,15 @@ class TemplateEvaluator:
         returned as is.
         """
         try:
-            cleaned = expression[1:]  # strip prefix
-            evaluated = self.evaluate_expression(cleaned, context, strategy)
+            body = expression[1:]  # strip prefix
+
+            # if expression doesn't start with ( then check it's an allowed top level context reference
+            if not body.startswith('('):
+                top_level = body.split('.')[0].lower()
+                if top_level not in self._allowed_top_levels:
+                    return expression
+
+            evaluated = self.evaluate_expression(body, context, strategy)
 
             # convert result to string
             result = conversions.to_string(evaluated, context)

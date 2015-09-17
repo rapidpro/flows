@@ -10,7 +10,7 @@ Usage
 EvaluationContext context = new EvaluationContext();
 context.putVariable("name", "bob jones");
 
-TemplateEvaluator evaluator = new EvaluatorBuilder().build();
+Evaluator evaluator = new EvaluatorBuilder().build();
 EvaluatedTemplate output = evaluator.evaluateTemplate("Hi @(PROPER(name))", context, false);
 
 assert output.getOutput() == "Hi Bob Jones";

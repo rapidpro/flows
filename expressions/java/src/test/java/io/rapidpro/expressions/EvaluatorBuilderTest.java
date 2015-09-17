@@ -1,6 +1,6 @@
 package io.rapidpro.expressions;
 
-import io.rapidpro.expressions.evaluator.TemplateEvaluator;
+import io.rapidpro.expressions.evaluator.Evaluator;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
@@ -13,7 +13,7 @@ public class EvaluatorBuilderTest {
 
     @Test
     public void build() {
-        TemplateEvaluator evaluator = new EvaluatorBuilder()
+        Evaluator evaluator = new EvaluatorBuilder()
                 .withExpressionPrefix('=')
                 .addFunctionLibrary(TestLibrary.class)
                 .build();

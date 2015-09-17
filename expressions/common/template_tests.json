@@ -7,10 +7,17 @@
     "errors": []
   },
   {
-    "template": "Twitter handle for Joe @ Nyaruka is @@flow. @@@flow",
-    "context": {"variables": { "flow": "x" }, "timezone": "UTC", "date_style": "day_first"},
+    "template": "My email is rowan@nyaruka.com.",
+    "context": {"variables": {}, "timezone": "UTC", "date_style": "day_first"},
     "url_encode": false,
-    "output": "Twitter handle for Joe @ Nyaruka is @flow. @x",
+    "output": "My email is rowan@nyaruka.com.",
+    "errors": []
+  },
+  {
+    "template": "Twitter handle for Joe@Nyaruka is @@flow. @@@flow",
+    "context": {"variables": {"flow": "x"}, "timezone": "UTC", "date_style": "day_first"},
+    "url_encode": false,
+    "output": "Twitter handle for Joe@Nyaruka is @flow. @x",
     "errors": []
   },
 
@@ -55,15 +62,15 @@
     "errors": []
   },
   {
-    "template": "@(X + Y + Z)",
-    "context": {"variables": {"x": 1.23, "y": 2, "z": "3"}, "timezone": "UTC", "date_style": "day_first"},
+    "template": "@(flow.X + flow.Y + flow.Z)",
+    "context": {"variables": {"flow": {"x": 1.23, "y": 2, "z": "3"}}, "timezone": "UTC", "date_style": "day_first"},
     "url_encode": false,
     "output": "6.23",
     "errors": []
   },
   { /* null values should be handled as empty strings */
-    "template": "Name: @foo",
-    "context": {"variables": {"foo": null}, "timezone": "UTC", "date_style": "day_first"},
+    "template": "Name: @contact",
+    "context": {"variables": {"contact": null}, "timezone": "UTC", "date_style": "day_first"},
     "url_encode": false,
     "output": "Name: ",
     "errors": []
@@ -89,15 +96,15 @@
   /* date arithmetic */
 
   { /* date var +/- integer */
-    "template": "@(dob + 1) @(dob - 3)",
-    "context": {"variables": { "dob": "01-12-2014" }, "timezone": "Africa/Kigali", "date_style": "day_first"},
+    "template": "@(contact.dob + 1) @(contact.dob - 3)",
+    "context": {"variables": {"contact": {"dob": "01-12-2014"}}, "timezone": "Africa/Kigali", "date_style": "day_first"},
     "url_encode": false,
     "output": "02-12-2014 28-11-2014",
     "errors": []
   },
   { /* datetime var +/- integer */
-    "template": "@(joined + 1) @(joined - 3)",
-    "context": {"variables": { "joined": "01-12-2014 09:00" }, "timezone": "Africa/Kigali", "date_style": "day_first"},
+    "template": "@(contact.joined + 1) @(contact.joined - 3)",
+    "context": {"variables": {"contact": {"joined": "01-12-2014 09:00"}}, "timezone": "Africa/Kigali", "date_style": "day_first"},
     "url_encode": false,
     "output": "02-12-2014 09:00 28-11-2014 09:00",
     "errors": []
@@ -110,15 +117,15 @@
     "errors": []
   },
   { /* datetime var +/- time */
-    "template": "@(joined + TIME(2, 30, 0)) @(joined - TIME(2, 30, 0))",
-    "context": {"variables": { "joined": "01-12-2014 09:00" }, "timezone": "Africa/Kigali", "date_style": "day_first"},
+    "template": "@(contact.joined + TIME(2, 30, 0)) @(contact.joined - TIME(2, 30, 0))",
+    "context": {"variables": {"contact": {"joined": "01-12-2014 09:00"}}, "timezone": "Africa/Kigali", "date_style": "day_first"},
     "url_encode": false,
     "output": "01-12-2014 11:30 01-12-2014 06:30",
     "errors": []
   },
   { /* date var +/- time */
-    "template": "@(joined + TIME(2, 30, 0)) @(joined - TIME(2, 30, 0))",
-    "context": {"variables": { "joined": "01-12-2014" }, "timezone": "Africa/Kigali", "date_style": "day_first"},
+    "template": "@(contact.joined + TIME(2, 30, 0)) @(contact.joined - TIME(2, 30, 0))",
+    "context": {"variables": {"contact": {"joined": "01-12-2014"}}, "timezone": "Africa/Kigali", "date_style": "day_first"},
     "url_encode": false,
     "output": "01-12-2014 02:30 30-11-2014 21:30",
     "errors": []
@@ -127,50 +134,50 @@
   /* logical */
 
   {
-    "template": "@(TRUE = TRUE) @(7 = 7) @(3.2 = 3.2) @(3.0 = 3) @(\"3\" = 3) @(\"3.0\" = 3.00) @(\"ab\" = \"ab\") @(d1 = d2)",
-    "context": {"variables": { "d1": "14-08-2015 15:02", "d2": "14-08-2015 15:02" }, "timezone": "UTC", "date_style": "day_first"},
+    "template": "@(TRUE = TRUE) @(7 = 7) @(3.2 = 3.2) @(3.0 = 3) @(\"3\" = 3) @(\"3.0\" = 3.00) @(\"ab\" = \"ab\") @(date.d1 = date.d2)",
+    "context": {"variables": {"date": {"d1": "14-08-2015 15:02", "d2": "14-08-2015 15:02"}}, "timezone": "UTC", "date_style": "day_first"},
     "url_encode": false,
     "output": "TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE",
     "errors": []
   },
   {
-    "template": "@(TRUE = FALSE) @(7 = 8) @(3.2 = 2.6) @(\"3.0\" = \"3.00\") @(\"ab\" = \"cd\") @(d1 = d2)",
-    "context": {"variables": { "d1": "14-08-2015 15:02", "d2": "14-08-2015 15:03" }, "timezone": "UTC", "date_style": "day_first"},
+    "template": "@(TRUE = FALSE) @(7 = 8) @(3.2 = 2.6) @(\"3.0\" = \"3.00\") @(\"ab\" = \"cd\") @(date.d1 = date.d2)",
+    "context": {"variables": {"date": {"d1": "14-08-2015 15:02", "d2": "14-08-2015 15:03"}}, "timezone": "UTC", "date_style": "day_first"},
     "url_encode": false,
     "output": "FALSE FALSE FALSE FALSE FALSE FALSE",
     "errors": []
   },
   {
-    "template": "@(TRUE <> FALSE) @(7 <> 8) @(3.2 <> 2.6) @(\"3.0\" <> \"3.00\") @(\"ab\" <> \"cd\") @(d1 <> d2)",
-    "context": {"variables": { "d1": "14-08-2015 15:02", "d2": "14-08-2015 15:03" }, "timezone": "UTC", "date_style": "day_first"},
+    "template": "@(TRUE <> FALSE) @(7 <> 8) @(3.2 <> 2.6) @(\"3.0\" <> \"3.00\") @(\"ab\" <> \"cd\") @(date.d1 <> date.d2)",
+    "context": {"variables": {"date": {"d1": "14-08-2015 15:02", "d2": "14-08-2015 15:03"}}, "timezone": "UTC", "date_style": "day_first"},
     "url_encode": false,
     "output": "TRUE TRUE TRUE TRUE TRUE TRUE",
     "errors": []
   },
   {
-    "template": "@(TRUE <> TRUE) @(7 <> 7) @(3.2 <> 3.2) @(3.0 <> 3) @(\"3\" <> 3) @(\"3.0\" <> 3.00) @(\"ab\" <> \"AB\") @(d1 <> d2)",
-    "context": {"variables": { "d1": "14-08-2015 15:02", "d2": "14-08-2015 15:02" }, "timezone": "UTC", "date_style": "day_first"},
+    "template": "@(TRUE <> TRUE) @(7 <> 7) @(3.2 <> 3.2) @(3.0 <> 3) @(\"3\" <> 3) @(\"3.0\" <> 3.00) @(\"ab\" <> \"AB\") @(date.d1 <> date.d2)",
+    "context": {"variables": {"date": {"d1": "14-08-2015 15:02", "d2": "14-08-2015 15:02"}}, "timezone": "UTC", "date_style": "day_first"},
     "url_encode": false,
     "output": "FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE",
     "errors": []
   },
   {
-    "template": "@(FALSE <= TRUE) @(TRUE <= TRUE) @(7 <= 7) @(7 <= 8) @(3.2 <= 3.2) @(3.0 <= 3) @(\"3\" <= 3) @(\"3.0\" <= 3.00) @(\"ab\" <= \"ab\") @(d1 <= d2)",
-    "context": {"variables": { "d1": "14-08-2015 15:02", "d2": "14-08-2015 15:03" }, "timezone": "UTC", "date_style": "day_first"},
+    "template": "@(FALSE <= TRUE) @(TRUE <= TRUE) @(7 <= 7) @(7 <= 8) @(3.2 <= 3.2) @(3.0 <= 3) @(\"3\" <= 3) @(\"3.0\" <= 3.00) @(\"ab\" <= \"ab\") @(date.d1 <= date.d2)",
+    "context": {"variables": {"date": {"d1": "14-08-2015 15:02", "d2": "14-08-2015 15:03"}}, "timezone": "UTC", "date_style": "day_first"},
     "url_encode": false,
     "output": "TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE",
     "errors": []
   },
   {
-    "template": "@(TRUE <= FALSE) @(8 <= 7) @(3.3 <= 3.2) @(3.2 <= 3) @(\"4\" <= 3) @(\"3.2\" <= 3.00) @(\"ac\" <= \"ab\") @(d2 <= d1)",
-    "context": {"variables": { "d1": "14-08-2015 15:02", "d2": "14-08-2015 15:03" }, "timezone": "UTC", "date_style": "day_first"},
+    "template": "@(TRUE <= FALSE) @(8 <= 7) @(3.3 <= 3.2) @(3.2 <= 3) @(\"4\" <= 3) @(\"3.2\" <= 3.00) @(\"ac\" <= \"ab\") @(date.d2 <= date.d1)",
+    "context": {"variables": {"date": {"d1": "14-08-2015 15:02", "d2": "14-08-2015 15:03"}}, "timezone": "UTC", "date_style": "day_first"},
     "url_encode": false,
     "output": "FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE",
     "errors": []
   },
   {
-    "template": "@(FALSE < TRUE) @(7 < 8) @(2.8 < 3) @(\"2.0\" < 3.00) @(\"ab\" < \"ac\") @(d1 < d2)",
-    "context": {"variables": { "d1": "14-08-2015 15:02", "d2": "14-08-2015 15:03" }, "timezone": "UTC", "date_style": "day_first"},
+    "template": "@(FALSE < TRUE) @(7 < 8) @(2.8 < 3) @(\"2.0\" < 3.00) @(\"ab\" < \"ac\") @(date.d1 < date.d2)",
+    "context": {"variables": {"date": {"d1": "14-08-2015 15:02", "d2": "14-08-2015 15:03"}}, "timezone": "UTC", "date_style": "day_first"},
     "url_encode": false,
     "output": "TRUE TRUE TRUE TRUE TRUE TRUE",
     "errors": []
@@ -536,8 +543,8 @@
     "errors": []
   },
   {
-    "template": "@(WEEKDAY(d1)) @(WEEKDAY(d2))",
-    "context": {"variables": { "d1": "15-08-2015", "d2": "16-08-2015 13:45" }, "timezone": "UTC", "date_style": "day_first"},
+    "template": "@(WEEKDAY(date.d1)) @(WEEKDAY(date.d2))",
+    "context": {"variables": {"date": {"d1": "15-08-2015", "d2": "16-08-2015 13:45"}}, "timezone": "UTC", "date_style": "day_first"},
     "url_encode": false,
     "output": "7 1",
     "errors": []
@@ -589,13 +596,13 @@
 
   {
     "template": "http://example.com/do.php?contact=@contact",
-    "context": {"variables": { "contact": { "*": "Joe Flow" }}, "timezone": "UTC", "date_style": "day_first"},
+    "context": {"variables": {"contact": { "*": "Joe Flow" }}, "timezone": "UTC", "date_style": "day_first"},
     "url_encode": true,
     "output": "http://example.com/do.php?contact=Joe%20Flow",
     "errors": []
   },
 
-  /* syntax errors */
+  /* invalid syntax */
 
   { /* unbalanced parenthesis */
     "template": "@(5 + (1 + )",
@@ -611,16 +618,16 @@
     "output": "@(\")",
     "errors": []
   },
-
-  /* evaluation errors */
-
   { /* unsupported old single function syntax */
     "template": "@SUM(1, 2)",
     "context": {"variables": {}, "timezone": "UTC", "date_style": "day_first"},
     "url_encode": false,
     "output": "@SUM(1, 2)",
-    "errors": ["No item called SUM in context"]
+    "errors": []
   },
+
+  /* evaluation errors */
+
   {
     "template": "@(LEN())",
     "context": {"variables": {}, "timezone": "UTC", "date_style": "day_first"},
@@ -650,11 +657,11 @@
     "errors": ["Expression is invalid"]
   },
   {
-    "template": "@X",
+    "template": "@contact.X",
     "context": {"variables": {}, "timezone": "UTC", "date_style": "day_first"},
     "url_encode": false,
-    "output": "@X",
-    "errors": ["No item called X in context"]
+    "output": "@contact.X",
+    "errors": ["No item called contact.X in context"]
   },
   {
     "template": "@(2/ 0)",

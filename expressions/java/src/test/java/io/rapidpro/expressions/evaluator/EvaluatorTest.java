@@ -18,11 +18,11 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests for {@link TemplateEvaluator}
+ * Tests for {@link Evaluator}
  */
-public class TemplateEvaluatorTest {
+public class EvaluatorTest {
 
-    private TemplateEvaluator m_evaluator = new EvaluatorBuilder().build();
+    private Evaluator m_evaluator = new EvaluatorBuilder().build();
 
     @Test
     public void evaluateTemplate() {
@@ -94,13 +94,13 @@ public class TemplateEvaluatorTest {
 
         EvaluationContext context = new EvaluationContext(variables, ZoneId.of("UTC"), DateStyle.DAY_FIRST);
 
-        EvaluatedTemplate evaluated = m_evaluator.evaluateTemplate("@(1 + 2)", context, false, TemplateEvaluator.EvaluationStrategy.RESOLVE_AVAILABLE);
+        EvaluatedTemplate evaluated = m_evaluator.evaluateTemplate("@(1 + 2)", context, false, Evaluator.EvaluationStrategy.RESOLVE_AVAILABLE);
         assertThat(evaluated.getOutput(), is("3"));
 
-        evaluated = m_evaluator.evaluateTemplate("Hi @contact.name", context, false, TemplateEvaluator.EvaluationStrategy.RESOLVE_AVAILABLE);
+        evaluated = m_evaluator.evaluateTemplate("Hi @contact.name", context, false, Evaluator.EvaluationStrategy.RESOLVE_AVAILABLE);
         assertThat(evaluated.getOutput(), is("Hi @contact.name"));
 
-        evaluated = m_evaluator.evaluateTemplate("@(foo + contact.name + bar)", context, false, TemplateEvaluator.EvaluationStrategy.RESOLVE_AVAILABLE);
+        evaluated = m_evaluator.evaluateTemplate("@(foo + contact.name + bar)", context, false, Evaluator.EvaluationStrategy.RESOLVE_AVAILABLE);
         assertThat(evaluated.getOutput(), is("@(5+contact.name+\"x\")"));
     }
 
