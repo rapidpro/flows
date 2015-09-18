@@ -60,7 +60,7 @@ public class FunctionManager {
         // find function with given name
         Method func = getFunction(name);
         if (func == null) {
-            throw new EvaluationError("No such function " + name);
+            throw new EvaluationError("Undefined function: " + name);
         }
 
         List<Object> parameters = new ArrayList<>();

@@ -41,7 +41,7 @@ class FunctionManager(object):
         # find function with given name
         func = self.get_function(name)
         if func is None:
-            raise EvaluationError("No such function " + name)
+            raise EvaluationError("Undefined function: %s" % name)
 
         args, varargs, keywords, defaults = inspect.getargspec(func)
 
