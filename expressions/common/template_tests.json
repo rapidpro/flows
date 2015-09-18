@@ -668,7 +668,7 @@
     "context": {"variables": {}, "timezone": "UTC", "date_style": "day_first"},
     "url_encode": false,
     "output": "@contact.X",
-    "errors": ["No item called contact.X in context"]
+    "errors": ["Undefined variable: contact.X"]
   },
   {
     "template": "@(2/ 0)",

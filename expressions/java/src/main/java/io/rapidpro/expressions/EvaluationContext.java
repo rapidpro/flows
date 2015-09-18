@@ -96,7 +96,7 @@ public class EvaluationContext {
         }
 
         if (!container.containsKey(item)) {
-            throw new EvaluationError("No item called " + originalPath + " in context");
+            throw new EvaluationError("Undefined variable: " + originalPath);
         }
 
         Object value = container.get(item);

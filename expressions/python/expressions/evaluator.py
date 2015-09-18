@@ -66,7 +66,7 @@ class EvaluationContext(object):
             remaining_path = None
 
         if item not in container:
-            raise EvaluationError('No item called %s in context' % original_path)
+            raise EvaluationError("Undefined variable: %s" % original_path)
 
         value = container[item]
 

@@ -119,7 +119,7 @@ public class EvaluatorTest {
         assertErrorMessage("1.1.0", context, "Expression is invalid");
 
         // evaluation errors
-        assertErrorMessage("X", context, "No item called X in context");
+        assertErrorMessage("X", context, "Undefined variable: X");
         assertErrorMessage("2 / 0", context, "Division by zero");
         assertErrorMessage("0 / 0", context, "Division by zero");
     }
