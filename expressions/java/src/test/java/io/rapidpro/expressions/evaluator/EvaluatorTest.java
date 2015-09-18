@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -29,13 +30,16 @@ public class EvaluatorTest {
         EvaluatedTemplate evaluated = m_evaluator.evaluateTemplate("Answer is @(2 + 3)", new EvaluationContext());
         assertThat(evaluated.getOutput(), is("Answer is 5"));
         assertThat(evaluated.getErrors(), empty());
-    }
 
-    @Test
-    public void evaluateTemplate_unbalancedExpression() {
-        EvaluatedTemplate evaluated = m_evaluator.evaluateTemplate("Answer is @(2 + 3", new EvaluationContext());
+        // with unbalanced expression
+        evaluated = m_evaluator.evaluateTemplate("Answer is @(2 + 3", new EvaluationContext());
         assertThat(evaluated.getOutput(), is("Answer is @(2 + 3"));
         assertThat(evaluated.getErrors(), empty());
+
+        // with invalid character
+        evaluated = m_evaluator.evaluateTemplate("@('x')", new EvaluationContext());
+        assertThat(evaluated.getOutput(), is("@('x')"));
+        assertThat(evaluated.getErrors(), contains("Expression error at: '"));
     }
 
     @Test
@@ -111,7 +115,7 @@ public class EvaluatorTest {
 
         // parser errors
         assertErrorMessage("0 /", context, "Expression is invalid");
-        assertErrorMessage("\"", context, "Expression is invalid");
+        assertErrorMessage("\"", context, "Expression error at: \"");
         assertErrorMessage("1.1.0", context, "Expression is invalid");
 
         // evaluation errors

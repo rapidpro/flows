@@ -255,7 +255,19 @@ public class Evaluator {
             }
         }
         catch (ParseCancellationException ex) {
-            throw new EvaluationError("Expression is invalid", ex);
+            String message = null;
+            if (ex.getCause() instanceof NoViableAltException) {
+                Token token = ((NoViableAltException) ex.getCause()).getOffendingToken();
+                if (token != null && token.getType() != ExcellentParser.EOF) {
+                    message = "Expression error at: " + token.getText();
+                }
+            }
+
+            if (message == null) {
+                message = "Expression is invalid";
+            }
+
+            throw new EvaluationError(message, ex);
         }
 
         if (strategy == EvaluationStrategy.RESOLVE_AVAILABLE) {

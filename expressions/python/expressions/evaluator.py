@@ -5,7 +5,7 @@ import logging
 import pytz
 
 from antlr4 import InputStream, CommonTokenStream, ParseTreeVisitor, Token
-from antlr4.error.Errors import ParseCancellationException
+from antlr4.error.Errors import ParseCancellationException, NoViableAltException
 from antlr4.error.ErrorStrategy import BailErrorStrategy
 from decimal import Decimal
 from enum import Enum
@@ -263,7 +263,16 @@ class Evaluator(object):
             if logger.isEnabledFor(logging.DEBUG):
                 logger.debug("Expression '%s' parsed as %s" % (expression, tree.toStringTree()))
         except ParseCancellationException, ex:
-            raise EvaluationError("Expression is invalid", ex)
+            message = None
+            if ex.args and isinstance(ex.args[0], NoViableAltException):
+                token = ex.args[0].offendingToken
+                if token is not None and token.type != ExcellentParser.EOF:
+                    message = "Expression error at: %s" % token.text
+
+            if message is None:
+                message = "Expression is invalid"
+
+            raise EvaluationError(message, ex)
 
         if strategy == EvaluationStrategy.RESOLVE_AVAILABLE:
             resolved = self._resolve_available(tokens, context)

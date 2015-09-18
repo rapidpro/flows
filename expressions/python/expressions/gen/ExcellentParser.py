@@ -7,7 +7,7 @@ from io import StringIO
 def serializedATN():
     with StringIO() as buf:
         buf.write(u"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3")
-        buf.write(u"\27D\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\3\2\3\2\3\2\3\3")
+        buf.write(u"\30D\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\3\2\3\2\3\2\3\3")
         buf.write(u"\3\3\3\3\3\3\3\3\3\3\5\3\24\n\3\3\3\3\3\3\3\3\3\3\3\3")
         buf.write(u"\3\3\3\3\3\3\3\3\3\3\3\5\3!\n\3\3\3\3\3\3\3\3\3\3\3\3")
         buf.write(u"\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\7")
@@ -53,7 +53,7 @@ class ExcellentParser ( Parser ):
                       u"MINUS", u"TIMES", u"DIVIDE", u"EXPONENT", u"EQ", 
                       u"NEQ", u"LTE", u"LT", u"GTE", u"GT", u"AMPERSAND", 
                       u"DECIMAL", u"STRING", u"TRUE", u"FALSE", u"NAME", 
-                      u"WS" ]
+                      u"WS", u"ERROR" ]
 
     RULE_parse = 0
     RULE_expression = 1
@@ -84,6 +84,7 @@ class ExcellentParser ( Parser ):
     FALSE=19
     NAME=20
     WS=21
+    ERROR=22
 
     def __init__(self, input):
         super(ExcellentParser, self).__init__(input)

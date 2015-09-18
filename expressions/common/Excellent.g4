@@ -30,6 +30,8 @@ NAME       : [a-zA-Z][a-zA-Z0-9_\.]*;    // variable names, e.g. contact.name or
 
 WS         : [ \t\n\r]+ -> skip;  // ignore whitespace
 
+ERROR      : . ;
+
 parse      : expression EOF;
 
 expression : fnname LPAREN parameters? RPAREN             # functionCall

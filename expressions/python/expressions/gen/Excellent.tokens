@@ -19,6 +19,7 @@ TRUE=18
 FALSE=19
 NAME=20
 WS=21
+ERROR=22
 ','=1
 '('=2
 ')'=3

@@ -213,6 +213,11 @@ class EvaluatorTests(unittest.TestCase):
         self.assertEqual(output, "Answer is @(2 + 3")
         self.assertEqual(errors, [])
 
+        # with illegal char
+        output, errors = self.evaluator.evaluate_template("@('x')", EvaluationContext())
+        self.assertEqual(output, "@('x')")
+        self.assertEqual(errors, ["Expression error at: '"])
+
     def test_evaluate_template_with_resolve_available_strategy(self):
         context = EvaluationContext()
         context.put_variable("foo", 5)
@@ -272,7 +277,7 @@ class EvaluatorTests(unittest.TestCase):
         self.assertEqual(self.evaluator.evaluate_expression("FIXED(1234.5678)", context), "1,234.57")
         self.assertEqual(self.evaluator.evaluate_expression("FIXED(1234.5678, 1)", context), "1,234.6")
         self.assertEqual(self.evaluator.evaluate_expression("FIXED(1234.5678, 1, True)", context), "1234.6")
-        
+
         
 class FunctionsTests(unittest.TestCase):
     
