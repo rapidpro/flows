@@ -4,7 +4,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 
     <groupId>io.rapidpro</groupId>
     <artifactId>expressions</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.3</version>
 
     <packaging>jar</packaging>
     <name>RapidPro Expressions</name>
