@@ -1,0 +1,43 @@
+<html>
+	<head>
+		<title>Expression testing</title>
+		<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+		<script type="text/javascript" src="excellent.js"></script>
+		<script type="text/javascript">
+			$(function () {
+				$('#message').on('change keyup paste', function() {
+					var text = $(this).val();
+					var parser = new excellent.Parser('@', ['channel', 'contact', 'date', 'extra', 'flow', 'step']);
+					
+					var expressions = parser.findExpressions(text);
+					var output = '';
+					for (var e = 0; e < expressions.length; e++) {
+						var expression = expressions[e];
+						output += expression.start + ' &rarr; ' + expression.end + ': ' + expression.text + '<br/>' 
+					}
+					$('#output').html(output);
+				});
+
+				$('#message').trigger('change');
+			});
+		</script>
+		<style type="text/css">
+			#message { width: 100%; height: 200px; }
+			#output { background-color: #CCC; padding: 0.5em; }
+		</style>
+	</head>
+	<body>
+		<textarea id="message">Expressions: 
+* @contact.name
+* @(ABS(contact.age) + 1)
+* @(LEN("@)"))
+
+Not expressions:
+* @@flow.response_1.text (escaped)
+* @nyaruka or code@nyaruka.com (disallowed top-levels)
+
+Incomplete expression:
+* @(UPPER(</textarea>
+		<div id="output"></div>
+	</body>
+</html>
