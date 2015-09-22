@@ -10,20 +10,27 @@
 					var parser = new excellent.Parser('@', ['channel', 'contact', 'date', 'extra', 'flow', 'step']);
 					
 					var expressions = parser.findExpressions(text);
-					var output = '';
+					
+					var tbody = $('#output').find('tbody');
+					tbody.empty()
+
 					for (var e = 0; e < expressions.length; e++) {
 						var expression = expressions[e];
-						output += expression.start + ' &rarr; ' + expression.end + ': ' + expression.text + '<br/>' 
+						var complete = expression.complete ? "true" : "false"
+						var output = '<tr><td>' + expression.start + '</td><td>' + expression.end + '</td><td>' + expression.text + '</td><td>' + complete + '</td></tr>';
+						tbody.append(output);
 					}
-					$('#output').html(output);
+					
 				});
 
 				$('#message').trigger('change');
 			});
 		</script>
 		<style type="text/css">
+			* { font-family: Arial, Helvetica, sans-serif }
 			#message { width: 100%; height: 200px; }
-			#output { background-color: #CCC; padding: 0.5em; }
+			#output { background-color: #CCC; width: 100% }
+			#output th { text-align: left; }
 		</style>
 	</head>
 	<body>
@@ -38,6 +45,16 @@ Not expressions:
 
 Incomplete expression:
 * @(UPPER(</textarea>
-		<div id="output"></div>
+		<table id="output">
+			<thead>
+				<tr>
+					<th>Start</th>
+					<th>End</th>
+					<th>Text</th>
+					<th>Complete</th>
+				</tr>
+			</thead>
+			<tbody></tbody>
+		</table>
 	</body>
 </html>
