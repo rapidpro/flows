@@ -15,6 +15,26 @@
         this.allowedTopLevels = allowedTopLevels;
     };
 
+    excellent.Parser.prototype.findExpressionContext = function(text) {
+        expressions = this.findExpressions(text);
+
+        if (expressions.length == 0) {
+            return null;
+        }
+
+        var lastExpression = expressions[expressions.length - 1];
+
+        if (lastExpression.end < text.length || lastExpression.complete) {
+            return null;
+        }
+
+        return lastExpression.text.substring(1);  // return without prefix
+    };
+
+    excellent.Parser.prototype.findNameContext = function(expression) {
+        // TODO
+    };
+
     excellent.Parser.prototype.findExpressions = function(text) {
         var expressions = [];
         var state = STATE_BODY;
@@ -81,28 +101,22 @@
             //  2. next char is not a word character or period
             //  3. next char is a period, but it's not followed by a word character
             if (state == STATE_IDENTIFIER) {
-                if (nextCh == 0  || (!isWordChar(nextCh) && nextCh != '.') || (nextCh == '.' && !isWordChar(nextNextCh))) {
+                if ((!isWordChar(nextCh) && nextCh !== '.') || (nextCh === '.' && !isWordChar(nextNextCh))) {
                     currentExpression.end = pos + 1;
                 }
             }
 
-            if (currentExpression != null && currentExpression.end != null) {
-                if (isValidExpression(currentExpression.text, this.allowedTopLevels)) {
-                	currentExpression.complete = true;
+            if (currentExpression != null && (currentExpression.end != null || nextCh === 0)) {
+                var allowIncomplete = (nextCh === 0); // if we're at the end of the input, allow incomplete expressions
+
+                if (isValidExpression(currentExpression.text, this.allowedTopLevels, allowIncomplete)) {
+                	currentExpression.complete = (currentExpression.text[1] === '(') && (parenthesesLevel == 0);
+                    currentExpression.end = pos + 1;
                     expressions.push(currentExpression);
                 }
 
                 currentExpression = null;
                 state = STATE_BODY;
-            }
-        }
-
-        // if last expression didn't terminate - still include it
-        if (currentExpression != null) {
-            if (isValidExpression(currentExpression.text, this.allowedTopLevels)) {
-            	currentExpression.complete = false;
-                currentExpression.end = pos + 1
-                expressions.push(currentExpression);
             }
         }
 
@@ -112,17 +126,33 @@
     /**
      * Checks the parsed expression to determine if it's valid
      */
-    function isValidExpression(expression, allowedTopLevels) {
+    function isValidExpression(expression, allowedTopLevels, allowIncomplete) {
         var body = expression.substring(1); // strip prefix
 
-        // if expression doesn't start with ( then check it's an allowed top level context reference
-        if (body[0] != '(') {
+        if (body[0] === '(') {
+            return true;
+        } else {
+            // if expression doesn't start with ( then check it's an allowed top level context reference
             var topLevel = body.split('.')[0].toLowerCase();
-            if (allowedTopLevels.indexOf(topLevel) < 0) {
-                return false;
+
+            if (allowIncomplete) {
+                for (var n = 0; n < allowedTopLevels.length; n++) {
+                    if (startsWith(allowedTopLevels[n], topLevel)) {
+                        return true;
+                    }
+                }
+            } else {
+                return allowedTopLevels.indexOf(topLevel) >= 0;
             }
+            return false;
         }
-        return true;
+    }
+
+    /**
+     * Determines whether the given string starts with the given text
+     */
+    function startsWith(str, start) {
+        return str.indexOf(start, 0) === 0;
     }
 
     /**
