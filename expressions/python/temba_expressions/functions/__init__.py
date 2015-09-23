@@ -2,8 +2,6 @@ from __future__ import absolute_import, unicode_literals
 
 import inspect
 
-from expressions import EvaluationError, conversions
-
 
 class FunctionManager(object):
 
@@ -38,6 +36,8 @@ class FunctionManager(object):
         :param arguments: the arguments to be passed to the function
         :return: the function return value
         """
+        from temba_expressions import EvaluationError, conversions
+
         # find function with given name
         func = self.get_function(name)
         if func is None:

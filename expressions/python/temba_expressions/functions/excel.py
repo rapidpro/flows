@@ -5,11 +5,11 @@ import random
 from datetime import date as _date, time as _time, datetime as _datetime
 from dateutil.relativedelta import relativedelta
 from decimal import Decimal, ROUND_FLOOR
-from expressions import conversions, EvaluationError
-from expressions.utils import decimal_pow
+from temba_expressions import conversions, EvaluationError
+from temba_expressions.utils import decimal_pow
 
 
-#################################### Text ####################################
+# =============================== Text ===============================
 
 def char(ctx, number):
     """
@@ -156,7 +156,7 @@ def upper(ctx, text):
     return conversions.to_string(text, ctx).upper()
 
 
-#################################### Date and time ####################################
+# =============================== Date and time ===============================
 
 
 def date(ctx, year, month, day):
@@ -265,7 +265,7 @@ def year(ctx, date):
     return conversions.to_date_or_datetime(date, ctx).year
 
 
-#################################### Math ####################################
+# =============================== Math ===============================
 
 
 def _abs(ctx, number):
@@ -348,7 +348,7 @@ def _sum(ctx, *args):
     return result
 
 
-#################################### Logical ####################################
+# =============================== Logical ===============================
 
 def _and(ctx, *args):
     """

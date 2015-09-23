@@ -3,7 +3,7 @@ from __future__ import absolute_import, unicode_literals
 import operator
 import regex
 
-from expressions import conversions
+from temba_expressions import conversions
 
 
 def field(ctx, text, index, delimiter=' '):
