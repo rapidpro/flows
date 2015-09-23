@@ -9,8 +9,8 @@ import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.runner.Runner;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.sound.midi.SysexMessage;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -60,9 +60,7 @@ public class SaveToContactAction extends Action {
                 value = StringUtils.substring(value, 0, 128);
                 label = "Phone Number";
 
-                List<ContactUrn.Scheme> schemes = new ArrayList<>();
-                schemes.add(ContactUrn.Scheme.TEL);
-                ContactUrn urn = run.getContact().getUrn(schemes);
+                ContactUrn urn = run.getContact().getUrn(Collections.singletonList(ContactUrn.Scheme.TEL));
 
                 List<ContactUrn> urns = run.getContact().getUrns();
                 if (urn != null) {
