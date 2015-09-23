@@ -3,10 +3,15 @@ package io.rapidpro.flows.definition.actions.contact;
 import com.google.gson.annotations.SerializedName;
 import io.rapidpro.expressions.EvaluatedTemplate;
 import io.rapidpro.flows.definition.actions.Action;
+import io.rapidpro.flows.runner.ContactUrn;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.runner.Runner;
 import org.apache.commons.lang3.StringUtils;
+
+import javax.sound.midi.SysexMessage;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Saves an evaluated expression to the contact as a field or their name
@@ -50,6 +55,21 @@ public class SaveToContactAction extends Action {
                 value = StringUtils.substring(value, 0, 128);
                 label = "First Name";
                 run.getContact().setFirstName(value);
+            }
+            else if (m_field.equals("tel_e164")) {
+                value = StringUtils.substring(value, 0, 128);
+                label = "Phone Number";
+
+                List<ContactUrn.Scheme> schemes = new ArrayList<>();
+                schemes.add(ContactUrn.Scheme.TEL);
+                ContactUrn urn = run.getContact().getUrn(schemes);
+
+                List<ContactUrn> urns = run.getContact().getUrns();
+                if (urn != null) {
+                    urns.remove(urn);
+                }
+
+                urns.add(ContactUrn.fromString("tel:" + value));
             }
             else {
                 // TODO does the 255 char limit still stand?
