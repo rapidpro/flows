@@ -88,3 +88,10 @@ class FunctionManager(object):
                 pretty_args.append(pretty)
 
             raise EvaluationError("Error calling function %s with arguments %s" % (name, ', '.join(pretty_args)), e)
+
+    def build_listing(self):
+        """
+        Builds a listing of all functions sorted A-Z, with their names and descriptions
+        """
+        listing = [{'name': name.upper(), 'description': f.__doc__.strip()} for name, f in self._functions.iteritems()]
+        return sorted(listing, key=lambda l: l['name'])

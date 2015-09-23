@@ -12,7 +12,7 @@ from decimal import Decimal
 from time import clock
 from . import conversions, EvaluationError
 from .dates import DateParser, DateStyle
-from .evaluator import Evaluator, EvaluationContext, EvaluationStrategy
+from .evaluator import Evaluator, EvaluationContext, EvaluationStrategy, DEFAULT_FUNCTION_MANAGER
 from .functions import excel, custom
 from .utils import urlquote, decimal_pow
 
@@ -280,6 +280,10 @@ class EvaluatorTests(unittest.TestCase):
 
         
 class FunctionsTests(unittest.TestCase):
+
+    def test_build_listing(self):
+        listing = DEFAULT_FUNCTION_MANAGER.build_listing()
+        self.assertEqual(listing[0], {'name': 'ABS', 'description': "Returns the absolute value of a number"})
     
     def test_excel(self):
         variables = {'date': {'now': '01-02-2014 03:55', 'today': '01-02-2014'}}
