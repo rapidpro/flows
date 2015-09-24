@@ -10,24 +10,27 @@
 					var text = $(this).val();
 					var parser = new excellent.Parser('@', ['channel', 'contact', 'date', 'extra', 'flow', 'step']);
 					
-					var expressions = parser.findExpressions(text);
+					var expressions = parser.expressions(text);
 					
 					var tbody = $('#expressions');
 					tbody.empty()
 
 					for (var e = 0; e < expressions.length; e++) {
 						var expression = expressions[e];
-						var complete = expression.complete ? "true" : "false"
-						var output = '<tr><td>' + expression.start + '</td><td>' + expression.end + '</td><td>' + expression.text + '</td><td>' + complete + '</td></tr>';
+						var closed = expression.closed ? "true" : "false"
+						var output = '<tr><td>' + expression.start + '</td><td>' + expression.end + '</td><td>' + expression.text + '</td><td>' + closed + '</td></tr>';
 						tbody.append(output);
 					}
 
 					// text up to the caret
 					var beforeCaret = $(this).val().substring(0, $(this).caret());
 
-					var currentExpression = parser.findExpressionContext(beforeCaret);
+					var currentExpression = parser.expressionContext(beforeCaret);
 					
-					$('#current-expression').text(currentExpression);
+					var currentIdentifier = currentExpression != null ? parser.autoCompleteContext(currentExpression) : null;
+
+					$('#expression-context').text(currentExpression);
+					$('#autocomplete-context').text(currentIdentifier);
 				});
 
 				$('#message').trigger('change');
@@ -54,20 +57,24 @@ Not expressions:
 Incomplete expression:
 * @(UPPER(</textarea>
 		<div id="output">
-			<h3>findExpressions</h3>
+			<h3>expressions</h3>
 			<table>
 				<thead>
 					<tr>
 						<th>Start</th>
 						<th>End</th>
 						<th>Text</th>
-						<th>Complete</th>
+						<th>Closed</th>
 					</tr>
 				</thead>
 				<tbody id="expressions"></tbody>
 			</table>
-			<h3>findExpressionContext</h3>
-			<span id="current-expression"></span>
+
+			<h3>expressionContext</h3>
+			<span id="expression-context"></span>
+
+			<h3>autoCompleteContext</h3>
+			<span id="autocomplete-context"></span>
 		</div>
 	</body>
 </html>
