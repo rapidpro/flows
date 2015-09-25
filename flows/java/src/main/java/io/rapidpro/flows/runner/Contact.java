@@ -31,6 +31,9 @@ public class Contact {
     protected String m_language;
 
     public Contact() {
+        m_urns = new ArrayList<>();
+        m_groups = new HashSet<>();
+        m_fields = new HashMap<>();
     }
 
     public Contact(String uuid, String name, ContactUrn urn, String language) {
@@ -56,6 +59,10 @@ public class Contact {
 
     public String getUuid() {
         return m_uuid;
+    }
+
+    public void setUuid(String uuid) {
+        m_uuid = uuid;
     }
 
     public String getName() {
