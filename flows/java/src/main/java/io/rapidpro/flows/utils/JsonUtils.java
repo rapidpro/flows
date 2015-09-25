@@ -38,7 +38,7 @@ public class JsonUtils {
     public static GsonBuilder getGsonBuilder() {
         return s_gsonBuilder;
     }
-    
+
     public static Gson getGson() {
         return s_gson;
     }

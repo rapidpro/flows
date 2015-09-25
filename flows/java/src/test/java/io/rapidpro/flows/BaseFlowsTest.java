@@ -43,10 +43,10 @@ public abstract class BaseFlowsTest {
         m_contact = new Contact(
                 "1234-1234",
                 "Joe Flow",
-                Arrays.asList(
+                new ArrayList<>(Arrays.asList(
                         ContactUrn.fromString("tel:+260964153686"),
                         ContactUrn.fromString("twitter:realJoeFlow")
-                ),
+                )),
                 new LinkedHashSet<>(Arrays.asList("Testers", "Developers")),
                 contactFields,
                 "eng"
