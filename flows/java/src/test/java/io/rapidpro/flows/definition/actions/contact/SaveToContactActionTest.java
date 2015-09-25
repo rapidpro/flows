@@ -2,9 +2,13 @@ package io.rapidpro.flows.definition.actions.contact;
 
 import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.definition.actions.BaseActionTest;
+import io.rapidpro.flows.runner.ContactUrn;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.utils.JsonUtils;
 import org.junit.Test;
+
+import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -44,5 +48,10 @@ public class SaveToContactActionTest extends BaseActionTest {
 
         assertThat(result.getActionPerformed(), is(nullValue()));
         assertThat(m_run.getContact().getFields().get("age"), is("64"));
+
+        // try one that updates the phone number
+        action = new SaveToContactAction("tel_e164", "Phone Number", "@step.value");
+        action.execute(m_runner, m_run, Input.of("+250788382382"));
+        assertThat(m_run.getContact().getUrn(Collections.singletonList(ContactUrn.Scheme.TEL)).getPath(), is("+250788382382"));
     }
 }

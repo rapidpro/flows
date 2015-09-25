@@ -37,7 +37,8 @@ public class Contact {
     }
 
     public Contact(String uuid, String name, ContactUrn urn, String language) {
-        this(uuid, name, Collections.singletonList(urn), new HashSet<String>(), new HashMap<String, String>(), language);
+        this(uuid, name, new ArrayList<>(Collections.singletonList(urn)),
+                new HashSet<String>(), new HashMap<String, String>(), language);
     }
 
     public Contact(String uuid, String name, List<ContactUrn> urns, Set<String> groups, Map<String, String> fields, String language) {
