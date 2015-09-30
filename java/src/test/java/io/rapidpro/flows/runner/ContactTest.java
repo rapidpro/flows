@@ -16,24 +16,6 @@ import static org.junit.Assert.assertThat;
 public class ContactTest extends BaseFlowsTest {
 
     @Test
-    public void buildContext() {
-        Map<String, String> context =  getContact().buildContext(getOrg());
-        assertThat(context, hasEntry("*", "Joe Flow"));
-        assertThat(context, hasEntry("name", "Joe Flow"));
-        assertThat(context, hasEntry("first_name", "Joe"));
-        assertThat(context, hasEntry("tel_e164", "+260964153686"));
-        assertThat(context, hasEntry("groups", "Testers,Developers"));
-        assertThat(context, hasEntry("uuid", "1234-1234"));
-        assertThat(context, hasEntry("language", "eng"));
-
-        assertThat(context, hasEntry("tel", "096 4153686"));
-        assertThat(context, hasEntry("twitter", "realJoeFlow"));
-
-        assertThat(context, hasEntry("gender", "M"));
-        assertThat(context, hasEntry("age", "34"));
-    }
-
-    @Test
     public void toAndFromJson() {
         Gson gson = new GsonBuilder().create();
         String json = gson.toJson(getContact());
@@ -75,5 +57,39 @@ public class ContactTest extends BaseFlowsTest {
         m_contact.m_name = null;
         m_contact.setFirstName("Bob");
         assertThat(m_contact.m_name, is("Bob"));
+    }
+
+    @Test
+    public void buildContext() {
+        Map<String, String> context =  getContact().buildContext(getOrg());
+        assertThat(context, hasEntry("*", "Joe Flow"));
+        assertThat(context, hasEntry("name", "Joe Flow"));
+        assertThat(context, hasEntry("first_name", "Joe"));
+        assertThat(context, hasEntry("tel_e164", "+260964153686"));
+        assertThat(context, hasEntry("groups", "Testers,Developers"));
+        assertThat(context, hasEntry("uuid", "1234-1234"));
+        assertThat(context, hasEntry("language", "eng"));
+
+        assertThat(context, hasEntry("tel", "096 4153686"));
+        assertThat(context, hasEntry("twitter", "realJoeFlow"));
+
+        assertThat(context, hasEntry("gender", "M"));
+        assertThat(context, hasEntry("age", "34"));
+
+        m_org.m_anon = true;
+        context =  getContact().buildContext(getOrg());
+        assertThat(context, hasEntry("*", "Joe Flow"));
+        assertThat(context, hasEntry("name", "Joe Flow"));
+        assertThat(context, hasEntry("first_name", "Joe"));
+        assertThat(context, hasEntry("tel_e164", "1234-1234"));
+        assertThat(context, hasEntry("groups", "Testers,Developers"));
+        assertThat(context, hasEntry("uuid", "1234-1234"));
+        assertThat(context, hasEntry("language", "eng"));
+
+        assertThat(context, hasEntry("tel", "1234-1234"));
+        assertThat(context, hasEntry("twitter", "1234-1234"));
+
+        assertThat(context, hasEntry("gender", "M"));
+        assertThat(context, hasEntry("age", "34"));
     }
 }

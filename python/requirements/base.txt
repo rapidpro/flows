@@ -1,4 +1,5 @@
 enum34
+phonenumbers==7.0.2
 pytz
 rapidpro-expressions==1.0.6
 regex

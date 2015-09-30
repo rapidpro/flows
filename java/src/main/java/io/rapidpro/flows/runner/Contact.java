@@ -50,14 +50,6 @@ public class Contact {
         m_language = language;
     }
 
-    public static Contact fromJson(JsonObject obj) {
-        Contact contact = new Contact();
-        contact.m_uuid = JsonUtils.getAsString(obj, "uuid");
-        contact.m_name = JsonUtils.getAsString(obj, "name");
-        contact.m_language = JsonUtils.getAsString(obj, "language");
-        return contact;
-    }
-
     public String getUuid() {
         return m_uuid;
     }
@@ -131,13 +123,6 @@ public class Contact {
     }
 
     /**
-     * Gets the highest priority matching URN for this contact in any scheme
-     */
-    public ContactUrn getUrn() {
-        return getUrn(null);
-    }
-
-    /**
      * Gets the highest priority matching URN for this contact in one of the given schemes
      */
     public ContactUrn getUrn(List<ContactUrn.Scheme> schemes) {
@@ -154,11 +139,6 @@ public class Contact {
         }
     }
 
-    protected String getAnonIdentifier() {
-        // TODO where can we get the usual anon identifier from? Is UUID an ok substitute?
-        return m_uuid;
-    }
-
     public String getUrnDisplay(Org org, ContactUrn.Scheme scheme, boolean full) {
         if (org.isAnon()) {
             return getAnonIdentifier();
@@ -167,6 +147,11 @@ public class Contact {
         List<ContactUrn.Scheme> schemes = scheme != null ? Collections.singletonList(scheme) : null;
         ContactUrn urn = getUrn(schemes);
         return urn != null ? urn.getDisplay(org, full) : "";
+    }
+
+    protected String getAnonIdentifier() {
+        // TODO where can we get the usual anon identifier from? Is UUID an ok substitute?
+        return m_uuid;
     }
 
     /**

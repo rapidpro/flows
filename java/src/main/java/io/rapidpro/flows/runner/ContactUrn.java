@@ -50,6 +50,9 @@ public class ContactUrn {
         return m_path;
     }
 
+    /**
+     * Gets a representation of the URN for display
+     */
     public String getDisplay(Org org, boolean full) {
         if (org.isAnon()) {
             return ANON_MASK;

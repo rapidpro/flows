@@ -6,6 +6,7 @@ import io.rapidpro.flows.BaseFlowsTest;
 import org.junit.Test;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.ZoneId;
+import org.threeten.bp.ZoneOffset;
 import org.threeten.bp.ZonedDateTime;
 
 import java.math.BigDecimal;
@@ -23,6 +24,7 @@ public class InputTest extends BaseFlowsTest {
     @Test
     public void buildContext() {
         Input input = Input.of("Hello");
+        input.m_time = ZonedDateTime.of(2015, 9, 30, 14, 31, 30, 0, ZoneOffset.UTC).toInstant();
 
         EvaluationContext container = new EvaluationContext(new HashMap<String, Object>(), ZoneId.of("Africa/Kigali"), DateStyle.DAY_FIRST);
 
@@ -31,7 +33,7 @@ public class InputTest extends BaseFlowsTest {
         Map<String, Object> context =  input.buildContext(container, contactContext);
         assertThat(context, hasEntry("*", (Object) "Hello"));
         assertThat(context, hasEntry("value", (Object) "Hello"));
-        assertThat(context, hasEntry(is("time"), notNullValue()));
+        assertThat(context, hasEntry("time", (Object) "30-09-2015 16:31"));
         assertThat(context, hasEntry("contact", (Object) contactContext));
 
         input = Input.of(new BigDecimal("123.456"));
