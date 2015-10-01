@@ -20,10 +20,10 @@ public class HasDateTest extends DateTest {
     }
 
     /**
-     * @see DateTest#evaluateAgainstDate(Runner, EvaluationContext, LocalDate)
+     * @see DateTest#evaluateForDate(Runner, EvaluationContext, LocalDate)
      */
     @Override
-    protected boolean evaluateAgainstDate(Runner runner, EvaluationContext context, LocalDate date) {
+    protected boolean evaluateForDate(Runner runner, EvaluationContext context, LocalDate date) {
         return true;
     }
 }

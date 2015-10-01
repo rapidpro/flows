@@ -1,6 +1,7 @@
 package io.rapidpro.flows.definition;
 
 import com.google.gson.*;
+import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import io.rapidpro.flows.definition.actions.Action;
@@ -23,9 +24,10 @@ import java.util.Set;
 public class Flow {
 
     public enum Type {
-        MESSAGE,
-        IVR,
-        SURVEY
+        @SerializedName("F") FLOW,
+        @SerializedName("M") MESSAGE,
+        @SerializedName("V") VOICE,
+        @SerializedName("S") SURVEY;
     }
 
     protected Type m_type;
@@ -53,41 +55,38 @@ public class Flow {
     public static class Deserializer implements JsonDeserializer<Flow> {
         @Override
         public Flow deserialize(JsonElement elem, java.lang.reflect.Type type, JsonDeserializationContext jsonContext) throws JsonParseException {
-            JsonObject obj = elem.getAsJsonObject().get("flow").getAsJsonObject();
+            JsonObject obj = elem.getAsJsonObject();
 
             Flow flow = new Flow();
-            flow.m_type = Type.MESSAGE;  // TODO flow type should be included in the JSON
+            flow.m_type = jsonContext.deserialize(obj.get("flow_type"), Type.class);
             flow.m_baseLanguage = JsonUtils.getAsString(obj, "base_language");
+
+            JsonObject definition = obj.get("definition").getAsJsonObject();
 
             // keep an exhaustive list of all languages in our flow definition
             Set<String> languages = new HashSet<>();
 
             DeserializationContext context = new DeserializationContext(flow);
 
-            for (JsonElement asElem : obj.get("action_sets").getAsJsonArray()) {
+            for (JsonElement asElem : definition.get("action_sets").getAsJsonArray()) {
                 ActionSet actionSet = ActionSet.fromJson(asElem.getAsJsonObject(), context, jsonContext);
+                flow.m_elementsByUuid.put(actionSet.m_uuid, actionSet);
 
                 // see what translations are set on this actionset
                 for (Action action : actionSet.getActions()) {
                     if (action instanceof MessageAction) {
-                        languages.addAll(((MessageAction)action).getMsg().m_translations.keySet());
+                        languages.addAll(((MessageAction) action).getMsg().getLanguages());
                     }
                 }
-
-                flow.m_elementsByUuid.put(actionSet.m_uuid, actionSet);
             }
 
-            for (JsonElement rsElem : obj.get("rule_sets").getAsJsonArray()) {
+            for (JsonElement rsElem : definition.get("rule_sets").getAsJsonArray()) {
                 RuleSet ruleSet = RuleSet.fromJson(rsElem.getAsJsonObject(), context);
-
-                // see what translations are set on this ruleset
-                for (Rule rule : ruleSet.getRules()) {
-                    languages.addAll(rule.getCategory().m_translations.keySet());
-                }
                 flow.m_elementsByUuid.put(ruleSet.m_uuid, ruleSet);
 
                 for (Rule rule : ruleSet.getRules()) {
                     flow.m_elementsByUuid.put(rule.getUuid(), rule);
+                    languages.addAll(rule.getCategory().getLanguages());
                 }
             }
 
@@ -105,7 +104,7 @@ public class Flow {
                 }
             }
 
-            flow.m_entry = flow.getElementByUuid(JsonUtils.getAsString(obj, "entry"));
+            flow.m_entry = flow.getElementByUuid(JsonUtils.getAsString(definition, "entry"));
             return flow;
         }
     }

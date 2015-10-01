@@ -21,10 +21,10 @@ public class HasNumberTest extends NumericTest {
     }
 
     /**
-     * @see NumericTest#evaluateAgainstDecimal(Runner, EvaluationContext, BigDecimal)
+     * @see NumericTest#evaluateForDecimal(Runner, EvaluationContext, BigDecimal)
      */
     @Override
-    protected boolean evaluateAgainstDecimal(Runner runner, EvaluationContext context, BigDecimal decimal) {
+    protected boolean evaluateForDecimal(Runner runner, EvaluationContext context, BigDecimal decimal) {
         return true; // this method is only called on decimals parsed from the input
     }
 }

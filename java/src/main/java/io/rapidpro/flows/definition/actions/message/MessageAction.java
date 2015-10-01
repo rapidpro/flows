@@ -31,8 +31,9 @@ public abstract class MessageAction extends Action {
         if (StringUtils.isNotEmpty(msg)) {
             EvaluationContext context = run.buildContext(input);
             return executeWithMessage(runner, context, msg);
+        } else {
+            return Result.NOOP;
         }
-        return Result.NOOP;
     }
 
     protected abstract Result executeWithMessage(Runner runner, EvaluationContext context, String message);

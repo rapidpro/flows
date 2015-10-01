@@ -32,10 +32,10 @@ public class BetweenTest extends NumericTest {
     }
 
     /**
-     * @see NumericTest#evaluateAgainstDecimal(Runner, EvaluationContext, BigDecimal)
+     * @see NumericTest#evaluateForDecimal(Runner, EvaluationContext, BigDecimal)
      */
     @Override
-    protected boolean evaluateAgainstDecimal(Runner runner, EvaluationContext context, BigDecimal decimal) {
+    protected boolean evaluateForDecimal(Runner runner, EvaluationContext context, BigDecimal decimal) {
         EvaluatedTemplate min = runner.substituteVariables(m_min, context);
         EvaluatedTemplate max = runner.substituteVariables(m_max, context);
 

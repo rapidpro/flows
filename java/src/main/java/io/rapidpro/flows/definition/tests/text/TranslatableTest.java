@@ -7,7 +7,7 @@ import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.runner.Runner;
 
 /**
- * Abstract base class for tests that have a translatable text argument
+ * Abstract base class for tests that have a translatable test argument
  */
 public abstract class TranslatableTest extends Test {
 
@@ -24,7 +24,7 @@ public abstract class TranslatableTest extends Test {
     public Result evaluate(Runner runner, RunState run, EvaluationContext context, String text) {
         String localizedTest = m_test.getLocalized(run);
 
-        return evaluateAgainstLocalized(runner, run, context, text, localizedTest);
+        return evaluateForLocalized(runner, run, context, text, localizedTest);
     }
 
     /**
@@ -36,7 +36,7 @@ public abstract class TranslatableTest extends Test {
      * @param localizedTest the localized test value
      * @return the test result
      */
-    protected abstract Result evaluateAgainstLocalized(Runner runner, RunState run, EvaluationContext context, String text, String localizedTest);
+    protected abstract Result evaluateForLocalized(Runner runner, RunState run, EvaluationContext context, String text, String localizedTest);
 
     public TranslatableText getTest() {
         return m_test;

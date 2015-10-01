@@ -60,19 +60,16 @@ public class RunState {
      * @param org the org
      * @param contact the contact
      * @param flow the flow
-     * @return the run state
      */
-    public static RunState start(Org org, Contact contact, Flow flow) {
-        RunState run = new RunState();
-        run.m_org = org;
-        run.m_contact = contact;
-        run.m_started = Instant.now();
-        run.m_steps = new ArrayList<>();
-        run.m_values = new HashMap<>();
-        run.m_extra = new HashMap<>();
-        run.m_state = State.IN_PROGRESS;
-        run.m_flow = flow;
-        return run;
+    public RunState(Org org, Contact contact, Flow flow) {
+        this.m_org = org;
+        this.m_contact = contact;
+        this.m_started = Instant.now();
+        this.m_steps = new ArrayList<>();
+        this.m_values = new HashMap<>();
+        this.m_extra = new HashMap<>();
+        this.m_state = State.IN_PROGRESS;
+        this.m_flow = flow;
     }
 
     /**

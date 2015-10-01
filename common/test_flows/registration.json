@@ -1,28 +1,8 @@
 {
-  "languages": [
-    {
-      "iso_code": "eng",
-      "name": "English"
-    },
-    {
-      "iso_code": "cpe",
-      "name": "Creoles and pidgins, English based"
-    },
-    {
-      "iso_code": "hau",
-      "name": "Hausa"
-    },
-    {
-      "iso_code": "yor",
-      "name": "Yoruba"
-    },
-    {
-      "iso_code": "ibo",
-      "name": "Igbo"
-    }
-  ],
-  "flow": {
-    "base_language": "eng",
+  "name": "U-Report Registration",
+  "flow_type": "S",
+  "base_language": "eng",
+  "definition": {
     "action_sets": [
       {
         "y": 37,

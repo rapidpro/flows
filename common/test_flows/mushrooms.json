@@ -1,16 +1,8 @@
 {
-  "languages": [
-    {
-      "iso_code": "eng",
-      "name": "English"
-    },
-    {
-      "iso_code": "fre",
-      "name": "French"
-    }
-  ],
-  "flow": {
-    "base_language": "eng",
+  "name": "Mushrooms",
+  "flow_type": "F",
+  "base_language": "eng",
+  "definition": {
     "action_sets": [
       {
         "y": 0,

@@ -31,10 +31,10 @@ public class ContainsAnyTest extends ContainsTest {
     }
 
     /**
-     * @see TranslatableTest#evaluateAgainstLocalized(Runner, RunState, EvaluationContext, String, String)
+     * @see TranslatableTest#evaluateForLocalized(Runner, RunState, EvaluationContext, String, String)
      */
     @Override
-    protected Test.Result evaluateAgainstLocalized(Runner runner, RunState run, EvaluationContext context, String text, String localizedTest) {
+    protected Test.Result evaluateForLocalized(Runner runner, RunState run, EvaluationContext context, String text, String localizedTest) {
         localizedTest = runner.substituteVariables(localizedTest, context).getOutput();
 
         // tokenize our test

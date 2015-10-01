@@ -18,10 +18,10 @@ public abstract class NumericComparisonTest extends NumericTest {
     }
 
     /**
-     * @see NumericTest#evaluateAgainstDecimal(Runner, EvaluationContext, BigDecimal)
+     * @see NumericTest#evaluateForDecimal(Runner, EvaluationContext, BigDecimal)
      */
     @Override
-    protected boolean evaluateAgainstDecimal(Runner runner, EvaluationContext context, BigDecimal input) {
+    protected boolean evaluateForDecimal(Runner runner, EvaluationContext context, BigDecimal input) {
         EvaluatedTemplate test = runner.substituteVariables(m_test, context);
 
         if (!test.hasErrors()) {

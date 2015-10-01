@@ -20,7 +20,7 @@ public abstract class DateTest extends Test {
     public Result evaluate(Runner runner, RunState run, EvaluationContext context, String text) {
         try {
             LocalDate date = Conversions.toDate(text, context);
-            if (evaluateAgainstDate(runner, context, date)) {
+            if (evaluateForDate(runner, context, date)) {
                 return Result.textMatch(Conversions.toString(date, context));
             }
         }
@@ -36,5 +36,5 @@ public abstract class DateTest extends Test {
      * @param date the date value
      * @return the test result
      */
-    protected abstract boolean evaluateAgainstDate(Runner runner, EvaluationContext context, LocalDate date);
+    protected abstract boolean evaluateForDate(Runner runner, EvaluationContext context, LocalDate date);
 }

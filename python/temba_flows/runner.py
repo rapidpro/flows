@@ -6,6 +6,11 @@ import pytz
 
 from enum import Enum
 from temba_expressions import conversions
+from temba_expressions.evaluator import Evaluator, EvaluationStrategy
+
+
+DEFAULT_EVALUATOR = Evaluator(expression_prefix='@',
+                              allowed_top_levels=('channel', 'contact', 'date', 'extra', 'flow', 'step'))
 
 
 class Org(object):
@@ -226,3 +231,88 @@ class Input(object):
         :return: the text value
         """
         return conversions.to_string(self.value, context)
+
+
+class RunState(object):
+    """
+    Represents state of a flow run after visiting one or more nodes in the flow
+    """
+    class State(Enum):
+        IN_PROGRESS = 1
+        COMPLETED = 2
+        WAIT_MESSAGE = 3
+
+    def __init__(self, org, contact, flow):
+        self.org = org
+        self.contact = contact
+        self.started = datetime.datetime.now(tz=pytz.UTC)
+        self.steps = []
+        self.values = {}
+        self.extra = {}
+        self.state = RunState.State.IN_PROGRESS
+        self.flow = flow
+
+    @classmethod
+    def from_json(cls, json_obj, flow):
+        """
+        Restores a run state from JSON
+        :param json_obj: the JSON containing a serialized run state
+        :param flow: the flow the run state is for
+        :return: the run state
+        """
+        # TODO
+        pass
+
+    def to_json(self):
+        """
+        Serializes this run state to JSON
+        """
+        # TODO
+        pass
+
+
+class Runner(object):
+    """
+    The flow runner
+    """
+    def __init__(self, template_evaluator=DEFAULT_EVALUATOR):
+        self.template_evaluator = template_evaluator
+
+    def start(self, org, contact, flow):
+        """
+        Starts a new run
+        :param org: the org
+        :param contact: the contact
+        :param flow: the flow
+        :return: the run state
+        """
+        run = RunState(org, contact, flow)
+        return self.resume(run, None)
+
+    def resume(self, run, input):
+        """
+        Resumes an existing run with new input
+        :param run: the previous run state
+        :param input: the new input
+        :return: the updated run state
+        """
+        # TODO
+        pass
+
+    def substitute_variables(self, text, context):
+        """
+        Performs variable substitution on the the given text
+        :param text: the text, e.g. "Hi @contact.name"
+        :param context: the evaluation context
+        :return: the evaluated template, e.g. "Hi Joe"
+        """
+        return self.template_evaluator.evaluate_template(text, context)
+
+    def substitute_variables_if_available(self, text, context):
+        """
+        Performs partial variable substitution on the the given text
+        :param text: the text, e.g. "Hi @contact.name"
+        :param context: the evaluation context
+        :return: the evaluated template, e.g. "Hi Joe"
+        """
+        return self.template_evaluator.evaluate_template(text, context, False, EvaluationStrategy.RESOLVE_AVAILABLE)

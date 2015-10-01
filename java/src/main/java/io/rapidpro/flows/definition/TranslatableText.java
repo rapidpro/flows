@@ -11,10 +11,7 @@ import io.rapidpro.flows.runner.RunState;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Text that may be a single untranslated value or a translation map
@@ -113,6 +110,10 @@ public class TranslatableText {
         }
 
         return defaultText;
+    }
+
+    public Set<String> getLanguages() {
+        return m_translations != null ? m_translations.keySet() : Collections.<String>emptySet();
     }
 
     /**

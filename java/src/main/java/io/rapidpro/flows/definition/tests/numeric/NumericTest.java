@@ -53,7 +53,7 @@ public abstract class NumericTest extends Test {
         for (String word : Pattern.compile("\\s+").split(text)) {
             try {
                 Pair<BigDecimal, String> pair = extractDecimal(word);
-                if (evaluateAgainstDecimal(runner, context, pair.getLeft())) {
+                if (evaluateForDecimal(runner, context, pair.getLeft())) {
                     return Test.Result.textMatch(pair.getRight());
                 }
             }
@@ -70,5 +70,5 @@ public abstract class NumericTest extends Test {
      * @param decimal the decimal value
      * @return the test result
      */
-    protected abstract boolean evaluateAgainstDecimal(Runner runner, EvaluationContext context, BigDecimal decimal);
+    protected abstract boolean evaluateForDecimal(Runner runner, EvaluationContext context, BigDecimal decimal);
 }

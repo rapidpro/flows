@@ -33,10 +33,10 @@ public class RegexTest extends TranslatableTest {
     }
 
     /**
-     * @see TranslatableTest#evaluateAgainstLocalized(Runner, RunState, EvaluationContext, String, String)
+     * @see TranslatableTest#evaluateForLocalized(Runner, RunState, EvaluationContext, String, String)
      */
     @Override
-    protected Result evaluateAgainstLocalized(Runner runner, RunState run, EvaluationContext context, String text, String localizedTest) {
+    protected Result evaluateForLocalized(Runner runner, RunState run, EvaluationContext context, String text, String localizedTest) {
         // check whether we match
         try {
             Map<String, String> groupNames = new HashMap<>();

@@ -9,7 +9,6 @@ import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.runner.Runner;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 

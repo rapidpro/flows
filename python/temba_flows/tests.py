@@ -1,6 +1,7 @@
 # coding=utf-8
 from __future__ import absolute_import, unicode_literals
 
+import codecs
 import datetime
 import json
 import pytz
@@ -9,12 +10,13 @@ import unittest
 from decimal import Decimal
 from temba_expressions.dates import DateStyle
 from temba_expressions.evaluator import EvaluationContext
+from .definition import Flow, ActionSet, RuleSet, TranslatableText
+from .definition.actions import ReplyAction
 from .runner import Contact, ContactUrn, Input, Org
 from .utils import edit_distance
 
 
-class FlowsTest(unittest.TestCase):
-
+class BaseFlowsTest(unittest.TestCase):
     def setUp(self):
         self.org = Org("RW", "eng", pytz.timezone("Africa/Kigali"), DateStyle.DAY_FIRST, False)
 
@@ -26,9 +28,13 @@ class FlowsTest(unittest.TestCase):
                                {"gender": "M", "age": "34"},
                                'eng')
 
+    @staticmethod
+    def read_resource(path):
+        with codecs.open('test_files/%s' % path, encoding='utf-8') as f:
+            return f.read()
 
-class ContactTest(FlowsTest):
 
+class ContactTest(BaseFlowsTest):
     def test_to_and_from_json(self):
         json_str = json.dumps(self.contact.to_json())
 
@@ -94,7 +100,37 @@ class ContactTest(FlowsTest):
                                    'age': "34"})
 
 
-class InputTest(FlowsTest):
+class FlowTest(BaseFlowsTest):
+    def test_from_json(self):
+        flow = Flow.from_json(json.loads(self.read_resource('test_flows/mushrooms.json')))
+
+        self.assertEqual(flow.base_language, 'eng')
+        self.assertEqual(flow.flow_type, Flow.Type.FLOW)
+        self.assertEqual(flow.languages, {'eng', 'fre'})
+
+        as1 = flow.entry
+
+        self.assertIsInstance(as1, ActionSet)
+        self.assertEqual(as1.uuid, '32cf414b-35e3-4c75-8a78-d5f4de925e13')
+        self.assertEqual(len(as1.actions), 1)
+        self.assertIsInstance(as1.actions[0], ReplyAction)
+
+        rs1 = as1.destination
+
+        self.assertIsInstance(rs1, RuleSet)
+        self.assertEqual(rs1.uuid, '1e318293-4730-481c-b455-daaaf86b2e6c')
+        self.assertEqual(rs1.ruleset_type, RuleSet.Type.WAIT_MESSAGE)
+        self.assertEqual(rs1.label, "Response 1")
+        self.assertEqual(rs1.operand, "@step.value")
+
+    def test_from_json_with_empty_flow(self):
+        flow = Flow.from_json(json.loads(self.read_resource('test_flows/empty.json')))
+
+        self.assertEqual(flow.base_language, 'eng')
+        self.assertEqual(flow.entry, None)
+
+
+class InputTest(BaseFlowsTest):
     def test_build_context(self):
         time = datetime.datetime(2015, 9, 30, 14, 31, 30, 0, pytz.UTC)
         _input = Input("Hello", time)
@@ -134,8 +170,43 @@ class InputTest(FlowsTest):
                                    'contact': contact_context})
 
 
-class UtilsTest(unittest.TestCase):
+class TranslatableTextTest(unittest.TestCase):
 
+    def test_from_json(self):
+        text = TranslatableText.from_json("test")
+        self.assertEqual(text.value, "test")
+
+        text = TranslatableText.from_json({'eng': "Hello", 'fra': "Bonjour"})
+        self.assertEqual(text.value, {'eng': "Hello", 'fra': "Bonjour"})
+
+    def test_get_localized_by_preferred(self):
+        text = TranslatableText("Hello")
+        self.assertEqual(text.get_localized_by_preferred([], "default"), "Hello")
+        self.assertEqual(text.get_localized_by_preferred(['eng', 'fra'], "default"), "Hello")
+
+        text = TranslatableText("")
+        self.assertEqual(text.get_localized_by_preferred([], "default"), "default")
+        self.assertEqual(text.get_localized_by_preferred(['eng', 'fra'], "default"), "default")
+
+        text = TranslatableText({})
+        self.assertEqual(text.get_localized_by_preferred([], "default"), "default")
+        self.assertEqual(text.get_localized_by_preferred(['eng', 'fra'], "default"), "default")
+
+        text = TranslatableText({'eng': "Hello", 'fra': "Bonjour"})
+        self.assertEqual(text.get_localized_by_preferred([], "default"), "default")
+        self.assertEqual(text.get_localized_by_preferred(['kin', 'run'], "default"), "default")
+        self.assertEqual(text.get_localized_by_preferred(['eng', 'fra'], "default"), "Hello")
+        self.assertEqual(text.get_localized_by_preferred(['fra', 'eng'], "default"), "Bonjour")
+
+    def test_eq(self):
+        self.assertEqual(TranslatableText("abc"), TranslatableText("abc"))
+        self.assertNotEqual(TranslatableText("abc"), TranslatableText("cde"))
+
+        self.assertEqual(TranslatableText({'eng': "Hello", 'fra': "Bonjour"}), TranslatableText({'eng': "Hello", 'fra': "Bonjour"}))
+        self.assertNotEqual(TranslatableText({'eng': "Hello", 'fra': "Salut"}), TranslatableText({'eng': "Hello", 'fra': "Bonjour"}))
+
+
+class UtilsTest(unittest.TestCase):
     def test_edit_distance(self):
         self.assertEqual(edit_distance("", ""), 0)
         self.assertEqual(edit_distance("abcd", "abcd"), 0)   # 0 differences

@@ -35,7 +35,7 @@ public class Runner {
      * @return the run state
      */
     public RunState start(Org org, Contact contact, Flow flow) throws FlowRunException {
-        RunState run = RunState.start(org, contact, flow);
+        RunState run = new RunState(org, contact, flow);
         return resume(run, null);
     }
 
@@ -125,7 +125,7 @@ public class Runner {
     }
 
     /**
-     * Performs variable substitution on the the given text
+     * Performs partial variable substitution on the the given text
      * @param text the text, e.g. "Hi @contact.name"
      * @param context the evaluation context
      * @return the evaluated template, e.g. "Hi Joe"

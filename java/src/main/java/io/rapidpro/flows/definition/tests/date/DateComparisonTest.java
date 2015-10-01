@@ -18,10 +18,10 @@ public abstract class DateComparisonTest extends DateTest {
     }
 
     /**
-     * @see DateTest#evaluateAgainstDate(Runner, EvaluationContext, LocalDate)
+     * @see DateTest#evaluateForDate(Runner, EvaluationContext, LocalDate)
      */
     @Override
-    protected boolean evaluateAgainstDate(Runner runner, EvaluationContext context, LocalDate input) {
+    protected boolean evaluateForDate(Runner runner, EvaluationContext context, LocalDate input) {
         EvaluatedTemplate test = runner.substituteVariables(m_test, context);
 
         if (!test.hasErrors()) {
