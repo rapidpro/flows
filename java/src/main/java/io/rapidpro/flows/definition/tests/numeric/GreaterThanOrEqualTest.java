@@ -12,6 +12,8 @@ import java.math.BigDecimal;
  */
 public class GreaterThanOrEqualTest extends NumericComparisonTest {
 
+    public static final String TYPE = "gte";
+
     public GreaterThanOrEqualTest(String test) {
         super(test);
     }

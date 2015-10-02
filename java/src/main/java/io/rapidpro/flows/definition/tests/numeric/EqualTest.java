@@ -12,6 +12,8 @@ import java.math.BigDecimal;
  */
 public class EqualTest extends NumericComparisonTest {
 
+    public static final String TYPE = "eq";
+
     public EqualTest(String test) {
         super(test);
     }

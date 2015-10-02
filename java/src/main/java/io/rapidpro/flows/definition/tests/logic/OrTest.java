@@ -15,6 +15,8 @@ import java.util.Collection;
  */
 public class OrTest extends Test {
 
+    public static final String TYPE = "or";
+
     protected Collection<Test> m_tests;
 
     public OrTest(Collection<Test> tests) {

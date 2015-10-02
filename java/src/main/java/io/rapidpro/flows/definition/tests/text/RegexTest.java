@@ -21,6 +21,8 @@ import java.util.regex.PatternSyntaxException;
  */
 public class RegexTest extends TranslatableTest {
 
+    public static final String TYPE = "regex";
+
     protected RegexTest(TranslatableText test) {
         super(test);
     }
@@ -37,11 +39,11 @@ public class RegexTest extends TranslatableTest {
      */
     @Override
     protected Result evaluateForLocalized(Runner runner, RunState run, EvaluationContext context, String text, String localizedTest) {
-        // check whether we match
         try {
             Map<String, String> groupNames = new HashMap<>();
             String javaRegex = pythonToJavaRegex(localizedTest, groupNames);
 
+            // check whether we match
             int flags = getPatternUnicodeFlag() | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE;
             Pattern regex = Pattern.compile(javaRegex, flags);
             Matcher matcher = regex.matcher(text);
@@ -69,7 +71,7 @@ public class RegexTest extends TranslatableTest {
                 // update @extra
                 run.getExtra().putAll(groupValues);
 
-                return Result.textMatch(returnMatch);
+                return Result.match(returnMatch);
             }
         } catch (PatternSyntaxException ignored) {}
 

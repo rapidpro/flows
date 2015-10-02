@@ -11,6 +11,8 @@ import org.threeten.bp.LocalDate;
  */
 public class DateEqualTest extends DateComparisonTest {
 
+    public static final String TYPE = "date_equal";
+
     public DateEqualTest(String test) {
         super(test);
     }

@@ -4,9 +4,10 @@ import datetime
 import phonenumbers
 import pytz
 
+from datetime import timedelta
 from enum import Enum
 from temba_expressions import conversions
-from temba_expressions.evaluator import Evaluator, EvaluationStrategy
+from temba_expressions.evaluator import Evaluator, EvaluationContext, EvaluationStrategy
 
 
 DEFAULT_EVALUATOR = Evaluator(expression_prefix='@',
@@ -270,13 +271,76 @@ class RunState(object):
         # TODO
         pass
 
+    def build_context(self, input):
+        context = EvaluationContext({}, self.org.timezone, self.org.date_style)
+
+        contact_context = self.contact.build_context(self.org)
+
+        if input is not None:
+            context.put_variable("step", input.build_context(context, contact_context))
+
+        context.put_variable("date", self.build_date_context(context, datetime.datetime.now(tz=self.org.timezone)))
+        context.put_variable("contact", contact_context)
+        context.put_variable("extra", self.extra)
+
+        flow_context = {}
+        values = []
+        for key, value in self.values.iteritems():
+            flow_context[key] = value.build_context(context)
+            values.append("%s: %s" % (key, value))
+        flow_context['*'] = "\n".join(values)
+
+        context.put_variable("flow", flow_context)
+
+        return context
+
+    def update_value(self, rule_set, result, time):
+        """
+        Updates a value in response to a rule match
+        :param rule_set: the rule set
+        :param result: the rule match result
+        :param time: the time from the input
+        :return:
+        """
+        # TODO
+        # key = rule_set.label.lower().replace("[^a-z0-9]+", "_")
+        # self.values[key] = Value(result.value, result.category, result.text, time)
+
+    @staticmethod
+    def build_date_context(container, now):
+        """
+        Builds the date context (i.e. @date.now, @date.today, ...)
+        """
+        as_date = now.date()
+        as_datetime_str = conversions.to_string(now, container)
+        as_date_str = conversions.to_string(as_date, container)
+
+        return {
+            '*': as_datetime_str,
+            'now': as_datetime_str,
+            'today': as_date_str,
+            'tomorrow': conversions.to_string(as_date + timedelta(days=1), container),
+            'yesterday': conversions.to_string(as_date - timedelta(days=1), container)
+        }
+
+    def get_completed_steps(self):
+        """
+        Gets the completed steps, i.e. those where the contact left the node or a terminal node
+        """
+        completed = []
+        for step in self.steps:
+            if step.is_completed or self.state == RunState.State.COMPLETED:
+                completed.append(step)
+        return completed
+
 
 class Runner(object):
     """
     The flow runner
     """
-    def __init__(self, template_evaluator=DEFAULT_EVALUATOR):
+    def __init__(self, template_evaluator=DEFAULT_EVALUATOR, location_resolver=None):
         self.template_evaluator = template_evaluator
+        self.location_resolver = location_resolver
 
     def start(self, org, contact, flow):
         """
@@ -297,7 +361,8 @@ class Runner(object):
         :return: the updated run state
         """
         # TODO
-        pass
+
+        return run
 
     def substitute_variables(self, text, context):
         """

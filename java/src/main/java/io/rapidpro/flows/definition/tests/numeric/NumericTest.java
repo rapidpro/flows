@@ -12,7 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Abstract base class for tests that are numerical
+ * Base class for tests that are numerical
  */
 public abstract class NumericTest extends Test {
 
@@ -27,7 +27,7 @@ public abstract class NumericTest extends Test {
         text = text.replace('l', '1').replace('o', '0').replace('O', '0');
 
         try {
-            return new ImmutablePair<>(new BigDecimal(text), text);
+            return new ImmutablePair<>(new BigDecimal(text), originalText);
         }
         catch (NumberFormatException ex) {
             // we only try this hard if we haven 't already substituted characters
@@ -47,14 +47,14 @@ public abstract class NumericTest extends Test {
      */
     @Override
     public Result evaluate(Runner runner, RunState run, EvaluationContext context, String text) {
-        // test every word in the message against our test
         text = text.replace(",", ""); // so that 1,234 is parsed as 1234
 
+        // test every word in the message against our test
         for (String word : Pattern.compile("\\s+").split(text)) {
             try {
                 Pair<BigDecimal, String> pair = extractDecimal(word);
                 if (evaluateForDecimal(runner, context, pair.getLeft())) {
-                    return Test.Result.textMatch(pair.getRight());
+                    return Test.Result.match(pair.getRight(), pair.getLeft());
                 }
             }
             catch (NumberFormatException ignored) {}

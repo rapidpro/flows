@@ -12,6 +12,8 @@ import io.rapidpro.flows.runner.Runner;
  */
 public class FalseTest extends Test {
 
+    public static final String TYPE = "false";
+
     /**
      * @see Test#fromJson(JsonObject, Flow.DeserializationContext)
      */
@@ -24,6 +26,6 @@ public class FalseTest extends Test {
      */
     @Override
     public Result evaluate(Runner runner, RunState run, EvaluationContext context, String text) {
-        return new Result(false, text);
+        return new Result(false, text, text);
     }
 }

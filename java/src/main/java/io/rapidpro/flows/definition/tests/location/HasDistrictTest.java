@@ -17,6 +17,8 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class HasDistrictTest extends Test {
 
+    public static final String TYPE = "district";
+
     protected String m_state;
 
     public HasDistrictTest(String state) {
@@ -43,7 +45,7 @@ public class HasDistrictTest extends Test {
             if (!state.hasErrors()) {
                 Location location = runner.getLocationResolver().resolve(text, country, Location.Level.DISTRICT, state.getOutput());
                 if (location != null) {
-                    return Result.textMatch(location.getName());
+                    return Result.match(location.getName());
                 }
             }
         }

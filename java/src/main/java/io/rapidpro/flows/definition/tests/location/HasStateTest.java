@@ -15,6 +15,8 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class HasStateTest extends Test {
 
+    public static final String TYPE = "state";
+
     /**
      * @see Test#fromJson(JsonObject, Flow.DeserializationContext)
      */
@@ -31,7 +33,7 @@ public class HasStateTest extends Test {
         if (StringUtils.isNotEmpty(country)) {
             Location location = runner.getLocationResolver().resolve(text, country, Location.Level.STATE, null);
             if (location != null) {
-                return Result.textMatch(location.getName());
+                return Result.match(location.getName());
             }
         }
 

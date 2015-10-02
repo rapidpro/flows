@@ -8,6 +8,7 @@ import org.junit.Test;
  * Test for {@link ContainsAnyTest}
  */
 public class ContainsAnyTestTest extends BaseTestTest {
+
     @Test
     public void evaluate() {
         ContainsAnyTest test = new ContainsAnyTest(new TranslatableText("eng", "yes,affirmative", "fre", "non"));

@@ -12,6 +12,8 @@ import org.threeten.bp.LocalDate;
  */
 public class HasDateTest extends DateTest {
 
+    public static final String TYPE = "date";
+
     /**
      * @see Test#fromJson(JsonObject, Flow.DeserializationContext)
      */

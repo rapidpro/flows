@@ -13,6 +13,8 @@ import java.math.BigDecimal;
  */
 public class HasNumberTest extends NumericTest {
 
+    public static final String TYPE = "number";
+
     /**
      * @see Test#fromJson(JsonObject, Flow.DeserializationContext)
      */

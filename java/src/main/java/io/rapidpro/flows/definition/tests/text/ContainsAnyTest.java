@@ -19,6 +19,8 @@ import java.util.List;
  */
 public class ContainsAnyTest extends ContainsTest {
 
+    public static final String TYPE = "contains_any";
+
     public ContainsAnyTest(TranslatableText test) {
         super(test);
     }
@@ -55,7 +57,7 @@ public class ContainsAnyTest extends ContainsTest {
 
         // we are a match if at least one test matches
         if (matches.size() > 0) {
-            return Test.Result.textMatch(StringUtils.join(matches, " "));
+            return Test.Result.match(StringUtils.join(matches, " "));
         } else {
             return Test.Result.NO_MATCH;
         }

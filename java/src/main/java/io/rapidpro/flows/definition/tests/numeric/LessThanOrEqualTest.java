@@ -12,6 +12,8 @@ import java.math.BigDecimal;
  */
 public class LessThanOrEqualTest extends NumericComparisonTest {
 
+    public static final String TYPE = "lte";
+
     public LessThanOrEqualTest(String test) {
         super(test);
     }

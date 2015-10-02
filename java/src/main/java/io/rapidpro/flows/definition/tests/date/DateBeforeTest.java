@@ -11,6 +11,8 @@ import org.threeten.bp.LocalDate;
  */
 public class DateBeforeTest extends DateComparisonTest {
 
+    public static final String TYPE = "date_before";
+
     public DateBeforeTest(String test) {
         super(test);
     }

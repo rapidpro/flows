@@ -3,6 +3,8 @@ package io.rapidpro.flows.definition.tests.numeric;
 import io.rapidpro.flows.definition.tests.BaseTestTest;
 import org.junit.Test;
 
+import java.math.BigDecimal;
+
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -22,14 +24,14 @@ public class BetweenTestTest extends BaseTestTest {
     public void evaluate() {
         BetweenTest test = new BetweenTest("32 ", "41");
 
-        assertTest(test, "32 cats", true, "32");
-        assertTest(test, "4l dogs", true, "41");
+        assertTest(test, "32 cats", true, "32", new BigDecimal(32));
+        assertTest(test, "4l dogs", true, "4l", new BigDecimal(41));
         assertTest(test, "31", false, null);
         assertTest(test, "42", false, null);
 
         // min and max can be expressions
         test = new BetweenTest("@contact.age", "@(contact.age + 3)");
 
-        assertTest(test, "35", true, "35");
+        assertTest(test, "35", true, "35", new BigDecimal(35));
     }
 }

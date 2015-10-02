@@ -21,7 +21,7 @@ public abstract class DateTest extends Test {
         try {
             LocalDate date = Conversions.toDate(text, context);
             if (evaluateForDate(runner, context, date)) {
-                return Result.textMatch(Conversions.toString(date, context));
+                return Result.match(Conversions.toString(date, context));
             }
         }
         catch (EvaluationError ignored) {}

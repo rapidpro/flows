@@ -18,6 +18,8 @@ import java.util.List;
  */
 public class AndTest extends Test {
 
+    public static final String TYPE = "and";
+
     protected Collection<Test> m_tests;
 
     public AndTest(Collection<Test> tests) {
@@ -45,6 +47,6 @@ public class AndTest extends Test {
                 return Result.NO_MATCH;
             }
         }
-        return Test.Result.textMatch(StringUtils.join(matches, " "));
+        return Test.Result.match(StringUtils.join(matches, " "));
     }
 }

@@ -15,6 +15,8 @@ import java.math.BigDecimal;
  */
 public class BetweenTest extends NumericTest {
 
+    public static final String TYPE = "between";
+
     protected String m_min;
 
     protected String m_max;

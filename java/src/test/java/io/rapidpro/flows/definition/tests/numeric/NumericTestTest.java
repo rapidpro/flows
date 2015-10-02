@@ -17,7 +17,7 @@ public class NumericTestTest {
     @Test
     public void extractDecimal() throws Exception {
         assertThat(NumericTest.extractDecimal("120"), is((Pair) new ImmutablePair<>(new BigDecimal(120), "120")));
-        assertThat(NumericTest.extractDecimal("l2O"), is((Pair) new ImmutablePair<>(new BigDecimal(120), "120")));
+        assertThat(NumericTest.extractDecimal("l2O"), is((Pair) new ImmutablePair<>(new BigDecimal(120), "l2O")));
         assertThat(NumericTest.extractDecimal("123C"), is((Pair) new ImmutablePair<>(new BigDecimal(123), "123")));
     }
 

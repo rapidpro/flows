@@ -12,6 +12,7 @@ import java.util.Arrays;
  * Test for {@link OrTest}
  */
 public class OrTestTest extends BaseTestTest {
+
     @org.junit.Test
     public void evaluate() {
         OrTest test = new OrTest(Arrays.<Test>asList(

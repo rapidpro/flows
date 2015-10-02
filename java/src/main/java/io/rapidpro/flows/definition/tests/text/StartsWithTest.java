@@ -10,9 +10,11 @@ import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.runner.Runner;
 
 /**
- * Whether the text starts with the given string
+ * Test that returns whether the text starts with the given string
  */
 public class StartsWithTest extends TranslatableTest {
+
+    public static final String TYPE = "starts";
 
     public StartsWithTest(TranslatableText test) {
         super(test);
@@ -37,7 +39,7 @@ public class StartsWithTest extends TranslatableTest {
 
         // see whether we start with our test
         if (text.toLowerCase().startsWith(localizedTest.toLowerCase())) {
-            return Result.textMatch(text.substring(0, localizedTest.length()));
+            return Result.match(text.substring(0, localizedTest.length()));
         } else {
             return Result.NO_MATCH;
         }

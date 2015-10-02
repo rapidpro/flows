@@ -3,6 +3,7 @@ package io.rapidpro.flows.definition;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluationContext;
+import io.rapidpro.expressions.evaluator.Conversions;
 import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.RunState;
@@ -74,16 +75,19 @@ public class RuleSet extends Flow.Node {
 
         EvaluationContext context = run.buildContext(input);
 
-        Pair<Rule, String> match = findMatchingRule(runner, run, context);
+        Pair<Rule, Test.Result> match = findMatchingRule(runner, run, context);
         if (match == null) {
             return null;
         }
 
-        // get category in the flow base language
         Rule rule = match.getLeft();
+        Test.Result testResult = match.getRight();
+
+        // get category in the flow base language
         String category = rule.getCategory().getLocalized(Collections.singletonList(run.getFlow().getBaseLanguage()), "");
 
-        Rule.Result result = new Rule.Result(rule, match.getValue(), category, input.getValueAsText(context));
+        String valueAsStr = Conversions.toString(testResult.getValue(), context);
+        Rule.Result result = new Rule.Result(rule, valueAsStr, category, testResult.getText());
         step.setRuleResult(result);
 
         run.updateValue(this, result, input.getTime());
@@ -98,13 +102,13 @@ public class RuleSet extends Flow.Node {
      * @param context the evaluation context
      * @return the rule and the matched text
      */
-    protected Pair<Rule, String> findMatchingRule(Runner runner, RunState run, EvaluationContext context) {
+    protected Pair<Rule, Test.Result> findMatchingRule(Runner runner, RunState run, EvaluationContext context) {
         String operand = runner.substituteVariables(m_operand, context).getOutput();
 
         for (Rule rule : m_rules) {
             Test.Result result = rule.matches(runner, run, context, operand);
             if (result.isMatched()) {
-                return new ImmutablePair<>(rule, result.getText());
+                return new ImmutablePair<>(rule, result);
             }
         }
         return null;

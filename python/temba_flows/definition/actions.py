@@ -1,6 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 
 from abc import ABCMeta, abstractmethod
+from . import TranslatableText
 
 
 class Action(object):
@@ -12,7 +13,7 @@ class Action(object):
     @classmethod
     def from_json(cls, json_obj, context):
         # TODO
-        return ReplyAction("testing...")
+        return ReplyAction(TranslatableText("testing..."))
 
     @abstractmethod
     def execute(self, runner, run, input):
@@ -56,9 +57,9 @@ class ReplyAction(MessageAction):
 
     @classmethod
     def from_json(cls, org, json):
-        return ReplyAction(json.get('msg', None))
+        return ReplyAction(TranslatableText.from_json(json.get('msg', None)))
 
-    def as_json(self):
+    def to_json(self):
         return {'type': ReplyAction.TYPE, 'msg': self.msg}
 
     def execute_with_message(self, runner, context, msg):

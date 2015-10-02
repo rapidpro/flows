@@ -22,6 +22,7 @@ import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.runner.Runner;
 import io.rapidpro.flows.utils.JsonUtils;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,29 +35,29 @@ public abstract class Test {
 
     protected static Map<String, Class<? extends Test>> s_classByType = new HashMap<>();
     static {
-        s_classByType.put("true", TrueTest.class);
-        s_classByType.put("false", FalseTest.class);
-        s_classByType.put("and", AndTest.class);
-        s_classByType.put("or", OrTest.class);
-        s_classByType.put("not_empty", NotEmptyTest.class);
-        s_classByType.put("contains", ContainsTest.class);
-        s_classByType.put("contains_any", ContainsAnyTest.class);
-        s_classByType.put("starts", StartsWithTest.class);
-        s_classByType.put("regex", RegexTest.class);
-        s_classByType.put("number", HasNumberTest.class);
-        s_classByType.put("between", BetweenTest.class);
-        s_classByType.put("eq", EqualTest.class);
-        s_classByType.put("lt", LessThanTest.class);
-        s_classByType.put("lte", LessThanOrEqualTest.class);
-        s_classByType.put("gt", GreaterThanTest.class);
-        s_classByType.put("gte", GreaterThanOrEqualTest.class);
-        s_classByType.put("date", HasDateTest.class);
-        s_classByType.put("date_equal", DateEqualTest.class);
-        s_classByType.put("date_before", DateBeforeTest.class);
-        s_classByType.put("date_after", DateAfterTest.class);
-        s_classByType.put("phone", HasPhoneTest.class);
-        s_classByType.put("state", HasStateTest.class);
-        s_classByType.put("district", HasDistrictTest.class);
+        s_classByType.put(TrueTest.TYPE, TrueTest.class);
+        s_classByType.put(FalseTest.TYPE, FalseTest.class);
+        s_classByType.put(AndTest.TYPE, AndTest.class);
+        s_classByType.put(OrTest.TYPE, OrTest.class);
+        s_classByType.put(NotEmptyTest.TYPE, NotEmptyTest.class);
+        s_classByType.put(ContainsTest.TYPE, ContainsTest.class);
+        s_classByType.put(ContainsAnyTest.TYPE, ContainsAnyTest.class);
+        s_classByType.put(StartsWithTest.TYPE, StartsWithTest.class);
+        s_classByType.put(RegexTest.TYPE, RegexTest.class);
+        s_classByType.put(HasNumberTest.TYPE, HasNumberTest.class);
+        s_classByType.put(BetweenTest.TYPE, BetweenTest.class);
+        s_classByType.put(EqualTest.TYPE, EqualTest.class);
+        s_classByType.put(LessThanTest.TYPE, LessThanTest.class);
+        s_classByType.put(LessThanOrEqualTest.TYPE, LessThanOrEqualTest.class);
+        s_classByType.put(GreaterThanTest.TYPE, GreaterThanTest.class);
+        s_classByType.put(GreaterThanOrEqualTest.TYPE, GreaterThanOrEqualTest.class);
+        s_classByType.put(HasDateTest.TYPE, HasDateTest.class);
+        s_classByType.put(DateEqualTest.TYPE, DateEqualTest.class);
+        s_classByType.put(DateBeforeTest.TYPE, DateBeforeTest.class);
+        s_classByType.put(DateAfterTest.TYPE, DateAfterTest.class);
+        s_classByType.put(HasPhoneTest.TYPE, HasPhoneTest.class);
+        s_classByType.put(HasStateTest.TYPE, HasStateTest.class);
+        s_classByType.put(HasDistrictTest.TYPE, HasDistrictTest.class);
     }
 
     /**
@@ -100,21 +101,29 @@ public abstract class Test {
     public abstract Result evaluate(Runner runner, RunState run, EvaluationContext context, String text);
 
     /**
-     * Holds the result of a test evaluation (the int value + the text matched)
+     * Holds the result of a test evaluation (matched + the text matched + the value matched)
      */
     public static class Result {
-        public static Result NO_MATCH = new Result(false, null);
+        public static Result NO_MATCH = new Result(false, null, null);
 
         protected boolean m_matched;
+
         protected String m_text;
 
-        public Result(boolean matched, String text) {
+        protected Object m_value;
+
+        public Result(boolean matched, String text, Object value) {
             m_matched = matched;
             m_text = text;
+            m_value = value;
         }
 
-        public static Result textMatch(String text) {
-            return new Result(true, text);
+        public static Result match(String text) {
+            return new Result(true, text, text);
+        }
+
+        public static Result match(String text, BigDecimal value) {
+            return new Result(true, text, value);
         }
 
         public boolean isMatched() {
@@ -123,6 +132,10 @@ public abstract class Test {
 
         public String getText() {
             return m_text;
+        }
+
+        public Object getValue() {
+            return m_value;
         }
 
         @Override

@@ -15,6 +15,8 @@ import io.rapidpro.flows.runner.Runner;
  */
 public class HasPhoneTest extends Test {
 
+    public static final String TYPE = "phone";
+
     /**
      * @see Test#fromJson(JsonObject, Flow.DeserializationContext)
      */
@@ -40,7 +42,7 @@ public class HasPhoneTest extends Test {
 
         if (matches.iterator().hasNext()) {
             Phonenumber.PhoneNumber number = matches.iterator().next().number();
-            return Result.textMatch(numberUtil.format(number, PhoneNumberUtil.PhoneNumberFormat.E164));
+            return Result.match(numberUtil.format(number, PhoneNumberUtil.PhoneNumberFormat.E164));
         } else {
             return Result.NO_MATCH;
         }

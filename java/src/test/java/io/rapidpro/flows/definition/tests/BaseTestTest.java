@@ -31,9 +31,7 @@ public abstract class BaseTestTest extends BaseFlowsTest {
 
     @Before
     public void setupRunState() throws Exception {
-        String flowJson = IOUtils.toString(BaseTestTest.class.getClassLoader().getResourceAsStream("test_flows/mushrooms.json"));
-
-        Flow flow = Flow.fromJson(flowJson);
+        Flow flow = Flow.fromJson(readResource("test_flows/mushrooms.json"));
 
         m_deserializationContext = new Flow.DeserializationContext(flow);
 
@@ -48,6 +46,13 @@ public abstract class BaseTestTest extends BaseFlowsTest {
     }
 
     protected void assertTest(Test test, String input, boolean expectedMatched, String expectedText) {
+        Test.Result result = test.evaluate(m_runner, m_run, m_context, input);
+        assertThat(result.isMatched(), is(expectedMatched));
+        assertThat(result.getText(), is(expectedText));
+        assertThat(result.getValue(), is((Object) expectedText));
+    }
+
+    protected void assertTest(Test test, String input, boolean expectedMatched, String expectedText, Object expectedValue) {
         Test.Result result = test.evaluate(m_runner, m_run, m_context, input);
         assertThat(result.isMatched(), is(expectedMatched));
         assertThat(result.getText(), is(expectedText));

@@ -12,6 +12,8 @@ import io.rapidpro.flows.runner.Runner;
  */
 public class NotEmptyTest extends Test {
 
+    public static final String TYPE = "not_empty";
+
     /**
      * @see Test#fromJson(JsonObject, Flow.DeserializationContext)
      */
@@ -27,7 +29,7 @@ public class NotEmptyTest extends Test {
         text = text.trim();
 
         if (text.length() > 0) {
-            return Result.textMatch(text);
+            return Result.match(text);
         } else {
             return Result.NO_MATCH;
         }

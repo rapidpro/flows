@@ -12,6 +12,7 @@ import java.util.Arrays;
  * Test for {@link AndTest}
  */
 public class AndTestTest extends BaseTestTest {
+
     @org.junit.Test
     public void evaluate() {
         AndTest test = new AndTest(Arrays.<Test>asList(

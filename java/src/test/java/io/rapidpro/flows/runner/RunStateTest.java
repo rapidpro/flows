@@ -25,7 +25,7 @@ public class RunStateTest extends BaseFlowsTest {
     @Test
     public void buildDateContext() throws Exception {
         EvaluationContext container = new EvaluationContext(new HashMap<String, Object>(), ZoneId.of("Africa/Kigali"), DateStyle.DAY_FIRST);
-        Instant now = Instant.from(ZonedDateTime.of(2015, 8, 24, 9, 44, 5, 0, ZoneId.of("Africa/Kigali")));
+        ZonedDateTime now = ZonedDateTime.of(2015, 8, 24, 9, 44, 5, 0, ZoneId.of("Africa/Kigali"));
 
         Map<String, String> context = RunState.buildDateContext(container, now);
 

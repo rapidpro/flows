@@ -12,6 +12,8 @@ import io.rapidpro.flows.runner.Runner;
  */
 public class TrueTest extends Test {
 
+    public static final String TYPE = "true";
+
     /**
      * @see Test#fromJson(JsonObject, Flow.DeserializationContext)
      */
@@ -24,6 +26,6 @@ public class TrueTest extends Test {
      */
     @Override
     public Result evaluate(Runner runner, RunState run, EvaluationContext context, String text) {
-        return Result.textMatch(text);
+        return Result.match(text);
     }
 }

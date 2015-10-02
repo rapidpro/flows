@@ -20,6 +20,8 @@ import java.util.List;
  */
 public class ContainsTest extends TranslatableTest {
 
+    public static final String TYPE = "contains";
+
     public ContainsTest(TranslatableText test) {
         super(test);
     }
@@ -74,7 +76,7 @@ public class ContainsTest extends TranslatableTest {
 
         // we are a match only if every test matches
         if (matches.size() == tests.length) {
-            return Result.textMatch(StringUtils.join(matches, " "));
+            return Result.match(StringUtils.join(matches, " "));
         } else {
             return Result.NO_MATCH;
         }

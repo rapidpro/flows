@@ -115,7 +115,7 @@ public class RunState {
             context.putVariable("step", input.buildContext(context, contactContext));
         }
 
-        context.putVariable("date", buildDateContext(context, Instant.now()));
+        context.putVariable("date", buildDateContext(context, ZonedDateTime.now(m_org.getTimezone())));
         context.putVariable("contact", contactContext);
         context.putVariable("extra", m_extra);
 
@@ -123,7 +123,7 @@ public class RunState {
         List<String> values = new ArrayList<>();
         for (Map.Entry<String, Value> entry : m_values.entrySet()) {
             flowContext.put(entry.getKey(), entry.getValue().buildContext(context));
-            values.add(entry.getKey() + " " + entry.getValue().getValue());
+            values.add(entry.getKey() + ": " + entry.getValue().getValue());
         }
         flowContext.put("*", StringUtils.join(values, "\n"));
 
@@ -147,11 +147,9 @@ public class RunState {
     /**
      * Builds the date context (i.e. @date.now, @date.today, ...)
      */
-    protected static Map<String, String> buildDateContext(EvaluationContext container, Instant now) {
-        ZonedDateTime asDateTime = now.atZone(container.getTimezone());
-        LocalDate asDate = asDateTime.toLocalDate();
-
-        String asDateTimeStr = Conversions.toString(asDateTime, container);
+    protected static Map<String, String> buildDateContext(EvaluationContext container, ZonedDateTime now) {
+        LocalDate asDate = now.toLocalDate();
+        String asDateTimeStr = Conversions.toString(now, container);
         String asDateStr = Conversions.toString(asDate, container);
 
         Map<String, String> dateContext = new HashMap<>();

@@ -11,6 +11,8 @@ import org.threeten.bp.LocalDate;
  */
 public class DateAfterTest extends DateComparisonTest {
 
+    public static final String TYPE = "date_after";
+
     public DateAfterTest(String test) {
         super(test);
     }
