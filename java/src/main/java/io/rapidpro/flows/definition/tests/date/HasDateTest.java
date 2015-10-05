@@ -8,7 +8,7 @@ import io.rapidpro.flows.runner.Runner;
 import org.threeten.bp.LocalDate;
 
 /**
- * Test that returns whether the text contains the a valid date
+ * Test that returns whether the text contains a valid date
  */
 public class HasDateTest extends DateTest {
 

@@ -21,6 +21,7 @@ import io.rapidpro.flows.definition.tests.text.*;
 import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.runner.Runner;
 import io.rapidpro.flows.utils.JsonUtils;
+import org.threeten.bp.LocalDate;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -45,12 +46,12 @@ public abstract class Test {
         s_classByType.put(StartsWithTest.TYPE, StartsWithTest.class);
         s_classByType.put(RegexTest.TYPE, RegexTest.class);
         s_classByType.put(HasNumberTest.TYPE, HasNumberTest.class);
-        s_classByType.put(BetweenTest.TYPE, BetweenTest.class);
         s_classByType.put(EqualTest.TYPE, EqualTest.class);
         s_classByType.put(LessThanTest.TYPE, LessThanTest.class);
         s_classByType.put(LessThanOrEqualTest.TYPE, LessThanOrEqualTest.class);
         s_classByType.put(GreaterThanTest.TYPE, GreaterThanTest.class);
         s_classByType.put(GreaterThanOrEqualTest.TYPE, GreaterThanOrEqualTest.class);
+        s_classByType.put(BetweenTest.TYPE, BetweenTest.class);
         s_classByType.put(HasDateTest.TYPE, HasDateTest.class);
         s_classByType.put(DateEqualTest.TYPE, DateEqualTest.class);
         s_classByType.put(DateBeforeTest.TYPE, DateBeforeTest.class);
@@ -123,6 +124,10 @@ public abstract class Test {
         }
 
         public static Result match(String text, BigDecimal value) {
+            return new Result(true, text, value);
+        }
+
+        public static Result match(String text, LocalDate value) {
             return new Result(true, text, value);
         }
 

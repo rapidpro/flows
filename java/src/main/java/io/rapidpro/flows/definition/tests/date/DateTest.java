@@ -9,7 +9,7 @@ import io.rapidpro.flows.runner.Runner;
 import org.threeten.bp.LocalDate;
 
 /**
- * Abstract base class for tests that are date based
+ * Base class for tests that are date based
  */
 public abstract class DateTest extends Test {
 
@@ -21,7 +21,7 @@ public abstract class DateTest extends Test {
         try {
             LocalDate date = Conversions.toDate(text, context);
             if (evaluateForDate(runner, context, date)) {
-                return Result.match(Conversions.toString(date, context));
+                return Result.match(text, date);
             }
         }
         catch (EvaluationError ignored) {}

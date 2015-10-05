@@ -69,7 +69,7 @@ public class RegexTest extends TranslatableTest {
                 }
 
                 // update @extra
-                run.getExtra().putAll(groupValues);
+                runner.updateExtra(run, groupValues);
 
                 return Result.match(returnMatch);
             }

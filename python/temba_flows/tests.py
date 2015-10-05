@@ -7,7 +7,6 @@ import json
 import pytz
 import unittest
 
-from decimal import Decimal
 from temba_expressions.dates import DateStyle
 from temba_expressions.evaluator import EvaluationContext
 from .definition.flow import Flow, ActionSet, RuleSet
@@ -336,6 +335,135 @@ class TestsTest(BaseFlowsTest):
         self.assertTest(test, "4l dogs", True, "4l", Decimal(41))
         self.assertTest(test, "cats", False, None)
         self.assertTest(test, "dogs", False, None)
+
+    def test_equal_test(self):
+        test = EqualTest("32 ")
+        self.assertTest(test, "3l", False, None)
+        self.assertTest(test, "32", True, "32", Decimal(32))
+        self.assertTest(test, "33", False, None)
+
+        # test can be an expression
+        test = EqualTest("@(contact.age - 2)")
+
+        self.assertTest(test, "3l", False, None)
+        self.assertTest(test, "32", True, "32", Decimal(32))
+        self.assertTest(test, "33", False, None)
+
+    def test_less_than_test(self):
+        test = LessThanTest("32 ")
+        self.assertTest(test, "3l", True, "3l", Decimal(31))
+        self.assertTest(test, "32", False, None)
+        self.assertTest(test, "33", False, None)
+
+        # test can be an expression
+        test = LessThanTest("@(contact.age - 2)")
+
+        self.assertTest(test, "3l", True, "3l", Decimal(31))
+        self.assertTest(test, "32", False, None)
+        self.assertTest(test, "33", False, None)
+
+    def test_less_than_or_equal_test(self):
+        test = LessThanOrEqualTest("32 ")
+        self.assertTest(test, "3l", True, "3l", Decimal(31))
+        self.assertTest(test, "32", True, "32", Decimal(32))
+        self.assertTest(test, "33", False, None)
+
+        # test can be an expression
+        test = LessThanOrEqualTest("@(contact.age - 2)")
+
+        self.assertTest(test, "3l", True, "3l", Decimal(31))
+        self.assertTest(test, "32", True, "32", Decimal(32))
+        self.assertTest(test, "33", False, None)
+
+    def test_greater_than_test(self):
+        test = GreaterThanTest("32 ")
+        self.assertTest(test, "3l", False, None)
+        self.assertTest(test, "32", False, None)
+        self.assertTest(test, "33", True, "33", Decimal(33))
+
+        # test can be an expression
+        test = GreaterThanTest("@(contact.age - 2)")
+
+        self.assertTest(test, "3l", False, None)
+        self.assertTest(test, "32", False, None)
+        self.assertTest(test, "33", True, "33", Decimal(33))
+
+    def test_greater_than_or_equal_test(self):
+        test = GreaterThanOrEqualTest("32 ")
+        self.assertTest(test, "3l", False, None)
+        self.assertTest(test, "32", True, "32", Decimal(32))
+        self.assertTest(test, "33", True, "33", Decimal(33))
+
+        # test can be an expression
+        test = GreaterThanOrEqualTest("@(contact.age - 2)")
+
+        self.assertTest(test, "3l", False, None)
+        self.assertTest(test, "32", True, "32", Decimal(32))
+        self.assertTest(test, "33", True, "33", Decimal(33))
+
+    def test_has_date_test(self):
+        HasDateTest.from_json({}, self.deserialization_context)
+
+        test = HasDateTest()
+
+        self.assertTest(test, "December 14, 1992", True, "December 14, 1992", datetime.date(1992, 12, 14))
+        self.assertTest(test, "sometime on 24/8/15", True, "sometime on 24/8/15", datetime.date(2015, 8, 24))
+
+        self.assertTest(test, "no date in this text", False, None)
+
+        # this differs from old implementation which was a bit too flexible regarding dates
+        self.assertTest(test, "123", False, None)
+
+    def test_date_equal_test(self):
+        test = DateEqualTest("24/8/2015")
+
+        self.assertTest(test, "23-8-15", False, None)
+        self.assertTest(test, "Aug 24, 2015", True, "Aug 24, 2015", datetime.date(2015, 8, 24))
+        self.assertTest(test, "Twas 25th Aug '15", False, None)
+
+        # date can be an expression
+        self.context.put_variable("dob", "24-08-2015")
+        test = DateEqualTest("@(dob)")
+
+        self.assertTest(test, "23-8-15", False, None)
+        self.assertTest(test, "Aug 24, 2015", True, "Aug 24, 2015", datetime.date(2015, 8, 24))
+        self.assertTest(test, "Twas 25th Aug '15", False, None)
+
+    def test_date_after_test(self):
+        test = DateAfterTest.from_json({"test": "December 14, 1892"}, self.deserialization_context)
+        self.assertEqual(test.test, "December 14, 1892")
+
+        test = DateAfterTest("24/8/2015")
+
+        self.assertTest(test, "23-8-15", False, None)
+        self.assertTest(test, "Aug 24, 2015", True, "Aug 24, 2015", datetime.date(2015, 8, 24))
+        self.assertTest(test, "Twas 25th Aug '15", True, "Twas 25th Aug '15", datetime.date(2015, 8, 25))
+
+        # date can be an expression
+        self.context.put_variable("dob", "24-08-2015")
+        test = DateAfterTest("@(dob)")
+
+        self.assertTest(test, "23-8-15", False, None)
+        self.assertTest(test, "Aug 24, 2015", True, "Aug 24, 2015", datetime.date(2015, 8, 24))
+        self.assertTest(test, "Twas 25th Aug '15", True, "Twas 25th Aug '15", datetime.date(2015, 8, 25))
+
+    def test_date_before_test(self):
+        test = DateBeforeTest.from_json({"test": "December 14, 1892"}, self.deserialization_context)
+        self.assertEqual(test.test, "December 14, 1892")
+
+        test = DateBeforeTest("24/8/2015")
+
+        self.assertTest(test, "23-8-15", True, "23-8-15", datetime.date(2015, 8, 23))
+        self.assertTest(test, "Aug 24, 2015", True, "Aug 24, 2015", datetime.date(2015, 8, 24))
+        self.assertTest(test, "Twas 25th Aug '15", False, None)
+
+        # date can be an expression
+        self.context.put_variable("dob", "24-08-2015")
+        test = DateBeforeTest("@(dob)")
+
+        self.assertTest(test, "23-8-15", True, "23-8-15", datetime.date(2015, 8, 23))
+        self.assertTest(test, "Aug 24, 2015", True, "Aug 24, 2015", datetime.date(2015, 8, 24))
+        self.assertTest(test, "Twas 25th Aug '15", False, None)
 
 
 class TranslatableTextTest(unittest.TestCase):

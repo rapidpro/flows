@@ -381,3 +381,21 @@ class Runner(object):
         :return: the evaluated template, e.g. "Hi Joe"
         """
         return self.template_evaluator.evaluate_template(text, context, False, EvaluationStrategy.RESOLVE_AVAILABLE)
+
+    def update_contact_field(self, run, key, value):
+        """
+        Updates a field on the contact for the given run
+        :param run: the current run state
+        :param key: the field key
+        :param value: the field value
+        """
+        # TODO
+        pass
+
+    def update_extra(self, run, values):
+        """
+        Updates the extra key values for the given run state
+        :param run: the run state
+        :param values: the key values
+        """
+        run.extra.update(values)

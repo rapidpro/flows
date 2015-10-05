@@ -8,6 +8,7 @@ import io.rapidpro.flows.definition.RuleSet;
 import org.threeten.bp.Instant;
 
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -184,5 +185,14 @@ public class Runner {
         }
 
         run.getContact().setField(key, actualValue);
+    }
+
+    /**
+     * Updates the extra key value store for the given run state
+     * @param run the run state
+     * @param values the key values
+     */
+    public void updateExtra(RunState run, Map<String, ?> values) {
+        run.getExtra().putAll(values);
     }
 }

@@ -7,7 +7,7 @@ import io.rapidpro.flows.runner.Runner;
 import org.threeten.bp.LocalDate;
 
 /**
- * Abstract base class for date tests which compare the input against a value
+ * Base class for date tests which compare the input against a value
  */
 public abstract class DateComparisonTest extends DateTest {
 

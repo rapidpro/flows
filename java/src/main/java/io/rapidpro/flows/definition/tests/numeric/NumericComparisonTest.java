@@ -7,7 +7,7 @@ import io.rapidpro.flows.runner.Runner;
 import java.math.BigDecimal;
 
 /**
- * Abstract base class for numeric tests which compare the input against a value
+ * Base class for numeric tests which compare the input against a value
  */
 public abstract class NumericComparisonTest extends NumericTest {
 
@@ -27,7 +27,6 @@ public abstract class NumericComparisonTest extends NumericTest {
         if (!test.hasErrors()) {
             try {
                 BigDecimal testVal = new BigDecimal(test.getOutput().trim());
-
                 return doComparison(input, testVal);
             }
             catch (NumberFormatException ignored) {}

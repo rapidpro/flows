@@ -22,10 +22,10 @@ public class RegexTestTest extends BaseTestTest {
         assertTest(test, "Isaac Newton", true, "Isaac Newton");
         assertTest(test, "Isaac", false, null);
 
-        assertThat(m_run.getExtra(), hasEntry("0", "Isaac Newton"));
-        assertThat(m_run.getExtra(), hasEntry("1", "Isaac"));
-        assertThat(m_run.getExtra(), hasEntry("2", "Newton"));
-        assertThat(m_run.getExtra(), hasEntry("first_name", "Isaac"));
+        assertThat(m_run.getExtra(), hasEntry("0", (Object) "Isaac Newton"));
+        assertThat(m_run.getExtra(), hasEntry("1", (Object) "Isaac"));
+        assertThat(m_run.getExtra(), hasEntry("2", (Object) "Newton"));
+        assertThat(m_run.getExtra(), hasEntry("first_name", (Object) "Isaac"));
     }
 
     @Test

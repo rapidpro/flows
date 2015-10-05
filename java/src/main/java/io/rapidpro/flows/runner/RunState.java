@@ -45,7 +45,7 @@ public class RunState {
     protected Map<String, Value> m_values;
 
     @SerializedName("extra")
-    protected Map<String, String> m_extra;
+    protected Map<String, Object> m_extra;
 
     @SerializedName("state")
     protected State m_state;
@@ -199,7 +199,7 @@ public class RunState {
         return m_values;
     }
 
-    public Map<String, String> getExtra() {
+    public Map<String, Object> getExtra() {
         return m_extra;
     }
 

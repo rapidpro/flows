@@ -4,6 +4,7 @@ import regex
 
 from abc import ABCMeta, abstractmethod
 from decimal import Decimal
+from temba_expressions import conversions, EvaluationError
 from temba_expressions.utils import tokenize
 from . import TranslatableText, FlowParseException
 from ..utils import edit_distance
@@ -31,16 +32,16 @@ class Test(object):
                 StartsWithTest.TYPE: StartsWithTest,
                 RegexTest.TYPE: RegexTest,
                 HasNumberTest.TYPE: HasNumberTest,
-                # EqualTest.TYPE: EqualTest,
-                # LessThanTest.TYPE: LessThanTest,
-                # LessThanOrEqualTest.TYPE: LessThanOrEqualTest,
-                # GreaterThanTest.TYPE: GreaterThanTest,
-                # GreaterThanOrEqualTest.TYPE: GreaterThanOrEqualTest,
-                # BetweenTest.TYPE: BetweenTest,
-                # HasDateTest.TYPE: HasDateTest,
-                # DateEqualTest.TYPE: DateEqualTest,
-                # DateAfterTest.TYPE: DateAfterTest,
-                # DateBeforeTest.TYPE: DateBeforeTest,
+                EqualTest.TYPE: EqualTest,
+                LessThanTest.TYPE: LessThanTest,
+                LessThanOrEqualTest.TYPE: LessThanOrEqualTest,
+                GreaterThanTest.TYPE: GreaterThanTest,
+                GreaterThanOrEqualTest.TYPE: GreaterThanOrEqualTest,
+                BetweenTest.TYPE: BetweenTest,
+                HasDateTest.TYPE: HasDateTest,
+                DateEqualTest.TYPE: DateEqualTest,
+                DateAfterTest.TYPE: DateAfterTest,
+                DateBeforeTest.TYPE: DateBeforeTest,
                 # HasPhoneTest.TYPE: HasPhoneTest,
                 # HasDistrictTest.TYPE: HasDistrictTest,
                 # HasStateTest.TYPE: HasStateTest
@@ -162,7 +163,7 @@ class NotEmptyTest(Test):
     TYPE = 'not_empty'
 
     @classmethod
-    def from_json(cls, json_org, context):
+    def from_json(cls, json_obj, context):
         return NotEmptyTest()
 
     def evaluate(self, runner, run, context, text):
@@ -203,8 +204,8 @@ class ContainsTest(TranslatableTest):
     TYPE = 'contains'
 
     @classmethod
-    def from_json(cls, json_object, context):
-        return cls(TranslatableText.from_json(json_object['test']))
+    def from_json(cls, json_obj, context):
+        return cls(TranslatableText.from_json(json_obj['test']))
 
     @staticmethod
     def test_in_words(test, words, raw_words):
@@ -281,8 +282,8 @@ class StartsWithTest(TranslatableTest):
     TYPE = 'starts'
 
     @classmethod
-    def from_json(cls, json_object, context):
-        return cls(TranslatableText.from_json(json_object['test']))
+    def from_json(cls, json_obj, context):
+        return cls(TranslatableText.from_json(json_obj['test']))
 
     def evaluate_for_localized(self, runner, run, context, text, localized_test):
         localized_test, errors = runner.substitute_variables(localized_test, context)
@@ -304,8 +305,8 @@ class RegexTest(TranslatableTest):
     TYPE = 'regex'
 
     @classmethod
-    def from_json(cls, json_object, context):
-        return cls(TranslatableText.from_json(json_object['test']))
+    def from_json(cls, json_obj, context):
+        return cls(TranslatableText.from_json(json_obj['test']))
 
     def evaluate_for_localized(self, runner, run, context, text, localized_test):
         try:
@@ -323,7 +324,7 @@ class RegexTest(TranslatableTest):
                     group_dict[str(idx)] = match.group(idx)
 
                 # update @extra
-                run.extra.update(group_dict)
+                runner.update_extra(run, group_dict)
 
                 # return all matched values
                 return Test.Result.match(return_match)
@@ -396,3 +397,228 @@ class HasNumberTest(NumericTest):
 
     def evaluate_for_decimal(self, runner, context, decimal):
         return True  # this method is only called on decimals parsed from the input
+
+
+class NumericComparisonTest(NumericTest):
+    """
+    Base class for numeric tests which compare the input against a value
+    """
+    __metaclass__ = ABCMeta
+
+    def __init__(self, test):
+        self.test = test
+
+    def evaluate_for_decimal(self, runner, context, input):
+        test, errors = runner.substitute_variables(self.test, context)
+
+        if not errors:
+            try:
+                test_val = Decimal(test.strip())
+                return self.do_comparison(input, test_val)
+            except Exception:
+                pass
+        return False
+
+    @abstractmethod
+    def do_comparison(self, input, test):
+        pass
+
+
+class EqualTest(NumericComparisonTest):
+    """
+    Test which returns whether input is numerically equal a value
+    """
+    TYPE = 'eq'
+
+    @classmethod
+    def from_json(cls, json_obj, context):
+        return cls(json_obj['test'])
+
+    def do_comparison(self, input, test):
+        return input == test
+
+
+class LessThanTest(NumericComparisonTest):
+    """
+    Test which returns whether input is numerically less than a value
+    """
+    TYPE = 'lt'
+
+    @classmethod
+    def from_json(cls, json_obj, context):
+        return cls(json_obj['test'])
+
+    def do_comparison(self, input, test):
+        return input < test
+
+
+class LessThanOrEqualTest(NumericComparisonTest):
+    """
+    Test which returns whether input is numerically less than or equal to a value
+    """
+    TYPE = 'lte'
+
+    @classmethod
+    def from_json(cls, json_obj, context):
+        return cls(json_obj['test'])
+
+    def do_comparison(self, input, test):
+        return input <= test
+
+
+class GreaterThanTest(NumericComparisonTest):
+    """
+    Test which returns whether input is numerically greater than a value
+    """
+    TYPE = 'gt'
+
+    @classmethod
+    def from_json(cls, json_obj, context):
+        return cls(json_obj['test'])
+
+    def do_comparison(self, input, test):
+        return input > test
+
+
+class GreaterThanOrEqualTest(NumericComparisonTest):
+    """
+    Test which returns whether input is numerically greater than or equal to a value
+    """
+    TYPE = 'gte'
+
+    @classmethod
+    def from_json(cls, json_obj, context):
+        return cls(json_obj['test'])
+
+    def do_comparison(self, input, test):
+        return input >= test
+
+
+class BetweenTest(NumericTest):
+    """
+    Test which returns whether input is a number between two numbers (inclusive)
+    """
+    TYPE = "between"
+
+    def __init__(self, min_val, max_val):
+        self.min = min_val
+        self.max = max_val
+
+    @classmethod
+    def from_json(cls, json_obj, context):
+        return cls(json_obj['min'], json_obj['max'])
+
+    def evaluate_for_decimal(self, runner, context, decimal):
+        min_val, min_errors = runner.substitute_variables(self.min, context)
+        max_val, max_errors = runner.substitute_variables(self.max, context)
+
+        if not min_errors and not max_errors:
+            try:
+                return Decimal(min_val) <= decimal <= Decimal(max_val)
+            except Exception:
+                pass
+
+        return False
+
+
+class DateTest(Test):
+    """
+    Base class for tests that are date based
+    """
+    __metaclass__ = ABCMeta
+
+    def evaluate(self, runner, run, context, text):
+        try:
+            date = conversions.to_date(text, context)
+            if self.evaluate_for_date(runner, context, date):
+                return Test.Result.match(text, date)
+        except EvaluationError:
+            pass
+
+        return Test.Result.NO_MATCH
+
+    @abstractmethod
+    def evaluate_for_date(self, runner, context, date):
+        pass
+
+
+class HasDateTest(DateTest):
+    """
+    Test which returns whether input has a valid date
+    """
+    TYPE = 'date'
+
+    @classmethod
+    def from_json(cls, json_obj, context):
+        return cls()
+
+    def evaluate_for_date(self, runner, context, date):
+        return True  # this method is only called on dates parsed from the input
+
+
+class DateComparisonTest(DateTest):
+    """
+    Base class for date tests which compare the input against a value
+    """
+    __metaclass__ = ABCMeta
+
+    def __init__(self, test):
+        self.test = test
+
+    def evaluate_for_date(self, runner, context, date):
+        test, errors = runner.substitute_variables(self.test, context)
+
+        if not errors:
+            try:
+                test_val = conversions.to_date(test, context)
+                return self.do_comparison(date, test_val)
+            except Exception:
+                pass
+
+        return False
+
+    @abstractmethod
+    def do_comparison(self, date, test):
+        pass
+
+
+class DateEqualTest(DateComparisonTest):
+    """
+    Test which returns whether input is a date equal to the given value
+    """
+    TYPE = 'date_equal'
+
+    @classmethod
+    def from_json(cls, json_obj, context):
+        return cls(json_obj['test'])
+
+    def do_comparison(self, date, test):
+        return date == test
+
+
+class DateAfterTest(DateComparisonTest):
+    """
+    Test which returns whether input is a date after the given value
+    """
+    TYPE = 'date_after'
+
+    @classmethod
+    def from_json(cls, json_obj, context):
+        return cls(json_obj['test'])
+
+    def do_comparison(self, date, test):
+        return date >= test
+
+
+class DateBeforeTest(DateComparisonTest):
+    """
+    Test which returns whether input is a date before the given value
+    """
+    TYPE = 'date_after'
+
+    @classmethod
+    def from_json(cls, json_obj, context):
+        return cls(json_obj['test'])
+
+    def do_comparison(self, date, test):
+        return date <= test
