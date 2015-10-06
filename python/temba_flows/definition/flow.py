@@ -36,10 +36,11 @@ class Flow(object):
     @classmethod
     def from_json(cls, json_obj):
         flow_type = Flow.Type.from_code(json_obj['flow_type'])
-        base_language = json_obj.get('base_language', None)
-        flow = Flow(flow_type, base_language)
 
         definition = json_obj['definition']
+        base_language = definition.get('base_language', None)
+
+        flow = Flow(flow_type, base_language)
 
         # keep an exhaustive list of all languages in our flow definition
         languages = []

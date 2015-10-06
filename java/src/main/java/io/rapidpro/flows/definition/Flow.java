@@ -59,9 +59,9 @@ public class Flow {
 
             Flow flow = new Flow();
             flow.m_type = jsonContext.deserialize(obj.get("flow_type"), Type.class);
-            flow.m_baseLanguage = JsonUtils.getAsString(obj, "base_language");
 
             JsonObject definition = obj.get("definition").getAsJsonObject();
+            flow.m_baseLanguage = JsonUtils.getAsString(definition, "base_language");
 
             // keep an exhaustive list of all languages in our flow definition
             Set<String> languages = new HashSet<>();

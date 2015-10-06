@@ -1,8 +1,8 @@
 {
   "name": "Empty Flow",
   "flow_type": "S",
-  "base_language": "eng",
   "definition": {
+    "base_language": "eng",
     "action_sets": [],
     "last_saved": "2015-08-24T07:33:25.421535Z",
     "entry": null,

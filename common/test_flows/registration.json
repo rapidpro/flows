@@ -1,8 +1,8 @@
 {
   "name": "U-Report Registration",
   "flow_type": "S",
-  "base_language": "eng",
   "definition": {
+    "base_language": "eng",
     "action_sets": [
       {
         "y": 37,

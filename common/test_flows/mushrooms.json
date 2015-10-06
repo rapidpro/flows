@@ -1,8 +1,8 @@
 {
   "name": "Mushrooms",
   "flow_type": "F",
-  "base_language": "eng",
   "definition": {
+    "base_language": "eng",
     "action_sets": [
       {
         "y": 0,
