@@ -2,7 +2,12 @@ package io.rapidpro.flows.runner;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import io.rapidpro.expressions.EvaluationContext;
+import io.rapidpro.expressions.dates.DateStyle;
 import io.rapidpro.flows.BaseFlowsTest;
+import io.rapidpro.flows.RunnerBuilder;
+import io.rapidpro.flows.definition.Flow;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Map;
@@ -14,6 +19,21 @@ import static org.junit.Assert.assertThat;
  * Test for {@link Contact}
  */
 public class ContactTest extends BaseFlowsTest {
+
+    protected Runner m_runner;
+
+    protected RunState m_run;
+
+    protected EvaluationContext m_context;
+
+    @Before
+    public void setupRunState() throws Exception {
+        Flow flow = Flow.fromJson(readResource("test_flows/mushrooms.json"));
+
+        m_runner = new RunnerBuilder().withLocationResolver(new TestLocationResolver()).build();
+        m_run = m_runner.start(m_org, m_fields, m_contact, flow);
+        m_context = m_run.buildContext(null);
+    }
 
     @Test
     public void toAndFromJson() {
@@ -61,7 +81,7 @@ public class ContactTest extends BaseFlowsTest {
 
     @Test
     public void buildContext() {
-        Map<String, String> context =  m_contact.buildContext(m_org);
+        Map<String, String> context =  m_contact.buildContext(m_run, m_context);
         assertThat(context, hasEntry("*", "Joe Flow"));
         assertThat(context, hasEntry("name", "Joe Flow"));
         assertThat(context, hasEntry("first_name", "Joe"));
@@ -75,9 +95,11 @@ public class ContactTest extends BaseFlowsTest {
 
         assertThat(context, hasEntry("gender", "M"));
         assertThat(context, hasEntry("age", "34"));
+        assertThat(context, hasEntry("joined", "06-10-2015 13:30"));
 
         m_org.m_anon = true;
-        context =  m_contact.buildContext(m_org);
+        m_context.setDateStyle(DateStyle.MONTH_FIRST);
+        context =  m_contact.buildContext(m_run, m_context);
         assertThat(context, hasEntry("*", "Joe Flow"));
         assertThat(context, hasEntry("name", "Joe Flow"));
         assertThat(context, hasEntry("first_name", "Joe"));
@@ -91,5 +113,6 @@ public class ContactTest extends BaseFlowsTest {
 
         assertThat(context, hasEntry("gender", "M"));
         assertThat(context, hasEntry("age", "34"));
+        assertThat(context, hasEntry("joined", "10-06-2015 13:30"));
     }
 }

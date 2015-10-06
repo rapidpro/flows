@@ -22,7 +22,8 @@ class BaseFlowsTest(unittest.TestCase):
 
         self.fields = [
             Field("gender", "Gender", Field.ValueType.TEXT),
-            Field("age", "Age", Field.ValueType.DECIMAL)
+            Field("age", "Age", Field.ValueType.DECIMAL),
+            Field("joined", "Joined", Field.ValueType.DATETIME)
         ]
 
         self.contact = Contact('1234-1234',
@@ -30,7 +31,7 @@ class BaseFlowsTest(unittest.TestCase):
                                [ContactUrn.from_string("tel:+260964153686"),
                                 ContactUrn.from_string("twitter:realJoeFlow")],
                                ["Testers", "Developers"],
-                               {"gender": "M", "age": "34"},
+                               {"gender": "M", "age": "34", "joined": "2015-10-06T11:30:01.123Z"},
                                'eng')
 
     @staticmethod
@@ -56,6 +57,14 @@ class BaseFlowsTest(unittest.TestCase):
 
 
 class ContactTest(BaseFlowsTest):
+    def setUp(self):
+        super(ContactTest, self).setUp()
+
+        flow = Flow.from_json(json.loads(self.read_resource("test_flows/mushrooms.json")))
+        self.runner = Runner(location_resolver=BaseFlowsTest.TestLocationResolver())
+        self.run = self.runner.start(self.org, self.fields, self.contact, flow)
+        self.context = self.run.build_context(None)
+
     def test_to_and_from_json(self):
         json_str = json.dumps(self.contact.to_json())
 
@@ -66,7 +75,7 @@ class ContactTest(BaseFlowsTest):
         self.assertEqual(contact.urns, [ContactUrn(ContactUrn.Scheme.TEL, "+260964153686"),
                                         ContactUrn(ContactUrn.Scheme.TWITTER, "realJoeFlow")])
         self.assertEqual(contact.groups, {"Testers", "Developers"})
-        self.assertEqual(contact.fields, {"age": "34", "gender": "M"})
+        self.assertEqual(contact.fields, {"age": "34", "gender": "M", "joined": "2015-10-06T11:30:01.123Z"})
         self.assertEqual(contact.language, 'eng')
 
     def test_get_first_name(self):
@@ -94,7 +103,7 @@ class ContactTest(BaseFlowsTest):
         self.assertEqual(self.contact.name, "Bob")
 
     def test_build_context(self):
-        context = self.contact.build_context(self.org)
+        context = self.contact.build_context(self.run, self.context)
         self.assertEqual(context, {'*': "Joe Flow",
                                    'name': "Joe Flow",
                                    'first_name': "Joe",
@@ -105,9 +114,11 @@ class ContactTest(BaseFlowsTest):
                                    'tel': "096 4153686",
                                    'twitter': "realJoeFlow",
                                    'gender': "M",
-                                   'age': "34"})
+                                   'age': "34",
+                                   'joined': "06-10-2015 13:30"})
         self.org.is_anon = True
-        context = self.contact.build_context(self.org)
+        self.context.date_style = DateStyle.MONTH_FIRST
+        context = self.contact.build_context(self.run, self.context)
         self.assertEqual(context, {'*': "Joe Flow",
                                    'name': "Joe Flow",
                                    'first_name': "Joe",
@@ -118,7 +129,8 @@ class ContactTest(BaseFlowsTest):
                                    'tel': "1234-1234",
                                    'twitter': "1234-1234",
                                    'gender': "M",
-                                   'age': "34"})
+                                   'age': "34",
+                                   'joined': "10-06-2015 13:30"})
 
 
 class FlowTest(BaseFlowsTest):
@@ -152,13 +164,21 @@ class FlowTest(BaseFlowsTest):
 
 
 class InputTest(BaseFlowsTest):
+    def setUp(self):
+        super(InputTest, self).setUp()
+
+        flow = Flow.from_json(json.loads(self.read_resource("test_flows/mushrooms.json")))
+        self.runner = Runner(location_resolver=BaseFlowsTest.TestLocationResolver())
+        self.run = self.runner.start(self.org, self.fields, self.contact, flow)
+        self.context = self.run.build_context(None)
+
     def test_build_context(self):
         time = datetime.datetime(2015, 9, 30, 14, 31, 30, 0, pytz.UTC)
         _input = Input("Hello", time)
 
         container = EvaluationContext({}, pytz.timezone("Africa/Kigali"), DateStyle.DAY_FIRST)
 
-        contact_context = self.contact.build_context(self.org)
+        contact_context = self.contact.build_context(self.run, self.context)
 
         context = _input.build_context(container, contact_context)
         self.assertEqual(context, {'*': "Hello",

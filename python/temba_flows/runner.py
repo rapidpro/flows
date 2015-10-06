@@ -155,17 +155,18 @@ class Contact(object):
         # TODO where can we get the usual anon identifier from? Is UUID an ok substitute?
         return self.uuid
 
-    def build_context(self, org):
+    def build_context(self, run, container):
         """
         Builds the evaluation context for this contact
-        :param org: the org
+        :param run: the current run state
+        :param container: the containing evaluation context
         :return: the context
         """
         context = {
-            '*': self.get_display(org, False),
+            '*': self.get_display(run.org, False),
             'name': self.name,
-            'first_name': self.get_first_name(org),
-            'tel_e164': self.get_urn_display(org, ContactUrn.Scheme.TEL, True),
+            'first_name': self.get_first_name(run.org),
+            'tel_e164': self.get_urn_display(run.org, ContactUrn.Scheme.TEL, True),
             'groups': ",".join(self.groups),
             'uuid': self.uuid,
             'language': self.language
@@ -173,10 +174,18 @@ class Contact(object):
 
         # add all URNs
         for scheme in ContactUrn.Scheme.__members__.values():
-            context[unicode(scheme.name).lower()] = self.get_urn_display(org, scheme, False)
+            context[unicode(scheme.name).lower()] = self.get_urn_display(run.org, scheme, False)
 
         # add all fields
-        for key, value in self.fields.iteritems():
+        for key, raw_value in self.fields.iteritems():
+            field = run.get_or_create_field(key)
+
+            if field and field.value_type == Field.ValueType.DATETIME:
+                as_datetime = conversions.to_datetime(raw_value, container)
+                value = conversions.to_string(as_datetime, container)
+            else:
+                value = raw_value
+
             context[key] = value
 
         return context
@@ -333,7 +342,7 @@ class RunState(object):
     def build_context(self, input):
         context = EvaluationContext({}, self.org.timezone, self.org.date_style)
 
-        contact_context = self.contact.build_context(self.org)
+        contact_context = self.contact.build_context(self, context)
 
         if input is not None:
             context.put_variable("step", input.build_context(context, contact_context))
@@ -391,6 +400,16 @@ class RunState(object):
             if step.is_completed or self.state == RunState.State.COMPLETED:
                 completed.append(step)
         return completed
+
+    def get_or_create_field(self, key):
+        # TODO get this into a map for efficiency
+        for field in self.fields:
+            if field.key == key:
+                return field
+
+        field = Field(key, key.title(), Field.ValueType.TEXT)
+        self.fields.append(field)
+        return field
 
     def get_created_fields(self):
         return [f for f in self.fields if f.is_new]

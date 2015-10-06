@@ -115,7 +115,7 @@ public class RunState {
     public EvaluationContext buildContext(Input input) {
         EvaluationContext context = new EvaluationContext(new HashMap<String, Object>(), m_org.getTimezone(), m_org.getDateStyle());
 
-        Map<String, String> contactContext = m_contact.buildContext(m_org);
+        Map<String, String> contactContext = m_contact.buildContext(this, context);
 
         if (input != null) {
             context.putVariable("step", input.buildContext(context, contactContext));

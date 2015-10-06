@@ -37,12 +37,14 @@ public abstract class BaseFlowsTest {
 
         m_fields = new ArrayList<>(Arrays.asList(
                 new Field("gender", "Gender", Field.ValueType.TEXT),
-                new Field("age", "Age", Field.ValueType.DECIMAL)
+                new Field("age", "Age", Field.ValueType.DECIMAL),
+                new Field("joined", "Joined", Field.ValueType.DATETIME)
         ));
 
         Map<String, String> contactFieldValues = new HashMap<>();
         contactFieldValues.put("gender", "M");
         contactFieldValues.put("age", "34");
+        contactFieldValues.put("joined", "2015-10-06T11:30:01.123Z");
 
         m_contact = new Contact(
                 "1234-1234",

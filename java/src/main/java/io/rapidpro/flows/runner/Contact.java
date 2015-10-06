@@ -1,9 +1,10 @@
 package io.rapidpro.flows.runner;
 
-import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
-import io.rapidpro.flows.utils.JsonUtils;
+import io.rapidpro.expressions.EvaluationContext;
+import io.rapidpro.expressions.evaluator.Conversions;
 import org.apache.commons.lang3.StringUtils;
+import org.threeten.bp.ZonedDateTime;
 
 import java.util.*;
 
@@ -156,27 +157,39 @@ public class Contact {
 
     /**
      * Builds the evaluation context for this contact
-     * @param org the org
+     * @param run the current run state
+     * @param container the containing evaluation context
      * @return the context
      */
-    public Map<String, String> buildContext(Org org) {
+    public Map<String, String> buildContext(RunState run, EvaluationContext container) {
         Map<String, String> context = new HashMap<>();
-        context.put("*", getDisplay(org, false));
+        context.put("*", getDisplay(run.getOrg(), false));
         context.put("name", m_name);
-        context.put("first_name", getFirstName(org));
-        context.put("tel_e164", getUrnDisplay(org, ContactUrn.Scheme.TEL, true));
+        context.put("first_name", getFirstName(run.getOrg()));
+        context.put("tel_e164", getUrnDisplay(run.getOrg(), ContactUrn.Scheme.TEL, true));
         context.put("groups", StringUtils.join(m_groups, ","));
         context.put("uuid", m_uuid);
         context.put("language", m_language);
 
         // add all URNs
         for (ContactUrn.Scheme scheme : ContactUrn.Scheme.values()) {
-            context.put(scheme.name().toLowerCase(), getUrnDisplay(org, scheme, false));
+            context.put(scheme.name().toLowerCase(), getUrnDisplay(run.getOrg(), scheme, false));
         }
 
         // add all fields
-        for (Map.Entry<String, String> field : m_fields.entrySet()) {
-            context.put(field.getKey(), field.getValue());
+        for (Map.Entry<String, String> entry : m_fields.entrySet()) {
+            String rawValue = entry.getValue();
+            Field field = run.getOrCreateField(entry.getKey());
+            String value;
+
+            if (field != null && field.getValueType().equals(Field.ValueType.DATETIME)) {
+                ZonedDateTime asDatetime = Conversions.toDateTime(rawValue, container);
+                value = Conversions.toString(asDatetime, container);
+            } else {
+                value = entry.getValue();
+            }
+
+            context.put(entry.getKey(), value);
         }
 
         return context;

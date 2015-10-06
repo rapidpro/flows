@@ -33,7 +33,7 @@ public class RunnerTest extends BaseFlowsTest {
         assertThat(run.getContact().getName(), is("Joe Flow"));
         assertThat(run.getContact().getUrns(), contains(new ContactUrn(ContactUrn.Scheme.TEL, "+260964153686"), new ContactUrn(ContactUrn.Scheme.TWITTER, "realJoeFlow")));
         assertThat(run.getContact().getGroups(), containsInAnyOrder("Testers", "Developers"));
-        assertThat(run.getContact().getFields().size(), is(2));
+        assertThat(run.getContact().getFields().size(), is(3));
         assertThat(run.getContact().getLanguage(), is("eng"));
 
         assertThat(run.getSteps(), hasSize(2));

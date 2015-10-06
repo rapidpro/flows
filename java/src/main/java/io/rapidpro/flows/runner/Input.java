@@ -42,7 +42,8 @@ public class Input {
 
     /**
      * Builds the evaluation context for this input
-     * @param container the evaluation context
+     * @param container the containing evaluation context
+     * @param contactContext the contact context
      * @return the context
      */
     public Map<String, Object> buildContext(EvaluationContext container, Map<String, String> contactContext) {

@@ -3,6 +3,9 @@ package io.rapidpro.flows.runner;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.dates.DateStyle;
 import io.rapidpro.flows.BaseFlowsTest;
+import io.rapidpro.flows.RunnerBuilder;
+import io.rapidpro.flows.definition.Flow;
+import org.junit.Before;
 import org.junit.Test;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.ZoneId;
@@ -21,6 +24,21 @@ import static org.junit.Assert.assertThat;
  */
 public class InputTest extends BaseFlowsTest {
 
+    protected Runner m_runner;
+
+    protected RunState m_run;
+
+    protected EvaluationContext m_context;
+
+    @Before
+    public void setupRunState() throws Exception {
+        Flow flow = Flow.fromJson(readResource("test_flows/mushrooms.json"));
+
+        m_runner = new RunnerBuilder().withLocationResolver(new TestLocationResolver()).build();
+        m_run = m_runner.start(m_org, m_fields, m_contact, flow);
+        m_context = m_run.buildContext(null);
+    }
+
     @Test
     public void buildContext() {
         Input input = Input.of("Hello");
@@ -28,7 +46,7 @@ public class InputTest extends BaseFlowsTest {
 
         EvaluationContext container = new EvaluationContext(new HashMap<String, Object>(), ZoneId.of("Africa/Kigali"), DateStyle.DAY_FIRST);
 
-        Map<String, String> contactContext = m_contact.buildContext(m_org);
+        Map<String, String> contactContext = m_contact.buildContext(m_run, container);
 
         Map<String, Object> context =  input.buildContext(container, contactContext);
         assertThat(context, hasEntry("*", (Object) "Hello"));
