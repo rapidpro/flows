@@ -18,7 +18,7 @@ public class ContactTest extends BaseFlowsTest {
     @Test
     public void toAndFromJson() {
         Gson gson = new GsonBuilder().create();
-        String json = gson.toJson(getContact());
+        String json = gson.toJson(m_contact);
 
         Contact contact = gson.fromJson(json, Contact.class);
 
@@ -61,7 +61,7 @@ public class ContactTest extends BaseFlowsTest {
 
     @Test
     public void buildContext() {
-        Map<String, String> context =  getContact().buildContext(getOrg());
+        Map<String, String> context =  m_contact.buildContext(m_org);
         assertThat(context, hasEntry("*", "Joe Flow"));
         assertThat(context, hasEntry("name", "Joe Flow"));
         assertThat(context, hasEntry("first_name", "Joe"));
@@ -77,7 +77,7 @@ public class ContactTest extends BaseFlowsTest {
         assertThat(context, hasEntry("age", "34"));
 
         m_org.m_anon = true;
-        context =  getContact().buildContext(getOrg());
+        context =  m_contact.buildContext(m_org);
         assertThat(context, hasEntry("*", "Joe Flow"));
         assertThat(context, hasEntry("name", "Joe Flow"));
         assertThat(context, hasEntry("first_name", "Joe"));

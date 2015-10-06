@@ -31,9 +31,9 @@ public class HasStateTest extends Test {
     public Result evaluate(Runner runner, RunState run, EvaluationContext context, String text) {
         String country = run.getOrg().getCountry();
         if (StringUtils.isNotEmpty(country)) {
-            Location location = runner.getLocationResolver().resolve(text, country, Location.Level.STATE, null);
-            if (location != null) {
-                return Result.match(location.getName());
+            Location state = runner.parseLocation(text, country, Location.Level.STATE, null);
+            if (state != null) {
+                return Result.match(state.getName());
             }
         }
 

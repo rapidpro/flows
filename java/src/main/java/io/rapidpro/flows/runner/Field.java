@@ -3,7 +3,7 @@ package io.rapidpro.flows.runner;
 import com.google.gson.annotations.SerializedName;
 
 /**
- *
+ * A contact field
  */
 public class Field {
 
@@ -24,6 +24,8 @@ public class Field {
     @SerializedName("value_type")
     protected ValueType m_valueType;
 
+    protected boolean m_new = false;
+
     public Field() {
     }
 
@@ -31,18 +33,7 @@ public class Field {
         m_key = key;
         m_label = label;
         m_valueType = valueType;
-    }
-
-    /**
-     * Interface for anything that can provide contact fields
-     */
-    public interface Provider {
-        /**
-         * Resolves a field  from the given key
-         * @param key the field key
-         * @return the field or null if no such field exists
-         */
-        Field provide(String key);
+        m_new = true;
     }
 
     public String getKey() {
@@ -55,5 +46,39 @@ public class Field {
 
     public ValueType getValueType() {
         return m_valueType;
+    }
+
+    public boolean isNew() {
+        return m_new;
+    }
+
+    @Override
+    public String toString() {
+        return "Field{" +
+                "m_key='" + m_key + '\'' +
+                ", m_label='" + m_label + '\'' +
+                ", m_valueType=" + m_valueType +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Field field = (Field) o;
+
+        if (!m_key.equals(field.m_key)) return false;
+        if (!m_label.equals(field.m_label)) return false;
+        return m_valueType == field.m_valueType;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = m_key.hashCode();
+        result = 31 * result + m_label.hashCode();
+        result = 31 * result + m_valueType.hashCode();
+        return result;
     }
 }

@@ -12,13 +12,18 @@ from temba_expressions.evaluator import EvaluationContext
 from .definition.flow import Flow, ActionSet, RuleSet
 from .definition.actions import ReplyAction
 from .definition.tests import *
-from .runner import Contact, ContactUrn, Input, Org, Runner, RunState
+from .runner import Contact, ContactUrn, Field, Input, Location, Org, Runner, RunState
 from .utils import edit_distance
 
 
 class BaseFlowsTest(unittest.TestCase):
     def setUp(self):
         self.org = Org("RW", "eng", pytz.timezone("Africa/Kigali"), DateStyle.DAY_FIRST, False)
+
+        self.fields = [
+            Field("gender", "Gender", Field.ValueType.TEXT),
+            Field("age", "Age", Field.ValueType.DECIMAL)
+        ]
 
         self.contact = Contact('1234-1234',
                                "Joe Flow",
@@ -32,6 +37,22 @@ class BaseFlowsTest(unittest.TestCase):
     def read_resource(path):
         with codecs.open('test_files/%s' % path, encoding='utf-8') as f:
             return f.read()
+
+    class TestLocationResolver(Location.Resolver):
+        """
+        Location resolver for testing which has one state (Kigali) and one district (Gasabo)
+        """
+        def __init__(self):
+            self.kigali = Location("S0001", "Kigali", Location.Level.STATE)
+            self.gasabo = Location("D0001", "Gasabo", Location.Level.DISTRICT)
+
+        def resolve(self, text, country, level, parent):
+            if level == Location.Level.STATE and text.strip().lower() == "kigali":
+                return self.kigali
+            elif level == Location.Level.DISTRICT and text.strip().lower() == "gasabo" and parent == self.kigali:
+                return self.gasabo
+            else:
+                return None
 
 
 class ContactTest(BaseFlowsTest):
@@ -220,8 +241,8 @@ class TestsTest(BaseFlowsTest):
 
         self.deserialization_context = Flow.DeserializationContext(flow)
 
-        self.runner = Runner()
-        self.run = self.runner.start(self.org, self.contact, flow)
+        self.runner = Runner(location_resolver=BaseFlowsTest.TestLocationResolver())
+        self.run = self.runner.start(self.org, self.fields, self.contact, flow)
         self.context = self.run.build_context(None)
 
     def assertTest(self, test, input, expected_matched, expected_text, expected_value=None):
@@ -464,6 +485,40 @@ class TestsTest(BaseFlowsTest):
         self.assertTest(test, "23-8-15", True, "23-8-15", datetime.date(2015, 8, 23))
         self.assertTest(test, "Aug 24, 2015", True, "Aug 24, 2015", datetime.date(2015, 8, 24))
         self.assertTest(test, "Twas 25th Aug '15", False, None)
+
+    def test_has_phone_test(self):
+        HasPhoneTest.from_json({}, self.deserialization_context)
+
+        test = HasPhoneTest()
+
+        self.assertTest(test, "My phone number is 0788 383 383", True, "+250788383383")
+        self.assertTest(test, "+250788123123", True, "+250788123123")
+        self.assertTest(test, "+12067799294", True, "+12067799294")
+
+        self.assertTest(test, "My phone is 0124515", False, None)
+
+    def test_has_district_test(self):
+        test = HasDistrictTest.from_json({"test": "kigali"}, self.deserialization_context)
+        self.assertEqual(test.state, "kigali")
+
+        test = HasDistrictTest("kigali")
+
+        self.assertTest(test, " gasabo", True, "Gasabo")
+        self.assertTest(test, "Nine", False, None)
+
+        self.context.variables["extra"]["homestate"] = "Kigali"
+        test = HasDistrictTest("@extra.homestate")
+
+        self.assertTest(test, " gasabo", True, "Gasabo")
+        self.assertTest(test, "Nine", False, None)
+
+    def test_has_state_test(self):
+        HasStateTest.from_json({}, self.deserialization_context)
+
+        test = HasStateTest()
+
+        self.assertTest(test, " kigali", True, "Kigali")
+        self.assertTest(test, "Washington", False, None)
 
 
 class TranslatableTextTest(unittest.TestCase):

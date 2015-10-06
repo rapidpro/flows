@@ -50,7 +50,7 @@ public class RunStateTest extends BaseFlowsTest {
     public void toAndFromJson() throws Exception {
         Flow flow = Flow.fromJson(readResource("test_flows/mushrooms.json"));
         Runner runner = new RunnerBuilder().build();
-        RunState run = runner.start(getOrg(), getContact(), flow);
+        RunState run = runner.start(m_org, m_fields, m_contact, flow);
 
         // send our first message through so we have references to rules
         runner.resume(run, Input.of("Yes"));

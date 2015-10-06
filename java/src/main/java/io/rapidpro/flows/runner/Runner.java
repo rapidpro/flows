@@ -5,9 +5,11 @@ import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.evaluator.Evaluator;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.RuleSet;
+import org.apache.commons.lang3.StringUtils;
 import org.threeten.bp.Instant;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -18,25 +20,23 @@ public class Runner {
 
     protected Evaluator m_templateEvaluator;
 
-    protected Field.Provider m_fieldProvider;
-
     protected Location.Resolver m_locationResolver;
 
-    public Runner(Evaluator templateEvaluator, Field.Provider fieldProvider, Location.Resolver locationResolver) {
+    public Runner(Evaluator templateEvaluator, Location.Resolver locationResolver) {
         m_templateEvaluator = templateEvaluator;
-        m_fieldProvider = fieldProvider;
         m_locationResolver = locationResolver;
     }
 
     /**
      * Starts a new run
      * @param org the org
+     * @param fields the contact fields
      * @param contact the contact
      * @param flow the flow
      * @return the run state
      */
-    public RunState start(Org org, Contact contact, Flow flow) throws FlowRunException {
-        RunState run = new RunState(org, contact, flow);
+    public RunState start(Org org, List<Field> fields, Contact contact, Flow flow) throws FlowRunException {
+        RunState run = new RunState(org, fields, contact, flow);
         return resume(run, null);
     }
 
@@ -140,11 +140,18 @@ public class Runner {
     }
 
     /**
-     * Gets the location resolver used by this runner
-     * @return the resolver
+     * Parses a location from the given text
+     * @param text the text containing a location name
+     * @param country the 2-digit country code
+     * @param level the level
+     * @param parent the parent location (may be null)
+     * @return the location or null if no such location exists
      */
-    public Location.Resolver getLocationResolver() {
-        return m_locationResolver;
+    public Location parseLocation(String text, String country, Location.Level level, Location parent) {
+        if (m_locationResolver != null) {
+            return m_locationResolver.resolve(text, country, level, parent);
+        }
+        return null;
     }
 
     /**
@@ -154,11 +161,7 @@ public class Runner {
      * @param value the field value
      */
     public void updateContactField(RunState run, String key, String value) {
-        Field field = m_fieldProvider.provide(key);
-        if (field == null) {
-            field = new Field(key, null, Field.ValueType.TEXT);
-        }
-
+        Field field = run.getOrCreateField(key);
         String actualValue = null;
 
         switch (field.getValueType()) {
@@ -166,21 +169,29 @@ public class Runner {
             case DECIMAL:
             case DATETIME:
                 actualValue = value;
+                break;
             case STATE: {
                 Location state = m_locationResolver.resolve(value, run.getOrg().getCountry(), Location.Level.STATE, null);
                 if (state != null) {
                     actualValue = state.getName();
                 }
+                break;
             }
             case DISTRICT: {
-                String stateFieldKey = run.getOrg().getStateField();
-                if (stateFieldKey != null) {
-                    String stateName = run.getContact().getFields().get(stateFieldKey);
-                    Location district = m_locationResolver.resolve(value, run.getOrg().getCountry(), Location.Level.DISTRICT, stateName);
-                    if (district != null) {
-                        actualValue = district.getName();
+                Field stateField = getStateField(run);
+                if (stateField != null) {
+                    String stateName = run.getContact().getFields().get(stateField.getKey());
+                    if (StringUtils.isNotEmpty(stateName)) {
+                        Location state = m_locationResolver.resolve(stateName, run.getOrg().getCountry(), Location.Level.STATE, null);
+                        if (state != null) {
+                            Location district = m_locationResolver.resolve(value, run.getOrg().getCountry(), Location.Level.DISTRICT, state);
+                            if (district != null) {
+                                actualValue = district.getName();
+                            }
+                        }
                     }
                 }
+                break;
             }
         }
 
@@ -194,5 +205,17 @@ public class Runner {
      */
     public void updateExtra(RunState run, Map<String, ?> values) {
         run.getExtra().putAll(values);
+    }
+
+    /**
+     * TODO this mimics what we currently do in RapidPro but needs changed
+     */
+    public Field getStateField(RunState run) {
+        for (Field field : run.m_fields) {
+            if (field.getValueType().equals(Field.ValueType.STATE)) {
+                return field;
+            }
+        }
+        return null;
     }
 }

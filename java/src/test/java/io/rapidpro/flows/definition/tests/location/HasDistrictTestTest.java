@@ -15,7 +15,7 @@ public class HasDistrictTestTest extends BaseTestTest {
 
     @Test
     public void fromJson() throws Exception {
-        HasDistrictTest test = HasDistrictTest.fromJson(parseObject("{\"test\": \"kigali\"}"), getDeserializationContext());
+        HasDistrictTest test = HasDistrictTest.fromJson(parseObject("{\"test\": \"kigali\"}"), m_deserializationContext);
         assertThat(test.getState(), is("kigali"));
     }
 
@@ -26,7 +26,7 @@ public class HasDistrictTestTest extends BaseTestTest {
         assertTest(test, " gasabo", true, "Gasabo");
         assertTest(test, "Nine", false, null);
 
-        ((Map<String, String>) getContext().getVariables().get("extra")).put("homestate", "Kigali");
+        ((Map<String, String>) m_context.getVariables().get("extra")).put("homestate", "Kigali");
         test = new HasDistrictTest("@extra.homestate");
 
         assertTest(test, " gasabo", true, "Gasabo");

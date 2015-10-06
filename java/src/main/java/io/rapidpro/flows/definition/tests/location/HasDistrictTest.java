@@ -13,7 +13,7 @@ import io.rapidpro.flows.utils.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Test that returns whether the text contains the valid state
+ * Test that returns whether the text contains a valid district in the given state
  */
 public class HasDistrictTest extends Test {
 
@@ -40,12 +40,15 @@ public class HasDistrictTest extends Test {
         String country = run.getOrg().getCountry();
         if (StringUtils.isNotEmpty(country)) {
             // state might be an expression
-            EvaluatedTemplate state = runner.substituteVariables(m_state, context);
+            EvaluatedTemplate stateTpl = runner.substituteVariables(m_state, context);
 
-            if (!state.hasErrors()) {
-                Location location = runner.getLocationResolver().resolve(text, country, Location.Level.DISTRICT, state.getOutput());
-                if (location != null) {
-                    return Result.match(location.getName());
+            if (!stateTpl.hasErrors()) {
+                Location state = runner.parseLocation(stateTpl.getOutput(), country, Location.Level.STATE, null);
+                if (state != null) {
+                    Location district = runner.parseLocation(text, country, Location.Level.DISTRICT, state);
+                    if (district != null) {
+                        return Result.match(district.getName());
+                    }
                 }
             }
         }

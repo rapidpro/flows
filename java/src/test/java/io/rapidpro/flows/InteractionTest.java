@@ -21,9 +21,9 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 /**
- *
+ * Flow interaction tests loaded from JSON
  */
-public class FlowsTest extends BaseFlowsTest {
+public class InteractionTest extends BaseFlowsTest {
 
     @Test
     public void interactionTests() throws Exception {
@@ -32,14 +32,16 @@ public class FlowsTest extends BaseFlowsTest {
     }
 
     protected void runInteractionTests(String flowFile, String interactionsFile) throws Exception {
+        System.out.println("Running interaction tests from " + interactionsFile);
+
         Flow flow = Flow.fromJson(readResource(flowFile));
 
         String interactionsJson = readResource(interactionsFile);
-        InteractionTest[] tests = JsonUtils.getGson().fromJson(interactionsJson, InteractionTest[].class);
+        TestDefinition[] tests = JsonUtils.getGson().fromJson(interactionsJson, TestDefinition[].class);
         Runner runner = new RunnerBuilder()
                 .withLocationResolver(new Location.Resolver() {
                     @Override
-                    public Location resolve(String input, String country, Location.Level level, String parent) {
+                    public Location resolve(String input, String country, Location.Level level, Location parent) {
                         // for testing, accept any location that doesn't begin with the letter X
                         if (!input.trim().toLowerCase().startsWith("x")) {
                             return new Location("S0001", input, Location.Level.STATE);
@@ -50,18 +52,18 @@ public class FlowsTest extends BaseFlowsTest {
                 })
                 .build();
 
-        for (InteractionTest test : tests) {
+        for (TestDefinition test : tests) {
             runInteractionTest(runner, flow, test);
         }
     }
 
-    protected void runInteractionTest(Runner runner, Flow flow, InteractionTest test) throws Exception {
+    protected void runInteractionTest(Runner runner, Flow flow, TestDefinition test) throws Exception {
         RunState run = null;
         do {
             if (run == null) {
-                run = runner.start(test.m_org, test.m_contactInitial, flow);
+                run = runner.start(test.m_org, test.m_fieldsInitial, test.m_contactInitial, flow);
             } else {
-                InteractionTest.Message message = test.m_messages.remove(0);
+                TestDefinition.Message message = test.m_messages.remove(0);
                 assertThat("input", is(message.m_type));
 
                 runner.resume(run, Input.of(message.m_msg));
@@ -73,7 +75,7 @@ public class FlowsTest extends BaseFlowsTest {
                         String msg = ((ReplyAction) action).getMsg().getLocalized(run);
 
                         if (test.m_messages.size() > 0) {
-                            InteractionTest.Message message = test.m_messages.remove(0);
+                            TestDefinition.Message message = test.m_messages.remove(0);
                             assertThat("reply", is(message.m_type));
                             assertThat(msg, is(message.m_msg));
                         } else {
@@ -87,9 +89,11 @@ public class FlowsTest extends BaseFlowsTest {
 
         assertThat(test.m_messages, hasSize(0));
 
+        assertThat(run.getCreatedFields(), is(test.m_fieldsCreated));
+
         assertThat(run.getContact().getName(), is(test.m_contactFinal.getName()));
         assertThat(run.getContact().getGroups(), is(test.m_contactFinal.getGroups()));
-        assertFields(run.getOrg(), run.getContact().getFields(), test.m_contactFinal.getFields());
+        assertFieldValues(run.getOrg(), run.getContact().getFields(), test.m_contactFinal.getFields());
         assertThat(run.getContact().getLanguage(), is(test.m_contactFinal.getLanguage()));
     }
 
@@ -97,7 +101,7 @@ public class FlowsTest extends BaseFlowsTest {
      * Fields can contain dynamic datetime values. If an expected field has [[NOW]], we compare it to the current
      * time with a +/- 1 minute error margin
      */
-    protected void assertFields(Org org, Map<String, String> actual, Map<String, String> expected) {
+    protected void assertFieldValues(Org org, Map<String, String> actual, Map<String, String> expected) {
         assertThat(actual.keySet(), is(expected.keySet()));
 
         for (Map.Entry<String, String> entry : actual.entrySet()) {
@@ -109,25 +113,31 @@ public class FlowsTest extends BaseFlowsTest {
                 ZonedDateTime actualDateTime = (ZonedDateTime) dateParser.auto(actualValue);
                 Instant actualInstant = Instant.from(actualDateTime);
 
-                // equaliy check with +/- 1 minute error margin
+                // equality check with +/- 1 minute error margin
                 assertThat(actualInstant, is(greaterThan(Instant.now().minus(60, ChronoUnit.SECONDS))));
                 assertThat(actualInstant, is(lessThan(Instant.now().plus(60, ChronoUnit.SECONDS))));
 
             } else {
-                assertThat(actualValue, is(expectedValue));
+                assertThat("Field mismatch for " + entry.getKey(), actualValue, is(expectedValue));
             }
         }
     }
 
-    protected static class InteractionTest {
+    protected static class TestDefinition {
         @SerializedName("org")
         public Org m_org;
+
+        @SerializedName("fields_initial")
+        public List<Field> m_fieldsInitial;
 
         @SerializedName("contact_initial")
         public Contact m_contactInitial;
 
         @SerializedName("messages")
         public List<Message> m_messages;
+
+        @SerializedName("fields_created")
+        public List<Field> m_fieldsCreated;
 
         @SerializedName("contact_final")
         public Contact m_contactFinal;

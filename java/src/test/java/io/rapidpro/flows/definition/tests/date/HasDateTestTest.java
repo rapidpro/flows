@@ -11,7 +11,7 @@ public class HasDateTestTest extends BaseTestTest {
 
     @Test
     public void fromJson() throws Exception {
-        HasDateTest.fromJson(parseObject("{}"), getDeserializationContext());
+        HasDateTest.fromJson(parseObject("{}"), m_deserializationContext);
     }
 
     @Test

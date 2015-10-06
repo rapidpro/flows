@@ -18,7 +18,7 @@ public class OrgTest extends BaseFlowsTest {
     @Test
     public void toAndFromJson() {
         Gson gson = new GsonBuilder().create();
-        String json = gson.toJson(getOrg());
+        String json = gson.toJson(m_org);
 
         assertThat(json, is("{" +
                 "\"country\":\"RW\"," +

@@ -9,7 +9,7 @@ public class HasPhoneTestTest extends BaseTestTest {
 
     @Test
     public void fromJson() throws Exception {
-        HasPhoneTest.fromJson(parseObject("{}"), getDeserializationContext());
+        HasPhoneTest.fromJson(parseObject("{}"), m_deserializationContext);
     }
 
     @Test

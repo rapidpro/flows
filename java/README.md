@@ -8,6 +8,7 @@ Usage
 
 ```java
 Org org = new Org("RW", "eng", ZoneId.of("Africa/Kigali"), DateStyle.DAY_FIRST, false);
+List<Field> fields = new ArrayList();
 Contact contact = new Contact(...);
 Flow flow = Flow.fromJson("...");
 
@@ -15,9 +16,10 @@ Runner runner = new RunnerBuilder()
     .withLocationResolver(...)
     .build();
 
-RunState run = runner.start(org, contact, flow);
+RunState run = runner.start(org, fields, contact, flow);
 
 List<Step> steps = run.getCompletedSteps();
+List<Field> fieldsToCreate = run.getCreatedFields();
 
 runner.resume(run, Input.of("Yes"));
 

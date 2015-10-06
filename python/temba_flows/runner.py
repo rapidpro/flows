@@ -4,6 +4,7 @@ import datetime
 import phonenumbers
 import pytz
 
+from abc import ABCMeta, abstractmethod
 from datetime import timedelta
 from enum import Enum
 from temba_expressions import conversions
@@ -36,6 +37,34 @@ class Org(object):
     def to_json(self):
         return {'country': self.country, 'primary_language': self.primary_language, 'timezone': self.timezone,
                 'date_style': self.date_style, 'anon': self.is_anon}
+
+
+class Field(object):
+    """
+    A contact field
+    """
+    class ValueType(Enum):
+        TEXT = 'T'
+        DECIMAL = 'N'
+        DATETIME = 'D'
+        STATE = 'S'
+        DISTRICT = 'I'
+
+        def __init__(self, code):
+            self.code = code
+
+        @classmethod
+        def from_code(cls, code):
+            for name, val in cls.__members__.iteritems():
+                if code == val.code:
+                    return val
+            return None
+
+    def __init__(self, key, label, value_type):
+        self.key = key
+        self.label = label
+        self.value_type = value_type
+        self.is_new = True
 
 
 class Contact(object):
@@ -234,6 +263,35 @@ class Input(object):
         return conversions.to_string(self.value, context)
 
 
+class Location(object):
+    """
+    Simple location model
+    """
+    class Level(Enum):
+        STATE = 1
+        DISTRICT = 2
+
+    def __init__(self, osm_id, name, level):
+        self.osm_id = osm_id
+        self.name = name
+        self.level = level
+
+    class Resolver(object):
+        __metaclass__ = ABCMeta
+
+        @abstractmethod
+        def resolve(self, text, country, level, parent):
+            """
+            Resolves a location name from the given input
+            :param text: the text to parse
+            :param country: the 2-digit country code
+            :param level: the level
+            :param parent: the parent location (may be null)
+            :return: the location or null if no such location exists
+            """
+            pass
+
+
 class RunState(object):
     """
     Represents state of a flow run after visiting one or more nodes in the flow
@@ -243,8 +301,9 @@ class RunState(object):
         COMPLETED = 2
         WAIT_MESSAGE = 3
 
-    def __init__(self, org, contact, flow):
+    def __init__(self, org, fields, contact, flow):
         self.org = org
+        self.fields = fields
         self.contact = contact
         self.started = datetime.datetime.now(tz=pytz.UTC)
         self.steps = []
@@ -333,6 +392,9 @@ class RunState(object):
                 completed.append(step)
         return completed
 
+    def get_created_fields(self):
+        return [f for f in self.fields if f.is_new]
+
 
 class Runner(object):
     """
@@ -342,15 +404,16 @@ class Runner(object):
         self.template_evaluator = template_evaluator
         self.location_resolver = location_resolver
 
-    def start(self, org, contact, flow):
+    def start(self, org, fields, contact, flow):
         """
         Starts a new run
         :param org: the org
+        :param fields: the contact fields
         :param contact: the contact
         :param flow: the flow
         :return: the run state
         """
-        run = RunState(org, contact, flow)
+        run = RunState(org, fields, contact, flow)
         return self.resume(run, None)
 
     def resume(self, run, input):
@@ -382,6 +445,19 @@ class Runner(object):
         """
         return self.template_evaluator.evaluate_template(text, context, False, EvaluationStrategy.RESOLVE_AVAILABLE)
 
+    def parse_location(self, text, country, level, parent=None):
+        """
+        Parses a location from the given text
+        :param text: the text containing a location name
+        :param country: the 2-digit country code
+        :param level: the level
+        :param parent: the parent location (may be null)
+        :return: the location or null if no such location exists
+        """
+        if self.location_resolver:
+            return self.location_resolver.resolve(text, country, level, parent)
+        return None
+
     def update_contact_field(self, run, key, value):
         """
         Updates a field on the contact for the given run
@@ -399,3 +475,10 @@ class Runner(object):
         :param values: the key values
         """
         run.extra.update(values)
+
+    def get_state_field(self, run):
+        # TODO this mimics what we currently do in RapidPro but needs changed
+        for field in run.fields:
+            if field.value_type == Field.ValueType.STATE:
+                return field
+        return None

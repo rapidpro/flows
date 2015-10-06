@@ -33,7 +33,7 @@ public abstract class BaseActionTest extends BaseFlowsTest {
         m_deserializationContext = new Flow.DeserializationContext(flow);
 
         m_runner = new RunnerBuilder().withLocationResolver(new TestLocationResolver()).build();
-        m_run = m_runner.start(m_org, m_contact, flow);
+        m_run = m_runner.start(m_org, m_fields, m_contact, flow);
         m_context = m_run.buildContext(null);
     }
 }

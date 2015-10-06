@@ -14,7 +14,7 @@ public class ContainsTestTest extends BaseTestTest {
 
     @Test
     public void fromJson() throws Exception {
-        ContainsTest test = ContainsTest.fromJson(parseObject("{\"test\": \"Hello\"}"), getDeserializationContext());
+        ContainsTest test = ContainsTest.fromJson(parseObject("{\"test\": \"Hello\"}"), m_deserializationContext);
         assertThat(test.getTest(), is(new TranslatableText("Hello")));
     }
 

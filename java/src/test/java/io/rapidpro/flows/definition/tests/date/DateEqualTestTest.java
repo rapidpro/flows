@@ -14,7 +14,7 @@ public class DateEqualTestTest extends BaseTestTest {
 
     @Test
     public void fromJson() throws Exception {
-        DateEqualTest test = DateEqualTest.fromJson(parseObject("{\"test\": \"December 14, 1892\"}"), getDeserializationContext());
+        DateEqualTest test = DateEqualTest.fromJson(parseObject("{\"test\": \"December 14, 1892\"}"), m_deserializationContext);
         assertThat(test.m_test, is("December 14, 1892"));
     }
 
@@ -27,7 +27,7 @@ public class DateEqualTestTest extends BaseTestTest {
         assertTest(test, "Twas 25th Aug '15", false, null);
 
         // date can be an expression
-        getContext().putVariable("dob", "24-08-2015");
+        m_context.putVariable("dob", "24-08-2015");
         test = new DateEqualTest("@(dob)");
 
         assertTest(test, "23-8-15", false, null);

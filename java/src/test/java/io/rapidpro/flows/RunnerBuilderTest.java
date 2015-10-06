@@ -18,14 +18,13 @@ public class RunnerBuilderTest extends BaseFlowsTest {
     @Test
     public void build() {
         Runner runner = new RunnerBuilder().build();
-        assertThat(runner.getLocationResolver(), is(notNullValue()));
         assertThat(runner.getTemplateEvaluator(), is(notNullValue()));
 
         Evaluator evaluator = new EvaluatorBuilder().build();
 
         Location.Resolver resolver = new Location.Resolver() {
             @Override
-            public Location resolve(String input, String country, Location.Level level, String parent) {
+            public Location resolve(String input, String country, Location.Level level, Location parent) {
                 return null;
             }
         };
@@ -36,6 +35,5 @@ public class RunnerBuilderTest extends BaseFlowsTest {
                 .build();
 
         assertThat(runner.getTemplateEvaluator(), is(evaluator));
-        assertThat(runner.getLocationResolver(), is(resolver));
     }
 }

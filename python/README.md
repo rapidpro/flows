@@ -8,14 +8,16 @@ Usage
 
 ```python
 org = Org("RW", "eng", pytz.timezone("Africa/Kigali"), DateStyle.DAY_FIRST, False)
+fields = [...]
 contact = Contact(...)
 flow = Flow.from_json("...")
 
 runner = Runner()
 
-run = runner.start(org, contact, flow)
+run = runner.start(org, fields, contact, flow)
 
 steps = run.get_completed_steps()
+fields_to_create = run.get_created_fields()
 
 runner.resume(run, Input.of("Yes"))
 

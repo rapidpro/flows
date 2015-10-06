@@ -8,6 +8,7 @@ import io.rapidpro.flows.definition.Rule;
 import io.rapidpro.flows.definition.RuleSet;
 import io.rapidpro.flows.utils.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.threeten.bp.Instant;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.ZonedDateTime;
@@ -31,6 +32,9 @@ public class RunState {
 
     @SerializedName("org")
     protected Org m_org;
+
+    @SerializedName("fields")
+    protected List<Field> m_fields;
 
     @SerializedName("contact")
     protected Contact m_contact;
@@ -58,11 +62,13 @@ public class RunState {
     /**
      * Creates a run state for a new run by the given contact in the given flow
      * @param org the org
+     * @param fields the contact fields
      * @param contact the contact
      * @param flow the flow
      */
-    public RunState(Org org, Contact contact, Flow flow) {
+    public RunState(Org org, List<Field> fields, Contact contact, Flow flow) {
         this.m_org = org;
+        this.m_fields = fields;
         this.m_contact = contact;
         this.m_started = Instant.now();
         this.m_steps = new ArrayList<>();
@@ -163,6 +169,28 @@ public class RunState {
 
     public Org getOrg() {
         return m_org;
+    }
+
+    public Field getOrCreateField(String key) {
+        // TODO get this into a map for efficiency
+        for (Field field : m_fields) {
+            if (field.getKey().equals(key)) {
+                return field;
+            }
+        }
+        Field field = new Field(key, WordUtils.capitalize(key, ' '), Field.ValueType.TEXT);
+        m_fields.add(field);
+        return field;
+    }
+
+    public List<Field> getCreatedFields() {
+        List<Field> created = new ArrayList<>();
+        for (Field field : m_fields) {
+            if (field.isNew()) {
+                created.add(field);
+            }
+        }
+        return created;
     }
 
     public Contact getContact() {

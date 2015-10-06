@@ -10,7 +10,7 @@ public class HasStateTestTest extends BaseTestTest {
 
     @Test
     public void fromJson() throws Exception {
-        HasStateTest.fromJson(parseObject("{}"), getDeserializationContext());
+        HasStateTest.fromJson(parseObject("{}"), m_deserializationContext);
     }
 
     @Test

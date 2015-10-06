@@ -6,10 +6,7 @@ import io.rapidpro.flows.definition.TranslatableText;
 import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.definition.actions.group.AddToGroupsAction;
 import io.rapidpro.flows.definition.actions.message.ReplyAction;
-import io.rapidpro.flows.runner.Contact;
-import io.rapidpro.flows.runner.ContactUrn;
-import io.rapidpro.flows.runner.Location;
-import io.rapidpro.flows.runner.Org;
+import io.rapidpro.flows.runner.*;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -30,15 +27,22 @@ public abstract class BaseFlowsTest {
 
     protected Org m_org;
 
+    protected List<Field> m_fields;
+
     protected Contact m_contact;
 
     @Before
     public void initBaseData() throws Exception {
         m_org = new Org("RW", "eng", ZoneId.of("Africa/Kigali"), DateStyle.DAY_FIRST, false);
 
-        Map<String, String> contactFields = new HashMap<>();
-        contactFields.put("gender", "M");
-        contactFields.put("age", "34");
+        m_fields = new ArrayList<>(Arrays.asList(
+                new Field("gender", "Gender", Field.ValueType.TEXT),
+                new Field("age", "Age", Field.ValueType.DECIMAL)
+        ));
+
+        Map<String, String> contactFieldValues = new HashMap<>();
+        contactFieldValues.put("gender", "M");
+        contactFieldValues.put("age", "34");
 
         m_contact = new Contact(
                 "1234-1234",
@@ -48,7 +52,7 @@ public abstract class BaseFlowsTest {
                         ContactUrn.fromString("twitter:realJoeFlow")
                 )),
                 new LinkedHashSet<>(Arrays.asList("Testers", "Developers")),
-                contactFields,
+                contactFieldValues,
                 "eng"
         );
     }
@@ -58,16 +62,18 @@ public abstract class BaseFlowsTest {
     }
 
     /**
-     * Location parser for testing which has one state (Kigali) and one district (Gasabo)
+     * Location resolver for testing which has one state (Kigali) and one district (Gasabo)
      */
     public static class TestLocationResolver implements Location.Resolver {
+        private static Location m_kigali = new Location("S0001", "Kigali", Location.Level.STATE);
+        private static Location m_gasabo = new Location("D0001", "Gasabo", Location.Level.DISTRICT);
 
         @Override
-        public Location resolve(String input, String country, Location.Level level, String parent) {
-            if (level == Location.Level.STATE && input.trim().equalsIgnoreCase("Kigali")) {
-                return new Location("S0001", "Kigali", Location.Level.STATE);
-            } else if (level == Location.Level.DISTRICT && input.trim().equalsIgnoreCase("Gasabo") && parent.trim().equalsIgnoreCase("Kigali")) {
-                return new Location("D0001", "Gasabo", Location.Level.DISTRICT);
+        public Location resolve(String text, String country, Location.Level level, Location parent) {
+            if (level == Location.Level.STATE && text.trim().equalsIgnoreCase("Kigali")) {
+                return m_kigali;
+            } else if (level == Location.Level.DISTRICT && text.trim().equalsIgnoreCase("Gasabo") && parent.equals(m_kigali)) {
+                return m_gasabo;
             } else {
                 return null;
             }
@@ -87,13 +93,5 @@ public abstract class BaseFlowsTest {
             names.add(group.getName());
         }
         assertThat(names, is(Arrays.asList(groupNames)));
-    }
-
-    public Org getOrg() {
-        return m_org;
-    }
-
-    public Contact getContact() {
-        return m_contact;
     }
 }

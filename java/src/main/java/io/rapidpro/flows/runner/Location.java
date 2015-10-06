@@ -28,13 +28,13 @@ public class Location {
     public interface Resolver {
         /**
          * Resolves a location name from the given input
-         * @param input the input to parse
+         * @param text the text to parse
          * @param country the 2-digit country code
          * @param level the level
-         * @param parent the parent location name (may be null)
+         * @param parent the parent location (may be null)
          * @return the location or null if no such location exists
          */
-        Location resolve(String input, String country, Level level, String parent);
+        Location resolve(String text, String country, Level level, Location parent);
     }
 
     public String getOsmId() {

@@ -2,7 +2,6 @@ package io.rapidpro.flows;
 
 import io.rapidpro.expressions.EvaluatorBuilder;
 import io.rapidpro.expressions.evaluator.Evaluator;
-import io.rapidpro.flows.runner.Field;
 import io.rapidpro.flows.runner.Location;
 import io.rapidpro.flows.runner.Runner;
 
@@ -13,17 +12,10 @@ public class RunnerBuilder {
 
     protected Evaluator m_templateEvaluator;
 
-    protected Field.Provider m_fieldProvider;
-
     protected Location.Resolver m_locationResolver;
 
     public RunnerBuilder withTemplateEvaluator(Evaluator templateEvaluator) {
         m_templateEvaluator = templateEvaluator;
-        return this;
-    }
-
-    public RunnerBuilder withFieldProvider(Field.Provider fieldProvider) {
-        m_fieldProvider = fieldProvider;
         return this;
     }
 
@@ -40,24 +32,15 @@ public class RunnerBuilder {
                     .build();
         }
 
-        if (m_fieldProvider == null) {
-            m_fieldProvider = new Field.Provider() {
-                @Override
-                public Field provide(String key) {
-                    return null;
-                }
-            };
-        }
-
         if (m_locationResolver == null) {
             m_locationResolver = new Location.Resolver() {
                 @Override
-                public Location resolve(String input, String country, Location.Level level, String parent) {
+                public Location resolve(String input, String country, Location.Level level, Location parent) {
                     return null;
                 }
             };
         }
 
-        return new Runner(m_templateEvaluator, m_fieldProvider, m_locationResolver);
+        return new Runner(m_templateEvaluator, m_locationResolver);
     }
 }

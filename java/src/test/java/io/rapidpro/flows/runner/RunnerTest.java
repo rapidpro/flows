@@ -8,9 +8,6 @@ import org.junit.Test;
 import org.threeten.bp.Instant;
 import org.threeten.bp.ZoneId;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -25,7 +22,7 @@ public class RunnerTest extends BaseFlowsTest {
     public void startAndResume_mushrooms() throws Exception {
         Flow flow = Flow.fromJson(readResource("test_flows/mushrooms.json"));
 
-        RunState run = m_runner.start(getOrg(), getContact(), flow);
+        RunState run = m_runner.start(m_org, m_fields, m_contact, flow);
 
         assertThat(run.getOrg().getPrimaryLanguage(), is("eng"));
         assertThat(run.getOrg().getTimezone(), is(ZoneId.of("Africa/Kigali")));
@@ -129,7 +126,7 @@ public class RunnerTest extends BaseFlowsTest {
 
         Contact jean = new Contact("1234-1234", "Jean D'Amour", ContactUrn.fromString("tel:+260964153686"), "fre");
 
-        RunState run = m_runner.start(getOrg(), jean, flow);
+        RunState run = m_runner.start(m_org, m_fields, jean, flow);
 
         assertThat(run.getContact().getLanguage(), is("fre"));
         assertThat(run.getSteps(), hasSize(2));
@@ -167,7 +164,7 @@ public class RunnerTest extends BaseFlowsTest {
     public void startAndResume_greatwall() throws Exception {
         Flow flow = Flow.fromJson(readResource("test_flows/greatwall.json"));
 
-        RunState run = m_runner.start(getOrg(), getContact(), flow);
+        RunState run = m_runner.start(m_org, m_fields, m_contact, flow);
 
         assertThat(run.getSteps().get(0).getNode().getUuid(), is("8dbb7e1a-43d6-4c5b-a99d-fe3ee8923b65"));
         assertThat(run.getSteps().get(0).getActions(), hasSize(1));
@@ -210,34 +207,27 @@ public class RunnerTest extends BaseFlowsTest {
     @Test(expected = FlowRunException.class)
     public void start_emptyFlow() throws Exception {
         Flow flow = Flow.fromJson(readResource("test_flows/empty.json"));
-        m_runner.start(getOrg(), getContact(), flow);
+        m_runner.start(m_org, m_fields, m_contact, flow);
     }
 
     @Test
     public void updateContactField() throws Exception {
-        final Map<String, Field> fields = new HashMap<>();
-        fields.put("district", new Field("district", "District", Field.ValueType.DISTRICT));
-        fields.put("state", new Field("state", "State", Field.ValueType.STATE));
+        m_fields.add(new Field("district", "District", Field.ValueType.DISTRICT));
 
         Runner runner = new RunnerBuilder()
-                .withFieldProvider(new Field.Provider() {
-                    @Override
-                    public Field provide(String key) {
-                        return fields.get(key);
-                    }
-                })
                 .withLocationResolver(new TestLocationResolver())
                 .build();
 
         Flow flow = Flow.fromJson(readResource("test_flows/mushrooms.json"));
-        RunState run = m_runner.start(getOrg(), getContact(), flow);
+        RunState run = m_runner.start(m_org, m_fields, m_contact, flow);
 
         runner.updateContactField(run, "district", "Gasabo");
 
         // can't set a district field value without a state field value
         assertThat(run.getContact().getFields().get("district"), is(nullValue()));
 
-        run.getOrg().setStateField("state");
+        m_fields.add(new Field("state", "State", Field.ValueType.STATE));
+
         runner.updateContactField(run, "state", "kigali");
         runner.updateContactField(run, "district", "gasabo");
 

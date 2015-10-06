@@ -1,5 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 
+import phonenumbers
 import regex
 
 from abc import ABCMeta, abstractmethod
@@ -42,9 +43,9 @@ class Test(object):
                 DateEqualTest.TYPE: DateEqualTest,
                 DateAfterTest.TYPE: DateAfterTest,
                 DateBeforeTest.TYPE: DateBeforeTest,
-                # HasPhoneTest.TYPE: HasPhoneTest,
-                # HasDistrictTest.TYPE: HasDistrictTest,
-                # HasStateTest.TYPE: HasStateTest
+                HasPhoneTest.TYPE: HasPhoneTest,
+                HasDistrictTest.TYPE: HasDistrictTest,
+                HasStateTest.TYPE: HasStateTest
             }
 
         test_type = json_obj['type']
@@ -622,3 +623,84 @@ class DateBeforeTest(DateComparisonTest):
 
     def do_comparison(self, date, test):
         return date <= test
+
+
+class HasPhoneTest(Test):
+    """
+    Test that returns whether the text contains a valid phone number
+    """
+    TYPE = 'phone'
+
+    @classmethod
+    def from_json(cls, json_obj, context):
+        return cls()
+
+    def evaluate(self, runner, run, context, text):
+        country = run.org.country
+
+        # try to find a phone number in the text we have been sent
+        matches = phonenumbers.PhoneNumberMatcher(text, country)
+
+        # try it as an international number if we failed
+        if not matches.has_next():
+            matches = phonenumbers.PhoneNumberMatcher('+' + text, country)
+
+        if matches.has_next():
+            number = next(matches).number
+            number = phonenumbers.format_number(number, phonenumbers.PhoneNumberFormat.E164)
+            return Test.Result.match(number)
+        else:
+            return Test.Result.NO_MATCH
+
+
+class HasDistrictTest(Test):
+    """
+    Test that returns whether the text contains a valid district in the given state
+    """
+    TYPE = "district"
+
+    def __init__(self, state):
+        self.state = state
+
+    @classmethod
+    def from_json(cls, json_obj, context):
+        return cls(json_obj.get('test', None))
+
+    def evaluate(self, runner, run, context, text):
+        from ..runner import Location
+
+        country = run.org.country
+        if country:
+            # state might be an expression
+            state_tpl, errors = runner.substitute_variables(self.state, context)
+
+            if not errors:
+                state = runner.parse_location(state_tpl, country, Location.Level.STATE, None)
+                if state:
+                    district = runner.parse_location(text, country, Location.Level.DISTRICT, state)
+                    if district:
+                        return Test.Result.match(district.name)
+
+        return Test.Result.NO_MATCH
+
+
+class HasStateTest(Test):
+    """
+    Test that returns whether the text contains a valid state
+    """
+    TYPE = "state"
+
+    @classmethod
+    def from_json(cls, json_obj, context):
+        return cls()
+
+    def evaluate(self, runner, run, context, text):
+        from ..runner import Location
+
+        country = run.org.country
+        if country:
+            state = runner.parse_location(text, country, Location.Level.STATE, None)
+            if state:
+                return Test.Result.match(state.name)
+
+        return Test.Result.NO_MATCH

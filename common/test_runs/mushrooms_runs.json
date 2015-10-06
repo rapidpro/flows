@@ -1,7 +1,8 @@
 [
   {
-    "org": { "country": "RW", "primary_language": "eng", "timezone": "Africa/Kigali", "date_style": "day_first", "anon": false },
-    "contact_initial": { "uuid": "1234", "name": "Joe Flow", "urns": [], "groups": [], "fields": {} },
+    "org": {"country": "RW", "primary_language": "eng", "timezone": "Africa/Kigali", "date_style": "day_first", "anon": false},
+    "fields_initial": [],
+    "contact_initial": {"uuid": "1234", "name": "Joe Flow", "urns": [], "groups": [], "fields": {}},
     "messages": [
       { "type": "reply", "msg": "Hi Joe. Do you like mushrooms?" },
       { "type": "input", "msg": "YUCK!" },
@@ -9,21 +10,25 @@
       { "type": "input", "msg": "no way" },
       { "type": "reply", "msg": "That was the right answer." }
     ],
-    "contact_final": { "uuid": "1234", "name": "Joe Flow", "urns": [], "groups": ["Approved"], "fields": {"preference": "No"} }
+    "fields_created": [{"key": "preference", "label": "Preference", "value_type": "T"}],
+    "contact_final": { "uuid": "1234", "name": "Joe Flow", "urns": [], "groups": ["Approved"], "fields": {"preference": "No"}}
   },
   {
-    "org": { "country": "RW", "primary_language": "eng", "timezone": "Africa/Kigali", "date_style": "day_first", "anon": false },
+    "org": {"country": "RW", "primary_language": "eng", "timezone": "Africa/Kigali", "date_style": "day_first", "anon": false},
+    "fields_initial": [],
     "contact_initial": { "uuid": "1234", "name": "Joe Flow", "urns": [], "groups": ["Approved"], "fields": {} },
     "messages": [
       { "type": "reply", "msg": "Hi Joe. Do you like mushrooms?" },
       { "type": "input", "msg": "yes I do" },
       { "type": "reply", "msg": "You should reconsider" }
     ],
-    "contact_final": { "uuid": "1234", "name": "Joe Flow", "urns": [], "groups": [], "fields": {"preference": "Yes"} }
+    "fields_created": [{"key": "preference", "label": "Preference", "value_type": "T"}],
+    "contact_final": {"uuid": "1234", "name": "Joe Flow", "urns": [], "groups": [], "fields": {"preference": "Yes"}}
   },
   {
-    "org": { "country": "RW", "primary_language": "fre", "timezone": "Africa/Kigali", "date_style": "day_first", "anon": false },
-    "contact_initial": { "uuid": "1234", "name": "Jean Flow", "urns": [], "groups": [], "fields": {} },
+    "org": {"country": "RW", "primary_language": "fre", "timezone": "Africa/Kigali", "date_style": "day_first", "anon": false},
+    "fields_initial": [],
+    "contact_initial": {"uuid": "1234", "name": "Jean Flow", "urns": [], "groups": [], "fields": {}},
     "messages": [
       { "type": "reply", "msg": "Salut Jean. Aimez-vous les champignons?" },
       { "type": "input", "msg": "EUGH!" },
@@ -31,6 +36,7 @@
       { "type": "input", "msg": "non" },
       { "type": "reply", "msg": "Ce fut la bonne réponse." }
     ],
-    "contact_final": { "uuid": "1234", "name": "Jean Flow", "urns": [], "groups": ["Approved"], "fields": {"preference": "No"} }
+    "fields_created": [{"key": "preference", "label": "Preference", "value_type": "T"}],
+    "contact_final": {"uuid": "1234", "name": "Jean Flow", "urns": [], "groups": ["Approved"], "fields": {"preference": "No"}}
   }
 ]
