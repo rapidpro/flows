@@ -195,7 +195,7 @@ public class Runner {
             }
         }
 
-        run.getContact().setField(key, actualValue);
+        run.getContact().getFields().put(key, actualValue);
     }
 
     /**

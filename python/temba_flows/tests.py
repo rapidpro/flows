@@ -252,6 +252,26 @@ class RunStateTest(BaseFlowsTest):
         # json should be the same
         # assertThat(restored.toJson(), is(json));
 
+    def test_update_contact_field(self):
+        self.fields.append(Field("district", "District", Field.ValueType.DISTRICT))
+
+        runner = Runner(location_resolver=BaseFlowsTest.TestLocationResolver())
+
+        flow = Flow.from_json(json.loads(self.read_resource("test_flows/mushrooms.json")))
+        run = runner.start(self.org, self.fields, self.contact, flow)
+
+        runner.update_contact_field(run, "district", "Gasabo")
+
+        # can't set a district field value without a state field value
+        self.assertEqual(run.contact.fields["district"], None)
+
+        self.fields.append(Field("state", "State", Field.ValueType.STATE))
+
+        runner.update_contact_field(run, "state", "kigali")
+        runner.update_contact_field(run, "district", "gasabo")
+
+        self.assertEqual(run.contact.fields["district"], "Gasabo")
+
 
 class TestsTest(BaseFlowsTest):
     def setUp(self):

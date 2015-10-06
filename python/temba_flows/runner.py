@@ -484,8 +484,27 @@ class Runner(object):
         :param key: the field key
         :param value: the field value
         """
-        # TODO
-        pass
+        field = run.get_or_create_field(key)
+        actual_value = None
+
+        if field.value_type in (Field.ValueType.TEXT, Field.ValueType.DECIMAL, Field.ValueType.DATETIME):
+            actual_value = value
+        elif field.value_type == Field.ValueType.STATE:
+            state = self.location_resolver.resolve(value, run.org.country, Location.Level.STATE, None)
+            if state:
+                actual_value = state.name
+        elif field.value_type == Field.ValueType.DISTRICT:
+            state_field = self.get_state_field(run)
+            if state_field:
+                state_name = run.contact.fields.get(state_field.key, None)
+                if state_name:
+                    state = self.location_resolver.resolve(state_name, run.org.country, Location.Level.STATE, None)
+                    if state:
+                        district = self.location_resolver.resolve(value, run.org.country, Location.Level.DISTRICT, state)
+                        if district:
+                            actual_value = district.name
+
+        run.contact.fields[key] = actual_value
 
     def update_extra(self, run, values):
         """
