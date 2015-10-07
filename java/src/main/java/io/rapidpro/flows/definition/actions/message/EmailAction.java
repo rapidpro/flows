@@ -25,13 +25,13 @@ public class EmailAction extends Action {
     protected String m_subject;
 
     @SerializedName("msg")
-    protected String m_message;
+    protected String m_msg;
 
-    protected EmailAction(List<String> addresses, String subject, String message) {
+    protected EmailAction(List<String> addresses, String subject, String msg) {
         super(TYPE);
         m_addresses = addresses;
         m_subject = subject;
-        m_message = message;
+        m_msg = msg;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class EmailAction extends Action {
         EvaluationContext context = run.buildContext(input);
 
         EvaluatedTemplate subject = runner.substituteVariables(m_subject, context);
-        EvaluatedTemplate message = runner.substituteVariables(m_message, context);
+        EvaluatedTemplate message = runner.substituteVariables(m_msg, context);
 
         List<String> errors = new ArrayList<>();
         errors.addAll(subject.getErrors());
@@ -64,7 +64,7 @@ public class EmailAction extends Action {
         return m_subject;
     }
 
-    public String getMessage() {
-        return m_message;
+    public String getMsg() {
+        return m_msg;
     }
 }

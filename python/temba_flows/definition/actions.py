@@ -29,7 +29,7 @@ class Action(object):
             }
 
         action_type = json_obj['type']
-        action_cls = cls.CLASS_BY_TYPE.get(action_type, None)
+        action_cls = cls.CLASS_BY_TYPE.get(action_type)
         if not action_cls:
             raise FlowParseException("Unknown action type: %s" % action_type)
 
@@ -66,6 +66,29 @@ class Action(object):
 Action.Result.NOOP = Action.Result(None, ())
 
 
+class VariableRef(object):
+    """
+    A variable reference to a contact group (by name) or a contact (by phone)
+    """
+    NEW_CONTACT = "@new_contact"
+
+    def __init__(self, value):
+        self.value = value
+
+    @classmethod
+    def from_json(cls, json_obj, context):
+        return cls(json_obj.get('id'))
+
+    def to_json(self):
+        return {'id': self.value}
+
+    def is_new_contact(self):
+        """
+        Returns whether this variable is a placeholder for a new contact
+        """
+        return self.value.lower() == self.NEW_CONTACT
+
+
 class MessageAction(Action):
     """
     Base class for actions which send a message
@@ -96,7 +119,7 @@ class ReplyAction(MessageAction):
 
     @classmethod
     def from_json(cls, json_obj, context):
-        return cls(TranslatableText.from_json(json_obj.get('msg', None)))
+        return cls(TranslatableText.from_json(json_obj.get('msg')))
 
     def to_json(self):
         return {'type': self.TYPE, 'msg': self.msg}
@@ -122,18 +145,32 @@ class SendAction(MessageAction):
 
     @classmethod
     def from_json(cls, json_obj, context):
-        # TODO
-        return cls(TranslatableText.from_json(json_obj.get('msg', None)),
-                   json_obj.get('contacts', None),
-                   json_obj.get('groups', None),
-                   json_obj.get('variables', None))
+        return cls(TranslatableText.from_json(json_obj.get('msg')),
+                   json_obj.get('contacts'),
+                   json_obj.get('groups'),
+                   [VariableRef.from_json(v, context) for v in json_obj.get('variables', [])])
 
     def to_json(self):
-        # TODO
-        return {'type': self.TYPE, 'msg': self.msg, }
+        return {'type': self.TYPE,
+                'msg': self.msg,
+                'contacts': self.contacts,
+                'groups': self.groups,
+                'variables': [v.to_json() for v in self.variables]}
 
     def execute_with_message(self, runner, context, msg):
-        # TODO evaluate variables (except @new_contact)... though what do we return them as ?
+        errors = []
+
+        # variables should evaluate to group names or phone numbers
+        variables = []
+        for variable in self.variables:
+            if not variable.is_new_contact():
+                var, var_errors = runner.substitute_variables(variable.value, context)
+                if not var_errors:
+                    variables.append(VariableRef(var))
+                else:
+                    errors += var_errors
+            else:
+                variables.append(VariableRef(variable.value))
 
         # create a new context without the @contact.* variables which will remain unresolved for now
         new_vars = context.variables.copy()
@@ -142,24 +179,47 @@ class SendAction(MessageAction):
 
         template, errors = runner.substitute_variables_if_available(msg, context_for_other_contacts)
 
-        performed = SendAction(TranslatableText(template), self.groups, self.contacts, self.variables)
+        performed = SendAction(TranslatableText(template), self.groups, self.contacts, variables)
         return Action.Result.performed(performed, errors)
 
 
-class EmailAction(MessageAction):
+class EmailAction(Action):
     """
     Sends an email to someone
     """
     TYPE = 'email'
 
+    def __init__(self, addresses, subject, msg):
+        self.addresses = addresses
+        self.subject = subject
+        self.msg = msg
+
     @classmethod
     def from_json(cls, json_obj, context):
-        return cls()
+        return cls(json_obj.get('emails'), json_obj.get('subject'), json_obj.get('msg'))
+
+    def to_json(self):
+        return {'type': self.TYPE,
+                'emails': self.addresses,
+                'subject': self.subject,
+                'msg': self.msg}
 
     def execute(self, runner, run, input):
-        pass
+        context = run.build_context(input)
 
-    # TODO
+        subject, subject_errors = runner.substitute_variables(self.subject, context)
+        message, message_errors = runner.substitute_variables(self.msg, context)
+
+        errors = subject_errors + message_errors
+
+        addresses = []
+        for address in self.addresses:
+            addr, addr_errors = runner.substitute_variables(address, context)
+            addresses.append(addr)
+            errors += addr_errors
+
+        performed = EmailAction(addresses, subject, message)
+        return Action.Result.performed(performed, errors)
 
 
 class SaveToContactAction(Action):
@@ -190,7 +250,7 @@ class SetLanguageAction(Action):
 
     @classmethod
     def from_json(cls, json_obj, context):
-        return cls(json_obj['lang'], json_obj.get('name', None))
+        return cls(json_obj.get('lang'), json_obj.get('name'))
 
     def to_json(self):
         return {'type': self.TYPE, 'lang': self.lang, 'name': self.name}

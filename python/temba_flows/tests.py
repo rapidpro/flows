@@ -11,7 +11,7 @@ from temba_expressions.dates import DateStyle
 from temba_expressions.evaluator import EvaluationContext
 from .definition.flow import Flow, ActionSet, RuleSet
 from .definition.actions import ReplyAction, SendAction, EmailAction, SaveToContactAction, SetLanguageAction
-from .definition.actions import AddToGroupsAction, RemoveFromGroupsAction, AddLabelAction
+from .definition.actions import AddToGroupsAction, RemoveFromGroupsAction, AddLabelAction, VariableRef
 from .definition.tests import *
 from .runner import Contact, ContactUrn, Field, Input, Location, Org, Runner, RunState
 from .utils import edit_distance
@@ -89,6 +89,64 @@ class ActionsTest(BaseFlowsTest):
 
         self.assertEqual(performed.msg, TranslatableText("@(badexpression)"))
         self.assertEqual(result.errors, ["Undefined variable: badexpression"])
+
+    def test_send_action(self):
+        action = SendAction.from_json({
+            "type": "send",
+            "msg": {"fre": "Bonjour"},
+            "groups": [{"id": 123, "name": "Testers"}],
+            "contacts": [{"id": 234, "name": "Mr Test"}],
+            "variables": [{"id": "@new_contact"}, {"id": "group-@contact.gender"}]
+        }, self.deserialization_context)
+
+        self.assertEqual(action.msg, TranslatableText({"fre": "Bonjour"}))
+        self.assertEqual(action.groups[0]['id'], 123)
+        self.assertEqual(action.groups[0]['name'], "Testers")
+        self.assertEqual(action.contacts[0]['id'], 234)
+        self.assertEqual(action.contacts[0]['name'], "Mr Test")
+        self.assertEqual(action.variables[0].value, "@new_contact")
+        self.assertEqual(action.variables[1].value, "group-@contact.gender")
+
+        action = SendAction(TranslatableText("Hi @(\"Dr\" & contact) @contact.first_name. @step.contact said @step.value"),
+                            [{"id": 123, "name": "Testers"}],
+                            [{"id": 234, "name": "Mr Test"}],
+                            [VariableRef("@new_contact"), VariableRef("group-@contact.gender")])
+
+        result = action.execute(self.runner, self.run, Input("Yes"))
+        self.assertEqual(result.errors, [])
+        performed = result.performed
+
+        self.assertEqual(performed.msg, TranslatableText("Hi @(\"Dr\"&contact) @contact.first_name. Joe Flow said Yes"))
+        self.assertEqual(len(performed.groups), 1)
+        self.assertEqual(performed.groups[0]['id'], 123)
+        self.assertEqual(performed.groups[0]['name'], "Testers")
+        self.assertEqual(len(performed.contacts), 1)
+        self.assertEqual(performed.contacts[0]['id'], 234)
+        self.assertEqual(performed.contacts[0]['name'], "Mr Test")
+        self.assertEqual(len(performed.variables), 2)
+        self.assertEqual(performed.variables[0].value, "@new_contact")
+        self.assertEqual(performed.variables[1].value, "group-M")
+
+    def test_email_action(self):
+        action = EmailAction.from_json({"type": "email",
+                                        "emails": ["code@nyaruka.com", "@contact.chw_email"],
+                                        "subject": "Salut",
+                                        "msg": "Ça va?"}, self.deserialization_context)
+
+        self.assertEqual(action.addresses, ["code@nyaruka.com", "@contact.chw_email"])
+        self.assertEqual(action.subject, "Salut")
+        self.assertEqual(action.msg, "Ça va?")
+
+        action = EmailAction(["rowan@nyaruka.com", "@(LOWER(contact.gender))@chws.org"],
+                             "Update from @contact",
+                             "This is to notify you that @contact did something")
+
+        result = action.execute(self.runner, self.run, Input("Yes"))
+        performed = result.performed
+
+        self.assertEqual(performed.addresses, ["rowan@nyaruka.com", "m@chws.org"])
+        self.assertEqual(performed.subject, "Update from Joe Flow")
+        self.assertEqual(performed.msg, "This is to notify you that Joe Flow did something")
 
     def test_set_language_action(self):
         action = SetLanguageAction.from_json({"type": "lang", "lang": "fre", "name": "Français"}, self.deserialization_context)
