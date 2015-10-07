@@ -22,7 +22,7 @@ public class EmailActionTest extends BaseActionTest {
                 "Update from @contact", "This is to notify you that @contact did something");
 
         Action.Result result = action.execute(m_runner, m_run, Input.of("Yes"));
-        EmailAction performed = (EmailAction) result.getActionPerformed();
+        EmailAction performed = (EmailAction) result.getPerformed();
 
         assertThat(performed.getAddresses(), contains("rowan@nyaruka.com", "m@chws.org"));
         assertThat(performed.getSubject(), is("Update from Joe Flow"));

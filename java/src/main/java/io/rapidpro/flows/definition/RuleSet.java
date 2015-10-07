@@ -2,6 +2,7 @@ package io.rapidpro.flows.definition;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.annotations.SerializedName;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.evaluator.Conversions;
 import io.rapidpro.flows.definition.tests.Test;
@@ -37,7 +38,7 @@ public class RuleSet extends Flow.Node {
         EXPRESSION
     }
 
-    protected Type m_type;
+    protected Type m_rulesetType;
 
     protected String m_label;
 
@@ -54,7 +55,7 @@ public class RuleSet extends Flow.Node {
     public static RuleSet fromJson(JsonObject obj, Flow.DeserializationContext context) throws FlowParseException {
         RuleSet set = new RuleSet();
         set.m_uuid = obj.get("uuid").getAsString();
-        set.m_type = Type.valueOf(obj.get("ruleset_type").getAsString().toUpperCase());
+        set.m_rulesetType = Type.valueOf(obj.get("ruleset_type").getAsString().toUpperCase());
         set.m_label = obj.get("label").getAsString();
         set.m_operand = obj.get("operand").getAsString();
 
@@ -87,7 +88,7 @@ public class RuleSet extends Flow.Node {
         String category = rule.getCategory().getLocalized(Collections.singletonList(run.getFlow().getBaseLanguage()), "");
 
         String valueAsStr = Conversions.toString(testResult.getValue(), context);
-        Rule.Result result = new Rule.Result(rule, valueAsStr, category, testResult.getText());
+        Result result = new Result(rule, valueAsStr, category, testResult.getText());
         step.setRuleResult(result);
 
         run.updateValue(this, result, input.getTime());
@@ -98,9 +99,9 @@ public class RuleSet extends Flow.Node {
     /**
      * Runs through the rules to find the first one that matches
      * @param runner the flow runner
-     * @param run the run state
+     * @param run the current run state
      * @param context the evaluation context
-     * @return the rule and the matched text
+     * @return the matching rule and the test result
      */
     protected Pair<Rule, Test.Result> findMatchingRule(Runner runner, RunState run, EvaluationContext context) {
         String operand = runner.substituteVariables(m_operand, context).getOutput();
@@ -114,8 +115,8 @@ public class RuleSet extends Flow.Node {
         return null;
     }
 
-    public Type getType() {
-        return m_type;
+    public Type getRuleSetType() {
+        return m_rulesetType;
     }
 
     public String getLabel() {
@@ -131,6 +132,51 @@ public class RuleSet extends Flow.Node {
     }
 
     public boolean isPause() {
-        return m_type == Type.WAIT_MESSAGE || m_type == Type.WAIT_RECORDING || m_type == Type.WAIT_DIGIT || m_type == Type.WAIT_DIGITS;
+        return m_rulesetType == Type.WAIT_MESSAGE
+                || m_rulesetType == Type.WAIT_RECORDING
+                || m_rulesetType == Type.WAIT_DIGIT
+                || m_rulesetType == Type.WAIT_DIGITS;
+    }
+
+    /**
+     * Holds the result of a ruleset evaluation
+     */
+    public static class Result {
+
+        @SerializedName("uuid")
+        @com.google.gson.annotations.JsonAdapter(RefAdapter.class)
+        protected Rule m_rule;
+
+        @SerializedName("value")
+        protected String m_value;
+
+        @SerializedName("category")
+        protected String m_category;
+
+        @SerializedName("text")
+        protected String m_text;
+
+        public Result(Rule rule, String value, String category, String text) {
+            m_rule = rule;
+            m_value = value;
+            m_category = category;
+            m_text = text;
+        }
+
+        public Rule getRule() {
+            return m_rule;
+        }
+
+        public String getValue() {
+            return m_value;
+        }
+
+        public String getCategory() {
+            return m_category;
+        }
+
+        public String getText() {
+            return m_text;
+        }
     }
 }

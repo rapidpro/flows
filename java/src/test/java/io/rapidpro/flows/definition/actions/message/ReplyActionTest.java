@@ -28,7 +28,7 @@ public class ReplyActionTest extends BaseActionTest {
         ReplyAction action = new ReplyAction(new TranslatableText("Hi @contact.first_name you said @step.value"));
 
         Action.Result result = action.execute(m_runner, m_run, Input.of("Yes"));
-        ReplyAction performed = (ReplyAction) result.getActionPerformed();
+        ReplyAction performed = (ReplyAction) result.getPerformed();
 
         assertThat(performed.getMsg(), is(new TranslatableText("Hi Joe you said Yes")));
 
@@ -36,7 +36,7 @@ public class ReplyActionTest extends BaseActionTest {
         action = new ReplyAction(new TranslatableText("@(badexpression)"));
 
         result = action.execute(m_runner, m_run, Input.of("Yes"));
-        performed = (ReplyAction) result.getActionPerformed();
+        performed = (ReplyAction) result.getPerformed();
 
         assertThat(performed.getMsg(), is(new TranslatableText("@(badexpression)")));
         assertThat(result.getErrors(), contains("Undefined variable: badexpression"));

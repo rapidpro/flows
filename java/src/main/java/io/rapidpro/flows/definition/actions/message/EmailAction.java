@@ -53,7 +53,7 @@ public class EmailAction extends Action {
         }
 
         Action performed = new EmailAction(addresses, subject.getOutput(), message.getOutput());
-        return new Result(performed, errors);
+        return Result.performed(performed, errors);
     }
 
     public List<String> getAddresses() {

@@ -28,14 +28,14 @@ public abstract class Action {
 
     protected static Map<String, Class<? extends Action>> s_classByType = new HashMap<>();
     static {
-        s_classByType.put(SaveToContactAction.TYPE, SaveToContactAction.class);
-        s_classByType.put(SetLanguageAction.TYPE, SetLanguageAction.class);
         s_classByType.put(ReplyAction.TYPE, ReplyAction.class);
         s_classByType.put(SendAction.TYPE, SendAction.class);
+        s_classByType.put(EmailAction.TYPE, EmailAction.class);
+        s_classByType.put(SaveToContactAction.TYPE, SaveToContactAction.class);
+        s_classByType.put(SetLanguageAction.TYPE, SetLanguageAction.class);
         s_classByType.put(AddToGroupsAction.TYPE, AddToGroupsAction.class);
         s_classByType.put(RemoveFromGroupsAction.TYPE, RemoveFromGroupsAction.class);
         s_classByType.put(AddLabelAction.TYPE, AddLabelAction.class);
-        s_classByType.put(EmailAction.TYPE, EmailAction.class);
     }
 
     @SerializedName("type")
@@ -80,23 +80,31 @@ public abstract class Action {
      * Holds the result of an action execution
      */
     public static class Result {
-        public static final Result NOOP = new Result(null, null);
+        public static final Result NOOP = new Result(null, Collections.<String>emptyList());
 
-        protected Action m_actionPerformed;
+        protected Action m_performed;
 
         protected List<String> m_errors;
 
-        public Result(Action performed) {
-            this(performed, Collections.<String>emptyList());
-        }
-
-        public Result(Action performed, List<String> errors) {
-            m_actionPerformed = performed;
+        protected Result(Action performed, List<String> errors) {
+            m_performed = performed;
             m_errors = errors;
         }
 
-        public Action getActionPerformed() {
-            return m_actionPerformed;
+        public static Result performed(Action performed) {
+            return new Result(performed, Collections.<String>emptyList());
+        }
+
+        public static Result performed(Action performed, List<String> errors) {
+            return new Result(performed, errors);
+        }
+
+        public static Result errors(List<String> errors) {
+            return new Result(null, errors);
+        }
+
+        public Action getPerformed() {
+            return m_performed;
         }
 
         public List<String> getErrors() {

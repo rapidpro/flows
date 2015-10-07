@@ -8,7 +8,6 @@ import io.rapidpro.flows.utils.JsonUtils;
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -33,7 +32,7 @@ public class SaveToContactActionTest extends BaseActionTest {
         SaveToContactAction action = new SaveToContactAction("age", "Age", "@extra.age");
 
         Action.Result result = action.execute(m_runner, m_run, Input.of("Yes"));
-        SaveToContactAction performed = (SaveToContactAction) result.getActionPerformed();
+        SaveToContactAction performed = (SaveToContactAction) result.getPerformed();
 
         assertThat(performed.getField(), is("age"));
         assertThat(performed.getLabel(), is("Age"));
@@ -46,7 +45,7 @@ public class SaveToContactActionTest extends BaseActionTest {
         action = new SaveToContactAction("age", "Age", "@(badexpression)");
         result = action.execute(m_runner, m_run, Input.of("Yes"));
 
-        assertThat(result.getActionPerformed(), is(nullValue()));
+        assertThat(result.getPerformed(), is(nullValue()));
         assertThat(m_run.getContact().getFields().get("age"), is("64"));
 
         // try one that updates the phone number

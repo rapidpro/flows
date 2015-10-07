@@ -3,12 +3,15 @@ from __future__ import absolute_import, unicode_literals
 import datetime
 import phonenumbers
 import pytz
+import regex
 
 from abc import ABCMeta, abstractmethod
 from datetime import timedelta
 from enum import Enum
 from temba_expressions import conversions
 from temba_expressions.evaluator import Evaluator, EvaluationContext, EvaluationStrategy
+from .definition.flow import RuleSet
+from .exceptions import FlowRunException, FlowLoopException
 
 
 DEFAULT_EVALUATOR = Evaluator(expression_prefix='@',
@@ -301,6 +304,46 @@ class Location(object):
             pass
 
 
+class Step(object):
+    """
+    A step taken by a contact or surveyor in a flow run
+    """
+    def __init__(self, node, arrived_on):
+        self.node = node
+        self.arrived_on = arrived_on
+        self.left_on = None
+        self.rule_result = None
+        self.actions = []
+        self.errors = []
+
+    def add_action_result(self, action_result):
+        if action_result.performed:
+            self.actions.append(action_result.performed)
+
+        if action_result.errors:
+            self.errors += action_result.errors
+
+
+class Value(object):
+    """
+    Holds the result of a contact's last visit to a ruleset
+    """
+    def __init__(self, value, category, text, time):
+        self.value = value
+        self.category = category
+        self.text = text
+        self.time = time
+
+    def build_context(self, container):
+        return {
+            '*': self.value,
+            'value': self.value,
+            'category': self.category,
+            'text': self.text,
+            'time': conversions.to_string(self.time, container)
+        }
+
+
 class RunState(object):
     """
     Represents state of a flow run after visiting one or more nodes in the flow
@@ -370,9 +413,8 @@ class RunState(object):
         :param time: the time from the input
         :return:
         """
-        # TODO
-        # key = rule_set.label.lower().replace("[^a-z0-9]+", "_")
-        # self.values[key] = Value(result.value, result.category, result.text, time)
+        key = regex.sub(r'[^a-z0-9]+', '_', rule_set.label.lower())
+        self.values[key] = Value(result.value, result.category, result.text, time)
 
     @staticmethod
     def build_date_context(container, now):
@@ -442,7 +484,57 @@ class Runner(object):
         :param input: the new input
         :return: the updated run state
         """
-        # TODO
+        if run.state == RunState.State.COMPLETED:
+            raise FlowRunException("Cannot resume a completed run state")
+
+        last_step = run.steps[-1] if len(run.steps) > 0 else None
+
+        # reset steps list so that it doesn't grow forever in a never-ending flow
+        run.steps = []
+
+        if last_step:
+            current_node = last_step.node  # we're resuming an existing run
+        else:
+            current_node = run.flow.entry  # we're starting a new run
+            if not current_node:
+                raise FlowRunException("Flow has no entry point")
+
+        # tracks nodes visited so we can detect loops
+        nodes_visited = []  # TODO ordered set?
+
+        while current_node:
+            # if we're resuming a previously paused step, then use its arrived on value
+            if last_step and len(nodes_visited) == 0:
+                arrived_on = last_step.arrived_on
+            else:
+                arrived_on = datetime.datetime.now(tz=pytz.UTC)
+
+            # create new step for this node
+            step = Step(current_node, arrived_on)
+            run.steps.append(step)
+
+            # should we pause at this node?
+            if isinstance(current_node, RuleSet):
+                if current_node.is_pause() and len(nodes_visited) > 0:
+                    run.state = RunState.State.WAIT_MESSAGE
+                    return run
+
+            # check for an non-pausing loop
+            if current_node in nodes_visited:
+                raise FlowLoopException(nodes_visited)
+            else:
+                nodes_visited.append(current_node)
+
+            next_node = current_node.visit(self, run, step, input)
+
+            if next_node:
+                # if we have a next node, then record leaving this one
+                step.left_on = datetime.datetime.now(tz=pytz.UTC)
+            else:
+                # if not then we've completed this flow
+                run.setState(RunState.State.COMPLETED)
+
+            current_node = next_node
 
         return run
 

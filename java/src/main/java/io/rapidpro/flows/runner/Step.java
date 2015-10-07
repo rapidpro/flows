@@ -3,7 +3,7 @@ package io.rapidpro.flows.runner;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import io.rapidpro.flows.definition.Flow;
-import io.rapidpro.flows.definition.Rule;
+import io.rapidpro.flows.definition.RuleSet;
 import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.utils.JsonUtils;
 import org.threeten.bp.Instant;
@@ -29,7 +29,7 @@ public class Step {
     protected Instant m_leftOn;
 
     @SerializedName("rule")
-    protected Rule.Result m_ruleResult;
+    protected RuleSet.Result m_ruleResult;
 
     @SerializedName("actions")
     protected List<Action> m_actions;
@@ -60,11 +60,11 @@ public class Step {
         m_leftOn = leftOn;
     }
 
-    public Rule.Result getRuleResult() {
+    public RuleSet.Result getRuleResult() {
         return m_ruleResult;
     }
 
-    public void setRuleResult(Rule.Result ruleResult) {
+    public void setRuleResult(RuleSet.Result ruleResult) {
         m_ruleResult = ruleResult;
     }
 
@@ -73,8 +73,8 @@ public class Step {
     }
 
     public void addActionResult(Action.Result actionResult) {
-        if (actionResult.getActionPerformed() != null) {
-            m_actions.add(actionResult.getActionPerformed());
+        if (actionResult.getPerformed() != null) {
+            m_actions.add(actionResult.getPerformed());
         }
         if (actionResult.hasErrors()) {
             m_errors.addAll(actionResult.getErrors());

@@ -17,7 +17,7 @@ class Test(object):
     """
     __metaclass__ = ABCMeta
 
-    CLASS_BY_TYPE = None
+    CLASS_BY_TYPE = None  # lazily initialized below
 
     @classmethod
     def from_json(cls, json_obj, context):

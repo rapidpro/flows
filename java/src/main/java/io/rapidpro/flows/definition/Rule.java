@@ -69,45 +69,4 @@ public class Rule extends Flow.Element implements Flow.ConnectionStart {
         this.m_destination = destination;
     }
 
-    /**
-     * Holds the result of the matched rule
-     */
-    public static class Result {
-
-        @SerializedName("uuid")
-        @com.google.gson.annotations.JsonAdapter(RefAdapter.class)
-        protected Rule m_rule;
-
-        @SerializedName("value")
-        protected String m_value;
-
-        @SerializedName("category")
-        protected String m_category;
-
-        @SerializedName("text")
-        protected String m_text;
-
-        public Result(Rule rule, String value, String category, String text) {
-            m_rule = rule;
-            m_value = value;
-            m_category = category;
-            m_text = text;
-        }
-
-        public Rule getRule() {
-            return m_rule;
-        }
-
-        public String getValue() {
-            return m_value;
-        }
-
-        public String getCategory() {
-            return m_category;
-        }
-
-        public String getText() {
-            return m_text;
-        }
-    }
 }

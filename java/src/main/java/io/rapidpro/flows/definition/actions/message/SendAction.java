@@ -41,7 +41,7 @@ public class SendAction extends MessageAction {
      * @see MessageAction#executeWithMessage(Runner, EvaluationContext, String)
      */
     @Override
-    protected Result executeWithMessage(Runner runner, EvaluationContext context, String message) {
+    protected Result executeWithMessage(Runner runner, EvaluationContext context, String msg) {
         // TODO evaluate variables (except @new_contact)... though what do we return them as ?
 
         // create a new context without the @contact.* variables which will remain unresolved for now
@@ -49,10 +49,10 @@ public class SendAction extends MessageAction {
         newVars.remove("contact");
         EvaluationContext contextForOtherContacts = new EvaluationContext(newVars, context.getTimezone(), context.getDateStyle());
 
-        EvaluatedTemplate template = runner.substituteVariablesIfAvailable(message, contextForOtherContacts);
+        EvaluatedTemplate template = runner.substituteVariablesIfAvailable(msg, contextForOtherContacts);
 
         Action performed = new SendAction(new TranslatableText(template.getOutput()), m_groups, m_contacts, m_variables);
-        return new Result(performed, template.getErrors());
+        return Result.performed(performed, template.getErrors());
     }
 
     public List<ContactRef> getContacts() {

@@ -75,10 +75,10 @@ public class SaveToContactAction extends Action {
                 runner.updateContactField(run, m_field, value);
             }
 
-            return new Result(new SaveToContactAction(m_field, label, value));
+            return Result.performed(new SaveToContactAction(m_field, label, value));
         }
         else {
-            return new Result(null, template.getErrors());
+            return Result.errors(template.getErrors());
         }
     }
 

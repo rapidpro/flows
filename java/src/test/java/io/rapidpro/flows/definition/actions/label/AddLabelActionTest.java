@@ -22,7 +22,7 @@ public class AddLabelActionTest extends BaseActionTest {
         AddLabelAction action = new AddLabelAction(Arrays.asList(new LabelRef(123, "Testing"), new LabelRef("Messages with @step.value")));
 
         Action.Result result = action.execute(m_runner, m_run, Input.of("Yes"));
-        AddLabelAction performed = (AddLabelAction) result.getActionPerformed();
+        AddLabelAction performed = (AddLabelAction) result.getPerformed();
 
         assertThat(performed.getLabels(), contains(new LabelRef(123, "Testing"), new LabelRef("Messages with Yes")));
 
@@ -30,7 +30,7 @@ public class AddLabelActionTest extends BaseActionTest {
         action = new AddLabelAction(Arrays.asList(new LabelRef("@(badexpression)")));
 
         result = action.execute(m_runner, m_run, Input.of("Yes"));
-        assertThat(result.getActionPerformed(), nullValue());
+        assertThat(result.getPerformed(), nullValue());
         assertThat(result.getErrors(), contains("Undefined variable: badexpression"));
     }
 }

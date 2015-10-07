@@ -32,7 +32,7 @@ public class FlowTest extends BaseFlowsTest {
         RuleSet rs1 = (RuleSet) as1.getDestination();
 
         assertThat(rs1.getUuid(), is("1e318293-4730-481c-b455-daaaf86b2e6c"));
-        assertThat(rs1.getType(), is(RuleSet.Type.WAIT_MESSAGE));
+        assertThat(rs1.getRuleSetType(), is(RuleSet.Type.WAIT_MESSAGE));
         assertThat(rs1.getLabel(), is("Response 1"));
         assertThat(rs1.getOperand(), is("@step.value"));
 

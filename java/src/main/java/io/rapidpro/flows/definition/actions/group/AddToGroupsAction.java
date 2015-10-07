@@ -27,7 +27,10 @@ public class AddToGroupsAction extends GroupMembershipAction {
             run.getContact().getGroups().add(group.getName());
         }
 
-        Action performed = groups.size() > 0 ? new AddToGroupsAction(groups) : null;
-        return new Action.Result(performed, errors);
+        if (groups.size() > 0) {
+            return Result.performed(new AddToGroupsAction(groups), errors);
+        } else {
+            return Result.errors(errors);
+        }
     }
 }

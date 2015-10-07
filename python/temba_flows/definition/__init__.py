@@ -1,12 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 
-
-class FlowParseException(Exception):
-    """
-    Exception thrown when flow JSON is invalid
-    """
-    def __init__(self, message):
-        super(FlowParseException, self).__init__(message)
+from ..exceptions import FlowParseException
 
 
 class TranslatableText(object):

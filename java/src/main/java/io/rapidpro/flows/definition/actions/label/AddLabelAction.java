@@ -46,8 +46,11 @@ public class AddLabelAction extends Action {
             }
         }
 
-        Action performed = labels.size() > 0 ? new AddLabelAction(labels) : null;
-        return new Action.Result(performed, errors);
+        if (labels.size() > 0) {
+            return Result.performed(new AddLabelAction(labels), errors);
+        } else {
+            return Result.errors(errors);
+        }
     }
 
     public List<LabelRef> getLabels() {

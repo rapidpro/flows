@@ -1,9 +1,15 @@
 from __future__ import absolute_import, unicode_literals
 
+import logging
+
+from abc import ABCMeta, abstractmethod
 from enum import Enum
+from temba_expressions import conversions
 from . import TranslatableText
 from .actions import Action, MessageAction
 from .tests import Test
+
+logger = logging.Logger(__name__)
 
 
 class Flow(object):
@@ -76,6 +82,9 @@ class Flow(object):
         return flow
 
     class DeserializationContext(object):
+        """
+        Allows state to be provided to deserialization methods
+        """
         def __init__(self, flow):
             self.flow = flow
             self.destinations_to_set = {}
@@ -83,16 +92,38 @@ class Flow(object):
         def needs_destination(self, start, destination_uuid):
             self.destinations_to_set[start] = destination_uuid
 
+    class Element(object):
+        """
+        Super class of anything in a flow definition with a UUID
+        """
+        __metaclass__ = ABCMeta
+
+        def __init__(self, uuid):
+            self.uuid = uuid
+
+        def __eq__(self, other):
+            return self.uuid == other.uuid
+
+    class Node(Element):
+        """
+        Super class for ActionSet and RuleSet. Things which can be a destination in a flow graph.
+        """
+        __metaclass__ = ABCMeta
+
+        @abstractmethod
+        def visit(self, runner, run, step, input):
+            pass
+
     def get_element_by_uuid(self, uuid):
         return self.elements_by_uuid.get(uuid, None)
 
 
-class ActionSet(object):
+class ActionSet(Flow.Node):
     """
     A flow node which is a set of actions to be performed
     """
     def __init__(self, uuid):
-        self.uuid = uuid
+        super(ActionSet, self).__init__(uuid)
         self.actions = []
         self.destination = None  # set later
 
@@ -110,8 +141,19 @@ class ActionSet(object):
 
         return action_set
 
+    def visit(self, runner, run, step, input):
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.debug("Visiting action set %s with input %s from contact %s"
+                         % (self.uuid, unicode(input), run.contact.uuid))
 
-class RuleSet(object):
+        for action in self.actions:
+            result = action.execute(runner, run, input)
+            step.add_action_result(result)
+
+        return self.destination
+
+
+class RuleSet(Flow.Node):
     """
     A flow node which is a set of rules, each with its own destination node
     """
@@ -127,7 +169,7 @@ class RuleSet(object):
         EXPRESSION = 9
 
     def __init__(self, uuid, ruleset_type, label, operand):
-        self.uuid = uuid
+        super(RuleSet, self).__init__(uuid)
         self.ruleset_type = ruleset_type
         self.label = label
         self.operand = operand
@@ -144,6 +186,62 @@ class RuleSet(object):
             rule_set.rules.append(Rule.from_json(rule_obj, context))
 
         return rule_set
+
+    def visit(self, runner, run, step, input):
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.debug("Visiting rule set %s with input %s from contact %s"
+                         % (self.uuid, unicode(input), run.contact.uuid))
+
+        context = run.build_context(input)
+
+        match = self.find_matching_rule(runner, run, context)
+        if not match:
+            return None
+
+        rule, test_result = match
+
+        # get category in the flow base language
+        category = rule.category.get_localized([run.flow.base_language], "")
+
+        value_as_str = conversions.to_string(test_result.value, context)
+        result = RuleSet.Result(rule, value_as_str, category, test_result.text)
+        step.set_rule_result(result)
+
+        run.update_value(self, result, input.time)
+
+        return rule.destination
+
+    def find_matching_rule(self, runner, run, context):
+        """
+        Runs through the rules to find the first one that matches
+        :param runner: the flow runner
+        :param run: the current run state
+        :param context: the evaluation context
+        :return: the matching rule and the test result
+        """
+        operand, errors = runner.substitute_variables(self.operand, context)
+
+        for rule in self.rules:
+            result = rule.matches(runner, run, context, operand)
+            if result.matched:
+                return rule, result
+        return None
+
+    def is_pause(self):
+        return self.ruleset_type == RuleSet.Type.WAIT_MESSAGE \
+               or self.ruleset_type == RuleSet.Type.WAIT_RECORDING \
+               or self.ruleset_type == RuleSet.Type.WAIT_DIGIT \
+               or self.ruleset_type == RuleSet.Type.WAIT_DIGITS
+
+    class Result(object):
+        """
+        Holds the result of a ruleset evaluation
+        """
+        def __init__(self, rule, value, category, text):
+            self.rule = rule
+            self.value = value
+            self.category = category
+            self.text = text
 
 
 class Rule(object):
@@ -167,3 +265,14 @@ class Rule(object):
             context.needs_destination(rule, destination_uuid)
 
         return rule
+
+    def matches(self, runner, run, context, input):
+        """
+        Checks whether this rule is a match for the given input
+        :param runner: the flow runner
+        :param run: the current run state
+        :param context: the evaluation context
+        :param input: the input
+        :return: the test result
+        """
+        return self.test.evaluate(runner, run, context, input)

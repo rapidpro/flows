@@ -22,7 +22,7 @@ public class AddToGroupsActionTest extends BaseActionTest {
         AddToGroupsAction action = new AddToGroupsAction(Arrays.asList(new GroupRef(123, "Testers"), new GroupRef("People who say @step.value")));
 
         Action.Result result = action.execute(m_runner, m_run, Input.of("Yes"));
-        AddToGroupsAction performed = (AddToGroupsAction) result.getActionPerformed();
+        AddToGroupsAction performed = (AddToGroupsAction) result.getPerformed();
 
         assertThat(performed.getGroups(), contains(new GroupRef(123, "Testers"), new GroupRef("People who say Yes")));
 
@@ -30,7 +30,7 @@ public class AddToGroupsActionTest extends BaseActionTest {
         action = new AddToGroupsAction(Arrays.asList(new GroupRef("@(badexpression)")));
 
         result = action.execute(m_runner, m_run, Input.of("Yes"));
-        assertThat(result.getActionPerformed(), nullValue());
+        assertThat(result.getPerformed(), nullValue());
         assertThat(result.getErrors(), contains("Undefined variable: badexpression"));
     }
 }

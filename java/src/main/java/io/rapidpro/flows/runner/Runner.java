@@ -48,7 +48,7 @@ public class Runner {
      */
     public RunState resume(RunState run, Input input) throws FlowRunException {
         if (run.getState().equals(RunState.State.COMPLETED)) {
-            throw new IllegalStateException("Cannot resume a completed run state");
+            throw new FlowRunException("Cannot resume a completed run");
         }
 
         Step lastStep = run.getSteps().size() > 0 ? run.getSteps().get(run.getSteps().size() - 1) : null;
@@ -70,8 +70,8 @@ public class Runner {
         // tracks nodes visited so we can detect loops
         Set<Flow.Node> nodesVisited = new LinkedHashSet<>();
 
-        do {
-            // if we're resuming a previously paused step, then use it's arrived on value
+        while (currentNode != null) {
+            // if we're resuming a previously paused step, then use its arrived on value
             Instant arrivedOn;
             if (lastStep != null && nodesVisited.size() == 0) {
                 arrivedOn = lastStep.getArrivedOn();
@@ -110,7 +110,6 @@ public class Runner {
 
             currentNode = nextNode;
         }
-        while (currentNode != null);
 
         return run;
     }

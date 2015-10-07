@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
+ * Holds the result of a contact's last visit to a ruleset
  */
 public class Value {
 

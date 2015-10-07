@@ -10,7 +10,8 @@ import unittest
 from temba_expressions.dates import DateStyle
 from temba_expressions.evaluator import EvaluationContext
 from .definition.flow import Flow, ActionSet, RuleSet
-from .definition.actions import ReplyAction
+from .definition.actions import ReplyAction, SendAction, EmailAction, SaveToContactAction, SetLanguageAction
+from .definition.actions import AddToGroupsAction, RemoveFromGroupsAction, AddLabelAction
 from .definition.tests import *
 from .runner import Contact, ContactUrn, Field, Input, Location, Org, Runner, RunState
 from .utils import edit_distance
@@ -54,6 +55,56 @@ class BaseFlowsTest(unittest.TestCase):
                 return self.gasabo
             else:
                 return None
+
+
+class ActionsTest(BaseFlowsTest):
+    def setUp(self):
+        super(ActionsTest, self).setUp()
+
+        flow = Flow.from_json(json.loads(self.read_resource("test_flows/mushrooms.json")))
+
+        self.deserialization_context = Flow.DeserializationContext(flow)
+
+        self.runner = Runner(location_resolver=BaseFlowsTest.TestLocationResolver())
+        self.run = self.runner.start(self.org, self.fields, self.contact, flow)
+        self.context = self.run.build_context(None)
+
+    def test_reply_action(self):
+        action = ReplyAction.from_json({"type": "reply", "msg": {"fre": "Bonjour"}}, self.deserialization_context)
+
+        self.assertEqual(action.msg, TranslatableText({"fre": "Bonjour"}))
+
+        action = ReplyAction(TranslatableText("Hi @contact.first_name you said @step.value"))
+
+        result = action.execute(self.runner, self.run, Input("Yes"))
+        performed = result.performed
+
+        self.assertEqual(performed.msg, TranslatableText("Hi Joe you said Yes"))
+
+        # still send if message has errors
+        action = ReplyAction(TranslatableText("@(badexpression)"))
+
+        result = action.execute(self.runner, self.run, Input("Yes"))
+        performed = result.performed
+
+        self.assertEqual(performed.msg, TranslatableText("@(badexpression)"))
+        self.assertEqual(result.errors, ["Undefined variable: badexpression"])
+
+    def test_set_language_action(self):
+        action = SetLanguageAction.from_json({"type": "lang", "lang": "fre", "name": "Français"}, self.deserialization_context)
+
+        self.assertEqual(action.lang, "fre")
+        self.assertEqual(action.name, "Français")
+
+        action = SetLanguageAction("fre", "Français")
+
+        result = action.execute(self.runner, self.run, Input("Yes"))
+        performed = result.performed
+
+        self.assertEqual(performed.lang, "fre")
+        self.assertEqual(performed.name, "Français")
+
+        self.assertEqual(self.run.contact.language, "fre")
 
 
 class ContactTest(BaseFlowsTest):
@@ -155,6 +206,44 @@ class FlowTest(BaseFlowsTest):
         self.assertEqual(rs1.ruleset_type, RuleSet.Type.WAIT_MESSAGE)
         self.assertEqual(rs1.label, "Response 1")
         self.assertEqual(rs1.operand, "@step.value")
+
+        rs1_rule1 = rs1.rules[0]
+
+        self.assertIsInstance(rs1_rule1.test, ContainsAnyTest)
+        self.assertEqual(rs1_rule1.category, TranslatableText({"base": "Yes", "eng": "Yes", "fre": "Oui"}))
+
+        as2 = rs1_rule1.destination
+
+        self.assertEqual(as2.uuid, '6d12cde9-dbbf-4673-acd7-afa1776d382b')
+        self.assertEqual(len(as2.actions), 2)
+        self.assertIsInstance(as2.actions[0], ReplyAction)
+        self.assertIsInstance(as2.actions[1], RemoveFromGroupsAction)
+        self.assertEqual(as2.destination.uuid, '6891e592-1e29-426b-b227-e3ae466662ab')
+
+        rs1_rule2 = rs1.rules[1]
+
+        self.assertIsInstance(rs1_rule2.test, ContainsAnyTest)
+        self.assertEqual(rs1_rule2.category, TranslatableText({"base": "No", "eng": "No", "fre": "Non"}))
+
+        as3 = rs1_rule2.destination
+
+        self.assertEqual(as3.uuid, '4ef2b232-1484-4db7-b470-98af1a2349d3')
+        self.assertEqual(len(as3.actions), 2)
+        self.assertIsInstance(as3.actions[0], ReplyAction)
+        self.assertIsInstance(as3.actions[1], AddToGroupsAction)
+        self.assertEqual(as3.destination.uuid, '6891e592-1e29-426b-b227-e3ae466662ab')
+
+        rs1_rule3 = rs1.rules[2]
+
+        self.assertIsInstance(rs1_rule3.test, TrueTest)
+        self.assertEqual(rs1_rule3.category, TranslatableText({"base": "Other", "eng": "Other", "fre": "Autre"}))
+
+        as4 = rs1_rule3.destination
+
+        self.assertEqual(as4.uuid, 'e277932e-d546-4e0c-a483-ce6cce06b929')
+        self.assertEqual(len(as4.actions), 1)
+        self.assertIsInstance(as4.actions[0], ReplyAction)
+        self.assertEqual(as4.destination, rs1)
 
     def test_from_json_with_empty_flow(self):
         flow = Flow.from_json(json.loads(self.read_resource('test_flows/empty.json')))

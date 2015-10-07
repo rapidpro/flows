@@ -1,7 +1,6 @@
 package io.rapidpro.flows.definition.actions.group;
 
 import io.rapidpro.flows.definition.GroupRef;
-import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.runner.Runner;
 
@@ -27,7 +26,10 @@ public class RemoveFromGroupsAction extends GroupMembershipAction {
             run.getContact().getGroups().remove(group.getName());
         }
 
-        Action performed = groups.size() > 0 ? new RemoveFromGroupsAction(groups) : null;
-        return new Result(performed, errors);
+        if (groups.size() > 0) {
+            return Result.performed(new RemoveFromGroupsAction(groups));
+        } else {
+            return Result.errors(errors);
+        }
     }
 }

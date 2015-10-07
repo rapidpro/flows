@@ -25,6 +25,6 @@ public class ReplyAction extends MessageAction {
         EvaluatedTemplate template = runner.substituteVariables(message, context);
 
         Action performed = new ReplyAction(new TranslatableText(template.getOutput()));
-        return new Result(performed, template.getErrors());
+        return Result.performed(performed, template.getErrors());
     }
 }

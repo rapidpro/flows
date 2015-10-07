@@ -4,7 +4,6 @@ import com.google.gson.annotations.SerializedName;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.evaluator.Conversions;
 import io.rapidpro.flows.definition.Flow;
-import io.rapidpro.flows.definition.Rule;
 import io.rapidpro.flows.definition.RuleSet;
 import io.rapidpro.flows.utils.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -144,7 +143,7 @@ public class RunState {
      * @param result the rule match result
      * @param time the time from the input
      */
-    public void updateValue(RuleSet ruleSet, Rule.Result result, Instant time) {
+    public void updateValue(RuleSet ruleSet, RuleSet.Result result, Instant time) {
         String key = ruleSet.getLabel().toLowerCase().replaceAll("[^a-z0-9]+", "_");
 
         m_values.put(key, new Value(result.getValue(), result.getCategory(), result.getText(), time));

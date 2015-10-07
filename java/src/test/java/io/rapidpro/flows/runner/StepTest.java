@@ -37,7 +37,7 @@ public class StepTest extends BaseFlowsTest {
                 "\"errors\":[]" +
                 "}"));
 
-        step.addActionResult(new Action.Result(new ReplyAction(new TranslatableText("Hi Joe"))));
+        step.addActionResult(Action.Result.performed(new ReplyAction(new TranslatableText("Hi Joe"))));
         json = gson.toJson(step);
 
         assertThat(json, is("{" +
@@ -47,7 +47,7 @@ public class StepTest extends BaseFlowsTest {
                 "\"errors\":[]" +
                 "}"));
 
-        step.addActionResult(new Action.Result(null, Arrays.asList("This is an error", "This too")));
+        step.addActionResult(Action.Result.performed(null, Arrays.asList("This is an error", "This too")));
         json = gson.toJson(step);
 
         assertThat(json, is("{" +
@@ -62,7 +62,7 @@ public class StepTest extends BaseFlowsTest {
 
         Rule yesRule = ((RuleSet) ((ActionSet) flow.getEntry()).getDestination()).getRules().get(0);
 
-        step.setRuleResult(new Rule.Result(yesRule, "yes", "Yes", "yes ok"));
+        step.setRuleResult(new RuleSet.Result(yesRule, "yes", "Yes", "yes ok"));
         json = gson.toJson(step);
 
         assertThat(json, is("{" +
