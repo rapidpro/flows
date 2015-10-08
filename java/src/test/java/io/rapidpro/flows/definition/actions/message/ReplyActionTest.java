@@ -8,6 +8,7 @@ import io.rapidpro.flows.utils.JsonUtils;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -28,17 +29,18 @@ public class ReplyActionTest extends BaseActionTest {
         ReplyAction action = new ReplyAction(new TranslatableText("Hi @contact.first_name you said @step.value"));
 
         Action.Result result = action.execute(m_runner, m_run, Input.of("Yes"));
-        ReplyAction performed = (ReplyAction) result.getPerformed();
+        assertThat(result.getErrors(), empty());
 
+        ReplyAction performed = (ReplyAction) result.getPerformed();
         assertThat(performed.getMsg(), is(new TranslatableText("Hi Joe you said Yes")));
 
         // still send if message has errors
         action = new ReplyAction(new TranslatableText("@(badexpression)"));
 
         result = action.execute(m_runner, m_run, Input.of("Yes"));
-        performed = (ReplyAction) result.getPerformed();
-
-        assertThat(performed.getMsg(), is(new TranslatableText("@(badexpression)")));
         assertThat(result.getErrors(), contains("Undefined variable: badexpression"));
+
+        performed = (ReplyAction) result.getPerformed();
+        assertThat(performed.getMsg(), is(new TranslatableText("@(badexpression)")));
     }
 }

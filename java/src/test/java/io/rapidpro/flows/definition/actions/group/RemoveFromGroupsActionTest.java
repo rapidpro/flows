@@ -9,6 +9,7 @@ import org.junit.Test;
 import java.util.Arrays;
 
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -21,8 +22,9 @@ public class RemoveFromGroupsActionTest extends BaseActionTest {
         RemoveFromGroupsAction action = new RemoveFromGroupsAction(Arrays.asList(new GroupRef(123, "Testers"), new GroupRef("People who say @step.value")));
 
         Action.Result result = action.execute(m_runner, m_run, Input.of("Yes"));
-        RemoveFromGroupsAction performed = (RemoveFromGroupsAction) result.getPerformed();
+        assertThat(result.getErrors(), empty());
 
+        RemoveFromGroupsAction performed = (RemoveFromGroupsAction) result.getPerformed();
         assertThat(performed.getGroups(), contains(new GroupRef(123, "Testers"), new GroupRef("People who say Yes")));
     }
 }

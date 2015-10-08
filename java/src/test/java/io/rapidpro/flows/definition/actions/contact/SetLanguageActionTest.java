@@ -6,6 +6,7 @@ import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.utils.JsonUtils;
 import org.junit.Test;
 
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -27,8 +28,9 @@ public class SetLanguageActionTest extends BaseActionTest {
         SetLanguageAction action = new SetLanguageAction("fre", "Français");
 
         Action.Result result = action.execute(m_runner, m_run, Input.of("Yes"));
-        SetLanguageAction performed = (SetLanguageAction) result.getPerformed();
+        assertThat(result.getErrors(), empty());
 
+        SetLanguageAction performed = (SetLanguageAction) result.getPerformed();
         assertThat(performed.getLang(), is("fre"));
         assertThat(performed.getName(), is("Français"));
 

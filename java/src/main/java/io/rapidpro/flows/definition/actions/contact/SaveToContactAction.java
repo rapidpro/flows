@@ -40,10 +40,10 @@ public class SaveToContactAction extends Action {
      */
     @Override
     public Result execute(Runner runner, RunState run, Input input) {
-        EvaluatedTemplate template = runner.substituteVariables(m_value, run.buildContext(input));
-        if (!template.hasErrors()) {
+        EvaluatedTemplate valueTpl = runner.substituteVariables(m_value, run.buildContext(input));
+        if (!valueTpl.hasErrors()) {
             String label;
-            String value = template.getOutput().trim();
+            String value = valueTpl.getOutput().trim();
 
             if (m_field.equals("name")) {
                 value = StringUtils.substring(value, 0, 128);
@@ -71,7 +71,7 @@ public class SaveToContactAction extends Action {
             return Result.performed(new SaveToContactAction(m_field, label, value));
         }
         else {
-            return Result.errors(template.getErrors());
+            return Result.errors(valueTpl.getErrors());
         }
     }
 

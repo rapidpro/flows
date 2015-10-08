@@ -9,6 +9,7 @@ import org.junit.Test;
 import java.util.Arrays;
 
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -37,8 +38,9 @@ public class EmailActionTest extends BaseActionTest {
                 "Update from @contact", "This is to notify you that @contact did something");
 
         Action.Result result = action.execute(m_runner, m_run, Input.of("Yes"));
-        EmailAction performed = (EmailAction) result.getPerformed();
+        assertThat(result.getErrors(), empty());
 
+        EmailAction performed = (EmailAction) result.getPerformed();
         assertThat(performed.getAddresses(), contains("rowan@nyaruka.com", "m@chws.org"));
         assertThat(performed.getSubject(), is("Update from Joe Flow"));
         assertThat(performed.getMsg(), is("This is to notify you that Joe Flow did something"));

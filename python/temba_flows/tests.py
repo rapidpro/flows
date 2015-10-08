@@ -77,18 +77,19 @@ class ActionsTest(BaseFlowsTest):
         action = ReplyAction(TranslatableText("Hi @contact.first_name you said @step.value"))
 
         result = action.execute(self.runner, self.run, Input("Yes"))
-        performed = result.performed
+        self.assertEqual(result.errors, [])
 
+        performed = result.performed
         self.assertEqual(performed.msg, TranslatableText("Hi Joe you said Yes"))
 
         # still send if message has errors
         action = ReplyAction(TranslatableText("@(badexpression)"))
 
         result = action.execute(self.runner, self.run, Input("Yes"))
-        performed = result.performed
-
-        self.assertEqual(performed.msg, TranslatableText("@(badexpression)"))
         self.assertEqual(result.errors, ["Undefined variable: badexpression"])
+
+        performed = result.performed
+        self.assertEqual(performed.msg, TranslatableText("@(badexpression)"))
 
     def test_send_action(self):
         action = SendAction.from_json({
@@ -114,8 +115,8 @@ class ActionsTest(BaseFlowsTest):
 
         result = action.execute(self.runner, self.run, Input("Yes"))
         self.assertEqual(result.errors, [])
-        performed = result.performed
 
+        performed = result.performed
         self.assertEqual(performed.msg, TranslatableText("Hi @(\"Dr\"&contact) @contact.first_name. Joe Flow said Yes"))
         self.assertEqual(len(performed.groups), 1)
         self.assertEqual(performed.groups[0]['id'], 123)
@@ -142,8 +143,9 @@ class ActionsTest(BaseFlowsTest):
                              "This is to notify you that @contact did something")
 
         result = action.execute(self.runner, self.run, Input("Yes"))
-        performed = result.performed
+        self.assertEqual(result.errors, [])
 
+        performed = result.performed
         self.assertEqual(performed.addresses, ["rowan@nyaruka.com", "m@chws.org"])
         self.assertEqual(performed.subject, "Update from Joe Flow")
         self.assertEqual(performed.msg, "This is to notify you that Joe Flow did something")
@@ -157,12 +159,49 @@ class ActionsTest(BaseFlowsTest):
         action = SetLanguageAction("fre", "Français")
 
         result = action.execute(self.runner, self.run, Input("Yes"))
-        performed = result.performed
+        self.assertEqual(result.errors, [])
 
+        performed = result.performed
         self.assertEqual(performed.lang, "fre")
         self.assertEqual(performed.name, "Français")
 
         self.assertEqual(self.run.contact.language, "fre")
+
+    def test_save_to_contact_action(self):
+        action = SaveToContactAction.from_json({"type": "save", "field": "age", "label": "Age", "value": "@extra.age"},
+                                               self.deserialization_context)
+
+        self.assertEqual(action.field, "age")
+        self.assertEqual(action.label, "Age")
+        self.assertEqual(action.value, "@extra.age")
+
+        self.run.extra["age"] = "64"
+        action = SaveToContactAction("age", "Age", "@extra.age")
+
+        result = action.execute(self.runner, self.run, Input("Yes"))
+        self.assertEqual(result.errors, [])
+
+        performed = result.performed
+        self.assertEqual(performed.field, "age")
+        self.assertEqual(performed.label, "Age")
+        self.assertEqual(performed.value, "64")
+
+        self.assertEqual(self.run.contact.fields["age"], "64")
+
+        # NOOP for invalid expression
+        action = SaveToContactAction("age", "Age", "@(badexpression)")
+        result = action.execute(self.runner, self.run, Input("Yes"))
+
+        self.assertEqual(result.performed, None)
+        self.assertEqual(result.errors, ['Undefined variable: badexpression'])
+
+        self.assertEqual(self.run.contact.fields["age"], "64")
+
+        # try one that updates the phone number
+        action = SaveToContactAction("tel_e164", "Phone Number", "@step.value")
+        action.execute(self.runner, self.run, Input("0788382382"))
+        self.assertEqual(len(self.run.contact.urns), 3)
+        self.assertEqual(self.run.contact.urns[2], ContactUrn(ContactUrn.Scheme.TEL, "+250788382382"))
 
 
 class ContactTest(BaseFlowsTest):

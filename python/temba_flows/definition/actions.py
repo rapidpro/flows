@@ -52,10 +52,10 @@ class Action(object):
         """
         def __init__(self, performed, errors):
             self.performed = performed
-            self.errors = errors
+            self.errors = errors if errors is not None else []
 
         @classmethod
-        def performed(cls, performed, errors=()):
+        def performed(cls, performed, errors=None):
             return cls(performed, errors)
 
         @classmethod
@@ -228,14 +228,46 @@ class SaveToContactAction(Action):
     """
     TYPE = 'save'
 
+    def __init__(self, field, label, value):
+        self.field = field
+        self.label = label
+        self.value = value
+
     @classmethod
     def from_json(cls, json_obj, context):
-        return cls()
+        return cls(json_obj.get('field'), json_obj.get('label'), json_obj.get('value'))
 
     def execute(self, runner, run, input):
-        pass
+        value, errors = runner.substitute_variables(self.value, run.build_context(input))
+        if not errors:
+            value = value.strip()
 
-    # TODO
+            if self.field == 'name':
+                value = value[:128]
+                label = "Contact Name"
+                run.contact.name = value
+
+            elif self.field == 'first_name':
+                value = value[:128]
+                label = "First Name"
+                run.contact.set_first_name(value)
+
+            elif self.field == 'tel_e164':
+                value = value[:128]
+                label = "Phone Number"
+
+                from ..runner import ContactUrn
+                urn = ContactUrn(ContactUrn.Scheme.TEL, value).normalized(run.org)
+                run.contact.urns.append(urn)
+
+            else:
+                value = value[:640]
+                label = self.label
+                runner.update_contact_field(run, self.field, value)
+
+            return Action.Result.performed(SaveToContactAction(self.field, label, value))
+        else:
+            return Action.Result.errors(errors)
 
 
 class SetLanguageAction(Action):

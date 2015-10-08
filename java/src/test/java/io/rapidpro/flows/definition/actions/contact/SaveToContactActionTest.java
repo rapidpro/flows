@@ -32,12 +32,12 @@ public class SaveToContactActionTest extends BaseActionTest {
         SaveToContactAction action = new SaveToContactAction("age", "Age", "@extra.age");
 
         Action.Result result = action.execute(m_runner, m_run, Input.of("Yes"));
-        SaveToContactAction performed = (SaveToContactAction) result.getPerformed();
+        assertThat(result.getErrors(), empty());
 
+        SaveToContactAction performed = (SaveToContactAction) result.getPerformed();
         assertThat(performed.getField(), is("age"));
         assertThat(performed.getLabel(), is("Age"));
         assertThat(performed.getValue(), is("64"));
-        assertThat(result.getErrors(), empty());
 
         assertThat(m_run.getContact().getFields().get("age"), is("64"));
 
@@ -46,6 +46,8 @@ public class SaveToContactActionTest extends BaseActionTest {
         result = action.execute(m_runner, m_run, Input.of("Yes"));
 
         assertThat(result.getPerformed(), is(nullValue()));
+        assertThat(result.getErrors(), contains("Undefined variable: badexpression"));
+
         assertThat(m_run.getContact().getFields().get("age"), is("64"));
 
         // try one that updates the phone number

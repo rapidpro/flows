@@ -9,6 +9,7 @@ import org.junit.Test;
 import java.util.Arrays;
 
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
@@ -22,8 +23,9 @@ public class AddToGroupsActionTest extends BaseActionTest {
         AddToGroupsAction action = new AddToGroupsAction(Arrays.asList(new GroupRef(123, "Testers"), new GroupRef("People who say @step.value")));
 
         Action.Result result = action.execute(m_runner, m_run, Input.of("Yes"));
-        AddToGroupsAction performed = (AddToGroupsAction) result.getPerformed();
+        assertThat(result.getErrors(), empty());
 
+        AddToGroupsAction performed = (AddToGroupsAction) result.getPerformed();
         assertThat(performed.getGroups(), contains(new GroupRef(123, "Testers"), new GroupRef("People who say Yes")));
 
         // don't add to group name which is an invalid expression

@@ -55,8 +55,8 @@ public class SendActionTest extends BaseActionTest {
 
         Action.Result result = action.execute(m_runner, m_run, Input.of("Yes"));
         assertThat(result.getErrors(), empty());
-        SendAction performed = (SendAction) result.getPerformed();
 
+        SendAction performed = (SendAction) result.getPerformed();
         assertThat(performed.getMsg(), is(new TranslatableText("Hi @(\"Dr\"&contact) @contact.first_name. Joe Flow said Yes")));
         assertThat(performed.getGroups().size(), is(1));
         assertThat(performed.getGroups().get(0).getId(), is(123));
