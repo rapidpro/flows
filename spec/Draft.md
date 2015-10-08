@@ -47,10 +47,8 @@ Name is used for display purposes in the editor. Example:
 #### Group References
 
 ```
-<group-ref> : <template> | { "id": <id>, "name": <text> }
+<group-ref> : { "id": <id>, "name": <text> }
 ```
-
-Only templates beginning with "@" are evaluated, and others are assumed to be group names.
 
 Name is used for display purposes in the editor. Example:
 
@@ -61,10 +59,8 @@ Name is used for display purposes in the editor. Example:
 #### Label References
 
 ```
-<label-ref> :  <template> | { "id": <id>, "name": <text> }
+<label-ref> :  { "id": <id>, "name": <text> }
 ```
-
-Only templates beginning with "@" are evaluated, and others are assumed to be group names.
 
 Name is used for display purposes in the editor. Example:
 
@@ -180,22 +176,28 @@ The destination must be one of:
 
 ```
 <add-to-groups-action> : { "type": "add_group", 
-                           "groups": [ <group-ref>* ] }
+                           "groups": [ (<group-ref> | <template>)* ] }
 ```
+
+When a group is a template, only those beginning with "@" are evaluated, and others are assumed to be group names.
 
 #### Remove From Groups Actions
 
 ```
 <remove-from-groups-action> : { "type": "del_group", 
-                                "groups": [ <group-ref>* ] }
+                                "groups": [ (<group-ref> | <template>)* ] }
 ```
+
+When a group is a template, only those beginning with "@" are evaluated, and others are assumed to be group names.
 
 #### Add Labels Actions
 
 ```
 <add-labels-action> : { "type": "add_label", 
-                        "labels": [ <label-ref>* ] }
+                        "labels": [ (<label-ref> | <template>)* ] }
 ```
+
+When a label is a template, only those beginning with "@" are evaluated, and others are assumed to be label names.
 
 ## Rule Sets
 
