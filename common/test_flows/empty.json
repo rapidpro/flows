@@ -1,12 +1,18 @@
 {
-  "name": "Empty Flow",
-  "flow_type": "S",
+  "uuid": "1578e7cf-222b-45d1-b46f-cc8a3c7132c4",
+  "archived": false,
+  "expires": 10080,
+  "name": "Empty",
+  "created_on": "2015-08-24T07:33:25.421Z",
   "definition": {
     "base_language": "eng",
     "action_sets": [],
-    "last_saved": "2015-08-24T07:33:25.421535Z",
+    "last_saved": "2015-09-21T11:04:36.449619Z",
     "entry": null,
     "rule_sets": [],
     "metadata": {}
-  }
+  },
+  "flow_type": "F",
+  "version": 1,
+  "spec_version": 6
 }

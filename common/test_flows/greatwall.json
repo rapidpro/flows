@@ -1,6 +1,9 @@
 {
+  "uuid": "3e486456-c551-44cf-b149-d9643b1109e8",
+  "archived": false,
+  "expires": 10080,
   "name": "Greatwall",
-  "flow_type": "S",
+  "created_on": "2015-08-20T07:47:49.885Z",
   "definition": {
     "base_language": "eng",
     "action_sets": [
@@ -47,7 +50,7 @@
         ]
       }
     ],
-    "last_saved": "2015-08-21T11:25:18.095080Z",
+    "last_saved": "2015-09-21T11:04:36.732757Z",
     "entry": "8dbb7e1a-43d6-4c5b-a99d-fe3ee8923b65",
     "rule_sets": [
       {
@@ -73,19 +76,13 @@
               "base": "All Responses",
               "eng": "Other"
             },
-            "uuid": "7987f891-0783-46a2-82c6-8e61e8ca6e93",
-            "destination": "c81af400-a744-499a-9ad5-c90e233e4b92",
-            "destination_type": "A",
             "test": {
               "test": "true",
               "type": "true"
             },
-            "config": {
-              "type": "true",
-              "verbose_name": "contains anything",
-              "name": "Other",
-              "operands": 0
-            }
+            "destination": "c81af400-a744-499a-9ad5-c90e233e4b92",
+            "uuid": "7987f891-0783-46a2-82c6-8e61e8ca6e93",
+            "destination_type": "A"
           }
         ],
         "webhook": null,
@@ -122,14 +119,8 @@
               "type": "true"
             },
             "category": {
-              "base": "All Responses",
+              "base": "Other",
               "eng": "Other"
-            },
-            "config": {
-              "type": "true",
-              "verbose_name": "contains anything",
-              "name": "Other",
-              "operands": 0
             },
             "uuid": "64a703a8-358b-4dce-827b-f289b28a5c5f"
           }
@@ -146,5 +137,8 @@
       }
     ],
     "metadata": {}
-  }
+  },
+  "flow_type": "F",
+  "version": 4,
+  "spec_version": 6
 }

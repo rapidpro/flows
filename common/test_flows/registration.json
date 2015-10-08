@@ -1,6 +1,9 @@
 {
-  "name": "U-Report Registration",
-  "flow_type": "S",
+  "uuid": "ac8924a1-7104-4df6-8518-342f4c40dfd2",
+  "archived": false,
+  "expires": 10080,
+  "name": "U-Report Registration Flow",
+  "created_on": "2014-04-07T14:34:47.504Z",
   "definition": {
     "base_language": "eng",
     "action_sets": [
@@ -92,9 +95,9 @@
           },
           {
             "msg": {
-              "cpe": "Ok, I don get UR NAME as @contact.name . If dis one no correct, reply with \"undo\", If no be so, reply with the YEAR wey dem born U.",
+              "eng": "Ok, I have your NAME as \"@contact.name\". If this is not right, reply with \"undo\", otherwise reply with what YEAR were you born.",
               "hau": "Yauwa, na samu sunanka kamar haka \u201c@contact.name\u201d  Idan ba dai dai bane, sai ka soke, idan ba haka ba sai ka amsa da shekarar haihuwarka.",
-              "eng": "Ok, I have your NAME as \"@contact.name\". If this is not right, reply with \"undo\", otherwise reply with what YEAR were you born."
+              "cpe": "Ok, I don get UR NAME as @contact.name . If dis one no correct, reply with \"undo\", If no be so, reply with the YEAR wey dem born U."
             },
             "type": "reply"
           }
@@ -108,9 +111,9 @@
         "actions": [
           {
             "msg": {
-              "cpe": "Abeg no vex, that YEAR no kajad.  abeg reply with number like 1979",
+              "eng": "Sorry, that YEAR is not recognized. please respond with a number like 1979",
               "hau": "Yi hakuri, an gaza fahimtar shekarar da ka bayar. Yi amfani da alkalumma ga amsarka, kamar haka 1979.",
-              "eng": "Sorry, that YEAR is not recognized. please respond with a number like 1979"
+              "cpe": "Abeg no vex, that YEAR no kajad.  abeg reply with number like 1979"
             },
             "type": "reply"
           }
@@ -124,9 +127,9 @@
         "actions": [
           {
             "msg": {
-              "cpe": "Na beta tin to get we area pipu wey sabi for inside U-report. You na MAN abi WOMAN? Reply with M for Man abi F for Woman.",
+              "eng": "Great to have some experienced members of our community on U-report. What GENDER are you? Please reply with M for Male or F for Female. ",
               "hau": "Dakyau da muka samu membobi daga cikin al\u2019ummarmu a U-Report. Wane jinsi ne kai? Amsa da M idan kai namiji ne, ko F idan ke mace ce.",
-              "eng": "Great to have some experienced members of our community on U-report. What GENDER are you? Please reply with M for Male or F for Female. "
+              "cpe": "Na beta tin to get we area pipu wey sabi for inside U-report. You na MAN abi WOMAN? Reply with M for Man abi F for Woman."
             },
             "type": "reply"
           },
@@ -164,9 +167,9 @@
         "actions": [
           {
             "msg": {
-              "cpe": "Na so, we go like hear  from our youth. Youths na dem be we future. You na Man abi Woman? Reply with M for Man abi F for Woman.",
+              "eng": "Great, we are looking forward to hearing from our youth. Youth are our future. What GENDER are you? Reply with M for Male or F for Female.",
               "hau": "Da kyau, muna jiran muji daga  matasanmu. Matasa sune makomarmu. Wane jinsi ne kai? Amsa da M idan kai namiji ne, ko F idan ke mace ce.",
-              "eng": "Great, we are looking forward to hearing from our youth. Youth are our future. What GENDER are you? Reply with M for Male or F for Female."
+              "cpe": "Na so, we go like hear  from our youth. Youths na dem be we future. You na Man abi Woman? Reply with M for Man abi F for Woman."
             },
             "type": "reply"
           },
@@ -204,9 +207,9 @@
         "actions": [
           {
             "msg": {
-              "cpe": "Na wish LGA you go dey report from?",
+              "eng": "From which LGA will you be reporting from?",
               "hau": "Daga wace karamar hukuma ce zaka rinka bada rahoton?",
-              "eng": "From which LGA will you be reporting from?"
+              "cpe": "Na wish LGA you go dey report from?"
             },
             "type": "reply"
           },
@@ -235,9 +238,9 @@
         "actions": [
           {
             "msg": {
-              "cpe": "Wedon, you don almost finish to register. Na wish WARD you dey stay now?",
+              "eng": "Welldon you are almost fully registered. What WARD are U living in? ",
               "hau": "Da kayu, saura kadan ka kammala rijistar ka. Wace unguwa kake da zama?",
-              "eng": "Welldon you are almost fully registered. What WARD are U living in? "
+              "cpe": "Wedon, you don almost finish to register. Na wish WARD you dey stay now?"
             },
             "type": "reply"
           },
@@ -257,9 +260,9 @@
         "actions": [
           {
             "msg": {
-              "cpe": "Wedon! you don almost reach there! Na wish area you dey stay now. If you no dey sure abeg reply with your ward.",
+              "eng": "Thumbs up! You are almost there! What SETTLMENT are U currently living in. If you are not sure please reply with your Ward. ",
               "hau": "A gaishe ka! Saura kadan ya rage! A wani layi ne kake da zama a halin yanzu? Idan baka da tabbas, yi amfani da unguwarka.",
-              "eng": "Thumbs up! You are almost there! What SETTLMENT are U currently living in. If you are not sure please reply with your Ward. "
+              "cpe": "Wedon! you don almost reach there! Na wish area you dey stay now. If you no dey sure abeg reply with your ward."
             },
             "type": "reply"
           },
@@ -308,9 +311,9 @@
           },
           {
             "msg": {
-              "cpe": "Abeg no vex, your age never reach to take join U-Report",
+              "eng": "Sorry, you are too young to join U-Report",
               "hau": "Yi hakuri, ka yi kankantar shiga cikin U-Report ba.",
-              "eng": "Sorry, you are too young to join U-Report"
+              "cpe": "Abeg no vex, your age never reach to take join U-Report"
             },
             "type": "reply"
           }
@@ -324,9 +327,9 @@
         "actions": [
           {
             "msg": {
-              "cpe": "Abeg no vex we no understand wetin you yarn. Abeg reply with Man abi Woman.",
+              "eng": "Sorry that response is not understood. Please respond with Male or Female.",
               "hau": "Yi hakuri, ba;a fahimci amsar da ka bayar ba. Ka amsa da Namiji ko Mace.",
-              "eng": "Sorry that response is not understood. Please respond with Male or Female."
+              "cpe": "Abeg no vex we no understand wetin you yarn. Abeg reply with Man abi Woman."
             },
             "type": "reply"
           }
@@ -340,9 +343,9 @@
         "actions": [
           {
             "msg": {
-              "cpe": "Nice one, we need leaders like Una for inside U-report. Na for wish STATE U dey stay  now?",
+              "eng": "Excellent, we need leaders like U on U-report. What STATE are U living in currently? ",
               "hau": "Yayi kyau, muna bukatar shugabanni kamarku a U-Report. Wace jiha kike zama a halin yanzu?",
-              "eng": "Excellent, we need leaders like U on U-report. What STATE are U living in currently? "
+              "cpe": "Nice one, we need leaders like Una for inside U-report. Na for wish STATE U dey stay  now?"
             },
             "type": "reply"
           },
@@ -380,9 +383,9 @@
         "actions": [
           {
             "msg": {
-              "cpe": "Congratulate, U go fit  tok Ur mind and you fit hear wetin other people get to yarn. Abeg ginger your friends to come join. Ur voice mata!! http://nigeria.ureport.in",
+              "eng": "Congratulations,U will be able to share Ur views and get feedback. Please encourage your friends to sign up. Ur voice matters!! http://nigeria.ureport.in",
               "hau": "Muna taya ka murna, zaka iya bayyana ra\u2019ayinka, ka kuma samu amsa. Don haka baiwa abokan ka kwarin guiwa su shiga cikin Muryarka na da tasiri!! Idan aka shiga shafin yanar gizo  a  http://nigeria.ureport.in",
-              "eng": "Congratulations,U will be able to share Ur views and get feedback. Please encourage your friends to sign up. Ur voice matters!! http://nigeria.ureport.in"
+              "cpe": "Congratulate, U go fit  tok Ur mind and you fit hear wetin other people get to yarn. Abeg ginger your friends to come join. Ur voice mata!! http://nigeria.ureport.in"
             },
             "type": "reply"
           },
@@ -411,9 +414,9 @@
         "actions": [
           {
             "msg": {
-              "hau": "Menene SANA\u2019ARKA, zabi daya  (a)Kiwon lafiya (b) Ilimi        (c) Kasuwanci  (d) Dogaro da kai (e) Dalibi (f)Aikin kayan sarki  (g) Aikin gona (h) Kula da jin dadin jama\u2019a (i) Saura j)Yiwa kasa hidima",
+              "eng": "What is Ur OCCUPATION, choose one: a)Health b)Education c)Business d)Self Employed e)Student f)Uniformed Service g)Agriculture h)Social Worker i)Other j)Corpers",
               "cpe": "Wish kain work you dey do, choose one: a) Body mata b) Education c) Business d) I dey do my own work e) Student f) Uniform Service g) Agriculture h) Social Worker i) Other works j) Corpers",
-              "eng": "What is Ur OCCUPATION, choose one: a)Health b)Education c)Business d)Self Employed e)Student f)Uniformed Service g)Agriculture h)Social Worker i)Other j)Corpers"
+              "hau": "Menene SANA\u2019ARKA, zabi daya  (a)Kiwon lafiya (b) Ilimi        (c) Kasuwanci  (d) Dogaro da kai (e) Dalibi (f)Aikin kayan sarki  (g) Aikin gona (h) Kula da jin dadin jama\u2019a (i) Saura j)Yiwa kasa hidima"
             },
             "type": "reply"
           },
@@ -441,16 +444,16 @@
         ]
       },
       {
-        "y": 2151,
-        "x": 1034,
+        "y": 2161,
+        "x": 1036,
         "destination": "3fb4bfaa-a856-4253-9768-4ef8dc295164",
         "uuid": "b61771c8-d1f3-4a8d-9970-30639cbfc206",
         "actions": [
           {
             "msg": {
-              "cpe": "Nice one, U-report need women like Una wey dey make tins happen. Na for wish STATE U dey stay now?",
+              "eng": "Fabulous U-report needs women like U who make the world go round. What STATE are U living in currently?",
               "hau": "U-Report mai gamsarwa yana bukatar mace kamar ki mai kazar kazar. Wace JIHA kike zama a halin yanzu?",
-              "eng": "Fabulous U-report needs women like U who make the world go round. What STATE are U living in currently?"
+              "cpe": "Nice one, U-report need women like Una wey dey make tins happen. Na for wish STATE U dey stay now?"
             },
             "type": "reply"
           },
@@ -488,9 +491,9 @@
         "actions": [
           {
             "msg": {
-              "cpe": "Abeg no vex, I miss am. No vex just reply am with your name. For example: \"Thomas\"",
+              "eng": "Sorry I got that wrong. Ok, please reply with just your name. For example: \"Thomas\"",
               "hau": "Yi hakuri, ban fahimce ka ba. Yauwa, sai ka amsa da sunan kawai. Misali \u201cThomas\u201d",
-              "eng": "Sorry I got that wrong. Ok, please reply with just your name. For example: \"Thomas\""
+              "cpe": "Abeg no vex, I miss am. No vex just reply am with your name. For example: \"Thomas\""
             },
             "type": "reply"
           }
@@ -504,9 +507,9 @@
         "actions": [
           {
             "msg": {
-              "cpe": "Abeg no vex, we no sabi dat state, abeg reply with the Nigeria state wey you \ndey stay now.",
+              "eng": "Sorry, we don't recognize that state, please respond with the Nigerian state you currently live in.",
               "hau": "Yi hakuri, bamu fahimci wannan jihar ba. Amsa da sunan jihar dake Nijeriya inda kake zama a halin yanzu.",
-              "eng": "Sorry, we don't recognize that state, please respond with the Nigerian state you currently live in."
+              "cpe": "Abeg no vex, we no sabi dat state, abeg reply with the Nigeria state wey you \ndey stay now."
             },
             "type": "reply"
           }
@@ -520,9 +523,9 @@
         "actions": [
           {
             "msg": {
-              "cpe": "Abeg no vex, we no sabi that LGA, abeg reply with the LGA wey you dey stay now for inside @flow.state",
+              "eng": "Sorry, we don't recognize that LGA, please respond with the LGA in @flow.state you currently live in.",
               "hau": "Yi hakuri, bamu  gane wannan karamar hukumar ba, amsa da karamar hukumar da kake zama a halin yanzu.",
-              "eng": "Sorry, we don't recognize that LGA, please respond with the LGA in @flow.state you currently live in."
+              "cpe": "Abeg no vex, we no sabi that LGA, abeg reply with the LGA wey you dey stay now for inside @flow.state"
             },
             "type": "reply"
           }
@@ -536,9 +539,9 @@
         "actions": [
           {
             "msg": {
-              "cpe": "Congratulate, U go fit  tok Ur mind and you fit hear wetin other people get to yarn. Abeg ginger your friends to come join. Ur voice mata!! http://nigeria.ureport.in",
+              "eng": "Congratulations,U will be able to share Ur views and get feedback. Please encourage your friends to sign up. Ur voice matters!! http://nigeria.ureport.in",
               "hau": "Muna taya ka murna, zaka iya bayyana ra\u2019ayinka, ka kuma samu amsa. Don haka baiwa abokan ka kwarin guiwa su shiga cikin Muryarka na da tasiri!! Idan aka shiga shafin yanar gizo  a  http://nigeria.ureport.in",
-              "eng": "Congratulations,U will be able to share Ur views and get feedback. Please encourage your friends to sign up. Ur voice matters!! http://nigeria.ureport.in"
+              "cpe": "Congratulate, U go fit  tok Ur mind and you fit hear wetin other people get to yarn. Abeg ginger your friends to come join. Ur voice mata!! http://nigeria.ureport.in"
             },
             "type": "reply"
           },
@@ -627,9 +630,9 @@
           },
           {
             "msg": {
-              "hau": "Ka bayar da amsa da SUNANKA  kokuma LAKABI, misali \u201cTolu ko \u201cTom\u201d ko \u201cAhmed\u201d Idan baka son bayyana sunanka kana iya yin amfani da haruffa ko lambobi. DUKKAN SAKONNI KYAUTA NE!",
+              "eng": "Please reply with Ur NAME or NICKNAME,for example \"Tolu\" or \"Tom\" or \"Ahmed\".  If U want to remain anonymous use any letters or numbers ALL MESSAGES ARE FREE !",
               "cpe": "Abeg make you reply with Ur NAME abi GUYNAME, for example \"Tolu\" abi \"Tom\" abi \"Ahmed\".  If U no wan make people know who U be, U fit use any letter abi numbers. ALL THE MESSAGE NA FREE!",
-              "eng": "Please reply with Ur NAME or NICKNAME,for example \"Tolu\" or \"Tom\" or \"Ahmed\".  If U want to remain anonymous use any letters or numbers ALL MESSAGES ARE FREE !"
+              "hau": "Ka bayar da amsa da SUNANKA  kokuma LAKABI, misali \u201cTolu ko \u201cTom\u201d ko \u201cAhmed\u201d Idan baka son bayyana sunanka kana iya yin amfani da haruffa ko lambobi. DUKKAN SAKONNI KYAUTA NE!"
             },
             "type": "reply"
           }
@@ -666,9 +669,9 @@
           },
           {
             "msg": {
-              "hau": "Ka bayar da amsa da SUNANKA  kokuma LAKABI, misali \u201cTolu ko \u201cTom\u201d ko \u201cAhmed\u201d Idan baka son bayyana sunanka kana iya yin amfani da haruffa ko lambobi. DUKKAN SAKONNI KYAUTA NE!",
+              "eng": "Please reply with Ur NAME or NICKNAME,for example \"Tolu\" or \"Tom\" or \"Ahmed\".  If U want to remain anonymous use any letters or numbers ALL MESSAGES ARE FREE !",
               "cpe": "Abeg make you reply with Ur NAME abi GUYNAME, for example \"Tolu\" abi \"Tom\" abi \"Ahmed\".  If U no wan make people know who U be, U fit use any letter abi numbers. ALL THE MESSAGE NA FREE!",
-              "eng": "Please reply with Ur NAME or NICKNAME,for example \"Tolu\" or \"Tom\" or \"Ahmed\".  If U want to remain anonymous use any letters or numbers ALL MESSAGES ARE FREE !"
+              "hau": "Ka bayar da amsa da SUNANKA  kokuma LAKABI, misali \u201cTolu ko \u201cTom\u201d ko \u201cAhmed\u201d Idan baka son bayyana sunanka kana iya yin amfani da haruffa ko lambobi. DUKKAN SAKONNI KYAUTA NE!"
             },
             "type": "reply"
           }
@@ -705,9 +708,9 @@
           },
           {
             "msg": {
-              "hau": "Ka bayar da amsa da SUNANKA  kokuma LAKABI, misali \u201cTolu ko \u201cTom\u201d ko \u201cAhmed\u201d Idan baka son bayyana sunanka kana iya yin amfani da haruffa ko lambobi. DUKKAN SAKONNI KYAUTA NE!",
+              "eng": "Please reply with Ur NAME or NICKNAME,for example \"Tolu\" or \"Tom\" or \"Ahmed\".  If U want to remain anonymous use any letters or numbers ALL MESSAGES ARE FREE !",
               "cpe": "Abeg make you reply with Ur NAME abi GUYNAME, for example \"Tolu\" abi \"Tom\" abi \"Ahmed\".  If U no wan make people know who U be, U fit use any letter abi numbers. ALL THE MESSAGE NA FREE!",
-              "eng": "Please reply with Ur NAME or NICKNAME,for example \"Tolu\" or \"Tom\" or \"Ahmed\".  If U want to remain anonymous use any letters or numbers ALL MESSAGES ARE FREE !"
+              "hau": "Ka bayar da amsa da SUNANKA  kokuma LAKABI, misali \u201cTolu ko \u201cTom\u201d ko \u201cAhmed\u201d Idan baka son bayyana sunanka kana iya yin amfani da haruffa ko lambobi. DUKKAN SAKONNI KYAUTA NE!"
             },
             "type": "reply"
           }
@@ -744,9 +747,9 @@
           },
           {
             "msg": {
-              "hau": "Ka bayar da amsa da SUNANKA  kokuma LAKABI, misali \u201cTolu ko \u201cTom\u201d ko \u201cAhmed\u201d Idan baka son bayyana sunanka kana iya yin amfani da haruffa ko lambobi. DUKKAN SAKONNI KYAUTA NE!",
+              "eng": "Please reply with Ur NAME or NICKNAME,for example \"Tolu\" or \"Tom\" or \"Ahmed\".  If U want to remain anonymous use any letters or numbers ALL MESSAGES ARE FREE !",
               "cpe": "Abeg make you reply with Ur NAME abi GUYNAME, for example \"Tolu\" abi \"Tom\" abi \"Ahmed\".  If U no wan make people know who U be, U fit use any letter abi numbers. ALL THE MESSAGE NA FREE!",
-              "eng": "Please reply with Ur NAME or NICKNAME,for example \"Tolu\" or \"Tom\" or \"Ahmed\".  If U want to remain anonymous use any letters or numbers ALL MESSAGES ARE FREE !"
+              "hau": "Ka bayar da amsa da SUNANKA  kokuma LAKABI, misali \u201cTolu ko \u201cTom\u201d ko \u201cAhmed\u201d Idan baka son bayyana sunanka kana iya yin amfani da haruffa ko lambobi. DUKKAN SAKONNI KYAUTA NE!"
             },
             "type": "reply"
           }
@@ -783,16 +786,16 @@
           },
           {
             "msg": {
-              "hau": "Ka bayar da amsa da SUNANKA  kokuma LAKABI, misali \u201cTolu ko \u201cTom\u201d ko \u201cAhmed\u201d Idan baka son bayyana sunanka kana iya yin amfani da haruffa ko lambobi. DUKKAN SAKONNI KYAUTA NE!",
+              "eng": "Please reply with Ur NAME or NICKNAME,for example \"Tolu\" or \"Tom\" or \"Ahmed\".  If U want to remain anonymous use any letters or numbers ALL MESSAGES ARE FREE !",
               "cpe": "Abeg make you reply with Ur NAME abi GUYNAME, for example \"Tolu\" abi \"Tom\" abi \"Ahmed\".  If U no wan make people know who U be, U fit use any letter abi numbers. ALL THE MESSAGE NA FREE!",
-              "eng": "Please reply with Ur NAME or NICKNAME,for example \"Tolu\" or \"Tom\" or \"Ahmed\".  If U want to remain anonymous use any letters or numbers ALL MESSAGES ARE FREE !"
+              "hau": "Ka bayar da amsa da SUNANKA  kokuma LAKABI, misali \u201cTolu ko \u201cTom\u201d ko \u201cAhmed\u201d Idan baka son bayyana sunanka kana iya yin amfani da haruffa ko lambobi. DUKKAN SAKONNI KYAUTA NE!"
             },
             "type": "reply"
           }
         ]
       }
     ],
-    "last_saved": "2015-08-18T12:39:31.047287Z",
+    "last_saved": "2015-09-18T19:50:57.231032Z",
     "entry": "76e71f2a-f15a-405d-b81f-36e847d3f09b",
     "rule_sets": [
       {
@@ -1436,5 +1439,8 @@
         }
       ]
     }
-  }
+  },
+  "flow_type": "F",
+  "version": 75,
+  "spec_version": 6
 }

@@ -1,6 +1,9 @@
 {
+  "uuid": "73c40f19-007d-46bd-83ea-aef439de9f9c",
+  "archived": false,
+  "expires": 10080,
   "name": "Mushrooms",
-  "flow_type": "F",
+  "created_on": "2015-08-18T08:39:55.420Z",
   "definition": {
     "base_language": "eng",
     "action_sets": [
@@ -97,7 +100,7 @@
         ]
       }
     ],
-    "last_saved": "2015-08-28T10:55:56.380349Z",
+    "last_saved": "2015-09-21T11:04:36.911634Z",
     "entry": "32cf414b-35e3-4c75-8a78-d5f4de925e13",
     "rule_sets": [
       {
@@ -146,19 +149,13 @@
               "fre": "Autre",
               "eng": "Other"
             },
-            "uuid": "366fb919-7e0b-48be-8f5b-baa14b2a65aa",
-            "destination": "e277932e-d546-4e0c-a483-ce6cce06b929",
-            "destination_type": "A",
             "test": {
               "test": "true",
               "type": "true"
             },
-            "config": {
-              "type": "true",
-              "verbose_name": "contains anything",
-              "name": "Other",
-              "operands": 0
-            }
+            "destination": "e277932e-d546-4e0c-a483-ce6cce06b929",
+            "uuid": "366fb919-7e0b-48be-8f5b-baa14b2a65aa",
+            "destination_type": "A"
           }
         ],
         "webhook": null,
@@ -173,5 +170,8 @@
       }
     ],
     "metadata": {}
-  }
+  },
+  "flow_type": "F",
+  "version": 18,
+  "spec_version": 6
 }

@@ -32,7 +32,8 @@ class Flow(object):
                     return val
             return None
 
-    def __init__(self, flow_type, base_language):
+    def __init__(self, version, flow_type, base_language):
+        self.version = version
         self.flow_type = flow_type
         self.languages = None
         self.base_language = base_language
@@ -41,12 +42,13 @@ class Flow(object):
 
     @classmethod
     def from_json(cls, json_obj):
+        version = int(json_obj['version'])
         flow_type = Flow.Type.from_code(json_obj['flow_type'])
 
         definition = json_obj['definition']
         base_language = definition.get('base_language', None)
 
-        flow = Flow(flow_type, base_language)
+        flow = Flow(version, flow_type, base_language)
 
         # keep an exhaustive list of all languages in our flow definition
         languages = []

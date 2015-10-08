@@ -30,6 +30,8 @@ public class Flow {
         @SerializedName("S") SURVEY;
     }
 
+    protected int m_version;
+
     protected Type m_type;
 
     protected String m_baseLanguage;
@@ -58,6 +60,7 @@ public class Flow {
             JsonObject obj = elem.getAsJsonObject();
 
             Flow flow = new Flow();
+            flow.m_version = obj.get("version").getAsInt();
             flow.m_type = jsonContext.deserialize(obj.get("flow_type"), Type.class);
 
             JsonObject definition = obj.get("definition").getAsJsonObject();
@@ -211,6 +214,14 @@ public class Flow {
         Node getDestination();
 
         void setDestination(Node destination);
+    }
+
+    public int getVersion() {
+        return m_version;
+    }
+
+    public Type getType() {
+        return m_type;
     }
 
     /**
