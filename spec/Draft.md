@@ -19,7 +19,7 @@
 
 Example: 
 
-```
+```js
 { "eng": "Hello @contact", "fre": "Bonjour @contact" }
 ```
 
@@ -29,6 +29,12 @@ Example:
 
 ```
 <contact-ref>: { "id": <id>, "name": <text> }
+```
+
+Name is used for display purposes in the editor. Example:
+
+```js
+{ "id": "1234", "name": "Joe Flow" }
 ```
 
 #### Group Reference
@@ -42,6 +48,8 @@ Example:
 ```
 <variable-ref>: { "id": <template> }
 ```
+
+The template should evaluate to either a group name or a phone number.
 
 ## Action Sets
 
@@ -60,6 +68,13 @@ Example:
          | <add-to-groups-action> 
          | <remove-from-groups-action> 
          | <add-label-action>
+```
+
+#### Reply Action
+
+```
+<reply-action> : { "type": "reply",
+                   "msg": <translatable-text> }
 ```
 
 #### Send Action
