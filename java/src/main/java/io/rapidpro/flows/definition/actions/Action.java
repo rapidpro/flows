@@ -7,7 +7,7 @@ import io.rapidpro.flows.definition.actions.contact.SaveToContactAction;
 import io.rapidpro.flows.definition.actions.contact.SetLanguageAction;
 import io.rapidpro.flows.definition.actions.group.AddToGroupsAction;
 import io.rapidpro.flows.definition.actions.group.RemoveFromGroupsAction;
-import io.rapidpro.flows.definition.actions.label.AddLabelAction;
+import io.rapidpro.flows.definition.actions.label.AddLabelsAction;
 import io.rapidpro.flows.definition.actions.message.EmailAction;
 import io.rapidpro.flows.definition.actions.message.ReplyAction;
 import io.rapidpro.flows.definition.actions.message.SendAction;
@@ -35,7 +35,7 @@ public abstract class Action {
         s_classByType.put(SetLanguageAction.TYPE, SetLanguageAction.class);
         s_classByType.put(AddToGroupsAction.TYPE, AddToGroupsAction.class);
         s_classByType.put(RemoveFromGroupsAction.TYPE, RemoveFromGroupsAction.class);
-        s_classByType.put(AddLabelAction.TYPE, AddLabelAction.class);
+        s_classByType.put(AddLabelsAction.TYPE, AddLabelsAction.class);
     }
 
     @SerializedName("type")

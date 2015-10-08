@@ -10,7 +10,7 @@ import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.runner.Runner;
 
 /**
- * Test that returns whether the text starts with the given string
+ * Test that returns whether the text starts with the given text
  */
 public class StartsWithTest extends TranslatableTest {
 

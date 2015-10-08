@@ -59,18 +59,11 @@ public class SaveToContactAction extends Action {
                 value = StringUtils.substring(value, 0, 128);
                 label = "Phone Number";
 
-                ContactUrn urn = run.getContact().getUrn(Collections.singletonList(ContactUrn.Scheme.TEL));
-
-                List<ContactUrn> urns = run.getContact().getUrns();
-                if (urn != null) {
-                    urns.remove(urn);
-                }
-
-                urns.add(ContactUrn.fromString("tel:" + value));
+                ContactUrn urn = new ContactUrn(ContactUrn.Scheme.TEL, value).normalized(run.getOrg());
+                run.getContact().getUrns().add(urn);
             }
             else {
-                // TODO does the 255 char limit still stand?
-                value = StringUtils.substring(value, 0, 255);
+                value = StringUtils.substring(value, 0, 640);
                 label = m_label;
                 runner.updateContactField(run, m_field, value);
             }

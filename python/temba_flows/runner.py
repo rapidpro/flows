@@ -12,6 +12,7 @@ from temba_expressions import conversions
 from temba_expressions.evaluator import Evaluator, EvaluationContext, EvaluationStrategy
 from .definition.flow import RuleSet
 from .exceptions import FlowRunException, FlowLoopException
+from .utils import normalize_number
 
 
 DEFAULT_EVALUATOR = Evaluator(expression_prefix='@',
@@ -218,6 +219,21 @@ class ContactUrn(object):
         parts = urn.split(':', 2)
         scheme = ContactUrn.Scheme[parts[0].upper()]
         return ContactUrn(scheme, parts[1])
+
+    def normalized(self, org):
+        """
+        Returns a normalized version of this URN
+        :param org: the org
+        :return: the normalized URN
+        """
+        if self.scheme == ContactUrn.Scheme.TWITTER:
+            norm_path = self.path.strip()
+            if norm_path[0] == '@':
+                norm_path = norm_path[1:]
+        else:
+            norm_path, is_valid = normalize_number(self.path, org.country)
+
+        return ContactUrn(self.scheme, norm_path)
 
     def get_display(self, org, full=False):
         """

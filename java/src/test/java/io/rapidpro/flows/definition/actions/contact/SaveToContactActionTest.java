@@ -50,7 +50,8 @@ public class SaveToContactActionTest extends BaseActionTest {
 
         // try one that updates the phone number
         action = new SaveToContactAction("tel_e164", "Phone Number", "@step.value");
-        action.execute(m_runner, m_run, Input.of("+250788382382"));
-        assertThat(m_run.getContact().getUrn(Collections.singletonList(ContactUrn.Scheme.TEL)).getPath(), is("+250788382382"));
+        action.execute(m_runner, m_run, Input.of("0788382382"));
+        assertThat(m_run.getContact().getUrns(), hasSize(3));
+        assertThat(m_run.getContact().getUrns().get(2), is(new ContactUrn(ContactUrn.Scheme.TEL, "+250788382382")));
     }
 }

@@ -44,8 +44,8 @@ class Test(object):
                 DateAfterTest.TYPE: DateAfterTest,
                 DateBeforeTest.TYPE: DateBeforeTest,
                 HasPhoneTest.TYPE: HasPhoneTest,
-                HasDistrictTest.TYPE: HasDistrictTest,
-                HasStateTest.TYPE: HasStateTest
+                HasStateTest.TYPE: HasStateTest,
+                HasDistrictTest.TYPE: HasDistrictTest
             }
 
         test_type = json_obj['type']
@@ -278,7 +278,7 @@ class ContainsAnyTest(ContainsTest):
 
 class StartsWithTest(TranslatableTest):
     """
-    Test that returns whether the text starts with the given string
+    Test that returns whether the text starts with the given text
     """
     TYPE = 'starts'
 
@@ -545,7 +545,7 @@ class DateTest(Test):
 
 class HasDateTest(DateTest):
     """
-    Test which returns whether input has a valid date
+    Test which returns whether input contains a valid date
     """
     TYPE = 'date'
 
@@ -653,6 +653,28 @@ class HasPhoneTest(Test):
             return Test.Result.NO_MATCH
 
 
+class HasStateTest(Test):
+    """
+    Test that returns whether the text contains a valid state
+    """
+    TYPE = "state"
+
+    @classmethod
+    def from_json(cls, json_obj, context):
+        return cls()
+
+    def evaluate(self, runner, run, context, text):
+        from ..runner import Location
+
+        country = run.org.country
+        if country:
+            state = runner.parse_location(text, country, Location.Level.STATE, None)
+            if state:
+                return Test.Result.match(state.name)
+
+        return Test.Result.NO_MATCH
+
+
 class HasDistrictTest(Test):
     """
     Test that returns whether the text contains a valid district in the given state
@@ -680,27 +702,5 @@ class HasDistrictTest(Test):
                     district = runner.parse_location(text, country, Location.Level.DISTRICT, state)
                     if district:
                         return Test.Result.match(district.name)
-
-        return Test.Result.NO_MATCH
-
-
-class HasStateTest(Test):
-    """
-    Test that returns whether the text contains a valid state
-    """
-    TYPE = "state"
-
-    @classmethod
-    def from_json(cls, json_obj, context):
-        return cls()
-
-    def evaluate(self, runner, run, context, text):
-        from ..runner import Location
-
-        country = run.org.country
-        if country:
-            state = runner.parse_location(text, country, Location.Level.STATE, None)
-            if state:
-                return Test.Result.match(state.name)
 
         return Test.Result.NO_MATCH

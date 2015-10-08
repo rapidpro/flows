@@ -5,7 +5,9 @@ import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import io.rapidpro.flows.utils.FlowUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.IOException;
 
@@ -42,12 +44,23 @@ public class ContactUrn {
         return new ContactUrn(scheme, parts[1]);
     }
 
-    public Scheme getScheme() {
-        return m_scheme;
-    }
+    /**
+     * Returns a normalized version of this URN
+     * @param org the org
+     * @return the normalized URN
+     */
+    public ContactUrn normalized(Org org) {
+        String normPath;
+        if (m_scheme == ContactUrn.Scheme.TWITTER) {
+            normPath = m_path.trim();
+            if (normPath.charAt(0) == '@') {
+                normPath = normPath.substring(1);
+            }
+        } else {
+            normPath = FlowUtils.normalizeNumber(m_path, org.getCountry()).getLeft();
+        }
 
-    public String getPath() {
-        return m_path;
+        return new ContactUrn(m_scheme, normPath);
     }
 
     /**
@@ -84,6 +97,14 @@ public class ContactUrn {
         public ContactUrn read(JsonReader in) throws IOException {
             return ContactUrn.fromString(in.nextString());
         }
+    }
+
+    public Scheme getScheme() {
+        return m_scheme;
+    }
+
+    public String getPath() {
+        return m_path;
     }
 
     /**

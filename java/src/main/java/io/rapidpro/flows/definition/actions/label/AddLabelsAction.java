@@ -15,14 +15,14 @@ import java.util.List;
 /**
  * Adds one or more labels to the incoming message
  */
-public class AddLabelAction extends Action {
+public class AddLabelsAction extends Action {
 
     public static final String TYPE = "add_label";
 
     @SerializedName("labels")
     protected List<LabelRef> m_labels;
 
-    protected AddLabelAction(List<LabelRef> labels) {
+    protected AddLabelsAction(List<LabelRef> labels) {
         super(TYPE);
         m_labels = labels;
     }
@@ -47,7 +47,7 @@ public class AddLabelAction extends Action {
         }
 
         if (labels.size() > 0) {
-            return Result.performed(new AddLabelAction(labels), errors);
+            return Result.performed(new AddLabelsAction(labels), errors);
         } else {
             return Result.errors(errors);
         }

@@ -11,10 +11,10 @@ from temba_expressions.dates import DateStyle
 from temba_expressions.evaluator import EvaluationContext
 from .definition.flow import Flow, ActionSet, RuleSet
 from .definition.actions import ReplyAction, SendAction, EmailAction, SaveToContactAction, SetLanguageAction
-from .definition.actions import AddToGroupsAction, RemoveFromGroupsAction, AddLabelAction, VariableRef
+from .definition.actions import AddToGroupsAction, RemoveFromGroupsAction, AddLabelsAction, VariableRef
 from .definition.tests import *
 from .runner import Contact, ContactUrn, Field, Input, Location, Org, Runner, RunState
-from .utils import edit_distance
+from .utils import edit_distance, normalize_number
 
 
 class BaseFlowsTest(unittest.TestCase):
@@ -240,6 +240,22 @@ class ContactTest(BaseFlowsTest):
                                    'gender': "M",
                                    'age': "34",
                                    'joined': "10-06-2015 13:30"})
+
+
+class ContactUrnTest(BaseFlowsTest):
+
+    def test_from_string(self):
+        urn = ContactUrn.from_string("tel:+260964153686")
+
+        self.assertEqual(urn.scheme, ContactUrn.Scheme.TEL)
+        self.assertEqual(urn.path, "+260964153686")
+
+    def test_normalized(self):
+        raw = ContactUrn(ContactUrn.Scheme.TEL, " 078-383-5665 ")
+        self.assertEqual(raw.normalized(self.org), ContactUrn(ContactUrn.Scheme.TEL, "+250783835665"))
+
+        raw = ContactUrn(ContactUrn.Scheme.TWITTER, "  @bob ")
+        self.assertEqual(raw.normalized(self.org), ContactUrn(ContactUrn.Scheme.TWITTER, "bob"))
 
 
 class FlowTest(BaseFlowsTest):
@@ -687,6 +703,14 @@ class TestsTest(BaseFlowsTest):
 
         self.assertTest(test, "My phone is 0124515", False, None)
 
+    def test_has_state_test(self):
+        HasStateTest.from_json({}, self.deserialization_context)
+
+        test = HasStateTest()
+
+        self.assertTest(test, " kigali", True, "Kigali")
+        self.assertTest(test, "Washington", False, None)
+
     def test_has_district_test(self):
         test = HasDistrictTest.from_json({"test": "kigali"}, self.deserialization_context)
         self.assertEqual(test.state, "kigali")
@@ -701,14 +725,6 @@ class TestsTest(BaseFlowsTest):
 
         self.assertTest(test, " gasabo", True, "Gasabo")
         self.assertTest(test, "Nine", False, None)
-
-    def test_has_state_test(self):
-        HasStateTest.from_json({}, self.deserialization_context)
-
-        test = HasStateTest()
-
-        self.assertTest(test, " kigali", True, "Kigali")
-        self.assertTest(test, "Washington", False, None)
 
 
 class TranslatableTextTest(unittest.TestCase):
@@ -755,3 +771,23 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(edit_distance("abcd", "ad"), 2)     # 2 deletions
         self.assertEqual(edit_distance("abcd", "axbcd"), 1)  # 1 addition
         self.assertEqual(edit_distance("abcd", "acbd"), 1)   # 1 transposition
+
+    def test_normalize_number(self):
+        # valid numbers
+        self.assertEquals(normalize_number("0788383383", "RW"), ("+250788383383", True))
+        self.assertEquals(normalize_number("+250788383383", "KE"), ("+250788383383", True))
+        self.assertEquals(normalize_number("+250788383383", None), ("+250788383383", True))
+        self.assertEquals(normalize_number("250788383383", None), ("+250788383383", True))
+        self.assertEquals(normalize_number("2.50788383383E+11", None), ("+250788383383", True))
+        self.assertEquals(normalize_number("2.50788383383E+12", None), ("+250788383383", True))
+        self.assertEquals(normalize_number("(917) 992-5253", "US"), ("+19179925253", True))
+        self.assertEquals(normalize_number("19179925253", None), ("+19179925253", True))
+        self.assertEquals(normalize_number("+62877747666", None), ("+62877747666", True))
+        self.assertEquals(normalize_number("62877747666", "ID"), ("+62877747666", True))
+        self.assertEquals(normalize_number("0877747666", "ID"), ("+62877747666", True))
+
+        # invalid numbers
+        self.assertEquals(normalize_number("12345", "RW"), ("12345", False))
+        self.assertEquals(normalize_number("0788383383", None), ("0788383383", False))
+        self.assertEquals(normalize_number("0788383383", "ZZ"), ("0788383383", False))
+        self.assertEquals(normalize_number("MTN", "RW"), ("mtn", False))

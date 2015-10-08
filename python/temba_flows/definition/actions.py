@@ -25,7 +25,7 @@ class Action(object):
                 SetLanguageAction.TYPE: SetLanguageAction,
                 AddToGroupsAction.TYPE: AddToGroupsAction,
                 RemoveFromGroupsAction.TYPE: RemoveFromGroupsAction,
-                AddLabelAction.TYPE: AddLabelAction,
+                AddLabelsAction.TYPE: AddLabelsAction,
             }
 
         action_type = json_obj['type']
@@ -292,7 +292,7 @@ class RemoveFromGroupsAction(Action):
     # TODO
 
 
-class AddLabelAction(Action):
+class AddLabelsAction(Action):
     """
     Adds one or more labels to the incoming message
     """
