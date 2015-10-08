@@ -7,11 +7,13 @@ import json
 import pytz
 import unittest
 
+from ordered_set import OrderedSet
 from temba_expressions.dates import DateStyle
 from temba_expressions.evaluator import EvaluationContext
+from .definition import ContactRef, GroupRef, LabelRef, VariableRef
 from .definition.flow import Flow, ActionSet, RuleSet
 from .definition.actions import ReplyAction, SendAction, EmailAction, SaveToContactAction, SetLanguageAction
-from .definition.actions import AddToGroupsAction, RemoveFromGroupsAction, AddLabelsAction, VariableRef
+from .definition.actions import AddToGroupsAction, RemoveFromGroupsAction, AddLabelsAction
 from .definition.tests import *
 from .runner import Contact, ContactUrn, Field, Input, Location, Org, Runner, RunState
 from .utils import edit_distance, normalize_number
@@ -31,7 +33,7 @@ class BaseFlowsTest(unittest.TestCase):
                                "Joe Flow",
                                [ContactUrn.from_string("tel:+260964153686"),
                                 ContactUrn.from_string("twitter:realJoeFlow")],
-                               ["Testers", "Developers"],
+                               OrderedSet(["Testers", "Developers"]),
                                {"gender": "M", "age": "34", "joined": "2015-10-06T11:30:01.123Z"},
                                'eng')
 
@@ -95,22 +97,22 @@ class ActionsTest(BaseFlowsTest):
         action = SendAction.from_json({
             "type": "send",
             "msg": {"fre": "Bonjour"},
-            "groups": [{"id": 123, "name": "Testers"}],
             "contacts": [{"id": 234, "name": "Mr Test"}],
+            "groups": [{"id": 123, "name": "Testers"}],
             "variables": [{"id": "@new_contact"}, {"id": "group-@contact.gender"}]
         }, self.deserialization_context)
 
         self.assertEqual(action.msg, TranslatableText({"fre": "Bonjour"}))
-        self.assertEqual(action.groups[0]['id'], 123)
-        self.assertEqual(action.groups[0]['name'], "Testers")
-        self.assertEqual(action.contacts[0]['id'], 234)
-        self.assertEqual(action.contacts[0]['name'], "Mr Test")
+        self.assertEqual(action.contacts[0].id, 234)
+        self.assertEqual(action.contacts[0].name, "Mr Test")
+        self.assertEqual(action.groups[0].id, 123)
+        self.assertEqual(action.groups[0].name, "Testers")
         self.assertEqual(action.variables[0].value, "@new_contact")
         self.assertEqual(action.variables[1].value, "group-@contact.gender")
 
         action = SendAction(TranslatableText("Hi @(\"Dr\" & contact) @contact.first_name. @step.contact said @step.value"),
-                            [{"id": 123, "name": "Testers"}],
-                            [{"id": 234, "name": "Mr Test"}],
+                            [ContactRef(234, "Mr Test")],
+                            [GroupRef(123, "Testers")],
                             [VariableRef("@new_contact"), VariableRef("group-@contact.gender")])
 
         result = action.execute(self.runner, self.run, Input("Yes"))
@@ -118,12 +120,12 @@ class ActionsTest(BaseFlowsTest):
 
         performed = result.performed
         self.assertEqual(performed.msg, TranslatableText("Hi @(\"Dr\"&contact) @contact.first_name. Joe Flow said Yes"))
-        self.assertEqual(len(performed.groups), 1)
-        self.assertEqual(performed.groups[0]['id'], 123)
-        self.assertEqual(performed.groups[0]['name'], "Testers")
         self.assertEqual(len(performed.contacts), 1)
-        self.assertEqual(performed.contacts[0]['id'], 234)
-        self.assertEqual(performed.contacts[0]['name'], "Mr Test")
+        self.assertEqual(performed.contacts[0].id, 234)
+        self.assertEqual(performed.contacts[0].name, "Mr Test")
+        self.assertEqual(len(performed.groups), 1)
+        self.assertEqual(performed.groups[0].id, 123)
+        self.assertEqual(performed.groups[0].name, "Testers")
         self.assertEqual(len(performed.variables), 2)
         self.assertEqual(performed.variables[0].value, "@new_contact")
         self.assertEqual(performed.variables[1].value, "group-M")
@@ -202,6 +204,22 @@ class ActionsTest(BaseFlowsTest):
         action.execute(self.runner, self.run, Input("0788382382"))
         self.assertEqual(len(self.run.contact.urns), 3)
         self.assertEqual(self.run.contact.urns[2], ContactUrn(ContactUrn.Scheme.TEL, "+250788382382"))
+
+    def test_add_to_groups_action(self):
+        action = AddToGroupsAction([GroupRef(123, "Testers"), GroupRef(None, "People who say @step.value")])
+
+        result = action.execute(self.runner, self.run, Input("Yes"))
+        self.assertEqual(result.errors, [])
+
+        performed = result.performed
+        self.assertEqual(performed.groups, [GroupRef(123, "Testers"), GroupRef(None, "People who say Yes")])
+
+        # don't add to group name which is an invalid expression
+        action = AddToGroupsAction([GroupRef(None, "@(badexpression)")])
+
+        result = action.execute(self.runner, self.run, Input("Yes"))
+        self.assertEqual(result.performed, None)
+        self.assertEqual(result.errors, ["Undefined variable: badexpression"])
 
 
 class ContactTest(BaseFlowsTest):

@@ -2,7 +2,7 @@ from __future__ import absolute_import, unicode_literals
 
 from abc import ABCMeta, abstractmethod
 from temba_expressions.evaluator import EvaluationContext
-from . import TranslatableText
+from . import TranslatableText, ContactRef, GroupRef, LabelRef, VariableRef
 from ..exceptions import FlowParseException
 
 
@@ -66,29 +66,6 @@ class Action(object):
 Action.Result.NOOP = Action.Result(None, ())
 
 
-class VariableRef(object):
-    """
-    A variable reference to a contact group (by name) or a contact (by phone)
-    """
-    NEW_CONTACT = "@new_contact"
-
-    def __init__(self, value):
-        self.value = value
-
-    @classmethod
-    def from_json(cls, json_obj, context):
-        return cls(json_obj.get('id'))
-
-    def to_json(self):
-        return {'id': self.value}
-
-    def is_new_contact(self):
-        """
-        Returns whether this variable is a placeholder for a new contact
-        """
-        return self.value.lower() == self.NEW_CONTACT
-
-
 class MessageAction(Action):
     """
     Base class for actions which send a message
@@ -146,15 +123,15 @@ class SendAction(MessageAction):
     @classmethod
     def from_json(cls, json_obj, context):
         return cls(TranslatableText.from_json(json_obj.get('msg')),
-                   json_obj.get('contacts'),
-                   json_obj.get('groups'),
+                   [ContactRef.from_json(c, context) for c in json_obj.get('contacts')],
+                   [GroupRef.from_json(g, context) for g in json_obj.get('groups')],
                    [VariableRef.from_json(v, context) for v in json_obj.get('variables', [])])
 
     def to_json(self):
         return {'type': self.TYPE,
                 'msg': self.msg,
-                'contacts': self.contacts,
-                'groups': self.groups,
+                'contacts': [c.to_json() for c in self.contacts],
+                'groups': [g.to_json() for g in self.groups],
                 'variables': [v.to_json() for v in self.variables]}
 
     def execute_with_message(self, runner, context, msg):
@@ -179,7 +156,7 @@ class SendAction(MessageAction):
 
         template, errors = runner.substitute_variables_if_available(msg, context_for_other_contacts)
 
-        performed = SendAction(TranslatableText(template), self.groups, self.contacts, variables)
+        performed = SendAction(TranslatableText(template), self.contacts, self.groups, variables)
         return Action.Result.performed(performed, errors)
 
 
@@ -292,7 +269,38 @@ class SetLanguageAction(Action):
         return Action.Result.performed(SetLanguageAction(self.lang, self.name))
 
 
-class AddToGroupsAction(Action):
+class GroupMembershipAction(Action):
+    """
+    Base class for actions which operate on a list of groups
+    """
+    __metaclass__ = ABCMeta
+
+    def __init__(self, groups):
+        self.groups = groups
+
+    def execute(self, runner, run, input):
+        context = run.build_context(input)
+        groups = []
+        errors = []
+
+        for group in self.groups:
+            if not group.id:
+                name, name_errors = runner.substitute_variables(group.name, context)
+                if not name_errors:
+                    groups.append(GroupRef(None, name))
+                else:
+                    errors += name_errors
+            else:
+                groups.append(group)
+
+        return self.execute_with_groups(runner, run, groups, errors)
+
+    @abstractmethod
+    def execute_with_groups(self, runner, run, groups, errors):
+        pass
+
+
+class AddToGroupsAction(GroupMembershipAction):
     """
     Adds the contact to one or more groups
     """
@@ -300,15 +308,21 @@ class AddToGroupsAction(Action):
 
     @classmethod
     def from_json(cls, json_obj, context):
-        return cls()
+        return cls([GroupRef.from_json(g, context) for g in json_obj['groups']])
 
-    def execute(self, runner, run, input):
-        pass
+    def to_json(self):
+        return {'type': self.TYPE, 'groups': [g.to_json() for g in self.groups]}
 
-    # TODO
+    def execute_with_groups(self, runner, run, groups, errors):
+        if groups:
+            for group in groups:
+                run.contact.groups.add(group.name)
+            return Action.Result.performed(AddToGroupsAction(groups), errors)
+        else:
+            return Action.Result.errors(errors)
 
 
-class RemoveFromGroupsAction(Action):
+class RemoveFromGroupsAction(GroupMembershipAction):
     """
     Removes the contact from one or more groups
     """
@@ -316,12 +330,18 @@ class RemoveFromGroupsAction(Action):
 
     @classmethod
     def from_json(cls, json_obj, context):
-        return cls()
+        return cls([GroupRef.from_json(g, context) for g in json_obj['groups']])
 
-    def execute(self, runner, run, input):
-        pass
+    def to_json(self):
+        return {'type': self.TYPE, 'groups': [g.to_json() for g in self.groups]}
 
-    # TODO
+    def execute_with_groups(self, runner, run, groups, errors):
+        if groups:
+            for group in groups:
+                run.contact.groups.add(group.name)
+            return Action.Result.performed(AddToGroupsAction(groups), errors)
+        else:
+            return Action.Result.errors(errors)
 
 
 class AddLabelsAction(Action):
@@ -330,11 +350,32 @@ class AddLabelsAction(Action):
     """
     TYPE = 'add_label'
 
+    def __init__(self, labels):
+        self.labels = labels
+
     @classmethod
     def from_json(cls, json_obj, context):
-        return cls()
+        return cls([LabelRef.from_json(l, context) for l in json_obj['labels']])
+
+    def to_json(self):
+        return {'type': self.TYPE, 'groups': [l.to_json() for l in self.labels]}
 
     def execute(self, runner, run, input):
-        pass
+        context = run.build_context(input)
+        labels = []
+        errors = []
 
-    # TODO
+        for label in self.labels:
+            if not label.id:
+                name, name_errors = runner.substitute_variables(label.name, context)
+                if not name_errors:
+                    labels.append(LabelRef(None, name))
+                else:
+                    errors += name_errors
+            else:
+                labels.append(label)
+
+        if labels:
+            return Action.Result.performed(AddLabelsAction(labels), errors)
+        else:
+            return Action.Result.errors(errors)

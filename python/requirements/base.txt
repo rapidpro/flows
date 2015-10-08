@@ -1,5 +1,6 @@
-enum34
+enum34==1.0.4
+ordered-set==1.4.0
 phonenumbers==7.0.2
 pytz
 rapidpro-expressions==1.0.6.1
-regex
+regex==2015.10.05

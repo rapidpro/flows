@@ -23,11 +23,10 @@ public class AddToGroupsAction extends GroupMembershipAction {
      */
     @Override
     protected Action.Result executeWithGroups(Runner runner, RunState run, List<GroupRef> groups, List<String> errors) {
-        for (GroupRef group : groups) {
-            run.getContact().getGroups().add(group.getName());
-        }
-
         if (groups.size() > 0) {
+            for (GroupRef group : groups) {
+                run.getContact().getGroups().add(group.getName());
+            }
             return Result.performed(new AddToGroupsAction(groups), errors);
         } else {
             return Result.errors(errors);

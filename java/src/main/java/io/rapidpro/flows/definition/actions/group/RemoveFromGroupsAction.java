@@ -22,11 +22,10 @@ public class RemoveFromGroupsAction extends GroupMembershipAction {
      */
     @Override
     protected Result executeWithGroups(Runner runner, RunState run, List<GroupRef> groups, List<String> errors) {
-        for (GroupRef group : groups) {
-            run.getContact().getGroups().remove(group.getName());
-        }
-
         if (groups.size() > 0) {
+            for (GroupRef group : groups) {
+                run.getContact().getGroups().remove(group.getName());
+            }
             return Result.performed(new RemoveFromGroupsAction(groups));
         } else {
             return Result.errors(errors);
