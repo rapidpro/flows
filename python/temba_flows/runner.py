@@ -35,7 +35,7 @@ class Org(object):
     def from_json(cls, json_obj):
         return cls(json_obj['country'],
                    json_obj['primary_language'],
-                   json_obj['timezone'],
+                   pytz.timezone(json_obj['timezone']),
                    json_obj['date_style'],
                    json_obj['anon'])
 
@@ -68,7 +68,7 @@ class Field(object):
                     return val
             return None
 
-    def __init__(self, key, label, value_type):
+    def __init__(self, key, label, value_type, is_new=False):
         if not self.is_valid_key(key):
             raise ValueError("Field key '%s' is invalid or reserved" % key)
 
@@ -78,7 +78,11 @@ class Field(object):
         self.key = key
         self.label = label
         self.value_type = value_type
-        self.is_new = True
+        self.is_new = is_new
+
+    @classmethod
+    def from_json(cls, json_obj):
+        return cls(json_obj['key'], json_obj['label'], Field.ValueType.from_code(json_obj['value_type']))
 
     @classmethod
     def make_key(cls, label):
@@ -92,6 +96,15 @@ class Field(object):
     @classmethod
     def is_valid_label(cls, label):
         return regex.match(r'^[A-Za-z0-9\- ]+$', label, regex.V0)
+
+    def __eq__(self, other):
+        return self.key == other.key and self.label == other.label and self.value_type == other.value_type
+
+    def __ne__(self, other):
+        return not (self == other)
+
+    def __hash__(self):
+        return hash(self.key)
 
 
 class Contact(object):
@@ -362,6 +375,9 @@ class Step(object):
         if action_result.errors:
             self.errors += action_result.errors
 
+    def is_completed(self):
+        return self.left_on is not None
+
 
 class Value(object):
     """
@@ -486,7 +502,7 @@ class RunState(object):
         """
         completed = []
         for step in self.steps:
-            if step.is_completed or self.state == RunState.State.COMPLETED:
+            if step.is_completed() or self.state == RunState.State.COMPLETED:
                 completed.append(step)
         return completed
 
@@ -507,12 +523,12 @@ class RunState(object):
         if not label:
             label = regex.sub(r'([^A-Za-z0-9\- ]+)', ' ', key, regex.V0).title()
 
-        field = Field(key, label, value_type)
+        field = Field(key, label, value_type, is_new=True)
         self.fields[key] = field
         return field
 
     def get_created_fields(self):
-        return [f for f in self.fields if f.is_new]
+        return [f for f in self.fields.values() if f.is_new]
 
 
 class Runner(object):
@@ -590,7 +606,7 @@ class Runner(object):
                 step.left_on = datetime.datetime.now(tz=pytz.UTC)
             else:
                 # if not then we've completed this flow
-                run.setState(RunState.State.COMPLETED)
+                run.state = RunState.State.COMPLETED
 
             current_node = next_node
 

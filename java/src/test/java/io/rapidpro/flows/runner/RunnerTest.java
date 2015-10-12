@@ -191,7 +191,6 @@ public class RunnerTest extends BaseFlowsTest {
         assertThat(run.getSteps().get(0).getNode().getUuid(), is("b7cfa0ac-4d50-4384-a1ab-9ec79bd45e42"));
         assertThat(run.getSteps().get(0).getRuleResult().getCategory(), is("1 - 8"));
         assertThat(run.getSteps().get(0).getRuleResult().getValue(), is("7"));
-
         assertThat(run.getSteps().get(1).getNode().getUuid(), is("fe5ec555-ed5b-4b29-934d-c593f52c5881"));
         assertThat(run.getSteps().get(1).getRuleResult().getCategory(), is("> 2"));
         assertThat(run.getSteps().get(1).getRuleResult().getValue(), is("7"));
@@ -205,7 +204,7 @@ public class RunnerTest extends BaseFlowsTest {
     }
 
     @Test(expected = FlowRunException.class)
-    public void start_emptyFlow() throws Exception {
+    public void start_withEmptyFlow() throws Exception {
         Flow flow = Flow.fromJson(readResource("test_flows/empty.json"));
         m_runner.start(m_org, m_fields, m_contact, flow);
     }

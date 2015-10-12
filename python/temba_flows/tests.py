@@ -8,13 +8,14 @@ import pytz
 import unittest
 
 from ordered_set import OrderedSet
-from temba_expressions.dates import DateStyle
+from temba_expressions.dates import DateStyle, DateParser
 from temba_expressions.evaluator import EvaluationContext
 from .definition import ContactRef, GroupRef, LabelRef, VariableRef
 from .definition.flow import Flow, ActionSet, RuleSet
 from .definition.actions import ReplyAction, SendAction, EmailAction, SaveToContactAction, SetLanguageAction
 from .definition.actions import AddToGroupsAction, RemoveFromGroupsAction, AddLabelsAction
 from .definition.tests import *
+from .exceptions import FlowRunException
 from .runner import Contact, ContactUrn, Field, Input, Location, Org, Runner, RunState
 from .utils import edit_distance, normalize_number
 
@@ -41,6 +42,16 @@ class BaseFlowsTest(unittest.TestCase):
     def read_resource(path):
         with codecs.open('test_files/%s' % path, encoding='utf-8') as f:
             return f.read()
+
+    def assertReply(self, action, msg):
+        self.assertIsInstance(action, ReplyAction)
+        self.assertEqual(action.msg, TranslatableText(msg))
+
+    def assertAddToGroup(self, action, *group_names):
+        self.assertIsInstance(action, AddToGroupsAction)
+
+        names = [g.name for g in action.groups]
+        self.assertEqual(names, list(group_names))
 
     class TestLocationResolver(Location.Resolver):
         """
@@ -454,6 +465,117 @@ class FlowTest(BaseFlowsTest):
                           json.loads(self.read_resource('test_flows/unsupported_version.json')))
 
 
+class InteractionTest(BaseFlowsTest):
+    """
+    Flow interaction tests loaded from JSON
+    """
+    def test_interaction_tests(self):
+        self._run_interaction_tests('test_flows/mushrooms.json', 'test_runs/mushrooms_runs.json')
+        self._run_interaction_tests('test_flows/registration.json', 'test_runs/registration_runs.json')
+
+    def _run_interaction_tests(self, flow_file, interactions_file):
+        print "Running interaction tests from %s" % interactions_file
+
+        flow = Flow.from_json(json.loads(self.read_resource(flow_file)))
+
+        interactions_json = json.loads(self.read_resource(interactions_file))
+        tests = [InteractionTest.TestDefinition.from_json(t) for t in interactions_json]
+        runner = Runner(location_resolver=InteractionTest.TestLocationResolver())
+
+        for test in tests:
+            self._run_interaction_test(runner, flow, test)
+
+    def _run_interaction_test(self, runner, flow, test):
+        run = None
+        while True:
+            if not run:
+                run = runner.start(test.org, test.fields_initial, test.contact_initial, flow)
+            else:
+                message = test.messages.pop(0)
+                self.assertEqual("input", message.type)
+
+                runner.resume(run, Input(message.msg))
+
+            for step in run.get_completed_steps():
+                for action in step.actions:
+                    if isinstance(action, ReplyAction):
+                        msg = action.msg.get_localized(run)
+
+                        if len(test.messages) > 0:
+                            message = test.messages.pop(0)
+                            self.assertEqual("reply", message.type)
+                            self.assertEqual(msg, message.msg)
+                        else:
+                            self.fail("Got un-expected additional reply: \"%s\"" % msg)
+
+            if len(test.messages) == 0:
+                break
+
+        self.assertEqual(len(test.messages), 0)
+
+        self.assertEqual(set(run.get_created_fields()), set(test.fields_created))
+
+        self.assertEqual(run.contact.name, test.contact_final.name)
+        self.assertEqual(run.contact.groups, test.contact_final.groups)
+        self.assertFieldValues(run.org, run.contact.fields, test.contact_final.fields)
+        self.assertEqual(run.contact.language, test.contact_final.language)
+
+    def assertFieldValues(self, org, actual, expected):
+        """
+        Fields can contain dynamic datetime values. If an expected field has [[NOW]], we compare it to the current
+        time with a +/- 1 minute error margin
+        """
+        self.assertEqual(actual.keys(), expected.keys())
+
+        for key, actual_value in actual.iteritems():
+            expected_value = expected[key]
+
+            if expected_value == "[[NOW]]":
+                date_parser = DateParser(datetime.date.today(), org.timezone, org.date_style)
+                actual_datetime = date_parser.auto(actual_value)
+
+                # equality check with +/- 1 minute error margin
+                seconds_diff = (actual_datetime - datetime.datetime.now(tz=org.timezone)).total_seconds()
+                self.assertTrue(abs(seconds_diff) < 60)
+            else:
+                self.assertEqual(actual_value, expected_value, "Field mismatch for " + key)
+
+    class TestDefinition(object):
+        def __init__(self, org, fields_initial, contact_initial, messages, fields_created, contact_final):
+            self.org = org
+            self.fields_initial = fields_initial
+            self.contact_initial = contact_initial
+            self.messages = messages
+            self.fields_created = fields_created
+            self.contact_final = contact_final
+
+        @classmethod
+        def from_json(cls, json_obj):
+            return cls(Org.from_json(json_obj['org']),
+                       [Field.from_json(f) for f in json_obj['fields_initial']],
+                       Contact.from_json(json_obj['contact_initial']),
+                       [InteractionTest.TestDefinition.Message.from_json(m) for m in json_obj['messages']],
+                       [Field.from_json(f) for f in json_obj['fields_created']],
+                       Contact.from_json(json_obj['contact_final']))
+
+        class Message(object):
+            def __init__(self, _type, msg):
+                self.type = _type
+                self.msg = msg
+
+            @classmethod
+            def from_json(cls, json_object):
+                return cls(json_object['type'], json_object['msg'])
+
+    class TestLocationResolver(Location.Resolver):
+        def resolve(self, input, country, level, parent):
+            # for testing, accept any location that doesn't begin with the letter X
+            if not input.strip().lower().startswith("x"):
+                return Location("S0001", input, Location.Level.STATE)
+            else:
+                return None
+
+
 class InputTest(BaseFlowsTest):
     def setUp(self):
         super(InputTest, self).setUp()
@@ -502,6 +624,217 @@ class InputTest(BaseFlowsTest):
                                    'contact': contact_context})
 
 
+class RunnerTest(BaseFlowsTest):
+
+    def setUp(self):
+        super(RunnerTest, self).setUp()
+
+        self.runner = Runner()
+
+    def test_start_and_resume_mushrooms(self):
+        flow = Flow.from_json(json.loads(self.read_resource("test_flows/mushrooms.json")))
+
+        run = self.runner.start(self.org, self.fields, self.contact, flow)
+
+        self.assertEqual(run.org.primary_language, "eng")
+        self.assertEqual(run.org.timezone, pytz.timezone("Africa/Kigali"))
+        self.assertEqual(run.org.date_style, DateStyle.DAY_FIRST)
+        self.assertFalse(run.org.is_anon)
+
+        self.assertEqual(run.contact.uuid, "1234-1234")
+        self.assertEqual(run.contact.name, "Joe Flow")
+        self.assertEqual(run.contact.urns, [ContactUrn(ContactUrn.Scheme.TEL, "+260964153686"), ContactUrn(ContactUrn.Scheme.TWITTER, "realJoeFlow")])
+        self.assertEqual(run.contact.groups, {"Testers", "Developers"})
+        self.assertEqual(len(run.contact.fields), 3)
+        self.assertEqual(run.contact.language, "eng")
+
+        self.assertEqual(len(run.steps), 2)
+        self.assertEqual(run.steps[0].node.uuid, "32cf414b-35e3-4c75-8a78-d5f4de925e13")
+        self.assertIsNotNone(run.steps[0].arrived_on)
+        self.assertIsNotNone(run.steps[0].left_on)
+        self.assertEqual(len(run.steps[0].actions), 1)
+        self.assertReply(run.steps[0].actions[0], "Hi Joe. Do you like mushrooms?")
+        self.assertEqual(run.steps[1].node.uuid, "1e318293-4730-481c-b455-daaaf86b2e6c")
+        self.assertIsNotNone(run.steps[1].arrived_on)
+        self.assertIsNone(run.steps[1].left_on)
+        self.assertIsNone(run.steps[1].rule_result)
+        self.assertEqual(len(run.get_completed_steps()), 1)
+
+        self.assertEqual(len(run.values), 0)
+
+        self.assertEqual(run.state, RunState.State.WAIT_MESSAGE)
+
+        last_step_left_on = run.steps[1].arrived_on
+
+        self.runner.resume(run, Input("YUCK!"))
+
+        self.assertEqual(run.contact.groups, {"Testers", "Developers"}) # unchanged
+
+        self.assertEqual(len(run.steps), 3)
+        self.assertEqual(run.steps[0].node.uuid, "1e318293-4730-481c-b455-daaaf86b2e6c")
+        self.assertEqual(run.steps[0].arrived_on, last_step_left_on)
+        self.assertIsNotNone(run.steps[0].left_on)
+        self.assertEqual(run.steps[0].rule_result.rule.uuid, "366fb919-7e0b-48be-8f5b-baa14b2a65aa")
+        self.assertEqual(run.steps[0].rule_result.category, "Other")
+        self.assertEqual(run.steps[0].rule_result.value, "YUCK!")
+        self.assertEqual(run.steps[1].node.uuid, "e277932e-d546-4e0c-a483-ce6cce06b929")
+        self.assertIsNotNone(run.steps[1].arrived_on)
+        self.assertIsNotNone(run.steps[1].left_on)
+        self.assertIsNone(run.steps[1].rule_result)
+        self.assertEqual(len(run.steps[1].actions), 1)
+        self.assertReply(run.steps[1].actions[0], "We didn't understand your answer. Please reply with yes/no.")
+        self.assertEqual(run.steps[2].node.uuid, "1e318293-4730-481c-b455-daaaf86b2e6c")
+        self.assertIsNotNone(run.steps[2].arrived_on)
+        self.assertIsNone(run.steps[2].left_on)
+        self.assertEqual(len(run.get_completed_steps()), 2)
+
+        self.assertEqual(len(run.values), 1)
+        self.assertEqual(run.values["response_1"].value, "YUCK!")
+        self.assertEqual(run.values["response_1"].category, "Other")
+        self.assertEqual(run.values["response_1"].text, "YUCK!")
+        self.assertIsNotNone(run.values["response_1"].time)
+
+        self.assertEqual(run.state, RunState.State.WAIT_MESSAGE)
+
+        last_step_left_on = run.steps[2].arrived_on
+
+        self.runner.resume(run, Input("no way"))
+
+        self.assertEqual(run.contact.groups, {"Testers", "Developers", "Approved"})  # added to group
+
+        self.assertEqual(len(run.steps), 3)
+        self.assertEqual(run.steps[0].node.uuid, "1e318293-4730-481c-b455-daaaf86b2e6c")
+        self.assertEqual(run.steps[0].arrived_on, last_step_left_on)
+        self.assertIsNotNone(run.steps[0].left_on)
+        self.assertEqual(run.steps[0].rule_result.rule.uuid, "d638e042-3f5c-4f03-a6c1-2031bd8971b2")
+        self.assertEqual(run.steps[0].rule_result.category, "No")
+        self.assertEqual(run.steps[0].rule_result.value, "no")
+        self.assertEqual(run.steps[1].node.uuid, "4ef2b232-1484-4db7-b470-98af1a2349d3")
+        self.assertIsNotNone(run.steps[1].arrived_on)
+        self.assertIsNotNone(run.steps[1].left_on)
+        self.assertIsNone(run.steps[1].rule_result)
+        self.assertEqual(len(run.steps[1].actions), 2)
+        self.assertReply(run.steps[1].actions[0], "That was the right answer.")
+        self.assertAddToGroup(run.steps[1].actions[1], "Approved")
+        self.assertEqual(run.steps[2].node.uuid, "6891e592-1e29-426b-b227-e3ae466662ab")
+        self.assertIsNotNone(run.steps[2].arrived_on)
+        self.assertIsNone(run.steps[2].left_on)
+        self.assertIsNone(run.steps[2].rule_result)
+        self.assertEqual(len(run.steps[2].actions), 1)
+        self.assertEqual(len(run.get_completed_steps()), 3)
+
+        self.assertEqual(len(run.values), 1)
+        self.assertEqual(run.values["response_1"].value, "no")
+        self.assertEqual(run.values["response_1"].category, "No")
+        self.assertEqual(run.values["response_1"].text, "no")
+        self.assertIsNotNone(run.values["response_1"].time)
+
+        self.assertEqual(run.state, RunState.State.COMPLETED)
+
+    def test_start_and_resume_mushrooms_in_french(self):
+        flow = Flow.from_json(json.loads(self.read_resource("test_flows/mushrooms.json")))
+
+        jean = Contact("1234-1234", "Jean D'Amour", [ContactUrn.from_string("tel:+260964153686")], OrderedSet(), {}, "fre")
+
+        run = self.runner.start(self.org, self.fields, jean, flow)
+
+        self.assertEqual(run.contact.language, "fre")
+        self.assertEqual(len(run.steps), 2)
+        self.assertReply(run.steps[0].actions[0], "Salut Jean. Aimez-vous les champignons?")
+        self.assertEqual(run.state, RunState.State.WAIT_MESSAGE)
+
+        self.runner.resume(run, Input("EUGH!"))
+
+        self.assertEqual(run.steps[0].rule_result.category, "Other")
+        self.assertEqual(run.steps[0].rule_result.value, "EUGH!")
+        self.assertReply(run.steps[1].actions[0], "Nous ne comprenions pas votre réponse. S'il vous plaît répondre par oui/non.")
+
+        self.assertEqual(run.values["response_1"].value, "EUGH!")
+        self.assertEqual(run.values["response_1"].category, "Other")
+        self.assertEqual(run.values["response_1"].text, "EUGH!")
+
+        self.assertEqual(run.state, RunState.State.WAIT_MESSAGE)
+
+        self.runner.resume(run, Input("non"))
+
+        self.assertEqual(run.contact.groups, ["Approved"])  # added to group
+
+        self.assertEqual(run.steps[0].rule_result.category, "No")
+        self.assertEqual(run.steps[0].rule_result.value, "non")
+        self.assertReply(run.steps[1].actions[0], "Ce fut la bonne réponse.")
+
+        self.assertEqual(run.values["response_1"].value, "non")
+        self.assertEqual(run.values["response_1"].category, "No")
+        self.assertEqual(run.values["response_1"].text, "non")
+
+        self.assertEqual(run.state, RunState.State.COMPLETED)
+
+    def test_start_and_resume_greatwall(self):
+        flow = Flow.from_json(json.loads(self.read_resource("test_flows/greatwall.json")))
+
+        run = self.runner.start(self.org, self.fields, self.contact, flow)
+
+        self.assertEqual(run.steps[0].node.uuid, "8dbb7e1a-43d6-4c5b-a99d-fe3ee8923b65")
+        self.assertEqual(len(run.steps[0].actions), 1)
+        self.assertReply(run.steps[0].actions[0], "How many people are you?")
+        self.assertEqual(run.steps[1].node.uuid, "b7cfa0ac-4d50-4384-a1ab-9ec79bd45e42")
+
+        self.assertEqual(run.state, RunState.State.WAIT_MESSAGE)
+
+        self.runner.resume(run, Input("9"))
+
+        self.assertEqual(run.steps[0].node.uuid, "b7cfa0ac-4d50-4384-a1ab-9ec79bd45e42")
+        self.assertEqual(run.steps[0].rule_result.category, "Other")
+        self.assertEqual(run.steps[0].rule_result.value, "9")
+        self.assertEqual(run.steps[1].node.uuid, "c81af400-a744-499a-9ad5-c90e233e4b92")
+        self.assertReply(run.steps[1].actions[0], "Please choose a number between 1 and 8")
+        self.assertEqual(run.steps[2].node.uuid, "b7cfa0ac-4d50-4384-a1ab-9ec79bd45e42")
+
+        self.assertEqual(run.values["people"].value, "9")
+        self.assertEqual(run.values["people"].category, "Other")
+        self.assertEqual(run.values["people"].text, "9")
+
+        self.runner.resume(run, Input("7"))
+
+        self.assertEqual(run.steps[0].node.uuid, "b7cfa0ac-4d50-4384-a1ab-9ec79bd45e42")
+        self.assertEqual(run.steps[0].rule_result.category, "1 - 8")
+        self.assertEqual(run.steps[0].rule_result.value, "7")
+        self.assertEqual(run.steps[1].node.uuid, "fe5ec555-ed5b-4b29-934d-c593f52c5881")
+        self.assertEqual(run.steps[1].rule_result.category, "> 2")
+        self.assertEqual(run.steps[1].rule_result.value, "7")
+
+        self.assertEqual(run.values["people"].value, "7")
+        self.assertEqual(run.values["people"].category, "1 - 8")
+        self.assertEqual(run.values["people"].text, "7")
+        self.assertEqual(run.values["enough_for_soup"].value, "7")
+        self.assertEqual(run.values["enough_for_soup"].category, "> 2")
+        self.assertEqual(run.values["enough_for_soup"].text, "7")
+
+    def test_start_with_empty_flow(self):
+        flow = Flow.from_json(json.loads(self.read_resource("test_flows/empty.json")))
+        self.assertRaises(FlowRunException, self.runner.start, self.org, self.fields, self.contact, flow)
+
+    def test_update_contact_field(self):
+        self.fields.append(Field("district", "District", Field.ValueType.DISTRICT))
+
+        runner = Runner(location_resolver=BaseFlowsTest.TestLocationResolver())
+
+        flow = Flow.from_json(json.loads(self.read_resource("test_flows/mushrooms.json")))
+        run = runner.start(self.org, self.fields, self.contact, flow)
+
+        runner.update_contact_field(run, "district", "Gasabo")
+
+        # can't set a district field value without a state field value
+        self.assertEqual(run.contact.fields["district"], None)
+
+        run.get_or_create_field("state", "State", Field.ValueType.STATE)
+
+        runner.update_contact_field(run, "state", "kigali")
+        runner.update_contact_field(run, "district", "gasabo")
+
+        self.assertEqual(run.contact.fields["district"], "Gasabo")
+
+
 class RunStateTest(BaseFlowsTest):
 
     def test_build_date_context(self):
@@ -542,26 +875,6 @@ class RunStateTest(BaseFlowsTest):
 
         # json should be the same
         # assertThat(restored.toJson(), is(json));
-
-    def test_update_contact_field(self):
-        self.fields.append(Field("district", "District", Field.ValueType.DISTRICT))
-
-        runner = Runner(location_resolver=BaseFlowsTest.TestLocationResolver())
-
-        flow = Flow.from_json(json.loads(self.read_resource("test_flows/mushrooms.json")))
-        run = runner.start(self.org, self.fields, self.contact, flow)
-
-        runner.update_contact_field(run, "district", "Gasabo")
-
-        # can't set a district field value without a state field value
-        self.assertEqual(run.contact.fields["district"], None)
-
-        run.get_or_create_field("state", "State", Field.ValueType.STATE)
-
-        runner.update_contact_field(run, "state", "kigali")
-        runner.update_contact_field(run, "district", "gasabo")
-
-        self.assertEqual(run.contact.fields["district"], "Gasabo")
 
 
 class TestsTest(BaseFlowsTest):
@@ -884,8 +1197,10 @@ class TranslatableTextTest(unittest.TestCase):
         self.assertEqual(TranslatableText("abc"), TranslatableText("abc"))
         self.assertNotEqual(TranslatableText("abc"), TranslatableText("cde"))
 
-        self.assertEqual(TranslatableText({'eng': "Hello", 'fra': "Bonjour"}), TranslatableText({'eng': "Hello", 'fra': "Bonjour"}))
-        self.assertNotEqual(TranslatableText({'eng': "Hello", 'fra': "Salut"}), TranslatableText({'eng': "Hello", 'fra': "Bonjour"}))
+        self.assertEqual(TranslatableText({'eng': "Hello", 'fra': "Bonjour"}),
+                         TranslatableText({'eng': "Hello", 'fra': "Bonjour"}))
+        self.assertNotEqual(TranslatableText({'eng': "Hello", 'fra': "Salut"}),
+                            TranslatableText({'eng': "Hello", 'fra': "Bonjour"}))
 
 
 class UtilsTest(unittest.TestCase):

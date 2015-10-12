@@ -344,7 +344,8 @@ class RemoveFromGroupsAction(GroupMembershipAction):
     def execute_with_groups(self, runner, run, groups, errors):
         if groups:
             for group in groups:
-                run.contact.groups.add(group.name)
+                if group.name in run.contact.groups:
+                    run.contact.groups.remove(group.name)
             return Action.Result.performed(AddToGroupsAction(groups), errors)
         else:
             return Action.Result.errors(errors)
