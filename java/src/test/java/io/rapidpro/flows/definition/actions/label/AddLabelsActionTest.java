@@ -26,7 +26,7 @@ public class AddLabelsActionTest extends BaseActionTest {
         AddLabelsAction performed = (AddLabelsAction) result.getPerformed();
         assertThat(performed.getLabels(), contains(new LabelRef(123, "Testing"), new LabelRef("Messages with Yes")));
 
-        // don't add to group name which is an invalid expression
+        // don't add label which is an invalid expression
         action = new AddLabelsAction(Arrays.asList(new LabelRef("@(badexpression)")));
 
         result = action.execute(m_runner, m_run, Input.of("Yes"));

@@ -235,6 +235,31 @@ class ActionsTest(BaseFlowsTest):
         self.assertEqual(result.performed, None)
         self.assertEqual(result.errors, ["Undefined variable: badexpression"])
 
+    def test_remove_from_groups_action(self):
+        action = RemoveFromGroupsAction([GroupRef(123, "Testers"), GroupRef(None, "People who say @step.value")])
+
+        result = action.execute(self.runner, self.run, Input("Yes"))
+        self.assertEqual(result.errors, [])
+
+        performed = result.performed
+        self.assertEqual(performed.groups, [GroupRef(123, "Testers"), GroupRef(None, "People who say Yes")])
+
+    def test_add_labels_action(self):
+        action = AddLabelsAction([LabelRef(123, "Testing"), LabelRef(None, "Messages with @step.value")])
+
+        result = action.execute(self.runner, self.run, Input("Yes"))
+        self.assertEqual(result.errors, [])
+
+        performed = result.performed
+        self.assertEqual(performed.labels, [LabelRef(123, "Testing"), LabelRef(None, "Messages with Yes")])
+
+        # don't add label which is an invalid expression
+        action = AddLabelsAction([LabelRef(None, "@(badexpression)")])
+
+        result = action.execute(self.runner, self.run, Input("Yes"))
+        self.assertEqual(result.performed, None)
+        self.assertEqual(result.errors, ["Undefined variable: badexpression"])
+
 
 class ContactTest(BaseFlowsTest):
     def setUp(self):
