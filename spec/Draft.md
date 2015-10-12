@@ -175,10 +175,17 @@ Saves an evaluated expression to the contact as a field or their name.
 
 ```
 <save-to-contact-action> : { "type": "save", 
-                             "field": ????, 
+                             "field": <text> | null, 
                              "label": <text>,
                              "value": <template>}
 ```
+
+Field must be one of the following:
+
+ * name
+ * first_name
+ * tel_e164
+ * a valid contact field key
 
 #### Add To Groups Actions
 
