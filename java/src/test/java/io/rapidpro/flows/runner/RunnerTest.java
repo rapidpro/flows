@@ -226,7 +226,7 @@ public class RunnerTest extends BaseFlowsTest {
         // can't set a district field value without a state field value
         assertThat(run.getContact().getFields().get("district"), is(nullValue()));
 
-        m_fields.add(new Field("state", "State", Field.ValueType.STATE));
+        run.getOrCreateField("state", "State", Field.ValueType.STATE);
 
         runner.updateContactField(run, "state", "kigali");
         runner.updateContactField(run, "district", "gasabo");

@@ -2,10 +2,19 @@ package io.rapidpro.flows.runner;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Pattern;
+
 /**
  * A contact field
  */
 public class Field {
+
+    // can't create contact fields with these keys
+    protected static Set<String> RESERVED_KEYS = new HashSet<>(Arrays.asList(
+            "name", "first_name", "phone", "language", "created_by", "modified_by", "org", "uuid", "groups"));
 
     public enum ValueType {
         @SerializedName("T") TEXT,
@@ -30,10 +39,30 @@ public class Field {
     }
 
     public Field(String key, String label, ValueType valueType) {
+        if (!isValidKey(key)) {
+            throw new RuntimeException("Field key '" + key + "' is invalid or reserved");
+        }
+        if (!isValidLabel(label)) {
+            throw new RuntimeException("Field label '" + label + "' is invalid or reserved");
+        }
+
         m_key = key;
         m_label = label;
         m_valueType = valueType;
         m_new = true;
+    }
+
+    public static String makeKey(String label) {
+        String key = label.toLowerCase().replaceAll("([^a-z0-9]+)", " ").trim();
+        return key.replaceAll("([^a-z0-9]+)", "_");
+    }
+
+    public static boolean isValidKey(String key) {
+        return Pattern.compile("^[a-z][a-z0-9_]*$").matcher(key).matches() && !RESERVED_KEYS.contains(key);
+    }
+
+    public static boolean isValidLabel(String label) {
+        return Pattern.compile("^[A-Za-z0-9- ]+$").matcher(label).matches();
     }
 
     public String getKey() {
@@ -55,10 +84,10 @@ public class Field {
     @Override
     public String toString() {
         return "Field{" +
-                "m_key='" + m_key + '\'' +
-                ", m_label='" + m_label + '\'' +
+                "m_key=\"" + m_key + "\"" +
+                ", m_label=\"" + m_label + "\"" +
                 ", m_valueType=" + m_valueType +
-                '}';
+                "}";
     }
 
     @Override

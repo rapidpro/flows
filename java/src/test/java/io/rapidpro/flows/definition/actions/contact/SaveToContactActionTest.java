@@ -28,8 +28,9 @@ public class SaveToContactActionTest extends BaseActionTest {
 
     @Test
     public void execute() {
-        m_run.getExtra().put("age", "64");
+        // update existing field
         SaveToContactAction action = new SaveToContactAction("age", "Age", "@extra.age");
+        m_run.getExtra().put("age", "64");
 
         Action.Result result = action.execute(m_runner, m_run, Input.of("Yes"));
         assertThat(result.getErrors(), empty());
@@ -40,6 +41,19 @@ public class SaveToContactActionTest extends BaseActionTest {
         assertThat(performed.getValue(), is("64"));
 
         assertThat(m_run.getContact().getFields().get("age"), is("64"));
+
+        // update new field (no key provided)
+        action = new SaveToContactAction(null, "Is OK", "Yes");
+
+        result = action.execute(m_runner, m_run, Input.of("Yes"));
+        assertThat(result.getErrors(), empty());
+
+        performed = (SaveToContactAction) result.getPerformed();
+        assertThat(performed.getField(), is("is_ok"));
+        assertThat(performed.getLabel(), is("Is OK"));
+        assertThat(performed.getValue(), is("Yes"));
+
+        assertThat(m_run.getContact().getFields().get("is_ok"), is("Yes"));
 
         // NOOP for invalid expression
         action = new SaveToContactAction("age", "Age", "@(badexpression)");

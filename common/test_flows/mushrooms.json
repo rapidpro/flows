@@ -95,7 +95,7 @@
             "field": "preference",
             "type": "save",
             "value": "@flow.response_1.category",
-            "label": "preference"
+            "label": "Preference"
           }
         ]
       }

@@ -8,6 +8,7 @@ import regex
 from abc import ABCMeta, abstractmethod
 from datetime import timedelta
 from enum import Enum
+from ordered_set import OrderedSet
 from temba_expressions import conversions
 from temba_expressions.evaluator import Evaluator, EvaluationContext, EvaluationStrategy
 from .definition.flow import RuleSet
@@ -47,6 +48,9 @@ class Field(object):
     """
     A contact field
     """
+    # can't create contact fields with these keys
+    RESERVED_KEYS = ('name', 'first_name', 'phone', 'language', 'created_by', 'modified_by', 'org', 'uuid', 'groups')
+
     class ValueType(Enum):
         TEXT = 'T'
         DECIMAL = 'N'
@@ -65,10 +69,29 @@ class Field(object):
             return None
 
     def __init__(self, key, label, value_type):
+        if not self.is_valid_key(key):
+            raise ValueError("Field key '%s' is invalid or reserved" % key)
+
+        if not self.is_valid_label(label):
+            raise ValueError("Field label '%s' is invalid" % label)
+
         self.key = key
         self.label = label
         self.value_type = value_type
         self.is_new = True
+
+    @classmethod
+    def make_key(cls, label):
+        key = regex.sub(r'([^a-z0-9]+)', ' ', label.lower(), regex.V0).strip()
+        return regex.sub(r'([^a-z0-9]+)', '_', key, regex.V0)
+
+    @classmethod
+    def is_valid_key(cls, key):
+        return regex.match(r'^[a-z][a-z0-9_]*$', key, regex.V0) and key not in cls.RESERVED_KEYS
+
+    @classmethod
+    def is_valid_label(cls, label):
+        return regex.match(r'^[A-Za-z0-9\- ]+$', label, regex.V0)
 
 
 class Contact(object):
@@ -371,7 +394,7 @@ class RunState(object):
 
     def __init__(self, org, fields, contact, flow):
         self.org = org
-        self.fields = fields
+        self.fields = {f.key: f for f in fields}
         self.contact = contact
         self.started = datetime.datetime.now(tz=pytz.UTC)
         self.steps = []
@@ -395,8 +418,16 @@ class RunState(object):
         """
         Serializes this run state to JSON
         """
-        # TODO
-        pass
+        return {
+            'org': self.org.to_json(),
+            'fields': self.fields.values(),
+            'contact': self.contact.to_json(),
+            'started': self.started,  # TODO ISO 6301 ?
+            'steps': [s.to_json() for s in self.steps],
+            'values': {},  # TODO
+            'extra': self.extra,
+            'state': self.state.name.lower()
+        }
 
     def build_context(self, input):
         context = EvaluationContext({}, self.org.timezone, self.org.date_style)
@@ -459,14 +490,25 @@ class RunState(object):
                 completed.append(step)
         return completed
 
-    def get_or_create_field(self, key):
-        # TODO get this into a map for efficiency
-        for field in self.fields:
-            if field.key == key:
-                return field
+    def get_or_create_field(self, key, label=None, value_type=Field.ValueType.TEXT):
+        """
+        Gets or creates a contact field
+        """
+        if not key and not label:
+            raise ValueError("Must provide either key or label")
 
-        field = Field(key, key.title(), Field.ValueType.TEXT)
-        self.fields.append(field)
+        if key:
+            field = self.fields.get(key)
+            if field:
+                return field
+        else:
+            key = Field.make_key(label)
+
+        if not label:
+            label = regex.sub(r'([^A-Za-z0-9\- ]+)', ' ', key, regex.V0).title()
+
+        field = Field(key, label, value_type)
+        self.fields[key] = field
         return field
 
     def get_created_fields(self):
@@ -516,7 +558,7 @@ class Runner(object):
                 raise FlowRunException("Flow has no entry point")
 
         # tracks nodes visited so we can detect loops
-        nodes_visited = []  # TODO ordered set?
+        nodes_visited = OrderedSet()
 
         while current_node:
             # if we're resuming a previously paused step, then use its arrived on value
@@ -539,7 +581,7 @@ class Runner(object):
             if current_node in nodes_visited:
                 raise FlowLoopException(nodes_visited)
             else:
-                nodes_visited.append(current_node)
+                nodes_visited.add(current_node)
 
             next_node = current_node.visit(self, run, step, input)
 
@@ -585,14 +627,15 @@ class Runner(object):
             return self.location_resolver.resolve(text, country, level, parent)
         return None
 
-    def update_contact_field(self, run, key, value):
+    def update_contact_field(self, run, key, value, label=None):
         """
         Updates a field on the contact for the given run
         :param run: the current run state
         :param key: the field key
         :param value: the field value
+        :return the field which may have been created
         """
-        field = run.get_or_create_field(key)
+        field = run.get_or_create_field(key, label)
         actual_value = None
 
         if field.value_type in (Field.ValueType.TEXT, Field.ValueType.DECIMAL, Field.ValueType.DATETIME):
@@ -612,7 +655,8 @@ class Runner(object):
                         if district:
                             actual_value = district.name
 
-        run.contact.fields[key] = actual_value
+        run.contact.fields[field.key] = actual_value
+        return field
 
     def update_extra(self, run, values):
         """
@@ -624,7 +668,7 @@ class Runner(object):
 
     def get_state_field(self, run):
         # TODO this mimics what we currently do in RapidPro but needs changed
-        for field in run.fields:
+        for field in run.fields.values():
             if field.value_type == Field.ValueType.STATE:
                 return field
         return None

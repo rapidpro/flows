@@ -177,8 +177,9 @@ class ActionsTest(BaseFlowsTest):
         self.assertEqual(action.label, "Age")
         self.assertEqual(action.value, "@extra.age")
 
-        self.run.extra["age"] = "64"
+        # update existing field
         action = SaveToContactAction("age", "Age", "@extra.age")
+        self.run.extra["age"] = "64"
 
         result = action.execute(self.runner, self.run, Input("Yes"))
         self.assertEqual(result.errors, [])
@@ -189,6 +190,19 @@ class ActionsTest(BaseFlowsTest):
         self.assertEqual(performed.value, "64")
 
         self.assertEqual(self.run.contact.fields["age"], "64")
+
+        # update new field (no key provided)
+        action = SaveToContactAction(None, "Is OK", "Yes")
+
+        result = action.execute(self.runner, self.run, Input("Yes"))
+        self.assertEqual(result.errors, [])
+
+        performed = result.performed
+        self.assertEqual(performed.field, "is_ok")
+        self.assertEqual(performed.label, "Is OK")
+        self.assertEqual(performed.value, "Yes")
+
+        self.assertEqual(self.run.contact.fields["is_ok"], "Yes")
 
         # NOOP for invalid expression
         action = SaveToContactAction("age", "Age", "@(badexpression)")
@@ -313,6 +327,29 @@ class ContactUrnTest(BaseFlowsTest):
 
         raw = ContactUrn(ContactUrn.Scheme.TWITTER, "  @bob ")
         self.assertEqual(raw.normalized(self.org), ContactUrn(ContactUrn.Scheme.TWITTER, "bob"))
+
+
+class FieldTest(BaseFlowsTest):
+    def test_make_key(self):
+        self.assertEquals(Field.make_key("First Name"), "first_name")
+        self.assertEquals(Field.make_key("Second   Name  "), "second_name")
+        self.assertEquals(Field.make_key("  ^%$# %$$ $##323 ffsn slfs ksflskfs!!!! fk$%%%$$$anfaDDGAS ))))))))) "), "323_ffsn_slfs_ksflskfs_fk_anfaddgas")
+
+    def test_is_valid_key(self):
+        self.assertTrue(Field.is_valid_key("age"))
+        self.assertTrue(Field.is_valid_key("age_now_2"))
+        self.assertFalse(Field.is_valid_key("Age"))   # must be lowercase
+        self.assertFalse(Field.is_valid_key("age!"))  # can't have punctuation
+        self.assertFalse(Field.is_valid_key("âge"))   # a-z only
+        self.assertFalse(Field.is_valid_key("2up"))   # can't start with a number
+        self.assertFalse(Field.is_valid_key("name"))  # can't be a reserved name
+        self.assertFalse(Field.is_valid_key("uuid"))
+
+    def test_is_valid_label(self):
+        self.assertTrue(Field.is_valid_label("Age"))
+        self.assertTrue(Field.is_valid_label("Age Now 2"))
+        self.assertFalse(Field.is_valid_label("Age_Now"))  # can't have punctuation
+        self.assertFalse(Field.is_valid_label("âge"))      # a-z only
 
 
 class FlowTest(BaseFlowsTest):
@@ -488,7 +525,7 @@ class RunStateTest(BaseFlowsTest):
         # can't set a district field value without a state field value
         self.assertEqual(run.contact.fields["district"], None)
 
-        self.fields.append(Field("state", "State", Field.ValueType.STATE))
+        run.get_or_create_field("state", "State", Field.ValueType.STATE)
 
         runner.update_contact_field(run, "state", "kigali")
         runner.update_contact_field(run, "district", "gasabo")

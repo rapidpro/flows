@@ -3,10 +3,7 @@ package io.rapidpro.flows.definition.actions.contact;
 import com.google.gson.annotations.SerializedName;
 import io.rapidpro.expressions.EvaluatedTemplate;
 import io.rapidpro.flows.definition.actions.Action;
-import io.rapidpro.flows.runner.ContactUrn;
-import io.rapidpro.flows.runner.Input;
-import io.rapidpro.flows.runner.RunState;
-import io.rapidpro.flows.runner.Runner;
+import io.rapidpro.flows.runner.*;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
@@ -42,20 +39,21 @@ public class SaveToContactAction extends Action {
     public Result execute(Runner runner, RunState run, Input input) {
         EvaluatedTemplate valueTpl = runner.substituteVariables(m_value, run.buildContext(input));
         if (!valueTpl.hasErrors()) {
+            String field = m_field;
             String label;
             String value = valueTpl.getOutput().trim();
 
-            if (m_field.equals("name")) {
+            if ("name".equals(m_field)) {
                 value = StringUtils.substring(value, 0, 128);
                 label = "Contact Name";
                 run.getContact().setName(value);
             }
-            else if (m_field.equals("first_name")) {
+            else if ("first_name".equals(m_field)) {
                 value = StringUtils.substring(value, 0, 128);
                 label = "First Name";
                 run.getContact().setFirstName(value);
             }
-            else if (m_field.equals("tel_e164")) {
+            else if ("tel_e164".equals(m_field)) {
                 value = StringUtils.substring(value, 0, 128);
                 label = "Phone Number";
 
@@ -65,10 +63,16 @@ public class SaveToContactAction extends Action {
             else {
                 value = StringUtils.substring(value, 0, 640);
                 label = m_label;
-                runner.updateContactField(run, m_field, value);
+                try {
+                    Field fieldObj = runner.updateContactField(run, m_field, value, label);
+                    field = fieldObj.getKey();
+                    label = fieldObj.getLabel();
+                } catch (RuntimeException ex) {
+                    return Result.errors(Collections.singletonList(ex.getMessage()));
+                }
             }
 
-            return Result.performed(new SaveToContactAction(m_field, label, value));
+            return Result.performed(new SaveToContactAction(field, label, value));
         }
         else {
             return Result.errors(valueTpl.getErrors());

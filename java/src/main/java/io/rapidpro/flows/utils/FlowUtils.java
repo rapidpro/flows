@@ -3,6 +3,7 @@ package io.rapidpro.flows.utils;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
+import org.apache.commons.lang3.text.WordUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -85,5 +86,12 @@ public class FlowUtils {
 
         // this must be a local number of some kind, just lowercase and save
         return new ImmutablePair<>(number.replaceAll("[^0-9a-z]", ""), false);
+    }
+
+    /**
+     * Equivalent to str.title() in Python
+     */
+    public static String title(String str) {
+        return WordUtils.capitalize(str, ' ');
     }
 }

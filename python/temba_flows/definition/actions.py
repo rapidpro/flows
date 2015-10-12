@@ -217,6 +217,7 @@ class SaveToContactAction(Action):
     def execute(self, runner, run, input):
         value, errors = runner.substitute_variables(self.value, run.build_context(input))
         if not errors:
+            field = self.field
             value = value.strip()
 
             if self.field == 'name':
@@ -240,9 +241,14 @@ class SaveToContactAction(Action):
             else:
                 value = value[:640]
                 label = self.label
-                runner.update_contact_field(run, self.field, value)
+                try:
+                    field_obj = runner.update_contact_field(run, self.field, value, label)
+                    field = field_obj.key
+                    label = field_obj.label
+                except ValueError, e:
+                    return Action.Result.errors([e.message])
 
-            return Action.Result.performed(SaveToContactAction(self.field, label, value))
+            return Action.Result.performed(SaveToContactAction(field, label, value))
         else:
             return Action.Result.errors(errors)
 

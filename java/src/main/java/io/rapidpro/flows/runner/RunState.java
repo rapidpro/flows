@@ -5,6 +5,7 @@ import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.evaluator.Conversions;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.RuleSet;
+import io.rapidpro.flows.utils.FlowUtils;
 import io.rapidpro.flows.utils.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
@@ -171,13 +172,34 @@ public class RunState {
     }
 
     public Field getOrCreateField(String key) {
-        // TODO get this into a map for efficiency
-        for (Field field : m_fields) {
-            if (field.getKey().equals(key)) {
-                return field;
-            }
+        return getOrCreateField(key, null, Field.ValueType.TEXT);
+    }
+
+    public Field getOrCreateField(String key, String label) {
+        return getOrCreateField(key, label, Field.ValueType.TEXT);
+    }
+
+    public Field getOrCreateField(String key, String label, Field.ValueType valueType) {
+        if (key == null && label == null) {
+            throw new RuntimeException("Must provide either key or label");
         }
-        Field field = new Field(key, WordUtils.capitalize(key, ' '), Field.ValueType.TEXT);
+
+        if (key != null) {
+            // TODO get this into a map for efficiency
+            for (Field field : m_fields) {
+                if (field.getKey().equals(key)) {
+                    return field;
+                }
+            }
+        } else {
+            key = Field.makeKey(label);
+        }
+
+        if (label == null) {
+            label = FlowUtils.title(key.replaceAll("([^A-Za-z0-9- ]+)", " "));
+        }
+
+        Field field = new Field(key, label, valueType);
         m_fields.add(field);
         return field;
     }

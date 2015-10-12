@@ -158,9 +158,22 @@ public class Runner {
      * @param run the current run state
      * @param key the field key
      * @param value the field value
+     * @return the field which may have been created
      */
-    public void updateContactField(RunState run, String key, String value) {
-        Field field = run.getOrCreateField(key);
+    public Field updateContactField(RunState run, String key, String value) {
+        return updateContactField(run, key, value, null);
+    }
+
+    /**
+     * Updates a field on the contact for the given run
+     * @param run the current run state
+     * @param key the field key
+     * @param value the field value
+     * @param label the field label (may be null)
+     * @return the field which may have been created
+     */
+    public Field updateContactField(RunState run, String key, String value, String label) {
+        Field field = run.getOrCreateField(key, label);
         String actualValue = null;
 
         switch (field.getValueType()) {
@@ -194,7 +207,8 @@ public class Runner {
             }
         }
 
-        run.getContact().getFields().put(key, actualValue);
+        run.getContact().getFields().put(field.getKey(), actualValue);
+        return field;
     }
 
     /**
