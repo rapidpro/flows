@@ -8,7 +8,6 @@ import io.rapidpro.flows.definition.RuleSet;
 import io.rapidpro.flows.utils.FlowUtils;
 import io.rapidpro.flows.utils.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.WordUtils;
 import org.threeten.bp.Instant;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.ZonedDateTime;

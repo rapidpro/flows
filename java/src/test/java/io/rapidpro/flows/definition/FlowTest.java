@@ -20,7 +20,6 @@ public class FlowTest extends BaseFlowsTest {
     public void fromJson() throws Exception {
         Flow flow = Flow.fromJson(readResource("test_flows/mushrooms.json"));
 
-        assertThat(flow.getVersion(), is(18));
         assertThat(flow.getType(), is(Flow.Type.FLOW));
         assertThat(flow.getBaseLanguage(), is("eng"));
         assertThat(flow.getLanguages(), containsInAnyOrder("eng", "fre"));
@@ -81,9 +80,18 @@ public class FlowTest extends BaseFlowsTest {
     public void fromJson_withEmptyFlow() throws Exception {
         Flow flow = Flow.fromJson(readResource("test_flows/empty.json"));
 
-        assertThat(flow.getVersion(), is(1));
         assertThat(flow.getType(), is(Flow.Type.FLOW));
         assertThat(flow.getBaseLanguage(), is("eng"));
         assertThat(flow.getEntry(), nullValue());
+    }
+
+    @Test(expected = FlowParseException.class)
+    public void fromJson_withMissingSpecVersion() throws Exception {
+        Flow.fromJson(readResource("test_flows/missing_version.json"));
+    }
+
+    @Test(expected = FlowParseException.class)
+    public void fromJson_withUnsupportedSpecVersion() throws Exception {
+        Flow.fromJson(readResource("test_flows/unsupported_version.json"));
     }
 }

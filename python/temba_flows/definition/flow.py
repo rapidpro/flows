@@ -8,6 +8,7 @@ from temba_expressions import conversions
 from . import TranslatableText
 from .actions import Action, MessageAction
 from .tests import Test
+from ..exceptions import FlowParseException
 
 logger = logging.Logger(__name__)
 
@@ -16,6 +17,8 @@ class Flow(object):
     """
     A flow definition, typically loaded from JSON
     """
+    SPEC_VERSION = 7
+
     class Type(Enum):
         FLOW = 'F'
         MESSAGE = 'M'
@@ -32,8 +35,7 @@ class Flow(object):
                     return val
             return None
 
-    def __init__(self, version, flow_type, base_language):
-        self.version = version
+    def __init__(self, flow_type, base_language):
         self.flow_type = flow_type
         self.languages = None
         self.base_language = base_language
@@ -42,35 +44,39 @@ class Flow(object):
 
     @classmethod
     def from_json(cls, json_obj):
-        version = int(json_obj['version'])
+        if 'version' in json_obj:
+            version = int(json_obj['version'])
+            if version != cls.SPEC_VERSION:
+                raise FlowParseException("Unsupported flow spec version: %d" % version)
+        else:
+            raise FlowParseException("Missing flow spec version")
+
         flow_type = Flow.Type.from_code(json_obj['flow_type'])
+        base_language = json_obj.get('base_language', None)
 
-        definition = json_obj['definition']
-        base_language = definition.get('base_language', None)
+        flow = Flow(flow_type, base_language)
 
-        flow = Flow(version, flow_type, base_language)
-
-        # keep an exhaustive list of all languages in our flow definition
-        languages = []
+        # keep an exhaustive record of all languages in our flow definition
+        languages = set()
 
         context = Flow.DeserializationContext(flow)
 
-        for as_obj in definition['action_sets']:
+        for as_obj in json_obj['action_sets']:
             action_set = ActionSet.from_json(as_obj, context)
             flow.elements_by_uuid[action_set.uuid] = action_set
 
             # see what translations are set on this actionset
             for action in action_set.actions:
                 if isinstance(action, MessageAction):
-                    languages += action.msg.get_languages()
+                    languages.update(action.msg.get_languages())
 
-        for rs_obj in definition['rule_sets']:
+        for rs_obj in json_obj['rule_sets']:
             rule_set = RuleSet.from_json(rs_obj, context)
             flow.elements_by_uuid[rule_set.uuid] = rule_set
 
             for rule in rule_set.rules:
                 flow.elements_by_uuid[rule.uuid] = rule
-                languages += rule.category.get_languages()
+                languages.update(rule.category.get_languages())
 
         # lookup and set destination nodes
         for start, destination_uuid in context.destinations_to_set.iteritems():
@@ -79,7 +85,7 @@ class Flow(object):
         # only accept languages that are ISO 639-2 (alpha3)
         flow.languages = {l for l in languages if len(l) == 3}
 
-        flow.entry = flow.get_element_by_uuid(definition.get("entry", None))
+        flow.entry = flow.get_element_by_uuid(json_obj.get("entry", None))
 
         return flow
 

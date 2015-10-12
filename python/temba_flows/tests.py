@@ -356,7 +356,6 @@ class FlowTest(BaseFlowsTest):
     def test_from_json(self):
         flow = Flow.from_json(json.loads(self.read_resource('test_flows/mushrooms.json')))
 
-        self.assertEqual(flow.version, 18)
         self.assertEqual(flow.flow_type, Flow.Type.FLOW)
         self.assertEqual(flow.base_language, 'eng')
         self.assertEqual(flow.languages, {'eng', 'fre'})
@@ -417,10 +416,17 @@ class FlowTest(BaseFlowsTest):
     def test_from_json_with_empty_flow(self):
         flow = Flow.from_json(json.loads(self.read_resource('test_flows/empty.json')))
 
-        self.assertEqual(flow.version, 1)
         self.assertEqual(flow.flow_type, Flow.Type.FLOW)
         self.assertEqual(flow.base_language, 'eng')
         self.assertEqual(flow.entry, None)
+
+    def test_from_json_with_missing_spec_version(self):
+        self.assertRaises(FlowParseException, Flow.from_json,
+                          json.loads(self.read_resource('test_flows/missing_version.json')))
+
+    def test_from_json_with_unsupported_spec_version(self):
+        self.assertRaises(FlowParseException, Flow.from_json,
+                          json.loads(self.read_resource('test_flows/unsupported_version.json')))
 
 
 class InputTest(BaseFlowsTest):

@@ -1,177 +1,176 @@
 {
-  "uuid": "73c40f19-007d-46bd-83ea-aef439de9f9c",
-  "archived": false,
-  "expires": 10080,
-  "name": "Mushrooms",
-  "created_on": "2015-08-18T08:39:55.420Z",
-  "definition": {
-    "base_language": "eng",
-    "action_sets": [
-      {
-        "y": 0,
-        "x": 100,
-        "destination": "1e318293-4730-481c-b455-daaaf86b2e6c",
-        "uuid": "32cf414b-35e3-4c75-8a78-d5f4de925e13",
-        "actions": [
-          {
-            "msg": {
-              "fre": "Salut @contact.first_name. Aimez-vous les champignons?",
-              "eng": "Hi @contact.first_name. Do you like mushrooms?"
-            },
-            "type": "reply"
-          }
-        ]
-      },
-      {
-        "y": 251,
-        "x": 117,
-        "destination": "6891e592-1e29-426b-b227-e3ae466662ab",
-        "uuid": "6d12cde9-dbbf-4673-acd7-afa1776d382b",
-        "actions": [
-          {
-            "msg": {
-              "fre": "Vous devriez revoir",
-              "eng": "You should reconsider"
-            },
-            "type": "reply"
-          },
-          {
-            "type": "del_group",
-            "groups": [
-              {
-                "name": "Approved",
-                "id": 11106
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "y": 251,
-        "x": 384,
-        "destination": "6891e592-1e29-426b-b227-e3ae466662ab",
-        "uuid": "4ef2b232-1484-4db7-b470-98af1a2349d3",
-        "actions": [
-          {
-            "msg": {
-              "fre": "Ce fut la bonne r\u00e9ponse.",
-              "eng": "That was the right answer."
-            },
-            "type": "reply"
-          },
-          {
-            "type": "add_group",
-            "groups": [
-              {
-                "name": "Approved",
-                "id": 11106
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "y": 0,
-        "x": 603,
-        "destination": "1e318293-4730-481c-b455-daaaf86b2e6c",
-        "uuid": "e277932e-d546-4e0c-a483-ce6cce06b929",
-        "actions": [
-          {
-            "msg": {
-              "fre": "Nous ne comprenions pas votre r\u00e9ponse. S'il vous pla\u00eet r\u00e9pondre par oui/non.",
-              "eng": "We didn't understand your answer. Please reply with yes/no."
-            },
-            "type": "reply"
-          }
-        ]
-      },
-      {
-        "y": 409,
-        "x": 249,
-        "destination": null,
-        "uuid": "6891e592-1e29-426b-b227-e3ae466662ab",
-        "actions": [
-          {
-            "field": "preference",
-            "type": "save",
-            "value": "@flow.response_1.category",
-            "label": "Preference"
-          }
-        ]
-      }
-    ],
-    "last_saved": "2015-09-21T11:04:36.911634Z",
-    "entry": "32cf414b-35e3-4c75-8a78-d5f4de925e13",
-    "rule_sets": [
-      {
-        "uuid": "1e318293-4730-481c-b455-daaaf86b2e6c",
-        "webhook_action": null,
-        "rules": [
-          {
-            "test": {
-              "test": {
-                "fre": "oui",
-                "eng": "yes,yeah,yup"
-              },
-              "base": "yes,yeah,yup",
-              "type": "contains_any"
-            },
-            "category": {
-              "base": "Yes",
-              "fre": "Oui",
-              "eng": "Yes"
-            },
-            "destination": "6d12cde9-dbbf-4673-acd7-afa1776d382b",
-            "uuid": "a53e3607-ac87-4bee-ab95-30fd4ad8a837",
-            "destination_type": "A"
-          },
-          {
-            "test": {
-              "test": {
-                "fre": "non",
-                "eng": "no,nay"
-              },
-              "base": "no,nay",
-              "type": "contains_any"
-            },
-            "category": {
-              "base": "No",
-              "fre": "Non",
-              "eng": "No"
-            },
-            "destination": "4ef2b232-1484-4db7-b470-98af1a2349d3",
-            "uuid": "d638e042-3f5c-4f03-a6c1-2031bd8971b2",
-            "destination_type": "A"
-          },
-          {
-            "category": {
-              "base": "Other",
-              "fre": "Autre",
-              "eng": "Other"
-            },
-            "test": {
-              "test": "true",
-              "type": "true"
-            },
-            "destination": "e277932e-d546-4e0c-a483-ce6cce06b929",
-            "uuid": "366fb919-7e0b-48be-8f5b-baa14b2a65aa",
-            "destination_type": "A"
-          }
-        ],
-        "webhook": null,
-        "ruleset_type": "wait_message",
-        "label": "Response 1",
-        "operand": "@step.value",
-        "finished_key": null,
-        "response_type": "",
-        "y": 101,
-        "x": 250,
-        "config": {}
-      }
-    ],
-    "metadata": {}
-  },
+  "version": 7,
   "flow_type": "F",
-  "version": 18,
-  "spec_version": 6
+  "base_language": "eng",
+  "action_sets": [
+    {
+      "y": 0,
+      "x": 100,
+      "destination": "1e318293-4730-481c-b455-daaaf86b2e6c",
+      "uuid": "32cf414b-35e3-4c75-8a78-d5f4de925e13",
+      "actions": [
+        {
+          "msg": {
+            "fre": "Salut @contact.first_name. Aimez-vous les champignons?",
+            "eng": "Hi @contact.first_name. Do you like mushrooms?"
+          },
+          "type": "reply"
+        }
+      ]
+    },
+    {
+      "y": 251,
+      "x": 117,
+      "destination": "6891e592-1e29-426b-b227-e3ae466662ab",
+      "uuid": "6d12cde9-dbbf-4673-acd7-afa1776d382b",
+      "actions": [
+        {
+          "msg": {
+            "fre": "Vous devriez revoir",
+            "eng": "You should reconsider"
+          },
+          "type": "reply"
+        },
+        {
+          "type": "del_group",
+          "groups": [
+            {
+              "name": "Approved",
+              "id": 11106
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "y": 251,
+      "x": 384,
+      "destination": "6891e592-1e29-426b-b227-e3ae466662ab",
+      "uuid": "4ef2b232-1484-4db7-b470-98af1a2349d3",
+      "actions": [
+        {
+          "msg": {
+            "fre": "Ce fut la bonne r\u00e9ponse.",
+            "eng": "That was the right answer."
+          },
+          "type": "reply"
+        },
+        {
+          "type": "add_group",
+          "groups": [
+            {
+              "name": "Approved",
+              "id": 11106
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "y": 0,
+      "x": 603,
+      "destination": "1e318293-4730-481c-b455-daaaf86b2e6c",
+      "uuid": "e277932e-d546-4e0c-a483-ce6cce06b929",
+      "actions": [
+        {
+          "msg": {
+            "fre": "Nous ne comprenions pas votre r\u00e9ponse. S'il vous pla\u00eet r\u00e9pondre par oui/non.",
+            "eng": "We didn't understand your answer. Please reply with yes/no."
+          },
+          "type": "reply"
+        }
+      ]
+    },
+    {
+      "y": 409,
+      "x": 249,
+      "destination": null,
+      "uuid": "6891e592-1e29-426b-b227-e3ae466662ab",
+      "actions": [
+        {
+          "field": "preference",
+          "type": "save",
+          "value": "@flow.response_1.category",
+          "label": "Preference"
+        }
+      ]
+    }
+  ],
+  "rule_sets": [
+    {
+      "uuid": "1e318293-4730-481c-b455-daaaf86b2e6c",
+      "webhook_action": null,
+      "rules": [
+        {
+          "test": {
+            "test": {
+              "fre": "oui",
+              "eng": "yes,yeah,yup"
+            },
+            "base": "yes,yeah,yup",
+            "type": "contains_any"
+          },
+          "category": {
+            "base": "Yes",
+            "fre": "Oui",
+            "eng": "Yes"
+          },
+          "destination": "6d12cde9-dbbf-4673-acd7-afa1776d382b",
+          "uuid": "a53e3607-ac87-4bee-ab95-30fd4ad8a837",
+          "destination_type": "A"
+        },
+        {
+          "test": {
+            "test": {
+              "fre": "non",
+              "eng": "no,nay"
+            },
+            "base": "no,nay",
+            "type": "contains_any"
+          },
+          "category": {
+            "base": "No",
+            "fre": "Non",
+            "eng": "No"
+          },
+          "destination": "4ef2b232-1484-4db7-b470-98af1a2349d3",
+          "uuid": "d638e042-3f5c-4f03-a6c1-2031bd8971b2",
+          "destination_type": "A"
+        },
+        {
+          "category": {
+            "base": "Other",
+            "fre": "Autre",
+            "eng": "Other"
+          },
+          "test": {
+            "test": "true",
+            "type": "true"
+          },
+          "destination": "e277932e-d546-4e0c-a483-ce6cce06b929",
+          "uuid": "366fb919-7e0b-48be-8f5b-baa14b2a65aa",
+          "destination_type": "A"
+        }
+      ],
+      "webhook": null,
+      "ruleset_type": "wait_message",
+      "label": "Response 1",
+      "operand": "@step.value",
+      "finished_key": null,
+      "response_type": "",
+      "y": 101,
+      "x": 250,
+      "config": {}
+    }
+  ],
+  "entry": "32cf414b-35e3-4c75-8a78-d5f4de925e13",
+  "metadata": {
+    "uuid": "73c40f19-007d-46bd-83ea-aef439de9f9c",
+    "revision": 18,
+    "archived": false,
+    "expires": 10080,
+    "name": "Mushrooms",
+    "created_on": "2015-08-18T08:39:55.420Z",
+    "last_saved": "2015-09-21T11:04:36.911634Z"
+  }
 }

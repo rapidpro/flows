@@ -6,7 +6,6 @@ import io.rapidpro.flows.BaseFlowsTest;
 import io.rapidpro.flows.RunnerBuilder;
 import io.rapidpro.flows.definition.Flow;
 import org.junit.Test;
-import org.threeten.bp.Instant;
 import org.threeten.bp.ZoneId;
 import org.threeten.bp.ZonedDateTime;
 

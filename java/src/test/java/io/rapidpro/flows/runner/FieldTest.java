@@ -3,7 +3,7 @@ package io.rapidpro.flows.runner;
 import io.rapidpro.flows.BaseFlowsTest;
 import org.junit.Test;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 /**

@@ -7,8 +7,6 @@ import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.utils.JsonUtils;
 import org.junit.Test;
 
-import java.util.Collections;
-
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 

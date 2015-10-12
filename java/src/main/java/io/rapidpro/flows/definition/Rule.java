@@ -1,7 +1,6 @@
 package io.rapidpro.flows.definition;
 
 import com.google.gson.JsonObject;
-import com.google.gson.annotations.SerializedName;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.RunState;

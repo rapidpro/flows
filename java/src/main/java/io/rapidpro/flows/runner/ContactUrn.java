@@ -7,7 +7,6 @@ import com.google.gson.stream.JsonWriter;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import io.rapidpro.flows.utils.FlowUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.IOException;
 

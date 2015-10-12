@@ -1,6 +1,9 @@
 package io.rapidpro.flows.definition.actions.message;
 
-import io.rapidpro.flows.definition.*;
+import io.rapidpro.flows.definition.ContactRef;
+import io.rapidpro.flows.definition.GroupRef;
+import io.rapidpro.flows.definition.TranslatableText;
+import io.rapidpro.flows.definition.VariableRef;
 import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.definition.actions.BaseActionTest;
 import io.rapidpro.flows.runner.Input;

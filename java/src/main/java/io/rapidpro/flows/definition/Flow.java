@@ -23,14 +23,14 @@ import java.util.Set;
  */
 public class Flow {
 
+    protected static int SPEC_VERSION = 7;
+
     public enum Type {
         @SerializedName("F") FLOW,
         @SerializedName("M") MESSAGE,
         @SerializedName("V") VOICE,
         @SerializedName("S") SURVEY;
     }
-
-    protected int m_version;
 
     protected Type m_type;
 
@@ -59,19 +59,25 @@ public class Flow {
         public Flow deserialize(JsonElement elem, java.lang.reflect.Type type, JsonDeserializationContext jsonContext) throws JsonParseException {
             JsonObject obj = elem.getAsJsonObject();
 
+            if (obj.has("version")) {
+                int version = obj.get("version").getAsInt();
+                if (version != SPEC_VERSION) {
+                    throw new FlowParseException("Unsupported flow spec version: " + version);
+                }
+            } else {
+                throw new FlowParseException("Missing flow spec version");
+            }
+
             Flow flow = new Flow();
-            flow.m_version = obj.get("version").getAsInt();
             flow.m_type = jsonContext.deserialize(obj.get("flow_type"), Type.class);
+            flow.m_baseLanguage = JsonUtils.getAsString(obj, "base_language");
 
-            JsonObject definition = obj.get("definition").getAsJsonObject();
-            flow.m_baseLanguage = JsonUtils.getAsString(definition, "base_language");
-
-            // keep an exhaustive list of all languages in our flow definition
+            // keep an exhaustive record of all languages in our flow definition
             Set<String> languages = new HashSet<>();
 
             DeserializationContext context = new DeserializationContext(flow);
 
-            for (JsonElement asElem : definition.get("action_sets").getAsJsonArray()) {
+            for (JsonElement asElem : obj.get("action_sets").getAsJsonArray()) {
                 ActionSet actionSet = ActionSet.fromJson(asElem.getAsJsonObject(), context, jsonContext);
                 flow.m_elementsByUuid.put(actionSet.m_uuid, actionSet);
 
@@ -83,7 +89,7 @@ public class Flow {
                 }
             }
 
-            for (JsonElement rsElem : definition.get("rule_sets").getAsJsonArray()) {
+            for (JsonElement rsElem : obj.get("rule_sets").getAsJsonArray()) {
                 RuleSet ruleSet = RuleSet.fromJson(rsElem.getAsJsonObject(), context);
                 flow.m_elementsByUuid.put(ruleSet.m_uuid, ruleSet);
 
@@ -107,7 +113,7 @@ public class Flow {
                 }
             }
 
-            flow.m_entry = flow.getElementByUuid(JsonUtils.getAsString(definition, "entry"));
+            flow.m_entry = flow.getElementByUuid(JsonUtils.getAsString(obj, "entry"));
             return flow;
         }
     }
@@ -214,10 +220,6 @@ public class Flow {
         Node getDestination();
 
         void setDestination(Node destination);
-    }
-
-    public int getVersion() {
-        return m_version;
     }
 
     public Type getType() {
