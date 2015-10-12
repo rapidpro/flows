@@ -1,4 +1,4 @@
-# Flow Specification Version 6
+# Flow Specification Version 7
 
 ## Common Components
 
@@ -89,18 +89,16 @@ Example:
 ## Top-level Structure
 
 ```
-<flow>: { "uuid": <uuid>,
-          "version": <int>,
-          "spec_version": 6,
+<flow>: { "version": 7,
           "flow_type": "F" | "M" | "S" | "V",
-          "name": <text>,
-          "definition": <definition> }
-          
-<definition>: { "base_language": <language-code>,
-                "action_sets": [ <action-set>* ],
-                "rule_sets": [ <rule-set>* ],
-                "entry": <uuid> | null }
+          "base_language": <language-code>,
+          "action_sets": [ <action-set>* ],
+          "rule_sets": [ <rule-set>* ],
+          "entry": <uuid> | null,
+          "metadata": <metadata> }
 ```
+
+Metadata is optional and implementation specific.
 
 ## Action Sets
 
@@ -131,12 +129,16 @@ The destination must be one of:
 
 #### Reply Actions
 
+Sends a message to the contact.
+
 ```
 <reply-action> : { "type": "reply",
                    "msg": <translatable-text> }
 ```
 
 #### Send Actions
+
+Sends a message to people other than the contact.
 
 ```
 <send-action> : { "type": "send", 
@@ -148,6 +150,8 @@ The destination must be one of:
 
 #### Email Actions
 
+Sends an email to someone.
+
 ```
 <email-action> : { "type": "email", 
                    "emails": [ <template>* ], 
@@ -157,6 +161,8 @@ The destination must be one of:
 
 #### Set Contact Language Actions
 
+Sets the contact's language.
+
 ```
 <set-language-action> : { "type": "lang", 
                           "lang": <language-code>, 
@@ -164,6 +170,8 @@ The destination must be one of:
 ```
 
 #### Save To Contact Actions
+
+Saves an evaluated expression to the contact as a field or their name.
 
 ```
 <save-to-contact-action> : { "type": "save", 
@@ -174,6 +182,8 @@ The destination must be one of:
 
 #### Add To Groups Actions
 
+Adds the contact to one or more groups
+
 ```
 <add-to-groups-action> : { "type": "add_group", 
                            "groups": [ (<group-ref> | <template>)* ] }
@@ -183,6 +193,8 @@ When a group is a template, only those beginning with "@" are evaluated, and oth
 
 #### Remove From Groups Actions
 
+Removes the contact from one or more groups
+
 ```
 <remove-from-groups-action> : { "type": "del_group", 
                                 "groups": [ (<group-ref> | <template>)* ] }
@@ -191,6 +203,8 @@ When a group is a template, only those beginning with "@" are evaluated, and oth
 When a group is a template, only those beginning with "@" are evaluated, and others are assumed to be group names.
 
 #### Add Labels Actions
+
+Adds one or more labels to the incoming message
 
 ```
 <add-labels-action> : { "type": "add_label", 
