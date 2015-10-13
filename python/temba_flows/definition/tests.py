@@ -621,7 +621,7 @@ class DateBeforeTest(DateComparisonTest):
     """
     Test which returns whether input is a date before the given value
     """
-    TYPE = 'date_after'
+    TYPE = 'date_before'
 
     @classmethod
     def from_json(cls, json_obj, context):

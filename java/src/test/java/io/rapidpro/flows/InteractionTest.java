@@ -29,6 +29,7 @@ public class InteractionTest extends BaseFlowsTest {
     public void interactionTests() throws Exception {
         runInteractionTests("test_flows/mushrooms.json", "test_runs/mushrooms_runs.json");
         runInteractionTests("test_flows/registration.json", "test_runs/registration_runs.json");
+        runInteractionTests("test_flows/date_testing.json", "test_runs/date_testing_runs.json");
     }
 
     protected void runInteractionTests(String flowFile, String interactionsFile) throws Exception {

@@ -1,0 +1,156 @@
+{
+  "version": 7,
+  "flow_type": "F",
+  "base_language": "eng",
+  "action_sets": [
+    {
+      "y": 0,
+      "x": 100,
+      "destination": "9ae52ae6-d113-4c36-ae35-76a05c30aeed",
+      "uuid": "b0a700af-dedb-42fb-ac05-273587f8d497",
+      "actions": [
+        {
+          "msg": {
+            "eng": "When was your birth date?"
+          },
+          "type": "reply"
+        }
+      ]
+    },
+    {
+      "y": 334,
+      "x": 387,
+      "destination": "9ae52ae6-d113-4c36-ae35-76a05c30aeed",
+      "uuid": "9938c42d-536c-4d1c-bbaa-98002a2f274a",
+      "actions": [
+        {
+          "msg": {
+            "eng": "Your birthdate can't be in the future. Try again."
+          },
+          "type": "reply"
+        }
+      ]
+    },
+    {
+      "y": 47,
+      "x": 625,
+      "destination": "9ae52ae6-d113-4c36-ae35-76a05c30aeed",
+      "uuid": "6e02e2a6-3f07-404f-bdeb-df0075ff9e5b",
+      "actions": [
+        {
+          "msg": {
+            "eng": "That didn't appear to be a date. Try again."
+          },
+          "type": "reply"
+        }
+      ]
+    },
+    {
+      "y": 332,
+      "x": 122,
+      "destination": null,
+      "uuid": "18d7ecea-4596-41d6-8f14-4f1cac457562",
+      "actions": [
+        {
+          "msg": {
+            "eng": "You entered @flow.birthdate.text which is @flow.birthdate"
+          },
+          "type": "reply"
+        }
+      ]
+    }
+  ],
+  "rule_sets": [
+    {
+      "uuid": "9ae52ae6-d113-4c36-ae35-76a05c30aeed",
+      "webhook_action": null,
+      "rules": [
+        {
+          "test": {
+            "type": "date"
+          },
+          "category": {
+            "eng": "Is Date"
+          },
+          "destination": "75172dfe-97a0-462d-a808-dd8fcd0ced97",
+          "uuid": "26c113a3-8852-46e6-8d0c-5481ee070221",
+          "destination_type": "R"
+        },
+        {
+          "test": {
+            "test": "true",
+            "type": "true"
+          },
+          "category": {
+            "eng": "Other"
+          },
+          "destination": "6e02e2a6-3f07-404f-bdeb-df0075ff9e5b",
+          "uuid": "9fa8e03b-ec8c-4717-bf74-659382e28df3",
+          "destination_type": "A"
+        }
+      ],
+      "webhook": null,
+      "ruleset_type": "wait_message",
+      "label": "birthdate",
+      "operand": "@step.value",
+      "finished_key": null,
+      "response_type": "",
+      "y": 97,
+      "x": 258,
+      "config": {}
+    },
+    {
+      "uuid": "75172dfe-97a0-462d-a808-dd8fcd0ced97",
+      "webhook_action": null,
+      "rules": [
+        {
+          "test": {
+            "test": "@(date.today + 0)",
+            "type": "date_before"
+          },
+          "category": {
+            "eng": "< today +date_before days"
+          },
+          "destination": "18d7ecea-4596-41d6-8f14-4f1cac457562",
+          "uuid": "51d63268-eb5e-4767-8cfa-8718929c33cb",
+          "destination_type": "A"
+        },
+        {
+          "test": {
+            "test": "@(date.today + 10)",
+            "type": "date_after"
+          },
+          "category": {
+            "eng": "> today +date_after days"
+          },
+          "destination": "9938c42d-536c-4d1c-bbaa-98002a2f274a",
+          "uuid": "746de79c-040c-4c11-8cfb-ade846406aa0",
+          "destination_type": "A"
+        },
+        {
+          "test": {
+            "test": "true",
+            "type": "true"
+          },
+          "category": {
+            "eng": "Other"
+          },
+          "uuid": "184529fa-83ea-4654-a5f5-714bb261bbf4"
+        }
+      ],
+      "webhook": null,
+      "ruleset_type": "expression",
+      "label": "Response 2",
+      "operand": "@flow.birthdate",
+      "finished_key": null,
+      "response_type": "",
+      "y": 214,
+      "x": 197,
+      "config": {}
+    }
+  ],
+  "entry": "b0a700af-dedb-42fb-ac05-273587f8d497",
+  "metadata": {
+    "last_saved": "2015-10-13T15:09:08.009838Z"
+  }
+}
