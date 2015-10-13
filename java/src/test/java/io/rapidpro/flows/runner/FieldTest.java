@@ -1,5 +1,7 @@
 package io.rapidpro.flows.runner;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import io.rapidpro.flows.BaseFlowsTest;
 import org.junit.Test;
 
@@ -10,6 +12,24 @@ import static org.junit.Assert.assertThat;
  * Test for {@link Field}
  */
 public class FieldTest extends BaseFlowsTest {
+
+    @Test
+    public void toAndFromJson() {
+        Gson gson = new GsonBuilder().create();
+        String json = gson.toJson(m_fields.get(0));
+
+        assertThat(json, is("{" +
+                "\"key\":\"gender\"," +
+                "\"label\":\"Gender\"," +
+                "\"value_type\":\"T\"" +
+                "}"));
+
+        Field field = gson.fromJson(json, Field.class);
+
+        assertThat(field.getKey(), is("gender"));
+        assertThat(field.getLabel(), is("Gender"));
+        assertThat(field.getValueType(), is(Field.ValueType.TEXT));
+    }
 
     @Test
     public void makeKey() {

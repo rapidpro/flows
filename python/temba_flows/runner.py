@@ -10,10 +10,12 @@ from datetime import timedelta
 from enum import Enum
 from ordered_set import OrderedSet
 from temba_expressions import conversions
+from temba_expressions.dates import DateStyle
 from temba_expressions.evaluator import Evaluator, EvaluationContext, EvaluationStrategy
-from .definition.flow import RuleSet
+from .definition.flow import Action, Flow, RuleSet
 from .exceptions import FlowRunException, FlowLoopException
-from .utils import normalize_number
+from .utils.flow import normalize_number
+from .utils.json import format_json_date, parse_json_date
 
 
 DEFAULT_EVALUATOR = Evaluator(expression_prefix='@',
@@ -36,12 +38,17 @@ class Org(object):
         return cls(json_obj['country'],
                    json_obj['primary_language'],
                    pytz.timezone(json_obj['timezone']),
-                   json_obj['date_style'],
+                   DateStyle[json_obj['date_style'].upper()],
                    json_obj['anon'])
 
     def to_json(self):
-        return {'country': self.country, 'primary_language': self.primary_language, 'timezone': self.timezone,
-                'date_style': self.date_style, 'anon': self.is_anon}
+        return {
+            'country': self.country,
+            'primary_language': self.primary_language,
+            'timezone': unicode(self.timezone),
+            'date_style': self.date_style.name.lower(),
+            'anon': self.is_anon
+        }
 
 
 class Field(object):
@@ -84,6 +91,9 @@ class Field(object):
     def from_json(cls, json_obj):
         return cls(json_obj['key'], json_obj['label'], Field.ValueType.from_code(json_obj['value_type']))
 
+    def to_json(self):
+        return {'key': self.key, 'label': self.label, 'value_type': self.value_type.code}
+
     @classmethod
     def make_key(cls, label):
         key = regex.sub(r'([^a-z0-9]+)', ' ', label.lower(), regex.V0).strip()
@@ -124,7 +134,7 @@ class Contact(object):
         return cls(json_obj.get('uuid', None),
                    json_obj['name'],
                    [ContactUrn.from_string(u) for u in json_obj['urns']],
-                   set(json_obj['groups']),
+                   OrderedSet(json_obj['groups']),
                    json_obj['fields'],
                    json_obj.get('language', None))
 
@@ -360,13 +370,32 @@ class Step(object):
     """
     A step taken by a contact or surveyor in a flow run
     """
-    def __init__(self, node, arrived_on):
+    def __init__(self, node, arrived_on, left_on=None, rule_result=None, actions=None, errors=None):
         self.node = node
         self.arrived_on = arrived_on
-        self.left_on = None
-        self.rule_result = None
-        self.actions = []
-        self.errors = []
+        self.left_on = left_on
+        self.rule_result = rule_result
+        self.actions = actions if actions else []
+        self.errors = errors if errors else []
+
+    @classmethod
+    def from_json(cls, json_obj, context):
+        return cls(context.flow.get_element_by_uuid(json_obj['node']),
+                   parse_json_date(json_obj['arrived_on']),
+                   parse_json_date(json_obj['left_on']),
+                   RuleSet.Result.from_json(json_obj['rule'], context) if json_obj.get('rule') else None,
+                   [Action.from_json(a, context) for a in json_obj['actions']],
+                   json_obj['errors'])
+
+    def to_json(self):
+        return {
+            'node': self.node.uuid,
+            'arrived_on': format_json_date(self.arrived_on),
+            'left_on': format_json_date(self.left_on),
+            'rule': self.rule_result.to_json() if self.rule_result else None,
+            'actions': [a.to_json() for a in self.actions],
+            'errors': self.errors
+        }
 
     def add_action_result(self, action_result):
         if action_result.performed:
@@ -388,6 +417,21 @@ class Value(object):
         self.category = category
         self.text = text
         self.time = time
+
+    @classmethod
+    def from_json(cls, json_object):
+        return cls(json_object['value'],
+                   json_object['category'],
+                   json_object['text'],
+                   parse_json_date(json_object['time']))
+
+    def to_json(self):
+        return {
+            'value': self.value,
+            'category': self.category,
+            'text': self.text,
+            'time': format_json_date(self.time)
+        }
 
     def build_context(self, container):
         return {
@@ -427,8 +471,19 @@ class RunState(object):
         :param flow: the flow the run state is for
         :return: the run state
         """
-        # TODO
-        pass
+        deserialization_context = Flow.DeserializationContext(flow)
+
+        run = cls(Org.from_json(json_obj['org']),
+                  [Field.from_json(f) for f in json_obj['fields']],
+                  Contact.from_json(json_obj['contact']),
+                  flow)
+
+        run.started = parse_json_date(json_obj['started'])
+        run.steps = [Step.from_json(s, deserialization_context) for s in json_obj['steps']]
+        run.values = {k: Value.from_json(v) for k, v in json_obj['values'].iteritems()}
+        run.extra = json_obj['extra']
+        run.state = RunState.State[json_obj['state'].upper()]
+        return run
 
     def to_json(self):
         """
@@ -436,11 +491,11 @@ class RunState(object):
         """
         return {
             'org': self.org.to_json(),
-            'fields': self.fields.values(),
+            'fields': [f.to_json() for f in self.fields.values()],
             'contact': self.contact.to_json(),
-            'started': self.started,  # TODO ISO 6301 ?
+            'started': format_json_date(self.started),
             'steps': [s.to_json() for s in self.steps],
-            'values': {},  # TODO
+            'values': {k: v.to_json() for k, v in self.values.iteritems()},
             'extra': self.extra,
             'state': self.state.name.lower()
         }

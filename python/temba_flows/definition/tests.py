@@ -8,7 +8,7 @@ from decimal import Decimal
 from temba_expressions import conversions, EvaluationError
 from temba_expressions.utils import tokenize
 from . import TranslatableText, FlowParseException
-from ..utils import edit_distance
+from ..utils.flow import edit_distance
 
 
 class Test(object):

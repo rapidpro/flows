@@ -33,7 +33,7 @@ public class Field {
     @SerializedName("value_type")
     protected ValueType m_valueType;
 
-    protected boolean m_new = false;
+    protected transient boolean m_new = false;
 
     public Field() {
     }

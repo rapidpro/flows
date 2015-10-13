@@ -251,6 +251,21 @@ class RuleSet(Flow.Node):
             self.category = category
             self.text = text
 
+        @classmethod
+        def from_json(cls, json_obj, context):
+            return cls(context.flow.get_element_by_uuid(json_obj['uuid']),
+                       json_obj['value'],
+                       json_obj['category'],
+                       json_obj['text'])
+
+        def to_json(self):
+            return {
+                'uuid': self.rule.uuid,
+                'value': self.value,
+                'category': self.category,
+                'text': self.text
+            }
+
 
 class Rule(object):
     """

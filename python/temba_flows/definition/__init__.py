@@ -12,14 +12,17 @@ class TranslatableText(object):
         self.value = value
 
     @classmethod
-    def from_json(cls, json_elem):
-        if json_elem is None:
+    def from_json(cls, json_elm):
+        if json_elm is None:
             return None
 
-        if not (isinstance(json_elem, dict) or isinstance(json_elem, basestring)):
+        if not (isinstance(json_elm, dict) or isinstance(json_elm, basestring)):
             raise FlowParseException("Translatable text be an object or string primitive")
 
-        return TranslatableText(json_elem)
+        return TranslatableText(json_elm)
+
+    def to_json(self):
+        return self.value
 
     def get_localized(self, run_state=None, default_text=""):
         """

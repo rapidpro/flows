@@ -99,7 +99,7 @@ class ReplyAction(MessageAction):
         return cls(TranslatableText.from_json(json_obj.get('msg')))
 
     def to_json(self):
-        return {'type': self.TYPE, 'msg': self.msg}
+        return {'type': self.TYPE, 'msg': self.msg.to_json()}
 
     def execute_with_message(self, runner, context, msg):
         template, errors = runner.substitute_variables(msg, context)
@@ -129,7 +129,7 @@ class SendAction(MessageAction):
 
     def to_json(self):
         return {'type': self.TYPE,
-                'msg': self.msg,
+                'msg': self.msg.to_json(),
                 'contacts': [c.to_json() for c in self.contacts],
                 'groups': [g.to_json() for g in self.groups],
                 'variables': [v.to_json() for v in self.variables]}
@@ -213,6 +213,9 @@ class SaveToContactAction(Action):
     @classmethod
     def from_json(cls, json_obj, context):
         return cls(json_obj.get('field'), json_obj.get('label'), json_obj.get('value'))
+
+    def to_json(self):
+        return {'type': self.TYPE, 'field': self.field, 'label': self.label, 'value': self.value}
 
     def execute(self, runner, run, input):
         value, errors = runner.substitute_variables(self.value, run.build_context(input))

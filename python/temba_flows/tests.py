@@ -11,16 +11,22 @@ from ordered_set import OrderedSet
 from temba_expressions.dates import DateStyle, DateParser
 from temba_expressions.evaluator import EvaluationContext
 from .definition import ContactRef, GroupRef, LabelRef, VariableRef
-from .definition.flow import Flow, ActionSet, RuleSet
+from .definition.flow import Flow, Action, ActionSet, RuleSet
 from .definition.actions import ReplyAction, SendAction, EmailAction, SaveToContactAction, SetLanguageAction
 from .definition.actions import AddToGroupsAction, RemoveFromGroupsAction, AddLabelsAction
 from .definition.tests import *
 from .exceptions import FlowRunException
-from .runner import Contact, ContactUrn, Field, Input, Location, Org, Runner, RunState
-from .utils import edit_distance, normalize_number
+from .runner import Contact, ContactUrn, Field, Input, Location, Org, Runner, RunState, Step, Value
+from .utils.flow import edit_distance, normalize_number
+from .utils.json import parse_json_date, format_json_date
 
 
 class BaseFlowsTest(unittest.TestCase):
+    """
+    Base class for all unit tests
+    """
+    __metaclass__ = ABCMeta
+
     def setUp(self):
         self.org = Org("RW", "eng", pytz.timezone("Africa/Kigali"), DateStyle.DAY_FIRST, False)
 
@@ -71,6 +77,7 @@ class BaseFlowsTest(unittest.TestCase):
 
 
 class ActionsTest(BaseFlowsTest):
+
     def setUp(self):
         super(ActionsTest, self).setUp()
 
@@ -282,11 +289,18 @@ class ContactTest(BaseFlowsTest):
         self.context = self.run.build_context(None)
 
     def test_to_and_from_json(self):
-        json_str = json.dumps(self.contact.to_json())
+        json_obj = self.contact.to_json()
 
-        contact = Contact.from_json(json.loads(json_str))
+        self.assertEqual(json_obj, {'uuid': "1234-1234",
+                                    'name': "Joe Flow",
+                                    'urns': ["tel:+260964153686", "twitter:realJoeFlow"],
+                                    'groups': ["Testers", "Developers"],
+                                    'fields': {"age": "34", "gender": "M", "joined": "2015-10-06T11:30:01.123Z"},
+                                    'language': 'eng'})
 
-        self.assertEqual(contact.uuid, '1234-1234')
+        contact = Contact.from_json(json_obj)
+
+        self.assertEqual(contact.uuid, "1234-1234")
         self.assertEqual(contact.name, "Joe Flow")
         self.assertEqual(contact.urns, [ContactUrn(ContactUrn.Scheme.TEL, "+260964153686"),
                                         ContactUrn(ContactUrn.Scheme.TWITTER, "realJoeFlow")])
@@ -366,6 +380,20 @@ class ContactUrnTest(BaseFlowsTest):
 
 
 class FieldTest(BaseFlowsTest):
+
+    def test_to_and_from_json(self):
+        json_obj = self.fields[0].to_json()
+
+        self.assertEqual(json_obj, {"key": "gender",
+                                    "label": "Gender",
+                                    "value_type": "T"})
+
+        field = Field.from_json(json_obj)
+
+        self.assertEqual(field.key, "gender")
+        self.assertEqual(field.label, "Gender")
+        self.assertEqual(field.value_type, Field.ValueType.TEXT)
+
     def test_make_key(self):
         self.assertEquals(Field.make_key("First Name"), "first_name")
         self.assertEquals(Field.make_key("Second   Name  "), "second_name")
@@ -389,6 +417,7 @@ class FieldTest(BaseFlowsTest):
 
 
 class FlowTest(BaseFlowsTest):
+
     def test_from_json(self):
         flow = Flow.from_json(json.loads(self.read_resource('test_flows/mushrooms.json')))
 
@@ -622,6 +651,26 @@ class InputTest(BaseFlowsTest):
                                    'value': "21-09-2015 15:30",
                                    'time': "30-09-2015 16:31",
                                    'contact': contact_context})
+
+
+class OrgTest(BaseFlowsTest):
+
+    def test_to_and_from_json(self):
+        json_obj = self.org.to_json()
+
+        self.assertEqual(json_obj, {"country": "RW",
+                                    "primary_language": "eng",
+                                    "timezone": "Africa/Kigali",
+                                    "date_style": "day_first",
+                                    "anon": False})
+
+        org = Org.from_json(json_obj)
+
+        self.assertEqual(org.country, "RW")
+        self.assertEqual(org.primary_language, "eng")
+        self.assertEqual(org.timezone, pytz.timezone("Africa/Kigali"))
+        self.assertEqual(org.date_style, DateStyle.DAY_FIRST)
+        self.assertEqual(org.is_anon, False)
 
 
 class RunnerTest(BaseFlowsTest):
@@ -860,24 +909,97 @@ class RunStateTest(BaseFlowsTest):
                                    'yesterday': "08-23-2015"})
 
     def test_to_and_from_json(self):
-        # TODO
-        pass
-        # flow = Flow.fromJson(readResource("test_flows/mushrooms.json"));
-        # runner = new RunnerBuilder().build();
-        # run = runner.start(getOrg(), getContact(), flow);
+        flow = Flow.from_json(json.loads(self.read_resource("test_flows/mushrooms.json")))
+        runner = Runner()
+        run = runner.start(self.org, self.fields, self.contact, flow)
 
         # send our first message through so we have references to rules
-        # runner.resume(run, Input.of("Yes"));
+        runner.resume(run, Input("Yes"))
 
-        # export to json and reimport
-        # String json = run.toJson();
-        # RunState restored = RunState.fromJson(json, flow);
+        # export to json and re-import
+        json_str = json.dumps(run.to_json())
+        restored = RunState.from_json(json.loads(json_str), flow)
 
         # json should be the same
-        # assertThat(restored.toJson(), is(json));
+        self.assertEqual(json.dumps(restored.to_json()), json_str)
+
+
+class StepTest(BaseFlowsTest):
+
+    def test_to_and_from_json(self):
+        flow = Flow.from_json(json.loads(self.read_resource("test_flows/mushrooms.json")))
+        deserialization_context = Flow.DeserializationContext(flow)
+        arrived_on = datetime.datetime(2015, 8, 25, 11, 59, 30, 88000, pytz.UTC)
+
+        step = Step(flow.entry, arrived_on)
+
+        json_obj = step.to_json()
+
+        self.assertEqual(json_obj, {'node': "32cf414b-35e3-4c75-8a78-d5f4de925e13",
+                                    'arrived_on': "2015-08-25T11:59:30.088Z",
+                                    'left_on': None,
+                                    'rule': None,
+                                    'actions': [],
+                                    'errors': []})
+
+        step.add_action_result(Action.Result.performed(ReplyAction(TranslatableText("Hi Joe"))))
+        json_obj = step.to_json()
+
+        self.assertEqual(json_obj, {'node': "32cf414b-35e3-4c75-8a78-d5f4de925e13",
+                                    'arrived_on': "2015-08-25T11:59:30.088Z",
+                                    'left_on': None,
+                                    'rule': None,
+                                    'actions': [{'type': "reply", 'msg': "Hi Joe"}],
+                                    'errors': []})
+
+        step.add_action_result(Action.Result.performed(None, ["This is an error", "This too"]))
+        json_obj = step.to_json()
+
+        self.assertEqual(json_obj, {'node': "32cf414b-35e3-4c75-8a78-d5f4de925e13",
+                                    'arrived_on': "2015-08-25T11:59:30.088Z",
+                                    'left_on': None,
+                                    'rule': None,
+                                    'actions': [{'type': "reply", 'msg': "Hi Joe"}],
+                                    'errors': ["This is an error", "This too"]})
+
+        step = Step.from_json(json_obj, deserialization_context)
+
+        self.assertEqual(step.node, flow.entry)
+        self.assertEqual(step.arrived_on, arrived_on)
+        self.assertEqual(step.left_on, None)
+        self.assertEqual(step.rule_result, None)
+        self.assertReply(step.actions[0], "Hi Joe")
+        self.assertEqual(step.errors, ["This is an error", "This too"])
+
+        step.actions = []
+        step.errors = []
+
+        yes_rule = flow.entry.destination.rules[0]
+
+        step.rule_result = RuleSet.Result(yes_rule, "yes", "Yes", "yes ok")
+        json_obj = step.to_json()
+
+        self.assertEqual(json_obj, {'node': "32cf414b-35e3-4c75-8a78-d5f4de925e13",
+                                    'arrived_on': "2015-08-25T11:59:30.088Z",
+                                    'left_on': None,
+                                    'rule': {'uuid': "a53e3607-ac87-4bee-ab95-30fd4ad8a837", "value": "yes", "category": "Yes", "text": "yes ok"},
+                                    'actions': [],
+                                    'errors': []})
+
+        step = Step.from_json(json_obj, deserialization_context)
+
+        self.assertEqual(step.node, flow.entry)
+        self.assertEqual(step.arrived_on, arrived_on)
+        self.assertEqual(step.left_on, None)
+        self.assertEqual(step.rule_result.rule, yes_rule)
+        self.assertEqual(step.rule_result.value, "yes")
+        self.assertEqual(step.rule_result.category, "Yes")
+        self.assertEqual(step.actions, [])
+        self.assertEqual(step.errors, [])
 
 
 class TestsTest(BaseFlowsTest):
+
     def setUp(self):
         super(TestsTest, self).setUp()
 
@@ -1204,6 +1326,7 @@ class TranslatableTextTest(unittest.TestCase):
 
 
 class UtilsTest(unittest.TestCase):
+
     def test_edit_distance(self):
         self.assertEqual(edit_distance("", ""), 0)
         self.assertEqual(edit_distance("abcd", "abcd"), 0)   # 0 differences
@@ -1231,3 +1354,37 @@ class UtilsTest(unittest.TestCase):
         self.assertEquals(normalize_number("0788383383", None), ("0788383383", False))
         self.assertEquals(normalize_number("0788383383", "ZZ"), ("0788383383", False))
         self.assertEquals(normalize_number("MTN", "RW"), ("mtn", False))
+
+    def test_json_dates(self):
+        self.assertIsNone(format_json_date(None))
+        self.assertIsNone(parse_json_date(None))
+
+        tz = pytz.timezone("Africa/Kigali")
+        d1 = tz.localize(datetime.datetime(2015, 10, 13, 9, 27, 30, 123000))
+        s1 = format_json_date(d1)
+
+        self.assertEqual(s1, '2015-10-13T07:27:30.123Z')
+
+        d2 = parse_json_date(s1)
+        self.assertEqual(d1, d2)
+
+
+class ValueTest(BaseFlowsTest):
+
+    def test_to_and_from_json(self):
+        time = datetime.datetime(2015, 8, 25, 11, 59, 30, 88000, pytz.UTC)
+        value = Value("no", "No", "no way!", time)
+
+        json_obj = value.to_json()
+
+        self.assertEqual(json_obj, {'value': "no",
+                                    'category': "No",
+                                    'text': "no way!",
+                                    'time': "2015-08-25T11:59:30.088Z"})
+
+        value = Value.from_json(json_obj)
+
+        self.assertEqual(value.value, "no")
+        self.assertEqual(value.category, "No")
+        self.assertEqual(value.text, "no way!")
+        self.assertEqual(value.time, time)
