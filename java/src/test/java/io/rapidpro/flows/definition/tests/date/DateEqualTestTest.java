@@ -23,15 +23,15 @@ public class DateEqualTestTest extends BaseTestTest {
         DateEqualTest test = new DateEqualTest("24/8/2015");
 
         assertTest(test, "23-8-15", false, null);
-        assertTest(test, "Aug 24, 2015", true, "Aug 24, 2015", LocalDate.of(2015, 8, 24));
-        assertTest(test, "Twas 25th Aug '15", false, null);
+        assertTest(test, "it was Aug 24, 2015", true, "Aug 24, 2015", LocalDate.of(2015, 8, 24));
+        assertTest(test, "25th Aug '15", false, null);
 
         // date can be an expression
         m_context.putVariable("dob", "24-08-2015");
         test = new DateEqualTest("@(dob)");
 
         assertTest(test, "23-8-15", false, null);
-        assertTest(test, "Aug 24, 2015", true, "Aug 24, 2015", LocalDate.of(2015, 8, 24));
-        assertTest(test, "Twas 25th Aug '15", false, null);
+        assertTest(test, "it was Aug 24, 2015", true, "Aug 24, 2015", LocalDate.of(2015, 8, 24));
+        assertTest(test, "25th Aug '15", false, null);
     }
 }
