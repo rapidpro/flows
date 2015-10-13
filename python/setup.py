@@ -19,7 +19,7 @@ test_packages = _read_requirements("requirements/tests.txt")
 
 setup(
     name='rapidpro-flows',
-    version='0.1',
+    version='1.1.1',
     description='Python implementation of the RapidPro flow engine',
     url='https://github.com/rapidpro/flows',
 
@@ -29,7 +29,7 @@ setup(
     license='BSD',
 
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Libraries',
         'License :: OSI Approved :: BSD License',
