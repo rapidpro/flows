@@ -1,0 +1,241 @@
+{
+  "base_language": "eng",
+  "action_sets": [
+    {
+      "y": 158,
+      "x": 760,
+      "destination": null,
+      "uuid": "54e83570-95b3-4336-bb27-e1620424e94c",
+      "actions": [
+        {
+          "msg": {
+            "eng": "Gender is invalid"
+          },
+          "type": "reply"
+        }
+      ]
+    },
+    {
+      "y": 287,
+      "x": 760,
+      "destination": null,
+      "uuid": "b976791e-5007-48a4-8339-d8bb1c53af25",
+      "actions": [
+        {
+          "msg": {
+            "eng": "Age is invalid"
+          },
+          "type": "reply"
+        }
+      ]
+    },
+    {
+      "y": 536,
+      "x": 406,
+      "destination": null,
+      "uuid": "086ae065-e601-4600-ad43-efc9754f86db",
+      "actions": [
+        {
+          "msg": {
+            "eng": "Your details:\nGender: @flow.gender.category\nAge: @flow.age\nWeight: @flow.weight"
+          },
+          "type": "reply"
+        }
+      ]
+    },
+    {
+      "y": 402,
+      "x": 758,
+      "destination": null,
+      "uuid": "104e4abd-e5af-453a-8fde-f35fd45edbb5",
+      "actions": [
+        {
+          "msg": {
+            "eng": "Weight is invalid"
+          },
+          "type": "reply"
+        }
+      ]
+    }
+  ],
+  "version": 7,
+  "flow_type": "F",
+  "entry": "7e84af89-6bbf-488b-94c7-599b02f2bb7e",
+  "rule_sets": [
+    {
+      "uuid": "7e84af89-6bbf-488b-94c7-599b02f2bb7e",
+      "webhook_action": null,
+      "rules": [
+        {
+          "test": {
+            "test": "true",
+            "type": "true"
+          },
+          "category": {
+            "eng": "All Responses"
+          },
+          "destination": "bd169c37-3526-401d-b345-f50e9a34e730",
+          "uuid": "2b308f98-5237-401a-b74d-c7e0aaa809a9",
+          "destination_type": "R"
+        }
+      ],
+      "webhook": null,
+      "ruleset_type": "wait_message",
+      "label": "Input",
+      "operand": "@step.value",
+      "finished_key": null,
+      "response_type": "",
+      "y": 0,
+      "x": 397,
+      "config": {}
+    },
+    {
+      "uuid": "bd169c37-3526-401d-b345-f50e9a34e730",
+      "webhook_action": null,
+      "rules": [
+        {
+          "test": {
+            "test": {
+              "eng": "m male man"
+            },
+            "type": "contains_any"
+          },
+          "category": {
+            "eng": "Male"
+          },
+          "destination": "601e4ffc-b597-4213-a5bc-dd55cb4e2b22",
+          "uuid": "537013ef-e9a2-45ab-b24f-4d6fd7c474bd",
+          "destination_type": "R"
+        },
+        {
+          "test": {
+            "test": {
+              "eng": "f female woman"
+            },
+            "type": "contains_any"
+          },
+          "category": {
+            "eng": "Female"
+          },
+          "destination": "601e4ffc-b597-4213-a5bc-dd55cb4e2b22",
+          "uuid": "e27a6559-a87b-48f0-b649-5a211062ba41",
+          "destination_type": "R"
+        },
+        {
+          "test": {
+            "test": "true",
+            "type": "true"
+          },
+          "category": {
+            "eng": "Other"
+          },
+          "destination": "54e83570-95b3-4336-bb27-e1620424e94c",
+          "uuid": "29388e1e-0c90-439c-a90b-a19011a46501",
+          "destination_type": "A"
+        }
+      ],
+      "webhook": null,
+      "ruleset_type": "form_field",
+      "label": "Gender",
+      "operand": "@flow.input",
+      "finished_key": null,
+      "response_type": "",
+      "y": 142,
+      "x": 380,
+      "config": {
+        "field_delimiter": " ",
+        "field_index": 0
+      }
+    },
+    {
+      "uuid": "601e4ffc-b597-4213-a5bc-dd55cb4e2b22",
+      "webhook_action": null,
+      "rules": [
+        {
+          "test": {
+            "type": "number"
+          },
+          "category": {
+            "eng": "numeric"
+          },
+          "destination": "32fe97e0-4022-4546-9f94-53d8ad28a6d6",
+          "uuid": "cd7a63d7-e0ce-423b-aff1-afd3e27aab5e",
+          "destination_type": "R"
+        },
+        {
+          "test": {
+            "test": "true",
+            "type": "true"
+          },
+          "category": {
+            "eng": "Other"
+          },
+          "destination": "b976791e-5007-48a4-8339-d8bb1c53af25",
+          "uuid": "876b12a9-93fa-4ca6-9122-7c6b66e6d986",
+          "destination_type": "A"
+        }
+      ],
+      "webhook": null,
+      "ruleset_type": "form_field",
+      "label": "Age",
+      "operand": "@flow.input",
+      "finished_key": null,
+      "response_type": "",
+      "y": 272,
+      "x": 409,
+      "config": {
+        "field_delimiter": " ",
+        "field_index": 1
+      }
+    },
+    {
+      "uuid": "32fe97e0-4022-4546-9f94-53d8ad28a6d6",
+      "webhook_action": null,
+      "rules": [
+        {
+          "test": {
+            "type": "number"
+          },
+          "category": {
+            "eng": "numeric"
+          },
+          "destination": "086ae065-e601-4600-ad43-efc9754f86db",
+          "uuid": "f36c1b1a-e7ed-4153-a257-934237e420c4",
+          "destination_type": "A"
+        },
+        {
+          "test": {
+            "test": "true",
+            "type": "true"
+          },
+          "category": {
+            "eng": "Other"
+          },
+          "destination": "104e4abd-e5af-453a-8fde-f35fd45edbb5",
+          "uuid": "845c87a6-8d3e-484c-a9e9-286bfe8cc31b",
+          "destination_type": "A"
+        }
+      ],
+      "webhook": null,
+      "ruleset_type": "form_field",
+      "label": "Weight",
+      "operand": "@flow.input",
+      "finished_key": null,
+      "response_type": "",
+      "y": 404,
+      "x": 417,
+      "config": {
+        "field_delimiter": " ",
+        "field_index": 2
+      }
+    }
+  ],
+  "metadata": {
+    "uuid": "0e0b1383-3461-4a88-b0cb-72744a5cc2fc",
+    "expires": 10080,
+    "name": "Basic Form",
+    "saved_on": "2015-10-14T09:29:31.360389Z",
+    "id": 18855,
+    "revision": 54
+  }
+}

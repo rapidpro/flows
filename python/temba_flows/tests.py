@@ -502,6 +502,7 @@ class InteractionTest(BaseFlowsTest):
         self._run_interaction_tests('test_flows/mushrooms.json', 'test_runs/mushrooms.runs.json')
         self._run_interaction_tests('test_flows/registration.json', 'test_runs/registration.runs.json')
         self._run_interaction_tests('test_flows/birthdate-check.json', 'test_runs/birthdate-check.runs.json')
+        self._run_interaction_tests('test_flows/basic-form.json', 'test_runs/basic-form.runs.json')
 
     def _run_interaction_tests(self, flow_file, interactions_file):
         print "Running interaction tests from %s" % interactions_file

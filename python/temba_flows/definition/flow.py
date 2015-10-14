@@ -176,11 +176,12 @@ class RuleSet(Flow.Node):
         CONTACT_FIELD = 8
         EXPRESSION = 9
 
-    def __init__(self, uuid, ruleset_type, label, operand):
+    def __init__(self, uuid, ruleset_type, label, operand, config):
         super(RuleSet, self).__init__(uuid)
         self.ruleset_type = ruleset_type
         self.label = label
         self.operand = operand
+        self.config = config
         self.rules = []
 
     @classmethod
@@ -188,7 +189,8 @@ class RuleSet(Flow.Node):
         rule_set_type = RuleSet.Type[json_obj['ruleset_type'].upper()]
         label = json_obj['label']
         operand = json_obj.get('operand', None)
-        rule_set = RuleSet(json_obj['uuid'], rule_set_type, label, operand)
+        config = json_obj.get('config', {})
+        rule_set = RuleSet(json_obj['uuid'], rule_set_type, label, operand, config)
 
         for rule_obj in json_obj["rules"]:
             rule_set.rules.append(Rule.from_json(rule_obj, context))
@@ -199,6 +201,8 @@ class RuleSet(Flow.Node):
         if logger.isEnabledFor(logging.DEBUG):
             logger.debug("Visiting rule set %s with input %s from contact %s"
                          % (self.uuid, unicode(input), run.contact.uuid))
+
+        input.consume()
 
         context = run.build_context(input)
 
@@ -227,7 +231,15 @@ class RuleSet(Flow.Node):
         :param context: the evaluation context
         :return: the matching rule and the test result
         """
-        operand, errors = runner.substitute_variables(self.operand, context)
+        # for form fields, construct operand as field expression
+        if self.ruleset_type == RuleSet.Type.FORM_FIELD:
+            field_delimiter = self.config.get('field_delimiter', ' ')
+            field_index = self.config.get('field_index', 0) + 1
+            operand = '@(FIELD(%s, %d, "%s"))' % (self.operand[1:], field_index, field_delimiter)
+        else:
+            operand = self.operand
+
+        operand, errors = runner.substitute_variables(operand, context)
 
         for rule in self.rules:
             result = rule.matches(runner, run, context, operand)

@@ -85,7 +85,7 @@ public class Runner {
 
             // should we pause at this node?
             if (currentNode instanceof RuleSet) {
-                if (((RuleSet) currentNode).isPause() && nodesVisited.size() > 0) {
+                if (((RuleSet) currentNode).isPause() && (input == null || input.isConsumed())) {
                     run.setState(RunState.State.WAIT_MESSAGE);
                     return run;
                 }

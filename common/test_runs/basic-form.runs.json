@@ -1,0 +1,13 @@
+[
+    {
+        "org": {"country": "RW", "primary_language": "eng", "timezone": "Africa/Kigali", "date_style": "day_first", "anon": false},
+        "fields_initial": [],
+        "contact_initial": {"uuid": "1234", "name": "Joe Flow", "urns": [], "groups": [], "fields": {}},
+        "messages": [
+            { "type": "input", "msg": "m 34 88" },
+            { "type": "reply", "msg": "Your details:\nGender: Male\nAge: 34\nWeight: 88" }
+        ],
+        "fields_created": [],
+        "contact_final": { "uuid": "1234", "name": "Joe Flow", "urns": [], "groups": [], "fields": {}}
+    }
+]

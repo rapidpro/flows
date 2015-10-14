@@ -19,9 +19,12 @@ public class Input {
 
     protected Instant m_time;
 
+    protected boolean m_consumed;
+
     protected Input(Object value) {
         m_value = value;
         m_time = Instant.now();
+        m_consumed = false;
     }
 
     public static Input of(String value) {
@@ -69,5 +72,13 @@ public class Input {
 
     public Instant getTime() {
         return m_time;
+    }
+
+    public boolean isConsumed() {
+        return m_consumed;
+    }
+
+    public void consume() {
+        m_consumed = true;
     }
 }

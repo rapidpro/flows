@@ -311,6 +311,7 @@ class Input(object):
     def __init__(self, value, time=None):
         self.value = value
         self.time = time if time else datetime.datetime.now(tz=pytz.UTC)
+        self.consumed = False
 
     def build_context(self, container, contact_context):
         """
@@ -335,6 +336,9 @@ class Input(object):
         :return: the text value
         """
         return conversions.to_string(self.value, context)
+
+    def consume(self):
+        self.consumed = True
 
 
 class Location(object):
@@ -644,7 +648,7 @@ class Runner(object):
 
             # should we pause at this node?
             if isinstance(current_node, RuleSet):
-                if current_node.is_pause() and len(nodes_visited) > 0:
+                if current_node.is_pause() and (not input or input.consumed):
                     run.state = RunState.State.WAIT_MESSAGE
                     return run
 
