@@ -27,9 +27,9 @@ public class InteractionTest extends BaseFlowsTest {
 
     @Test
     public void interactionTests() throws Exception {
-        runInteractionTests("test_flows/mushrooms.json", "test_runs/mushrooms_runs.json");
-        runInteractionTests("test_flows/registration.json", "test_runs/registration_runs.json");
-        runInteractionTests("test_flows/date_testing.json", "test_runs/date_testing_runs.json");
+        runInteractionTests("test_flows/mushrooms.json", "test_runs/mushrooms.runs.json");
+        runInteractionTests("test_flows/registration.json", "test_runs/registration.runs.json");
+        runInteractionTests("test_flows/birthdate-check.json", "test_runs/birthdate-check.runs.json");
     }
 
     protected void runInteractionTests(String flowFile, String interactionsFile) throws Exception {
@@ -67,6 +67,8 @@ public class InteractionTest extends BaseFlowsTest {
                 TestDefinition.Message message = test.m_messages.remove(0);
                 assertThat("input", is(message.m_type));
 
+                //System.out.println(" > Resuming run with input: " + message.m_msg);
+
                 runner.resume(run, Input.of(message.m_msg));
             }
 
@@ -74,6 +76,8 @@ public class InteractionTest extends BaseFlowsTest {
                 for (Action action : step.getActions()) {
                     if (action instanceof ReplyAction) {
                         String msg = ((ReplyAction) action).getMsg().getLocalized(run);
+
+                        //System.out.println(" > Got reply: " + msg);
 
                         if (test.m_messages.size() > 0) {
                             TestDefinition.Message message = test.m_messages.remove(0);

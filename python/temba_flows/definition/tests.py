@@ -1,12 +1,11 @@
 from __future__ import absolute_import, unicode_literals
 
-import datetime
 import phonenumbers
 import regex
 
 from abc import ABCMeta, abstractmethod
 from decimal import Decimal
-from temba_expressions import conversions
+from temba_expressions import conversions, EvaluationError
 from temba_expressions.utils import tokenize
 from . import TranslatableText, FlowParseException
 from ..utils.flow import edit_distance
@@ -530,17 +529,12 @@ class DateTest(Test):
     __metaclass__ = ABCMeta
 
     def evaluate(self, runner, run, context, text):
-        result = context.get_date_parser().auto_with_location(text)
-        if result:
-            date = None
-
-            if isinstance(result.value, datetime.datetime):
-                date = result.value.date()
-            elif isinstance(result.value, datetime.date):
-                date = result.value
-
-            if date and self.evaluate_for_date(runner, context, date):
-                return Test.Result.match(text[result.start:result.end], date)
+        try:
+            date = conversions.to_date(text, context)
+            if self.evaluate_for_date(runner, context, date):
+                return Test.Result.match(text, date)
+        except EvaluationError:
+            pass
 
         return Test.Result.NO_MATCH
 

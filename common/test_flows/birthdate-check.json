@@ -1,6 +1,4 @@
 {
-  "version": 7,
-  "flow_type": "F",
   "base_language": "eng",
   "action_sets": [
     {
@@ -53,13 +51,16 @@
       "actions": [
         {
           "msg": {
-            "eng": "You entered @flow.birthdate.text which is @flow.birthdate"
+            "eng": "You entered \"@flow.birthdate.text\" which is @flow.birthdate"
           },
           "type": "reply"
         }
       ]
     }
   ],
+  "version": 7,
+  "flow_type": "F",
+  "entry": "b0a700af-dedb-42fb-ac05-273587f8d497",
   "rule_sets": [
     {
       "uuid": "9ae52ae6-d113-4c36-ae35-76a05c30aeed",
@@ -149,8 +150,12 @@
       "config": {}
     }
   ],
-  "entry": "b0a700af-dedb-42fb-ac05-273587f8d497",
   "metadata": {
-    "last_saved": "2015-10-13T15:09:08.009838Z"
+    "uuid": "64c27506-3030-4408-b49c-3aea6536a9f8",
+    "expires": 10080,
+    "name": "Birthdate Check",
+    "saved_on": "2015-10-14T07:17:52.881077Z",
+    "id": 18854,
+    "revision": 29
   }
 }

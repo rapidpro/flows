@@ -487,11 +487,11 @@ class FlowTest(BaseFlowsTest):
 
     def test_from_json_with_missing_spec_version(self):
         self.assertRaises(FlowParseException, Flow.from_json,
-                          json.loads(self.read_resource('test_flows/missing_version.json')))
+                          json.loads(self.read_resource('test_flows/missing-version.json')))
 
     def test_from_json_with_unsupported_spec_version(self):
         self.assertRaises(FlowParseException, Flow.from_json,
-                          json.loads(self.read_resource('test_flows/unsupported_version.json')))
+                          json.loads(self.read_resource('test_flows/unsupported-version.json')))
 
 
 class InteractionTest(BaseFlowsTest):
@@ -499,9 +499,9 @@ class InteractionTest(BaseFlowsTest):
     Flow interaction tests loaded from JSON
     """
     def test_interaction_tests(self):
-        self._run_interaction_tests('test_flows/mushrooms.json', 'test_runs/mushrooms_runs.json')
-        self._run_interaction_tests('test_flows/registration.json', 'test_runs/registration_runs.json')
-        self._run_interaction_tests('test_flows/date_testing.json', 'test_runs/date_testing_runs.json')
+        self._run_interaction_tests('test_flows/mushrooms.json', 'test_runs/mushrooms.runs.json')
+        self._run_interaction_tests('test_flows/registration.json', 'test_runs/registration.runs.json')
+        self._run_interaction_tests('test_flows/birthdate-check.json', 'test_runs/birthdate-check.runs.json')
 
     def _run_interaction_tests(self, flow_file, interactions_file):
         print "Running interaction tests from %s" % interactions_file
@@ -524,12 +524,16 @@ class InteractionTest(BaseFlowsTest):
                 message = test.messages.pop(0)
                 self.assertEqual("input", message.type)
 
+                # print " > Resuming run with input: %s" % message.msg
+
                 runner.resume(run, Input(message.msg))
 
             for step in run.get_completed_steps():
                 for action in step.actions:
                     if isinstance(action, ReplyAction):
                         msg = action.msg.get_localized(run)
+
+                        # print " > Got reply: %s" % msg
 
                         if len(test.messages) > 0:
                             message = test.messages.pop(0)
@@ -1195,7 +1199,7 @@ class TestsTest(BaseFlowsTest):
         test = HasDateTest()
 
         self.assertTest(test, "December 14, 1992", True, "December 14, 1992", datetime.date(1992, 12, 14))
-        self.assertTest(test, "sometime on 24/8/15", True, "24/8/15", datetime.date(2015, 8, 24))
+        self.assertTest(test, "sometime on 24/8/15", True, "sometime on 24/8/15", datetime.date(2015, 8, 24))
 
         self.assertTest(test, "no date in this text", False, None)
 
@@ -1206,7 +1210,7 @@ class TestsTest(BaseFlowsTest):
         test = DateEqualTest("24/8/2015")
 
         self.assertTest(test, "23-8-15", False, None)
-        self.assertTest(test, "it was Aug 24, 2015", True, "Aug 24, 2015", datetime.date(2015, 8, 24))
+        self.assertTest(test, "it was Aug 24, 2015", True, "it was Aug 24, 2015", datetime.date(2015, 8, 24))
         self.assertTest(test, "25th Aug '15", False, None)
 
         # date can be an expression
@@ -1214,7 +1218,7 @@ class TestsTest(BaseFlowsTest):
         test = DateEqualTest("@(dob)")
 
         self.assertTest(test, "23-8-15", False, None)
-        self.assertTest(test, "it was Aug 24, 2015", True, "Aug 24, 2015", datetime.date(2015, 8, 24))
+        self.assertTest(test, "it was Aug 24, 2015", True, "it was Aug 24, 2015", datetime.date(2015, 8, 24))
         self.assertTest(test, "25th Aug '15", False, None)
 
     def test_date_after_test(self):
@@ -1224,7 +1228,7 @@ class TestsTest(BaseFlowsTest):
         test = DateAfterTest("24/8/2015")
 
         self.assertTest(test, "23-8-15", False, None)
-        self.assertTest(test, "it was Aug 24, 2015", True, "Aug 24, 2015", datetime.date(2015, 8, 24))
+        self.assertTest(test, "it was Aug 24, 2015", True, "it was Aug 24, 2015", datetime.date(2015, 8, 24))
         self.assertTest(test, "25th Aug '15", True, "25th Aug '15", datetime.date(2015, 8, 25))
 
         # date can be an expression
@@ -1232,7 +1236,7 @@ class TestsTest(BaseFlowsTest):
         test = DateAfterTest("@(dob)")
 
         self.assertTest(test, "23-8-15", False, None)
-        self.assertTest(test, "it was Aug 24, 2015", True, "Aug 24, 2015", datetime.date(2015, 8, 24))
+        self.assertTest(test, "it was Aug 24, 2015", True, "it was Aug 24, 2015", datetime.date(2015, 8, 24))
         self.assertTest(test, "25th Aug '15", True, "25th Aug '15", datetime.date(2015, 8, 25))
 
     def test_date_before_test(self):
@@ -1242,7 +1246,7 @@ class TestsTest(BaseFlowsTest):
         test = DateBeforeTest("24/8/2015")
 
         self.assertTest(test, "23-8-15", True, "23-8-15", datetime.date(2015, 8, 23))
-        self.assertTest(test, "it was Aug 24, 2015", True, "Aug 24, 2015", datetime.date(2015, 8, 24))
+        self.assertTest(test, "it was Aug 24, 2015", True, "it was Aug 24, 2015", datetime.date(2015, 8, 24))
         self.assertTest(test, "25th Aug '15", False, None)
 
         # date can be an expression
@@ -1250,7 +1254,7 @@ class TestsTest(BaseFlowsTest):
         test = DateBeforeTest("@(dob)")
 
         self.assertTest(test, "23-8-15", True, "23-8-15", datetime.date(2015, 8, 23))
-        self.assertTest(test, "it was Aug 24, 2015", True, "Aug 24, 2015", datetime.date(2015, 8, 24))
+        self.assertTest(test, "it was Aug 24, 2015", True, "it was Aug 24, 2015", datetime.date(2015, 8, 24))
         self.assertTest(test, "25th Aug '15", False, None)
 
     def test_has_phone_test(self):

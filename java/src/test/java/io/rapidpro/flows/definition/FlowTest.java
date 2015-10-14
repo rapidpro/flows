@@ -87,11 +87,11 @@ public class FlowTest extends BaseFlowsTest {
 
     @Test(expected = FlowParseException.class)
     public void fromJson_withMissingSpecVersion() throws Exception {
-        Flow.fromJson(readResource("test_flows/missing_version.json"));
+        Flow.fromJson(readResource("test_flows/missing-version.json"));
     }
 
     @Test(expected = FlowParseException.class)
     public void fromJson_withUnsupportedSpecVersion() throws Exception {
-        Flow.fromJson(readResource("test_flows/unsupported_version.json"));
+        Flow.fromJson(readResource("test_flows/unsupported-version.json"));
     }
 }

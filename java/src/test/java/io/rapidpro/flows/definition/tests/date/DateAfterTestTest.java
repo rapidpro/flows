@@ -23,7 +23,7 @@ public class DateAfterTestTest extends BaseTestTest {
         DateAfterTest test = new DateAfterTest("24/8/2015");
 
         assertTest(test, "23-8-15", false, null);
-        assertTest(test, "it was Aug 24, 2015", true, "Aug 24, 2015", LocalDate.of(2015, 8, 24));
+        assertTest(test, "it was Aug 24, 2015", true, "it was Aug 24, 2015", LocalDate.of(2015, 8, 24));
         assertTest(test, "25th Aug '15", true, "25th Aug '15", LocalDate.of(2015, 8, 25));
 
         // date can be an expression
@@ -31,7 +31,7 @@ public class DateAfterTestTest extends BaseTestTest {
         test = new DateAfterTest("@(dob)");
 
         assertTest(test, "23-8-15", false, null);
-        assertTest(test, "it was Aug 24, 2015", true, "Aug 24, 2015", LocalDate.of(2015, 8, 24));
+        assertTest(test, "it was Aug 24, 2015", true, "it was Aug 24, 2015", LocalDate.of(2015, 8, 24));
         assertTest(test, "25th Aug '15", true, "25th Aug '15", LocalDate.of(2015, 8, 25));
     }
 }
