@@ -1,16 +1,15 @@
 {
-  "uuid": "1578e7cf-222b-45d1-b46f-cc8a3c7132c4",
-  "archived": false,
-  "expires": 10080,
-  "name": "Unsupported Version",
-  "created_on": "2015-08-24T07:33:25.421Z",
-  "definition": {
     "base_language": "eng",
     "action_sets": [],
-    "last_saved": "2015-09-21T11:04:36.449619Z",
+    "flow_type": "F",
     "entry": null,
     "rule_sets": [],
-    "metadata": {}
-  },
-  "flow_type": "F"
+    "metadata": {
+        "uuid": "1578e7cf-222b-45d1-b46f-cc8a3c7132c4",
+        "expires": 10080,
+        "name": "Empty",
+        "revision": 2,
+        "id": 17629,
+        "saved_on": "2015-10-14T08:43:22.108103Z"
+    }
 }

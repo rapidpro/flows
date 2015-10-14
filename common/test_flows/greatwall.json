@@ -1,143 +1,142 @@
 {
-  "version": 7,
-  "flow_type": "F",
-  "base_language": "eng",
-  "action_sets": [
-    {
-      "y": 0,
-      "x": 100,
-      "destination": "b7cfa0ac-4d50-4384-a1ab-9ec79bd45e42",
-      "uuid": "8dbb7e1a-43d6-4c5b-a99d-fe3ee8923b65",
-      "actions": [
+    "base_language": "eng",
+    "action_sets": [
         {
-          "msg": {
-            "eng": "How many people are you?"
-          },
-          "type": "reply"
-        }
-      ]
-    },
-    {
-      "y": 46,
-      "x": 439,
-      "destination": "b7cfa0ac-4d50-4384-a1ab-9ec79bd45e42",
-      "uuid": "c81af400-a744-499a-9ad5-c90e233e4b92",
-      "actions": [
-        {
-          "msg": {
-            "eng": "Please choose a number between 1 and 8"
-          },
-          "type": "reply"
-        }
-      ]
-    },
-    {
-      "y": 373,
-      "x": 120,
-      "destination": null,
-      "uuid": "471da3b9-6114-4600-8a1d-a5280153a758",
-      "actions": [
-        {
-          "msg": {
-            "eng": "Would you prefer Hot & Sour or Egg & Tomato soup?"
-          },
-          "type": "reply"
-        }
-      ]
-    }
-  ],
-  "rule_sets": [
-    {
-      "uuid": "b7cfa0ac-4d50-4384-a1ab-9ec79bd45e42",
-      "webhook_action": null,
-      "rules": [
-        {
-          "test": {
-            "max": "8",
-            "type": "between",
-            "min": "1"
-          },
-          "category": {
-            "base": "1 - 8",
-            "eng": "1 - 8"
-          },
-          "destination": "fe5ec555-ed5b-4b29-934d-c593f52c5881",
-          "uuid": "38277179-bef0-4dff-ba09-4471cbe6d13a",
-          "destination_type": "R"
+            "y": 0,
+            "x": 100,
+            "destination": "b7cfa0ac-4d50-4384-a1ab-9ec79bd45e42",
+            "uuid": "8dbb7e1a-43d6-4c5b-a99d-fe3ee8923b65",
+            "actions": [
+                {
+                    "msg": {
+                        "eng": "How many people are you?"
+                    },
+                    "type": "reply"
+                }
+            ]
         },
         {
-          "category": {
-            "base": "All Responses",
-            "eng": "Other"
-          },
-          "test": {
-            "test": "true",
-            "type": "true"
-          },
-          "destination": "c81af400-a744-499a-9ad5-c90e233e4b92",
-          "uuid": "7987f891-0783-46a2-82c6-8e61e8ca6e93",
-          "destination_type": "A"
-        }
-      ],
-      "webhook": null,
-      "ruleset_type": "wait_message",
-      "label": "People",
-      "operand": "@step.value",
-      "finished_key": null,
-      "response_type": "",
-      "y": 136,
-      "x": 134,
-      "config": {}
-    },
-    {
-      "uuid": "fe5ec555-ed5b-4b29-934d-c593f52c5881",
-      "webhook_action": null,
-      "rules": [
-        {
-          "test": {
-            "test": "2",
-            "base": "2",
-            "type": "gt"
-          },
-          "category": {
-            "base": "> 2",
-            "eng": "> 2"
-          },
-          "destination": "471da3b9-6114-4600-8a1d-a5280153a758",
-          "uuid": "0ff6ac17-9520-4bcb-8130-e00f416fcf45",
-          "destination_type": "A"
+            "y": 46,
+            "x": 439,
+            "destination": "b7cfa0ac-4d50-4384-a1ab-9ec79bd45e42",
+            "uuid": "c81af400-a744-499a-9ad5-c90e233e4b92",
+            "actions": [
+                {
+                    "msg": {
+                        "eng": "Please choose a number between 1 and 8"
+                    },
+                    "type": "reply"
+                }
+            ]
         },
         {
-          "test": {
-            "test": "true",
-            "type": "true"
-          },
-          "category": {
-            "base": "Other",
-            "eng": "Other"
-          },
-          "uuid": "64a703a8-358b-4dce-827b-f289b28a5c5f"
+            "y": 373,
+            "x": 120,
+            "destination": null,
+            "uuid": "471da3b9-6114-4600-8a1d-a5280153a758",
+            "actions": [
+                {
+                    "msg": {
+                        "eng": "Would you prefer Hot & Sour or Egg & Tomato soup?"
+                    },
+                    "type": "reply"
+                }
+            ]
         }
-      ],
-      "webhook": null,
-      "ruleset_type": "expression",
-      "label": "Enough For Soup",
-      "operand": "@flow.people.text",
-      "finished_key": null,
-      "response_type": "",
-      "y": 257,
-      "x": 126,
-      "config": {}
+    ],
+    "version": 7,
+    "flow_type": "F",
+    "entry": "8dbb7e1a-43d6-4c5b-a99d-fe3ee8923b65",
+    "rule_sets": [
+        {
+            "uuid": "b7cfa0ac-4d50-4384-a1ab-9ec79bd45e42",
+            "webhook_action": null,
+            "rules": [
+                {
+                    "test": {
+                        "max": "8",
+                        "type": "between",
+                        "min": "1"
+                    },
+                    "category": {
+                        "base": "1 - 8",
+                        "eng": "1 - 8"
+                    },
+                    "destination": "fe5ec555-ed5b-4b29-934d-c593f52c5881",
+                    "uuid": "38277179-bef0-4dff-ba09-4471cbe6d13a",
+                    "destination_type": "R"
+                },
+                {
+                    "category": {
+                        "base": "All Responses",
+                        "eng": "Other"
+                    },
+                    "test": {
+                        "test": "true",
+                        "type": "true"
+                    },
+                    "destination": "c81af400-a744-499a-9ad5-c90e233e4b92",
+                    "uuid": "7987f891-0783-46a2-82c6-8e61e8ca6e93",
+                    "destination_type": "A"
+                }
+            ],
+            "webhook": null,
+            "ruleset_type": "wait_message",
+            "label": "People",
+            "operand": "@step.value",
+            "finished_key": null,
+            "response_type": "",
+            "y": 136,
+            "x": 134,
+            "config": {}
+        },
+        {
+            "uuid": "fe5ec555-ed5b-4b29-934d-c593f52c5881",
+            "webhook_action": null,
+            "rules": [
+                {
+                    "test": {
+                        "test": "2",
+                        "base": "2",
+                        "type": "gt"
+                    },
+                    "category": {
+                        "base": "> 2",
+                        "eng": "> 2"
+                    },
+                    "destination": "471da3b9-6114-4600-8a1d-a5280153a758",
+                    "uuid": "0ff6ac17-9520-4bcb-8130-e00f416fcf45",
+                    "destination_type": "A"
+                },
+                {
+                    "test": {
+                        "test": "true",
+                        "type": "true"
+                    },
+                    "category": {
+                        "base": "Other",
+                        "eng": "Other"
+                    },
+                    "uuid": "64a703a8-358b-4dce-827b-f289b28a5c5f"
+                }
+            ],
+            "webhook": null,
+            "ruleset_type": "expression",
+            "label": "Enough For Soup",
+            "operand": "@flow.people.text",
+            "finished_key": null,
+            "response_type": "",
+            "y": 257,
+            "x": 126,
+            "config": {}
+        }
+    ],
+    "metadata": {
+        "uuid": "3e486456-c551-44cf-b149-d9643b1109e8",
+        "expires": 10080,
+        "name": "Greatwall",
+        "revision": 5,
+        "id": 17607,
+        "saved_on": "2015-10-14T08:45:21.064495Z"
     }
-  ],
-  "entry": "8dbb7e1a-43d6-4c5b-a99d-fe3ee8923b65",
-  "metadata": {
-    "uuid": "3e486456-c551-44cf-b149-d9643b1109e8",
-    "revision": 4,
-    "archived": false,
-    "expires": 10080,
-    "name": "Greatwall",
-    "created_on": "2015-08-20T07:47:49.885Z",
-    "last_saved": "2015-09-21T11:04:36.732757Z"
-  }
 }

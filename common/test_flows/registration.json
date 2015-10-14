@@ -1,1444 +1,1443 @@
 {
-  "version": 7,
-  "flow_type": "F",
-  "base_language": "eng",
-  "action_sets": [
-    {
-      "y": 37,
-      "x": 111,
-      "destination": "46c61e28-d4bd-4af4-89e5-ed8884e45904",
-      "uuid": "76e71f2a-f15a-405d-b81f-36e847d3f09b",
-      "actions": [
+    "base_language": "eng",
+    "action_sets": [
         {
-          "msg": {
-            "eng": "Welcome to U-report! Please type A for ENGLISH; B for PIDGIN; C for HAUSA; D for Yoruba and E for Igbo"
-          },
-          "type": "reply"
+            "y": 37,
+            "x": 111,
+            "destination": "46c61e28-d4bd-4af4-89e5-ed8884e45904",
+            "uuid": "76e71f2a-f15a-405d-b81f-36e847d3f09b",
+            "actions": [
+                {
+                    "msg": {
+                        "eng": "Welcome to U-report! Please type A for ENGLISH; B for PIDGIN; C for HAUSA; D for Yoruba and E for Igbo"
+                    },
+                    "type": "reply"
+                },
+                {
+                    "field": "registration_date",
+                    "type": "save",
+                    "value": "@date.now ",
+                    "label": "Registration Date"
+                },
+                {
+                    "type": "add_group",
+                    "groups": [
+                        {
+                            "name": "No Occupation",
+                            "id": 22
+                        }
+                    ]
+                },
+                {
+                    "type": "add_group",
+                    "groups": [
+                        {
+                            "name": "Ureport No State",
+                            "id": 25
+                        }
+                    ]
+                },
+                {
+                    "type": "add_group",
+                    "groups": [
+                        {
+                            "name": "UReport No Gender",
+                            "id": 127
+                        }
+                    ]
+                },
+                {
+                    "type": "add_group",
+                    "groups": [
+                        {
+                            "name": "UReport No Age",
+                            "id": 128
+                        }
+                    ]
+                },
+                {
+                    "type": "add_group",
+                    "groups": [
+                        {
+                            "name": "UReporters",
+                            "id": 8
+                        }
+                    ]
+                },
+                {
+                    "type": "add_group",
+                    "groups": [
+                        {
+                            "name": "UReport No Language",
+                            "id": 10049
+                        }
+                    ]
+                }
+            ]
         },
         {
-          "field": "registration_date",
-          "type": "save",
-          "value": "@date.now ",
-          "label": "Registration Date"
+            "y": 1259,
+            "x": 665,
+            "destination": "ec045f06-d92d-425a-9992-da1140309c0d",
+            "uuid": "1f13bb42-815c-4fe5-a4ea-1bd2590e828d",
+            "actions": [
+                {
+                    "field": "name",
+                    "type": "save",
+                    "value": "@flow.name ",
+                    "label": "Contact Name"
+                },
+                {
+                    "msg": {
+                        "cpe": "Ok, I don get UR NAME as @contact.name . If dis one no correct, reply with \"undo\", If no be so, reply with the YEAR wey dem born U.",
+                        "hau": "Yauwa, na samu sunanka kamar haka \u201c@contact.name\u201d  Idan ba dai dai bane, sai ka soke, idan ba haka ba sai ka amsa da shekarar haihuwarka.",
+                        "eng": "Ok, I have your NAME as \"@contact.name\". If this is not right, reply with \"undo\", otherwise reply with what YEAR were you born."
+                    },
+                    "type": "reply"
+                }
+            ]
         },
         {
-          "type": "add_group",
-          "groups": [
-            {
-              "name": "No Occupation",
-              "id": 22
-            }
-          ]
+            "y": 1352,
+            "x": 1064,
+            "destination": "ec045f06-d92d-425a-9992-da1140309c0d",
+            "uuid": "10c7dd41-ff8f-4f60-91de-a529e022e3cc",
+            "actions": [
+                {
+                    "msg": {
+                        "cpe": "Abeg no vex, that YEAR no kajad.  abeg reply with number like 1979",
+                        "hau": "Yi hakuri, an gaza fahimtar shekarar da ka bayar. Yi amfani da alkalumma ga amsarka, kamar haka 1979.",
+                        "eng": "Sorry, that YEAR is not recognized. please respond with a number like 1979"
+                    },
+                    "type": "reply"
+                }
+            ]
         },
         {
-          "type": "add_group",
-          "groups": [
-            {
-              "name": "Ureport No State",
-              "id": 25
-            }
-          ]
+            "y": 1577,
+            "x": 1130,
+            "destination": "b8aad8eb-6388-4fb7-91d1-4653c760420b",
+            "uuid": "9f2b9449-031d-4295-9962-4e5fe60f6e96",
+            "actions": [
+                {
+                    "msg": {
+                        "cpe": "Na beta tin to get we area pipu wey sabi for inside U-report. You na MAN abi WOMAN? Reply with M for Man abi F for Woman.",
+                        "hau": "Dakyau da muka samu membobi daga cikin al\u2019ummarmu a U-Report. Wane jinsi ne kai? Amsa da M idan kai namiji ne, ko F idan ke mace ce.",
+                        "eng": "Great to have some experienced members of our community on U-report. What GENDER are you? Please reply with M for Male or F for Female. "
+                    },
+                    "type": "reply"
+                },
+                {
+                    "type": "add_group",
+                    "groups": [
+                        {
+                            "name": "UReport Adults",
+                            "id": 10
+                        }
+                    ]
+                },
+                {
+                    "field": "born",
+                    "type": "save",
+                    "value": "@flow.born ",
+                    "label": "Born"
+                },
+                {
+                    "type": "del_group",
+                    "groups": [
+                        {
+                            "name": "UReport No Age",
+                            "id": 128
+                        }
+                    ]
+                }
+            ]
         },
         {
-          "type": "add_group",
-          "groups": [
-            {
-              "name": "UReport No Gender",
-              "id": 127
-            }
-          ]
+            "y": 1669,
+            "x": 87,
+            "destination": "b8aad8eb-6388-4fb7-91d1-4653c760420b",
+            "uuid": "885d50ba-98bd-413e-bf77-2938fd3a2b20",
+            "actions": [
+                {
+                    "msg": {
+                        "cpe": "Na so, we go like hear  from our youth. Youths na dem be we future. You na Man abi Woman? Reply with M for Man abi F for Woman.",
+                        "hau": "Da kyau, muna jiran muji daga  matasanmu. Matasa sune makomarmu. Wane jinsi ne kai? Amsa da M idan kai namiji ne, ko F idan ke mace ce.",
+                        "eng": "Great, we are looking forward to hearing from our youth. Youth are our future. What GENDER are you? Reply with M for Male or F for Female."
+                    },
+                    "type": "reply"
+                },
+                {
+                    "type": "add_group",
+                    "groups": [
+                        {
+                            "name": "UReport Youth",
+                            "id": 9
+                        }
+                    ]
+                },
+                {
+                    "field": "born",
+                    "type": "save",
+                    "value": "@flow.born ",
+                    "label": "Born"
+                },
+                {
+                    "type": "del_group",
+                    "groups": [
+                        {
+                            "name": "UReport No Age",
+                            "id": 128
+                        }
+                    ]
+                }
+            ]
         },
         {
-          "type": "add_group",
-          "groups": [
-            {
-              "name": "UReport No Age",
-              "id": 128
-            }
-          ]
+            "y": 2634,
+            "x": 124,
+            "destination": "74571e5a-de69-4f5a-a613-58ecf4093bcd",
+            "uuid": "edccfae0-a9b5-4743-98c4-7e13a6f2799b",
+            "actions": [
+                {
+                    "msg": {
+                        "cpe": "Na wish LGA you go dey report from?",
+                        "hau": "Daga wace karamar hukuma ce zaka rinka bada rahoton?",
+                        "eng": "From which LGA will you be reporting from?"
+                    },
+                    "type": "reply"
+                },
+                {
+                    "type": "del_group",
+                    "groups": [
+                        {
+                            "name": "Ureport No State",
+                            "id": 25
+                        }
+                    ]
+                },
+                {
+                    "field": "state",
+                    "type": "save",
+                    "value": "@flow.state ",
+                    "label": "State"
+                }
+            ]
         },
         {
-          "type": "add_group",
-          "groups": [
-            {
-              "name": "UReporters",
-              "id": 8
-            }
-          ]
+            "y": 3009,
+            "x": 195,
+            "destination": "0c56fb61-b304-4470-84dd-c368cc60b25e",
+            "uuid": "e4831c4f-bdb8-4697-b79d-78bb1ee61e1d",
+            "actions": [
+                {
+                    "msg": {
+                        "cpe": "Wedon, you don almost finish to register. Na wish WARD you dey stay now?",
+                        "hau": "Da kayu, saura kadan ka kammala rijistar ka. Wace unguwa kake da zama?",
+                        "eng": "Welldon you are almost fully registered. What WARD are U living in? "
+                    },
+                    "type": "reply"
+                },
+                {
+                    "field": "lga",
+                    "type": "save",
+                    "value": "@flow.lga ",
+                    "label": "LGA"
+                }
+            ]
         },
         {
-          "type": "add_group",
-          "groups": [
-            {
-              "name": "UReport No Language",
-              "id": 10049
-            }
-          ]
+            "y": 3278,
+            "x": 225,
+            "destination": "08ec335c-d96d-47d5-9f5d-3add33b175a7",
+            "uuid": "213ebc6c-8bf9-4eee-b935-01c863882a33",
+            "actions": [
+                {
+                    "msg": {
+                        "cpe": "Wedon! you don almost reach there! Na wish area you dey stay now. If you no dey sure abeg reply with your ward.",
+                        "hau": "A gaishe ka! Saura kadan ya rage! A wani layi ne kake da zama a halin yanzu? Idan baka da tabbas, yi amfani da unguwarka.",
+                        "eng": "Thumbs up! You are almost there! What SETTLMENT are U currently living in. If you are not sure please reply with your Ward. "
+                    },
+                    "type": "reply"
+                },
+                {
+                    "field": "ward",
+                    "type": "save",
+                    "value": "@flow.ward ",
+                    "label": "Ward"
+                }
+            ]
+        },
+        {
+            "y": 1337,
+            "x": 43,
+            "destination": null,
+            "uuid": "917f4a1a-23fe-492c-818c-9b2a11eecac8",
+            "actions": [
+                {
+                    "type": "del_group",
+                    "groups": [
+                        {
+                            "name": "UReporters",
+                            "id": 8
+                        },
+                        {
+                            "name": "No Occupation",
+                            "id": 22
+                        },
+                        {
+                            "name": "Ureport No State",
+                            "id": 25
+                        },
+                        {
+                            "name": "UReport No Age",
+                            "id": 128
+                        },
+                        {
+                            "name": "UReport English",
+                            "id": 27
+                        },
+                        {
+                            "name": "UReport No Gender",
+                            "id": 127
+                        }
+                    ]
+                },
+                {
+                    "msg": {
+                        "cpe": "Abeg no vex, your age never reach to take join U-Report",
+                        "hau": "Yi hakuri, ka yi kankantar shiga cikin U-Report ba.",
+                        "eng": "Sorry, you are too young to join U-Report"
+                    },
+                    "type": "reply"
+                }
+            ]
+        },
+        {
+            "y": 1900,
+            "x": 777,
+            "destination": "b8aad8eb-6388-4fb7-91d1-4653c760420b",
+            "uuid": "8bd9487f-48a9-474e-8ce3-31c1bdf3b5d0",
+            "actions": [
+                {
+                    "msg": {
+                        "cpe": "Abeg no vex we no understand wetin you yarn. Abeg reply with Man abi Woman.",
+                        "hau": "Yi hakuri, ba;a fahimci amsar da ka bayar ba. Ka amsa da Namiji ko Mace.",
+                        "eng": "Sorry that response is not understood. Please respond with Male or Female."
+                    },
+                    "type": "reply"
+                }
+            ]
+        },
+        {
+            "y": 2180,
+            "x": 75,
+            "destination": "3fb4bfaa-a856-4253-9768-4ef8dc295164",
+            "uuid": "f59b766d-52e5-45a2-b95f-de3c1a28a5aa",
+            "actions": [
+                {
+                    "msg": {
+                        "cpe": "Nice one, we need leaders like Una for inside U-report. Na for wish STATE U dey stay  now?",
+                        "hau": "Yayi kyau, muna bukatar shugabanni kamarku a U-Report. Wace jiha kike zama a halin yanzu?",
+                        "eng": "Excellent, we need leaders like U on U-report. What STATE are U living in currently? "
+                    },
+                    "type": "reply"
+                },
+                {
+                    "type": "add_group",
+                    "groups": [
+                        {
+                            "name": "UReport Males",
+                            "id": 23
+                        }
+                    ]
+                },
+                {
+                    "field": "gender",
+                    "type": "save",
+                    "value": "@flow.gender.category ",
+                    "label": "Gender"
+                },
+                {
+                    "type": "del_group",
+                    "groups": [
+                        {
+                            "name": "UReport No Gender",
+                            "id": 127
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "y": 4539,
+            "x": 142,
+            "destination": null,
+            "uuid": "69852180-a6b6-40f0-89f0-90830f90dc3b",
+            "actions": [
+                {
+                    "msg": {
+                        "cpe": "Congratulate, U go fit  tok Ur mind and you fit hear wetin other people get to yarn. Abeg ginger your friends to come join. Ur voice mata!! http://nigeria.ureport.in",
+                        "hau": "Muna taya ka murna, zaka iya bayyana ra\u2019ayinka, ka kuma samu amsa. Don haka baiwa abokan ka kwarin guiwa su shiga cikin Muryarka na da tasiri!! Idan aka shiga shafin yanar gizo  a  http://nigeria.ureport.in",
+                        "eng": "Congratulations,U will be able to share Ur views and get feedback. Please encourage your friends to sign up. Ur voice matters!! http://nigeria.ureport.in"
+                    },
+                    "type": "reply"
+                },
+                {
+                    "field": "occupation",
+                    "type": "save",
+                    "value": "@flow.occupation.category ",
+                    "label": "Occupation"
+                },
+                {
+                    "type": "del_group",
+                    "groups": [
+                        {
+                            "name": "No Occupation",
+                            "id": 22
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "y": 3649,
+            "x": 422,
+            "destination": "944078e8-c226-416a-84cd-d4b390657360",
+            "uuid": "0b70684b-adcd-403c-833b-736c5f0f2c0f",
+            "actions": [
+                {
+                    "msg": {
+                        "hau": "Menene SANA\u2019ARKA, zabi daya  (a)Kiwon lafiya (b) Ilimi        (c) Kasuwanci  (d) Dogaro da kai (e) Dalibi (f)Aikin kayan sarki  (g) Aikin gona (h) Kula da jin dadin jama\u2019a (i) Saura j)Yiwa kasa hidima",
+                        "cpe": "Wish kain work you dey do, choose one: a) Body mata b) Education c) Business d) I dey do my own work e) Student f) Uniform Service g) Agriculture h) Social Worker i) Other works j) Corpers",
+                        "eng": "What is Ur OCCUPATION, choose one: a)Health b)Education c)Business d)Self Employed e)Student f)Uniformed Service g)Agriculture h)Social Worker i)Other j)Corpers"
+                    },
+                    "type": "reply"
+                },
+                {
+                    "field": "settlement",
+                    "type": "save",
+                    "value": "@flow.settlement ",
+                    "label": "Settlement"
+                }
+            ]
+        },
+        {
+            "y": 4176,
+            "x": 1311,
+            "destination": "0dad8d42-0853-462b-bce7-7dfa46b35eef",
+            "uuid": "b816c6ef-fe02-4ce3-a70b-163f52d61251",
+            "actions": [
+                {
+                    "msg": {
+                        "cpe": "Abeg wish kain wok you dey do abi you fit say none if you never begin wok.",
+                        "eng": "Please specify what kind of work you do or say 'none' if U are not employed"
+                    },
+                    "type": "reply"
+                }
+            ]
+        },
+        {
+            "y": 2161,
+            "x": 1036,
+            "destination": "3fb4bfaa-a856-4253-9768-4ef8dc295164",
+            "uuid": "b61771c8-d1f3-4a8d-9970-30639cbfc206",
+            "actions": [
+                {
+                    "msg": {
+                        "cpe": "Nice one, U-report need women like Una wey dey make tins happen. Na for wish STATE U dey stay now?",
+                        "hau": "U-Report mai gamsarwa yana bukatar mace kamar ki mai kazar kazar. Wace JIHA kike zama a halin yanzu?",
+                        "eng": "Fabulous U-report needs women like U who make the world go round. What STATE are U living in currently?"
+                    },
+                    "type": "reply"
+                },
+                {
+                    "type": "add_group",
+                    "groups": [
+                        {
+                            "name": "UReport Females",
+                            "id": 24
+                        }
+                    ]
+                },
+                {
+                    "field": "gender",
+                    "type": "save",
+                    "value": "@flow.gender.category ",
+                    "label": "Gender"
+                },
+                {
+                    "type": "del_group",
+                    "groups": [
+                        {
+                            "name": "UReport No Gender",
+                            "id": 127
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "y": 1267,
+            "x": 346,
+            "destination": "9fca130c-eba5-4445-8ab9-88c60f55690b",
+            "uuid": "6d850a6e-a54d-48d0-a449-e370046341e7",
+            "actions": [
+                {
+                    "msg": {
+                        "cpe": "Abeg no vex, I miss am. No vex just reply am with your name. For example: \"Thomas\"",
+                        "hau": "Yi hakuri, ban fahimce ka ba. Yauwa, sai ka amsa da sunan kawai. Misali \u201cThomas\u201d",
+                        "eng": "Sorry I got that wrong. Ok, please reply with just your name. For example: \"Thomas\""
+                    },
+                    "type": "reply"
+                }
+            ]
+        },
+        {
+            "y": 2586,
+            "x": 746,
+            "destination": "3fb4bfaa-a856-4253-9768-4ef8dc295164",
+            "uuid": "6fda4992-375d-49bc-8140-f79dad663ace",
+            "actions": [
+                {
+                    "msg": {
+                        "cpe": "Abeg no vex, we no sabi dat state, abeg reply with the Nigeria state wey you \ndey stay now.",
+                        "hau": "Yi hakuri, bamu fahimci wannan jihar ba. Amsa da sunan jihar dake Nijeriya inda kake zama a halin yanzu.",
+                        "eng": "Sorry, we don't recognize that state, please respond with the Nigerian state you currently live in."
+                    },
+                    "type": "reply"
+                }
+            ]
+        },
+        {
+            "y": 2813,
+            "x": 893,
+            "destination": "74571e5a-de69-4f5a-a613-58ecf4093bcd",
+            "uuid": "70564e92-7c21-4b99-9547-42e2f8aa0fb9",
+            "actions": [
+                {
+                    "msg": {
+                        "cpe": "Abeg no vex, we no sabi that LGA, abeg reply with the LGA wey you dey stay now for inside @flow.state",
+                        "hau": "Yi hakuri, bamu  gane wannan karamar hukumar ba, amsa da karamar hukumar da kake zama a halin yanzu.",
+                        "eng": "Sorry, we don't recognize that LGA, please respond with the LGA in @flow.state you currently live in."
+                    },
+                    "type": "reply"
+                }
+            ]
+        },
+        {
+            "y": 4492,
+            "x": 975,
+            "destination": null,
+            "uuid": "2bd90e1c-34ad-4206-9505-eb0b93bd6f35",
+            "actions": [
+                {
+                    "msg": {
+                        "cpe": "Congratulate, U go fit  tok Ur mind and you fit hear wetin other people get to yarn. Abeg ginger your friends to come join. Ur voice mata!! http://nigeria.ureport.in",
+                        "hau": "Muna taya ka murna, zaka iya bayyana ra\u2019ayinka, ka kuma samu amsa. Don haka baiwa abokan ka kwarin guiwa su shiga cikin Muryarka na da tasiri!! Idan aka shiga shafin yanar gizo  a  http://nigeria.ureport.in",
+                        "eng": "Congratulations,U will be able to share Ur views and get feedback. Please encourage your friends to sign up. Ur voice matters!! http://nigeria.ureport.in"
+                    },
+                    "type": "reply"
+                },
+                {
+                    "type": "add_group",
+                    "groups": [
+                        {
+                            "name": "Corpers",
+                            "id": 697
+                        }
+                    ]
+                },
+                {
+                    "field": "occupation",
+                    "type": "save",
+                    "value": "@flow.occupation.category",
+                    "label": "Occupation"
+                },
+                {
+                    "type": "del_group",
+                    "groups": [
+                        {
+                            "name": "No Occupation",
+                            "id": 22
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "y": 3910,
+            "x": 1356,
+            "destination": "944078e8-c226-416a-84cd-d4b390657360",
+            "uuid": "eb0210c0-10c7-4d14-9dcf-7b13b8b0b794",
+            "actions": [
+                {
+                    "msg": {
+                        "eng": "i didnt get that please choose one: a)Health b)Education c)Business d)Self Employed e)Student f)Uniformed Service g)Agriculture h)Social Worker i)Other j)Corpers"
+                    },
+                    "type": "reply"
+                }
+            ]
+        },
+        {
+            "y": 482,
+            "x": 976,
+            "destination": "46c61e28-d4bd-4af4-89e5-ed8884e45904",
+            "uuid": "dfd1b4e9-c2aa-43b6-9ee6-9efa7a4ef12e",
+            "actions": [
+                {
+                    "msg": {
+                        "eng": "Please select your language!\nA. English\nB. Pidgin\nC. Hausa\nD. Yoroba\nE. Igbo"
+                    },
+                    "type": "reply"
+                }
+            ]
+        },
+        {
+            "y": 835,
+            "x": 42,
+            "destination": "9fca130c-eba5-4445-8ab9-88c60f55690b",
+            "uuid": "8813f0d5-f8d0-4d95-9512-93b081cc4559",
+            "actions": [
+                {
+                    "lang": "eng",
+                    "type": "lang",
+                    "name": "English"
+                },
+                {
+                    "type": "add_group",
+                    "groups": [
+                        {
+                            "name": "UReport English",
+                            "id": 27
+                        }
+                    ]
+                },
+                {
+                    "type": "del_group",
+                    "groups": [
+                        {
+                            "name": "UReport No Language",
+                            "id": 10049
+                        }
+                    ]
+                },
+                {
+                    "msg": {
+                        "hau": "Ka bayar da amsa da SUNANKA  kokuma LAKABI, misali \u201cTolu ko \u201cTom\u201d ko \u201cAhmed\u201d Idan baka son bayyana sunanka kana iya yin amfani da haruffa ko lambobi. DUKKAN SAKONNI KYAUTA NE!",
+                        "cpe": "Abeg make you reply with Ur NAME abi GUYNAME, for example \"Tolu\" abi \"Tom\" abi \"Ahmed\".  If U no wan make people know who U be, U fit use any letter abi numbers. ALL THE MESSAGE NA FREE!",
+                        "eng": "Please reply with Ur NAME or NICKNAME,for example \"Tolu\" or \"Tom\" or \"Ahmed\".  If U want to remain anonymous use any letters or numbers ALL MESSAGES ARE FREE !"
+                    },
+                    "type": "reply"
+                }
+            ]
+        },
+        {
+            "y": 669,
+            "x": 337,
+            "destination": "9fca130c-eba5-4445-8ab9-88c60f55690b",
+            "uuid": "5ce6a2f5-8a00-42ec-a290-79751435a22a",
+            "actions": [
+                {
+                    "lang": "cpe",
+                    "type": "lang",
+                    "name": "Creoles and pidgins, English based"
+                },
+                {
+                    "type": "add_group",
+                    "groups": [
+                        {
+                            "name": "UReport Pidgin",
+                            "id": 9971
+                        }
+                    ]
+                },
+                {
+                    "type": "del_group",
+                    "groups": [
+                        {
+                            "name": "UReport No Language",
+                            "id": 10049
+                        }
+                    ]
+                },
+                {
+                    "msg": {
+                        "hau": "Ka bayar da amsa da SUNANKA  kokuma LAKABI, misali \u201cTolu ko \u201cTom\u201d ko \u201cAhmed\u201d Idan baka son bayyana sunanka kana iya yin amfani da haruffa ko lambobi. DUKKAN SAKONNI KYAUTA NE!",
+                        "cpe": "Abeg make you reply with Ur NAME abi GUYNAME, for example \"Tolu\" abi \"Tom\" abi \"Ahmed\".  If U no wan make people know who U be, U fit use any letter abi numbers. ALL THE MESSAGE NA FREE!",
+                        "eng": "Please reply with Ur NAME or NICKNAME,for example \"Tolu\" or \"Tom\" or \"Ahmed\".  If U want to remain anonymous use any letters or numbers ALL MESSAGES ARE FREE !"
+                    },
+                    "type": "reply"
+                }
+            ]
+        },
+        {
+            "y": 675,
+            "x": 620,
+            "destination": "9fca130c-eba5-4445-8ab9-88c60f55690b",
+            "uuid": "2925195e-1f77-418e-9fd3-a387a4b42ea8",
+            "actions": [
+                {
+                    "lang": "hau",
+                    "type": "lang",
+                    "name": "Hausa"
+                },
+                {
+                    "type": "add_group",
+                    "groups": [
+                        {
+                            "name": "UReport Hausa",
+                            "id": 9972
+                        }
+                    ]
+                },
+                {
+                    "type": "del_group",
+                    "groups": [
+                        {
+                            "name": "UReport No Language",
+                            "id": 10049
+                        }
+                    ]
+                },
+                {
+                    "msg": {
+                        "hau": "Ka bayar da amsa da SUNANKA  kokuma LAKABI, misali \u201cTolu ko \u201cTom\u201d ko \u201cAhmed\u201d Idan baka son bayyana sunanka kana iya yin amfani da haruffa ko lambobi. DUKKAN SAKONNI KYAUTA NE!",
+                        "cpe": "Abeg make you reply with Ur NAME abi GUYNAME, for example \"Tolu\" abi \"Tom\" abi \"Ahmed\".  If U no wan make people know who U be, U fit use any letter abi numbers. ALL THE MESSAGE NA FREE!",
+                        "eng": "Please reply with Ur NAME or NICKNAME,for example \"Tolu\" or \"Tom\" or \"Ahmed\".  If U want to remain anonymous use any letters or numbers ALL MESSAGES ARE FREE !"
+                    },
+                    "type": "reply"
+                }
+            ]
+        },
+        {
+            "y": 698,
+            "x": 887,
+            "destination": "9fca130c-eba5-4445-8ab9-88c60f55690b",
+            "uuid": "510e8533-e510-4e23-a715-b79014be724c",
+            "actions": [
+                {
+                    "lang": "yor",
+                    "type": "lang",
+                    "name": "Yoruba"
+                },
+                {
+                    "type": "add_group",
+                    "groups": [
+                        {
+                            "name": "UReport Yoroba",
+                            "id": 9973
+                        }
+                    ]
+                },
+                {
+                    "type": "del_group",
+                    "groups": [
+                        {
+                            "name": "UReport No Language",
+                            "id": 10049
+                        }
+                    ]
+                },
+                {
+                    "msg": {
+                        "hau": "Ka bayar da amsa da SUNANKA  kokuma LAKABI, misali \u201cTolu ko \u201cTom\u201d ko \u201cAhmed\u201d Idan baka son bayyana sunanka kana iya yin amfani da haruffa ko lambobi. DUKKAN SAKONNI KYAUTA NE!",
+                        "cpe": "Abeg make you reply with Ur NAME abi GUYNAME, for example \"Tolu\" abi \"Tom\" abi \"Ahmed\".  If U no wan make people know who U be, U fit use any letter abi numbers. ALL THE MESSAGE NA FREE!",
+                        "eng": "Please reply with Ur NAME or NICKNAME,for example \"Tolu\" or \"Tom\" or \"Ahmed\".  If U want to remain anonymous use any letters or numbers ALL MESSAGES ARE FREE !"
+                    },
+                    "type": "reply"
+                }
+            ]
+        },
+        {
+            "y": 794,
+            "x": 1115,
+            "destination": "9fca130c-eba5-4445-8ab9-88c60f55690b",
+            "uuid": "f9dd7875-a52e-4b93-a13b-a8e282690a37",
+            "actions": [
+                {
+                    "lang": "ibo",
+                    "type": "lang",
+                    "name": "Igbo"
+                },
+                {
+                    "type": "add_group",
+                    "groups": [
+                        {
+                            "name": "UReport Igbo",
+                            "id": 9974
+                        }
+                    ]
+                },
+                {
+                    "type": "del_group",
+                    "groups": [
+                        {
+                            "name": "UReport No Language",
+                            "id": 10049
+                        }
+                    ]
+                },
+                {
+                    "msg": {
+                        "hau": "Ka bayar da amsa da SUNANKA  kokuma LAKABI, misali \u201cTolu ko \u201cTom\u201d ko \u201cAhmed\u201d Idan baka son bayyana sunanka kana iya yin amfani da haruffa ko lambobi. DUKKAN SAKONNI KYAUTA NE!",
+                        "cpe": "Abeg make you reply with Ur NAME abi GUYNAME, for example \"Tolu\" abi \"Tom\" abi \"Ahmed\".  If U no wan make people know who U be, U fit use any letter abi numbers. ALL THE MESSAGE NA FREE!",
+                        "eng": "Please reply with Ur NAME or NICKNAME,for example \"Tolu\" or \"Tom\" or \"Ahmed\".  If U want to remain anonymous use any letters or numbers ALL MESSAGES ARE FREE !"
+                    },
+                    "type": "reply"
+                }
+            ]
         }
-      ]
-    },
-    {
-      "y": 1259,
-      "x": 665,
-      "destination": "ec045f06-d92d-425a-9992-da1140309c0d",
-      "uuid": "1f13bb42-815c-4fe5-a4ea-1bd2590e828d",
-      "actions": [
+    ],
+    "version": 7,
+    "flow_type": "F",
+    "entry": "76e71f2a-f15a-405d-b81f-36e847d3f09b",
+    "rule_sets": [
         {
-          "field": "name",
-          "type": "save",
-          "value": "@flow.name ",
-          "label": "Contact Name"
+            "uuid": "9fca130c-eba5-4445-8ab9-88c60f55690b",
+            "webhook_action": null,
+            "rules": [
+                {
+                    "test": {
+                        "type": "true"
+                    },
+                    "category": {
+                        "eng": "All Responses"
+                    },
+                    "destination": "1f13bb42-815c-4fe5-a4ea-1bd2590e828d",
+                    "uuid": "f3e017e0-5a7b-40b4-ada8-3ebfaaabfeb6",
+                    "destination_type": "A"
+                }
+            ],
+            "webhook": null,
+            "ruleset_type": "wait_message",
+            "label": "Name",
+            "operand": "@step.value",
+            "finished_key": null,
+            "response_type": "O",
+            "y": 1115,
+            "x": 622,
+            "config": {}
         },
         {
-          "msg": {
-            "eng": "Ok, I have your NAME as \"@contact.name\". If this is not right, reply with \"undo\", otherwise reply with what YEAR were you born.",
-            "hau": "Yauwa, na samu sunanka kamar haka \u201c@contact.name\u201d  Idan ba dai dai bane, sai ka soke, idan ba haka ba sai ka amsa da shekarar haihuwarka.",
-            "cpe": "Ok, I don get UR NAME as @contact.name . If dis one no correct, reply with \"undo\", If no be so, reply with the YEAR wey dem born U."
-          },
-          "type": "reply"
-        }
-      ]
-    },
-    {
-      "y": 1352,
-      "x": 1064,
-      "destination": "ec045f06-d92d-425a-9992-da1140309c0d",
-      "uuid": "10c7dd41-ff8f-4f60-91de-a529e022e3cc",
-      "actions": [
-        {
-          "msg": {
-            "eng": "Sorry, that YEAR is not recognized. please respond with a number like 1979",
-            "hau": "Yi hakuri, an gaza fahimtar shekarar da ka bayar. Yi amfani da alkalumma ga amsarka, kamar haka 1979.",
-            "cpe": "Abeg no vex, that YEAR no kajad.  abeg reply with number like 1979"
-          },
-          "type": "reply"
-        }
-      ]
-    },
-    {
-      "y": 1577,
-      "x": 1130,
-      "destination": "b8aad8eb-6388-4fb7-91d1-4653c760420b",
-      "uuid": "9f2b9449-031d-4295-9962-4e5fe60f6e96",
-      "actions": [
-        {
-          "msg": {
-            "eng": "Great to have some experienced members of our community on U-report. What GENDER are you? Please reply with M for Male or F for Female. ",
-            "hau": "Dakyau da muka samu membobi daga cikin al\u2019ummarmu a U-Report. Wane jinsi ne kai? Amsa da M idan kai namiji ne, ko F idan ke mace ce.",
-            "cpe": "Na beta tin to get we area pipu wey sabi for inside U-report. You na MAN abi WOMAN? Reply with M for Man abi F for Woman."
-          },
-          "type": "reply"
+            "uuid": "ec045f06-d92d-425a-9992-da1140309c0d",
+            "webhook_action": null,
+            "rules": [
+                {
+                    "test": {
+                        "test": {
+                            "eng": "undo"
+                        },
+                        "type": "contains_any"
+                    },
+                    "category": {
+                        "eng": "Undo"
+                    },
+                    "destination": "6d850a6e-a54d-48d0-a449-e370046341e7",
+                    "uuid": "9ac7db33-ece1-4b2d-8c2e-18e7764e668c",
+                    "destination_type": "A"
+                },
+                {
+                    "test": {
+                        "test": "2002",
+                        "type": "gt"
+                    },
+                    "category": {
+                        "eng": "> 2002"
+                    },
+                    "destination": "917f4a1a-23fe-492c-818c-9b2a11eecac8",
+                    "uuid": "623855f4-3cae-4b4e-818c-a160b3aaaf66",
+                    "destination_type": "A"
+                },
+                {
+                    "test": {
+                        "max": "2002",
+                        "type": "between",
+                        "min": "1996"
+                    },
+                    "category": {
+                        "eng": "1996 - 2002"
+                    },
+                    "destination": "885d50ba-98bd-413e-bf77-2938fd3a2b20",
+                    "uuid": "6c9654b0-d218-4153-b05a-3beb50d1840d",
+                    "destination_type": "A"
+                },
+                {
+                    "test": {
+                        "max": "1995",
+                        "type": "between",
+                        "min": "1989"
+                    },
+                    "category": {
+                        "eng": "1989-1995"
+                    },
+                    "destination": "885d50ba-98bd-413e-bf77-2938fd3a2b20",
+                    "uuid": "b6390aa0-0ee4-4cf9-8262-46bf124ed6ce",
+                    "destination_type": "A"
+                },
+                {
+                    "test": {
+                        "max": "1988",
+                        "type": "between",
+                        "min": "1979"
+                    },
+                    "category": {
+                        "eng": "1979 - 1988"
+                    },
+                    "destination": "885d50ba-98bd-413e-bf77-2938fd3a2b20",
+                    "uuid": "503c1c18-c368-4f6f-8a17-f018de6b94f8",
+                    "destination_type": "A"
+                },
+                {
+                    "test": {
+                        "max": "1978",
+                        "type": "between",
+                        "min": "1959"
+                    },
+                    "category": {
+                        "eng": "1959 - 1978"
+                    },
+                    "destination": "9f2b9449-031d-4295-9962-4e5fe60f6e96",
+                    "uuid": "a46b9402-3320-42f2-8659-9d675a101957",
+                    "destination_type": "A"
+                },
+                {
+                    "test": {
+                        "max": "1958",
+                        "type": "between",
+                        "min": "1949"
+                    },
+                    "category": {
+                        "eng": "1949 - 1958"
+                    },
+                    "destination": "9f2b9449-031d-4295-9962-4e5fe60f6e96",
+                    "uuid": "d718605f-4399-471b-a692-a2ed65c921f0",
+                    "destination_type": "A"
+                },
+                {
+                    "test": {
+                        "test": "1948",
+                        "type": "lt"
+                    },
+                    "category": {
+                        "eng": "< 1948"
+                    },
+                    "destination": "9f2b9449-031d-4295-9962-4e5fe60f6e96",
+                    "uuid": "4640cda2-0348-4a6c-b297-418a54fe7f63",
+                    "destination_type": "A"
+                },
+                {
+                    "test": {
+                        "type": "true"
+                    },
+                    "category": {
+                        "eng": "Other"
+                    },
+                    "destination": "10c7dd41-ff8f-4f60-91de-a529e022e3cc",
+                    "uuid": "fcc14f23-5225-4cf4-85b2-929f6db3c95e",
+                    "destination_type": "A"
+                }
+            ],
+            "webhook": null,
+            "ruleset_type": "wait_message",
+            "label": "Born",
+            "operand": "@step.value",
+            "finished_key": null,
+            "response_type": "C",
+            "y": 1523,
+            "x": 296,
+            "config": {}
         },
         {
-          "type": "add_group",
-          "groups": [
+            "uuid": "3fb4bfaa-a856-4253-9768-4ef8dc295164",
+            "webhook_action": null,
+            "rules": [
+                {
+                    "test": {
+                        "type": "state"
+                    },
+                    "category": {
+                        "eng": "state"
+                    },
+                    "destination": "edccfae0-a9b5-4743-98c4-7e13a6f2799b",
+                    "uuid": "946ab17e-b5a7-4e59-8d5f-5d656679f261",
+                    "destination_type": "A"
+                },
+                {
+                    "test": {
+                        "type": "true"
+                    },
+                    "category": {
+                        "eng": "Other"
+                    },
+                    "destination": "6fda4992-375d-49bc-8140-f79dad663ace",
+                    "uuid": "cbd6eb15-cde7-4db6-a93d-f8e64962867d",
+                    "destination_type": "A"
+                }
+            ],
+            "webhook": null,
+            "ruleset_type": "wait_message",
+            "label": "State",
+            "operand": "@step.value",
+            "finished_key": null,
+            "response_type": "C",
+            "y": 2519,
+            "x": 452,
+            "config": {}
+        },
+        {
+            "uuid": "74571e5a-de69-4f5a-a613-58ecf4093bcd",
+            "webhook_action": null,
+            "rules": [
+                {
+                    "test": {
+                        "test": "@flow.state ",
+                        "type": "district"
+                    },
+                    "category": {
+                        "eng": "district"
+                    },
+                    "destination": "e4831c4f-bdb8-4697-b79d-78bb1ee61e1d",
+                    "uuid": "8efa21c1-355f-42de-a239-ec2c334e723a",
+                    "destination_type": "A"
+                },
+                {
+                    "test": {
+                        "type": "true"
+                    },
+                    "category": {
+                        "eng": "Other"
+                    },
+                    "destination": "70564e92-7c21-4b99-9547-42e2f8aa0fb9",
+                    "uuid": "87c58e62-2d7e-4e2a-b7d6-9b8d84460700",
+                    "destination_type": "A"
+                }
+            ],
+            "webhook": null,
+            "ruleset_type": "wait_message",
+            "label": "LGA",
+            "operand": "@step.value",
+            "finished_key": null,
+            "response_type": "C",
+            "y": 2901,
+            "x": 559,
+            "config": {}
+        },
+        {
+            "uuid": "0c56fb61-b304-4470-84dd-c368cc60b25e",
+            "webhook_action": null,
+            "rules": [
+                {
+                    "test": {
+                        "type": "true"
+                    },
+                    "category": {
+                        "eng": "All Responses"
+                    },
+                    "destination": "213ebc6c-8bf9-4eee-b935-01c863882a33",
+                    "uuid": "f227cdcb-b356-44a3-a324-8f1f82020978",
+                    "destination_type": "A"
+                }
+            ],
+            "webhook": null,
+            "ruleset_type": "wait_message",
+            "label": "Ward",
+            "operand": "@step.value",
+            "finished_key": null,
+            "response_type": "O",
+            "y": 3107,
+            "x": 598,
+            "config": {}
+        },
+        {
+            "uuid": "08ec335c-d96d-47d5-9f5d-3add33b175a7",
+            "webhook_action": null,
+            "rules": [
+                {
+                    "test": {
+                        "type": "true"
+                    },
+                    "category": {
+                        "eng": "All Responses"
+                    },
+                    "destination": "0b70684b-adcd-403c-833b-736c5f0f2c0f",
+                    "uuid": "d782faea-2307-459d-8034-06635295d047",
+                    "destination_type": "A"
+                }
+            ],
+            "webhook": null,
+            "ruleset_type": "wait_message",
+            "label": "Settlement",
+            "operand": "@step.value",
+            "finished_key": null,
+            "response_type": "O",
+            "y": 3569,
+            "x": 614,
+            "config": {}
+        },
+        {
+            "uuid": "b8aad8eb-6388-4fb7-91d1-4653c760420b",
+            "webhook_action": null,
+            "rules": [
+                {
+                    "test": {
+                        "test": {
+                            "eng": "male m boy "
+                        },
+                        "type": "contains_any"
+                    },
+                    "category": {
+                        "eng": "Male"
+                    },
+                    "destination": "f59b766d-52e5-45a2-b95f-de3c1a28a5aa",
+                    "uuid": "fcabeccc-cb7a-4940-8746-9ffd3613a36b",
+                    "destination_type": "A"
+                },
+                {
+                    "test": {
+                        "test": {
+                            "eng": "female f  girl"
+                        },
+                        "type": "contains_any"
+                    },
+                    "category": {
+                        "eng": "Female"
+                    },
+                    "destination": "b61771c8-d1f3-4a8d-9970-30639cbfc206",
+                    "uuid": "af358a86-03ae-44c4-baa2-f2690141deba",
+                    "destination_type": "A"
+                },
+                {
+                    "test": {
+                        "type": "true"
+                    },
+                    "category": {
+                        "eng": "Other"
+                    },
+                    "destination": "8bd9487f-48a9-474e-8ce3-31c1bdf3b5d0",
+                    "uuid": "5b015464-d0f8-407c-9923-871dbdd21f91",
+                    "destination_type": "A"
+                }
+            ],
+            "webhook": null,
+            "ruleset_type": "wait_message",
+            "label": "Gender",
+            "operand": "@step.value",
+            "finished_key": null,
+            "response_type": "C",
+            "y": 2076,
+            "x": 565,
+            "config": {}
+        },
+        {
+            "uuid": "944078e8-c226-416a-84cd-d4b390657360",
+            "webhook_action": null,
+            "rules": [
+                {
+                    "test": {
+                        "test": {
+                            "eng": "Health a A"
+                        },
+                        "type": "contains_any"
+                    },
+                    "category": {
+                        "eng": "Health"
+                    },
+                    "destination": "69852180-a6b6-40f0-89f0-90830f90dc3b",
+                    "uuid": "8faa174f-76df-446d-900a-5d04f85dd0ad",
+                    "destination_type": "A"
+                },
+                {
+                    "test": {
+                        "test": {
+                            "eng": "Education b B"
+                        },
+                        "type": "contains_any"
+                    },
+                    "category": {
+                        "eng": "Education"
+                    },
+                    "destination": "69852180-a6b6-40f0-89f0-90830f90dc3b",
+                    "uuid": "48a800be-a381-42a9-9777-a3995a2e11b0",
+                    "destination_type": "A"
+                },
+                {
+                    "test": {
+                        "test": {
+                            "eng": "Finance / Business c C"
+                        },
+                        "type": "contains_any"
+                    },
+                    "category": {
+                        "eng": "Business"
+                    },
+                    "destination": "69852180-a6b6-40f0-89f0-90830f90dc3b",
+                    "uuid": "b13ee109-275a-4b14-8bbd-d628084b3cbe",
+                    "destination_type": "A"
+                },
+                {
+                    "test": {
+                        "test": {
+                            "eng": "Self Employed d D"
+                        },
+                        "type": "contains_any"
+                    },
+                    "category": {
+                        "eng": "Self employed "
+                    },
+                    "destination": "69852180-a6b6-40f0-89f0-90830f90dc3b",
+                    "uuid": "fdbc67aa-db39-41c1-af73-ca8a2dc3a726",
+                    "destination_type": "A"
+                },
+                {
+                    "test": {
+                        "test": {
+                            "eng": "Student e E"
+                        },
+                        "type": "contains_any"
+                    },
+                    "category": {
+                        "eng": "Student "
+                    },
+                    "destination": "69852180-a6b6-40f0-89f0-90830f90dc3b",
+                    "uuid": "1f65320e-8014-4f8e-ada0-41d157d3d72c",
+                    "destination_type": "A"
+                },
+                {
+                    "test": {
+                        "test": {
+                            "eng": "Uniformed Service f F"
+                        },
+                        "type": "contains_any"
+                    },
+                    "category": {
+                        "eng": "Uniformed"
+                    },
+                    "destination": "69852180-a6b6-40f0-89f0-90830f90dc3b",
+                    "uuid": "d95a1e1c-a52a-444c-9f4a-b3832bc99a07",
+                    "destination_type": "A"
+                },
+                {
+                    "test": {
+                        "test": {
+                            "eng": "Agriculture g G"
+                        },
+                        "type": "contains_any"
+                    },
+                    "category": {
+                        "eng": "Agriculture"
+                    },
+                    "destination": "69852180-a6b6-40f0-89f0-90830f90dc3b",
+                    "uuid": "f1648295-3e7f-4a7e-a351-bb6602137d35",
+                    "destination_type": "A"
+                },
+                {
+                    "test": {
+                        "test": {
+                            "eng": "Social worker h H"
+                        },
+                        "type": "contains_any"
+                    },
+                    "category": {
+                        "eng": "Social worker"
+                    },
+                    "destination": "69852180-a6b6-40f0-89f0-90830f90dc3b",
+                    "uuid": "1d71cfbc-a610-4965-984c-407d5acc83b7",
+                    "destination_type": "A"
+                },
+                {
+                    "test": {
+                        "test": {
+                            "eng": "Other i I"
+                        },
+                        "type": "contains_any"
+                    },
+                    "category": {
+                        "eng": "Other"
+                    },
+                    "destination": "b816c6ef-fe02-4ce3-a70b-163f52d61251",
+                    "uuid": "2adaaf15-68ce-4682-adb8-150ba26716bc",
+                    "destination_type": "A"
+                },
+                {
+                    "test": {
+                        "test": {
+                            "eng": "Corper j J"
+                        },
+                        "type": "contains_any"
+                    },
+                    "category": {
+                        "eng": "Corper"
+                    },
+                    "destination": "2bd90e1c-34ad-4206-9505-eb0b93bd6f35",
+                    "uuid": "37dd361f-6294-4a52-a7cf-45f8ace052db",
+                    "destination_type": "A"
+                },
+                {
+                    "test": {
+                        "type": "true"
+                    },
+                    "category": {
+                        "eng": "Other"
+                    },
+                    "destination": "eb0210c0-10c7-4d14-9dcf-7b13b8b0b794",
+                    "uuid": "cfdd5f17-eafc-4282-9f6f-57df9c2c5766",
+                    "destination_type": "A"
+                }
+            ],
+            "webhook": null,
+            "ruleset_type": "wait_message",
+            "label": "Occupation",
+            "operand": "@step.value",
+            "finished_key": null,
+            "response_type": "C",
+            "y": 3959,
+            "x": 226,
+            "config": {}
+        },
+        {
+            "uuid": "0dad8d42-0853-462b-bce7-7dfa46b35eef",
+            "webhook_action": null,
+            "rules": [
+                {
+                    "test": {
+                        "type": "true"
+                    },
+                    "category": {
+                        "eng": "All Responses"
+                    },
+                    "destination": "69852180-a6b6-40f0-89f0-90830f90dc3b",
+                    "uuid": "4b6cd273-dbcc-42a9-a407-020a9a9359b2",
+                    "destination_type": "A"
+                }
+            ],
+            "webhook": null,
+            "ruleset_type": "wait_message",
+            "label": "Occupation",
+            "operand": "@step.value",
+            "finished_key": null,
+            "response_type": "O",
+            "y": 4207,
+            "x": 66,
+            "config": {}
+        },
+        {
+            "uuid": "46c61e28-d4bd-4af4-89e5-ed8884e45904",
+            "webhook_action": null,
+            "rules": [
+                {
+                    "test": {
+                        "test": {
+                            "eng": "a a) a. english"
+                        },
+                        "type": "contains_any"
+                    },
+                    "category": {
+                        "base": "English",
+                        "eng": "English"
+                    },
+                    "destination": "8813f0d5-f8d0-4d95-9512-93b081cc4559",
+                    "uuid": "1d7f2f58-330a-4a83-b52a-5e77d9880e0d",
+                    "destination_type": "A"
+                },
+                {
+                    "test": {
+                        "test": {
+                            "eng": "b b) b. pdgin"
+                        },
+                        "type": "contains_any"
+                    },
+                    "category": {
+                        "base": "Pidgin",
+                        "eng": "Pidgin"
+                    },
+                    "destination": "5ce6a2f5-8a00-42ec-a290-79751435a22a",
+                    "uuid": "06e982ce-dbb6-4ef7-8967-751cd9d42d1d",
+                    "destination_type": "A"
+                },
+                {
+                    "test": {
+                        "test": {
+                            "eng": "c c) c. Hausa"
+                        },
+                        "type": "contains_any"
+                    },
+                    "category": {
+                        "base": "Hausa",
+                        "eng": "Hausa"
+                    },
+                    "destination": "2925195e-1f77-418e-9fd3-a387a4b42ea8",
+                    "uuid": "64268aea-a97a-40a8-ab6c-5ba89cfbd2bd",
+                    "destination_type": "A"
+                },
+                {
+                    "test": {
+                        "test": {
+                            "eng": "d d) d. yoruba"
+                        },
+                        "type": "contains_any"
+                    },
+                    "category": {
+                        "base": "Yoruba",
+                        "eng": "Yoruba"
+                    },
+                    "destination": "510e8533-e510-4e23-a715-b79014be724c",
+                    "uuid": "703d8040-d9cc-4261-b929-22452dba193a",
+                    "destination_type": "A"
+                },
+                {
+                    "test": {
+                        "test": {
+                            "eng": "e e) e. igbo"
+                        },
+                        "type": "contains_any"
+                    },
+                    "category": {
+                        "base": "Igbo",
+                        "eng": "Igbo"
+                    },
+                    "destination": "f9dd7875-a52e-4b93-a13b-a8e282690a37",
+                    "uuid": "c62ab7ab-464f-46bf-b586-6e0a1de5e979",
+                    "destination_type": "A"
+                },
+                {
+                    "test": {
+                        "type": "true"
+                    },
+                    "category": {
+                        "base": "Other",
+                        "eng": "Other"
+                    },
+                    "destination": "dfd1b4e9-c2aa-43b6-9ee6-9efa7a4ef12e",
+                    "uuid": "83266486-6b21-4da8-89ff-80643cfbd717",
+                    "destination_type": "A"
+                }
+            ],
+            "webhook": null,
+            "ruleset_type": "wait_message",
+            "label": "Language",
+            "operand": "@step.value",
+            "finished_key": null,
+            "response_type": "C",
+            "y": 323,
+            "x": 558,
+            "config": {}
+        }
+    ],
+    "metadata": {
+        "uuid": "ac8924a1-7104-4df6-8518-342f4c40dfd2",
+        "notes": [
             {
-              "name": "UReport Adults",
-              "id": 10
+                "body": "We do this using @flow.gender.category instead of @flow.gender so that we save Male or Female instead of whatever the UReporter used to answer the question (which could be M, boy, male, F, girl, etc)",
+                "x": 585,
+                "y": 2242,
+                "title": "Saving gender category to contact"
             }
-          ]
-        },
-        {
-          "field": "born",
-          "type": "save",
-          "value": "@flow.born ",
-          "label": "Born"
-        },
-        {
-          "type": "del_group",
-          "groups": [
-            {
-              "name": "UReport No Age",
-              "id": 128
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "y": 1669,
-      "x": 87,
-      "destination": "b8aad8eb-6388-4fb7-91d1-4653c760420b",
-      "uuid": "885d50ba-98bd-413e-bf77-2938fd3a2b20",
-      "actions": [
-        {
-          "msg": {
-            "eng": "Great, we are looking forward to hearing from our youth. Youth are our future. What GENDER are you? Reply with M for Male or F for Female.",
-            "hau": "Da kyau, muna jiran muji daga  matasanmu. Matasa sune makomarmu. Wane jinsi ne kai? Amsa da M idan kai namiji ne, ko F idan ke mace ce.",
-            "cpe": "Na so, we go like hear  from our youth. Youths na dem be we future. You na Man abi Woman? Reply with M for Man abi F for Woman."
-          },
-          "type": "reply"
-        },
-        {
-          "type": "add_group",
-          "groups": [
-            {
-              "name": "UReport Youth",
-              "id": 9
-            }
-          ]
-        },
-        {
-          "field": "born",
-          "type": "save",
-          "value": "@flow.born ",
-          "label": "Born"
-        },
-        {
-          "type": "del_group",
-          "groups": [
-            {
-              "name": "UReport No Age",
-              "id": 128
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "y": 2634,
-      "x": 124,
-      "destination": "74571e5a-de69-4f5a-a613-58ecf4093bcd",
-      "uuid": "edccfae0-a9b5-4743-98c4-7e13a6f2799b",
-      "actions": [
-        {
-          "msg": {
-            "eng": "From which LGA will you be reporting from?",
-            "hau": "Daga wace karamar hukuma ce zaka rinka bada rahoton?",
-            "cpe": "Na wish LGA you go dey report from?"
-          },
-          "type": "reply"
-        },
-        {
-          "type": "del_group",
-          "groups": [
-            {
-              "name": "Ureport No State",
-              "id": 25
-            }
-          ]
-        },
-        {
-          "field": "state",
-          "type": "save",
-          "value": "@flow.state ",
-          "label": "State"
-        }
-      ]
-    },
-    {
-      "y": 3009,
-      "x": 195,
-      "destination": "0c56fb61-b304-4470-84dd-c368cc60b25e",
-      "uuid": "e4831c4f-bdb8-4697-b79d-78bb1ee61e1d",
-      "actions": [
-        {
-          "msg": {
-            "eng": "Welldon you are almost fully registered. What WARD are U living in? ",
-            "hau": "Da kayu, saura kadan ka kammala rijistar ka. Wace unguwa kake da zama?",
-            "cpe": "Wedon, you don almost finish to register. Na wish WARD you dey stay now?"
-          },
-          "type": "reply"
-        },
-        {
-          "field": "lga",
-          "type": "save",
-          "value": "@flow.lga ",
-          "label": "LGA"
-        }
-      ]
-    },
-    {
-      "y": 3278,
-      "x": 225,
-      "destination": "08ec335c-d96d-47d5-9f5d-3add33b175a7",
-      "uuid": "213ebc6c-8bf9-4eee-b935-01c863882a33",
-      "actions": [
-        {
-          "msg": {
-            "eng": "Thumbs up! You are almost there! What SETTLMENT are U currently living in. If you are not sure please reply with your Ward. ",
-            "hau": "A gaishe ka! Saura kadan ya rage! A wani layi ne kake da zama a halin yanzu? Idan baka da tabbas, yi amfani da unguwarka.",
-            "cpe": "Wedon! you don almost reach there! Na wish area you dey stay now. If you no dey sure abeg reply with your ward."
-          },
-          "type": "reply"
-        },
-        {
-          "field": "ward",
-          "type": "save",
-          "value": "@flow.ward ",
-          "label": "Ward"
-        }
-      ]
-    },
-    {
-      "y": 1337,
-      "x": 43,
-      "destination": null,
-      "uuid": "917f4a1a-23fe-492c-818c-9b2a11eecac8",
-      "actions": [
-        {
-          "type": "del_group",
-          "groups": [
-            {
-              "name": "UReporters",
-              "id": 8
-            },
-            {
-              "name": "No Occupation",
-              "id": 22
-            },
-            {
-              "name": "Ureport No State",
-              "id": 25
-            },
-            {
-              "name": "UReport No Age",
-              "id": 128
-            },
-            {
-              "name": "UReport English",
-              "id": 27
-            },
-            {
-              "name": "UReport No Gender",
-              "id": 127
-            }
-          ]
-        },
-        {
-          "msg": {
-            "eng": "Sorry, you are too young to join U-Report",
-            "hau": "Yi hakuri, ka yi kankantar shiga cikin U-Report ba.",
-            "cpe": "Abeg no vex, your age never reach to take join U-Report"
-          },
-          "type": "reply"
-        }
-      ]
-    },
-    {
-      "y": 1900,
-      "x": 777,
-      "destination": "b8aad8eb-6388-4fb7-91d1-4653c760420b",
-      "uuid": "8bd9487f-48a9-474e-8ce3-31c1bdf3b5d0",
-      "actions": [
-        {
-          "msg": {
-            "eng": "Sorry that response is not understood. Please respond with Male or Female.",
-            "hau": "Yi hakuri, ba;a fahimci amsar da ka bayar ba. Ka amsa da Namiji ko Mace.",
-            "cpe": "Abeg no vex we no understand wetin you yarn. Abeg reply with Man abi Woman."
-          },
-          "type": "reply"
-        }
-      ]
-    },
-    {
-      "y": 2180,
-      "x": 75,
-      "destination": "3fb4bfaa-a856-4253-9768-4ef8dc295164",
-      "uuid": "f59b766d-52e5-45a2-b95f-de3c1a28a5aa",
-      "actions": [
-        {
-          "msg": {
-            "eng": "Excellent, we need leaders like U on U-report. What STATE are U living in currently? ",
-            "hau": "Yayi kyau, muna bukatar shugabanni kamarku a U-Report. Wace jiha kike zama a halin yanzu?",
-            "cpe": "Nice one, we need leaders like Una for inside U-report. Na for wish STATE U dey stay  now?"
-          },
-          "type": "reply"
-        },
-        {
-          "type": "add_group",
-          "groups": [
-            {
-              "name": "UReport Males",
-              "id": 23
-            }
-          ]
-        },
-        {
-          "field": "gender",
-          "type": "save",
-          "value": "@flow.gender.category ",
-          "label": "Gender"
-        },
-        {
-          "type": "del_group",
-          "groups": [
-            {
-              "name": "UReport No Gender",
-              "id": 127
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "y": 4539,
-      "x": 142,
-      "destination": null,
-      "uuid": "69852180-a6b6-40f0-89f0-90830f90dc3b",
-      "actions": [
-        {
-          "msg": {
-            "eng": "Congratulations,U will be able to share Ur views and get feedback. Please encourage your friends to sign up. Ur voice matters!! http://nigeria.ureport.in",
-            "hau": "Muna taya ka murna, zaka iya bayyana ra\u2019ayinka, ka kuma samu amsa. Don haka baiwa abokan ka kwarin guiwa su shiga cikin Muryarka na da tasiri!! Idan aka shiga shafin yanar gizo  a  http://nigeria.ureport.in",
-            "cpe": "Congratulate, U go fit  tok Ur mind and you fit hear wetin other people get to yarn. Abeg ginger your friends to come join. Ur voice mata!! http://nigeria.ureport.in"
-          },
-          "type": "reply"
-        },
-        {
-          "field": "occupation",
-          "type": "save",
-          "value": "@flow.occupation.category ",
-          "label": "Occupation"
-        },
-        {
-          "type": "del_group",
-          "groups": [
-            {
-              "name": "No Occupation",
-              "id": 22
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "y": 3649,
-      "x": 422,
-      "destination": "944078e8-c226-416a-84cd-d4b390657360",
-      "uuid": "0b70684b-adcd-403c-833b-736c5f0f2c0f",
-      "actions": [
-        {
-          "msg": {
-            "eng": "What is Ur OCCUPATION, choose one: a)Health b)Education c)Business d)Self Employed e)Student f)Uniformed Service g)Agriculture h)Social Worker i)Other j)Corpers",
-            "cpe": "Wish kain work you dey do, choose one: a) Body mata b) Education c) Business d) I dey do my own work e) Student f) Uniform Service g) Agriculture h) Social Worker i) Other works j) Corpers",
-            "hau": "Menene SANA\u2019ARKA, zabi daya  (a)Kiwon lafiya (b) Ilimi        (c) Kasuwanci  (d) Dogaro da kai (e) Dalibi (f)Aikin kayan sarki  (g) Aikin gona (h) Kula da jin dadin jama\u2019a (i) Saura j)Yiwa kasa hidima"
-          },
-          "type": "reply"
-        },
-        {
-          "field": "settlement",
-          "type": "save",
-          "value": "@flow.settlement ",
-          "label": "Settlement"
-        }
-      ]
-    },
-    {
-      "y": 4176,
-      "x": 1311,
-      "destination": "0dad8d42-0853-462b-bce7-7dfa46b35eef",
-      "uuid": "b816c6ef-fe02-4ce3-a70b-163f52d61251",
-      "actions": [
-        {
-          "msg": {
-            "cpe": "Abeg wish kain wok you dey do abi you fit say none if you never begin wok.",
-            "eng": "Please specify what kind of work you do or say 'none' if U are not employed"
-          },
-          "type": "reply"
-        }
-      ]
-    },
-    {
-      "y": 2161,
-      "x": 1036,
-      "destination": "3fb4bfaa-a856-4253-9768-4ef8dc295164",
-      "uuid": "b61771c8-d1f3-4a8d-9970-30639cbfc206",
-      "actions": [
-        {
-          "msg": {
-            "eng": "Fabulous U-report needs women like U who make the world go round. What STATE are U living in currently?",
-            "hau": "U-Report mai gamsarwa yana bukatar mace kamar ki mai kazar kazar. Wace JIHA kike zama a halin yanzu?",
-            "cpe": "Nice one, U-report need women like Una wey dey make tins happen. Na for wish STATE U dey stay now?"
-          },
-          "type": "reply"
-        },
-        {
-          "type": "add_group",
-          "groups": [
-            {
-              "name": "UReport Females",
-              "id": 24
-            }
-          ]
-        },
-        {
-          "field": "gender",
-          "type": "save",
-          "value": "@flow.gender.category ",
-          "label": "Gender"
-        },
-        {
-          "type": "del_group",
-          "groups": [
-            {
-              "name": "UReport No Gender",
-              "id": 127
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "y": 1267,
-      "x": 346,
-      "destination": "9fca130c-eba5-4445-8ab9-88c60f55690b",
-      "uuid": "6d850a6e-a54d-48d0-a449-e370046341e7",
-      "actions": [
-        {
-          "msg": {
-            "eng": "Sorry I got that wrong. Ok, please reply with just your name. For example: \"Thomas\"",
-            "hau": "Yi hakuri, ban fahimce ka ba. Yauwa, sai ka amsa da sunan kawai. Misali \u201cThomas\u201d",
-            "cpe": "Abeg no vex, I miss am. No vex just reply am with your name. For example: \"Thomas\""
-          },
-          "type": "reply"
-        }
-      ]
-    },
-    {
-      "y": 2586,
-      "x": 746,
-      "destination": "3fb4bfaa-a856-4253-9768-4ef8dc295164",
-      "uuid": "6fda4992-375d-49bc-8140-f79dad663ace",
-      "actions": [
-        {
-          "msg": {
-            "eng": "Sorry, we don't recognize that state, please respond with the Nigerian state you currently live in.",
-            "hau": "Yi hakuri, bamu fahimci wannan jihar ba. Amsa da sunan jihar dake Nijeriya inda kake zama a halin yanzu.",
-            "cpe": "Abeg no vex, we no sabi dat state, abeg reply with the Nigeria state wey you \ndey stay now."
-          },
-          "type": "reply"
-        }
-      ]
-    },
-    {
-      "y": 2813,
-      "x": 893,
-      "destination": "74571e5a-de69-4f5a-a613-58ecf4093bcd",
-      "uuid": "70564e92-7c21-4b99-9547-42e2f8aa0fb9",
-      "actions": [
-        {
-          "msg": {
-            "eng": "Sorry, we don't recognize that LGA, please respond with the LGA in @flow.state you currently live in.",
-            "hau": "Yi hakuri, bamu  gane wannan karamar hukumar ba, amsa da karamar hukumar da kake zama a halin yanzu.",
-            "cpe": "Abeg no vex, we no sabi that LGA, abeg reply with the LGA wey you dey stay now for inside @flow.state"
-          },
-          "type": "reply"
-        }
-      ]
-    },
-    {
-      "y": 4492,
-      "x": 975,
-      "destination": null,
-      "uuid": "2bd90e1c-34ad-4206-9505-eb0b93bd6f35",
-      "actions": [
-        {
-          "msg": {
-            "eng": "Congratulations,U will be able to share Ur views and get feedback. Please encourage your friends to sign up. Ur voice matters!! http://nigeria.ureport.in",
-            "hau": "Muna taya ka murna, zaka iya bayyana ra\u2019ayinka, ka kuma samu amsa. Don haka baiwa abokan ka kwarin guiwa su shiga cikin Muryarka na da tasiri!! Idan aka shiga shafin yanar gizo  a  http://nigeria.ureport.in",
-            "cpe": "Congratulate, U go fit  tok Ur mind and you fit hear wetin other people get to yarn. Abeg ginger your friends to come join. Ur voice mata!! http://nigeria.ureport.in"
-          },
-          "type": "reply"
-        },
-        {
-          "type": "add_group",
-          "groups": [
-            {
-              "name": "Corpers",
-              "id": 697
-            }
-          ]
-        },
-        {
-          "field": "occupation",
-          "type": "save",
-          "value": "@flow.occupation.category",
-          "label": "Occupation"
-        },
-        {
-          "type": "del_group",
-          "groups": [
-            {
-              "name": "No Occupation",
-              "id": 22
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "y": 3910,
-      "x": 1356,
-      "destination": "944078e8-c226-416a-84cd-d4b390657360",
-      "uuid": "eb0210c0-10c7-4d14-9dcf-7b13b8b0b794",
-      "actions": [
-        {
-          "msg": {
-            "eng": "i didnt get that please choose one: a)Health b)Education c)Business d)Self Employed e)Student f)Uniformed Service g)Agriculture h)Social Worker i)Other j)Corpers"
-          },
-          "type": "reply"
-        }
-      ]
-    },
-    {
-      "y": 482,
-      "x": 976,
-      "destination": "46c61e28-d4bd-4af4-89e5-ed8884e45904",
-      "uuid": "dfd1b4e9-c2aa-43b6-9ee6-9efa7a4ef12e",
-      "actions": [
-        {
-          "msg": {
-            "eng": "Please select your language!\nA. English\nB. Pidgin\nC. Hausa\nD. Yoroba\nE. Igbo"
-          },
-          "type": "reply"
-        }
-      ]
-    },
-    {
-      "y": 835,
-      "x": 42,
-      "destination": "9fca130c-eba5-4445-8ab9-88c60f55690b",
-      "uuid": "8813f0d5-f8d0-4d95-9512-93b081cc4559",
-      "actions": [
-        {
-          "lang": "eng",
-          "type": "lang",
-          "name": "English"
-        },
-        {
-          "type": "add_group",
-          "groups": [
-            {
-              "name": "UReport English",
-              "id": 27
-            }
-          ]
-        },
-        {
-          "type": "del_group",
-          "groups": [
-            {
-              "name": "UReport No Language",
-              "id": 10049
-            }
-          ]
-        },
-        {
-          "msg": {
-            "eng": "Please reply with Ur NAME or NICKNAME,for example \"Tolu\" or \"Tom\" or \"Ahmed\".  If U want to remain anonymous use any letters or numbers ALL MESSAGES ARE FREE !",
-            "cpe": "Abeg make you reply with Ur NAME abi GUYNAME, for example \"Tolu\" abi \"Tom\" abi \"Ahmed\".  If U no wan make people know who U be, U fit use any letter abi numbers. ALL THE MESSAGE NA FREE!",
-            "hau": "Ka bayar da amsa da SUNANKA  kokuma LAKABI, misali \u201cTolu ko \u201cTom\u201d ko \u201cAhmed\u201d Idan baka son bayyana sunanka kana iya yin amfani da haruffa ko lambobi. DUKKAN SAKONNI KYAUTA NE!"
-          },
-          "type": "reply"
-        }
-      ]
-    },
-    {
-      "y": 669,
-      "x": 337,
-      "destination": "9fca130c-eba5-4445-8ab9-88c60f55690b",
-      "uuid": "5ce6a2f5-8a00-42ec-a290-79751435a22a",
-      "actions": [
-        {
-          "lang": "cpe",
-          "type": "lang",
-          "name": "Creoles and pidgins, English based"
-        },
-        {
-          "type": "add_group",
-          "groups": [
-            {
-              "name": "UReport Pidgin",
-              "id": 9971
-            }
-          ]
-        },
-        {
-          "type": "del_group",
-          "groups": [
-            {
-              "name": "UReport No Language",
-              "id": 10049
-            }
-          ]
-        },
-        {
-          "msg": {
-            "eng": "Please reply with Ur NAME or NICKNAME,for example \"Tolu\" or \"Tom\" or \"Ahmed\".  If U want to remain anonymous use any letters or numbers ALL MESSAGES ARE FREE !",
-            "cpe": "Abeg make you reply with Ur NAME abi GUYNAME, for example \"Tolu\" abi \"Tom\" abi \"Ahmed\".  If U no wan make people know who U be, U fit use any letter abi numbers. ALL THE MESSAGE NA FREE!",
-            "hau": "Ka bayar da amsa da SUNANKA  kokuma LAKABI, misali \u201cTolu ko \u201cTom\u201d ko \u201cAhmed\u201d Idan baka son bayyana sunanka kana iya yin amfani da haruffa ko lambobi. DUKKAN SAKONNI KYAUTA NE!"
-          },
-          "type": "reply"
-        }
-      ]
-    },
-    {
-      "y": 675,
-      "x": 620,
-      "destination": "9fca130c-eba5-4445-8ab9-88c60f55690b",
-      "uuid": "2925195e-1f77-418e-9fd3-a387a4b42ea8",
-      "actions": [
-        {
-          "lang": "hau",
-          "type": "lang",
-          "name": "Hausa"
-        },
-        {
-          "type": "add_group",
-          "groups": [
-            {
-              "name": "UReport Hausa",
-              "id": 9972
-            }
-          ]
-        },
-        {
-          "type": "del_group",
-          "groups": [
-            {
-              "name": "UReport No Language",
-              "id": 10049
-            }
-          ]
-        },
-        {
-          "msg": {
-            "eng": "Please reply with Ur NAME or NICKNAME,for example \"Tolu\" or \"Tom\" or \"Ahmed\".  If U want to remain anonymous use any letters or numbers ALL MESSAGES ARE FREE !",
-            "cpe": "Abeg make you reply with Ur NAME abi GUYNAME, for example \"Tolu\" abi \"Tom\" abi \"Ahmed\".  If U no wan make people know who U be, U fit use any letter abi numbers. ALL THE MESSAGE NA FREE!",
-            "hau": "Ka bayar da amsa da SUNANKA  kokuma LAKABI, misali \u201cTolu ko \u201cTom\u201d ko \u201cAhmed\u201d Idan baka son bayyana sunanka kana iya yin amfani da haruffa ko lambobi. DUKKAN SAKONNI KYAUTA NE!"
-          },
-          "type": "reply"
-        }
-      ]
-    },
-    {
-      "y": 698,
-      "x": 887,
-      "destination": "9fca130c-eba5-4445-8ab9-88c60f55690b",
-      "uuid": "510e8533-e510-4e23-a715-b79014be724c",
-      "actions": [
-        {
-          "lang": "yor",
-          "type": "lang",
-          "name": "Yoruba"
-        },
-        {
-          "type": "add_group",
-          "groups": [
-            {
-              "name": "UReport Yoroba",
-              "id": 9973
-            }
-          ]
-        },
-        {
-          "type": "del_group",
-          "groups": [
-            {
-              "name": "UReport No Language",
-              "id": 10049
-            }
-          ]
-        },
-        {
-          "msg": {
-            "eng": "Please reply with Ur NAME or NICKNAME,for example \"Tolu\" or \"Tom\" or \"Ahmed\".  If U want to remain anonymous use any letters or numbers ALL MESSAGES ARE FREE !",
-            "cpe": "Abeg make you reply with Ur NAME abi GUYNAME, for example \"Tolu\" abi \"Tom\" abi \"Ahmed\".  If U no wan make people know who U be, U fit use any letter abi numbers. ALL THE MESSAGE NA FREE!",
-            "hau": "Ka bayar da amsa da SUNANKA  kokuma LAKABI, misali \u201cTolu ko \u201cTom\u201d ko \u201cAhmed\u201d Idan baka son bayyana sunanka kana iya yin amfani da haruffa ko lambobi. DUKKAN SAKONNI KYAUTA NE!"
-          },
-          "type": "reply"
-        }
-      ]
-    },
-    {
-      "y": 794,
-      "x": 1115,
-      "destination": "9fca130c-eba5-4445-8ab9-88c60f55690b",
-      "uuid": "f9dd7875-a52e-4b93-a13b-a8e282690a37",
-      "actions": [
-        {
-          "lang": "ibo",
-          "type": "lang",
-          "name": "Igbo"
-        },
-        {
-          "type": "add_group",
-          "groups": [
-            {
-              "name": "UReport Igbo",
-              "id": 9974
-            }
-          ]
-        },
-        {
-          "type": "del_group",
-          "groups": [
-            {
-              "name": "UReport No Language",
-              "id": 10049
-            }
-          ]
-        },
-        {
-          "msg": {
-            "eng": "Please reply with Ur NAME or NICKNAME,for example \"Tolu\" or \"Tom\" or \"Ahmed\".  If U want to remain anonymous use any letters or numbers ALL MESSAGES ARE FREE !",
-            "cpe": "Abeg make you reply with Ur NAME abi GUYNAME, for example \"Tolu\" abi \"Tom\" abi \"Ahmed\".  If U no wan make people know who U be, U fit use any letter abi numbers. ALL THE MESSAGE NA FREE!",
-            "hau": "Ka bayar da amsa da SUNANKA  kokuma LAKABI, misali \u201cTolu ko \u201cTom\u201d ko \u201cAhmed\u201d Idan baka son bayyana sunanka kana iya yin amfani da haruffa ko lambobi. DUKKAN SAKONNI KYAUTA NE!"
-          },
-          "type": "reply"
-        }
-      ]
+        ],
+        "expires": 10080,
+        "name": "U-Report Registration Flow",
+        "revision": 76,
+        "id": 10,
+        "saved_on": "2015-10-14T04:05:10.571931Z"
     }
-  ],
-  "rule_sets": [
-    {
-      "uuid": "9fca130c-eba5-4445-8ab9-88c60f55690b",
-      "webhook_action": null,
-      "rules": [
-        {
-          "test": {
-            "type": "true"
-          },
-          "category": {
-            "eng": "All Responses"
-          },
-          "destination": "1f13bb42-815c-4fe5-a4ea-1bd2590e828d",
-          "uuid": "f3e017e0-5a7b-40b4-ada8-3ebfaaabfeb6",
-          "destination_type": "A"
-        }
-      ],
-      "webhook": null,
-      "ruleset_type": "wait_message",
-      "label": "Name",
-      "operand": "@step.value",
-      "finished_key": null,
-      "response_type": "O",
-      "y": 1115,
-      "x": 622,
-      "config": {}
-    },
-    {
-      "uuid": "ec045f06-d92d-425a-9992-da1140309c0d",
-      "webhook_action": null,
-      "rules": [
-        {
-          "test": {
-            "test": {
-              "eng": "undo"
-            },
-            "type": "contains_any"
-          },
-          "category": {
-            "eng": "Undo"
-          },
-          "destination": "6d850a6e-a54d-48d0-a449-e370046341e7",
-          "uuid": "9ac7db33-ece1-4b2d-8c2e-18e7764e668c",
-          "destination_type": "A"
-        },
-        {
-          "test": {
-            "test": "2002",
-            "type": "gt"
-          },
-          "category": {
-            "eng": "> 2002"
-          },
-          "destination": "917f4a1a-23fe-492c-818c-9b2a11eecac8",
-          "uuid": "623855f4-3cae-4b4e-818c-a160b3aaaf66",
-          "destination_type": "A"
-        },
-        {
-          "test": {
-            "max": "2002",
-            "type": "between",
-            "min": "1996"
-          },
-          "category": {
-            "eng": "1996 - 2002"
-          },
-          "destination": "885d50ba-98bd-413e-bf77-2938fd3a2b20",
-          "uuid": "6c9654b0-d218-4153-b05a-3beb50d1840d",
-          "destination_type": "A"
-        },
-        {
-          "test": {
-            "max": "1995",
-            "type": "between",
-            "min": "1989"
-          },
-          "category": {
-            "eng": "1989-1995"
-          },
-          "destination": "885d50ba-98bd-413e-bf77-2938fd3a2b20",
-          "uuid": "b6390aa0-0ee4-4cf9-8262-46bf124ed6ce",
-          "destination_type": "A"
-        },
-        {
-          "test": {
-            "max": "1988",
-            "type": "between",
-            "min": "1979"
-          },
-          "category": {
-            "eng": "1979 - 1988"
-          },
-          "destination": "885d50ba-98bd-413e-bf77-2938fd3a2b20",
-          "uuid": "503c1c18-c368-4f6f-8a17-f018de6b94f8",
-          "destination_type": "A"
-        },
-        {
-          "test": {
-            "max": "1978",
-            "type": "between",
-            "min": "1959"
-          },
-          "category": {
-            "eng": "1959 - 1978"
-          },
-          "destination": "9f2b9449-031d-4295-9962-4e5fe60f6e96",
-          "uuid": "a46b9402-3320-42f2-8659-9d675a101957",
-          "destination_type": "A"
-        },
-        {
-          "test": {
-            "max": "1958",
-            "type": "between",
-            "min": "1949"
-          },
-          "category": {
-            "eng": "1949 - 1958"
-          },
-          "destination": "9f2b9449-031d-4295-9962-4e5fe60f6e96",
-          "uuid": "d718605f-4399-471b-a692-a2ed65c921f0",
-          "destination_type": "A"
-        },
-        {
-          "test": {
-            "test": "1948",
-            "type": "lt"
-          },
-          "category": {
-            "eng": "< 1948"
-          },
-          "destination": "9f2b9449-031d-4295-9962-4e5fe60f6e96",
-          "uuid": "4640cda2-0348-4a6c-b297-418a54fe7f63",
-          "destination_type": "A"
-        },
-        {
-          "test": {
-            "type": "true"
-          },
-          "category": {
-            "eng": "Other"
-          },
-          "destination": "10c7dd41-ff8f-4f60-91de-a529e022e3cc",
-          "uuid": "fcc14f23-5225-4cf4-85b2-929f6db3c95e",
-          "destination_type": "A"
-        }
-      ],
-      "webhook": null,
-      "ruleset_type": "wait_message",
-      "label": "Born",
-      "operand": "@step.value",
-      "finished_key": null,
-      "response_type": "C",
-      "y": 1523,
-      "x": 296,
-      "config": {}
-    },
-    {
-      "uuid": "3fb4bfaa-a856-4253-9768-4ef8dc295164",
-      "webhook_action": null,
-      "rules": [
-        {
-          "test": {
-            "type": "state"
-          },
-          "category": {
-            "eng": "state"
-          },
-          "destination": "edccfae0-a9b5-4743-98c4-7e13a6f2799b",
-          "uuid": "946ab17e-b5a7-4e59-8d5f-5d656679f261",
-          "destination_type": "A"
-        },
-        {
-          "test": {
-            "type": "true"
-          },
-          "category": {
-            "eng": "Other"
-          },
-          "destination": "6fda4992-375d-49bc-8140-f79dad663ace",
-          "uuid": "cbd6eb15-cde7-4db6-a93d-f8e64962867d",
-          "destination_type": "A"
-        }
-      ],
-      "webhook": null,
-      "ruleset_type": "wait_message",
-      "label": "State",
-      "operand": "@step.value",
-      "finished_key": null,
-      "response_type": "C",
-      "y": 2519,
-      "x": 452,
-      "config": {}
-    },
-    {
-      "uuid": "74571e5a-de69-4f5a-a613-58ecf4093bcd",
-      "webhook_action": null,
-      "rules": [
-        {
-          "test": {
-            "test": "@flow.state ",
-            "type": "district"
-          },
-          "category": {
-            "eng": "district"
-          },
-          "destination": "e4831c4f-bdb8-4697-b79d-78bb1ee61e1d",
-          "uuid": "8efa21c1-355f-42de-a239-ec2c334e723a",
-          "destination_type": "A"
-        },
-        {
-          "test": {
-            "type": "true"
-          },
-          "category": {
-            "eng": "Other"
-          },
-          "destination": "70564e92-7c21-4b99-9547-42e2f8aa0fb9",
-          "uuid": "87c58e62-2d7e-4e2a-b7d6-9b8d84460700",
-          "destination_type": "A"
-        }
-      ],
-      "webhook": null,
-      "ruleset_type": "wait_message",
-      "label": "LGA",
-      "operand": "@step.value",
-      "finished_key": null,
-      "response_type": "C",
-      "y": 2901,
-      "x": 559,
-      "config": {}
-    },
-    {
-      "uuid": "0c56fb61-b304-4470-84dd-c368cc60b25e",
-      "webhook_action": null,
-      "rules": [
-        {
-          "test": {
-            "type": "true"
-          },
-          "category": {
-            "eng": "All Responses"
-          },
-          "destination": "213ebc6c-8bf9-4eee-b935-01c863882a33",
-          "uuid": "f227cdcb-b356-44a3-a324-8f1f82020978",
-          "destination_type": "A"
-        }
-      ],
-      "webhook": null,
-      "ruleset_type": "wait_message",
-      "label": "Ward",
-      "operand": "@step.value",
-      "finished_key": null,
-      "response_type": "O",
-      "y": 3107,
-      "x": 598,
-      "config": {}
-    },
-    {
-      "uuid": "08ec335c-d96d-47d5-9f5d-3add33b175a7",
-      "webhook_action": null,
-      "rules": [
-        {
-          "test": {
-            "type": "true"
-          },
-          "category": {
-            "eng": "All Responses"
-          },
-          "destination": "0b70684b-adcd-403c-833b-736c5f0f2c0f",
-          "uuid": "d782faea-2307-459d-8034-06635295d047",
-          "destination_type": "A"
-        }
-      ],
-      "webhook": null,
-      "ruleset_type": "wait_message",
-      "label": "Settlement",
-      "operand": "@step.value",
-      "finished_key": null,
-      "response_type": "O",
-      "y": 3569,
-      "x": 614,
-      "config": {}
-    },
-    {
-      "uuid": "b8aad8eb-6388-4fb7-91d1-4653c760420b",
-      "webhook_action": null,
-      "rules": [
-        {
-          "test": {
-            "test": {
-              "eng": "male m boy "
-            },
-            "type": "contains_any"
-          },
-          "category": {
-            "eng": "Male"
-          },
-          "destination": "f59b766d-52e5-45a2-b95f-de3c1a28a5aa",
-          "uuid": "fcabeccc-cb7a-4940-8746-9ffd3613a36b",
-          "destination_type": "A"
-        },
-        {
-          "test": {
-            "test": {
-              "eng": "female f  girl"
-            },
-            "type": "contains_any"
-          },
-          "category": {
-            "eng": "Female"
-          },
-          "destination": "b61771c8-d1f3-4a8d-9970-30639cbfc206",
-          "uuid": "af358a86-03ae-44c4-baa2-f2690141deba",
-          "destination_type": "A"
-        },
-        {
-          "test": {
-            "type": "true"
-          },
-          "category": {
-            "eng": "Other"
-          },
-          "destination": "8bd9487f-48a9-474e-8ce3-31c1bdf3b5d0",
-          "uuid": "5b015464-d0f8-407c-9923-871dbdd21f91",
-          "destination_type": "A"
-        }
-      ],
-      "webhook": null,
-      "ruleset_type": "wait_message",
-      "label": "Gender",
-      "operand": "@step.value",
-      "finished_key": null,
-      "response_type": "C",
-      "y": 2076,
-      "x": 565,
-      "config": {}
-    },
-    {
-      "uuid": "944078e8-c226-416a-84cd-d4b390657360",
-      "webhook_action": null,
-      "rules": [
-        {
-          "test": {
-            "test": {
-              "eng": "Health a A"
-            },
-            "type": "contains_any"
-          },
-          "category": {
-            "eng": "Health"
-          },
-          "destination": "69852180-a6b6-40f0-89f0-90830f90dc3b",
-          "uuid": "8faa174f-76df-446d-900a-5d04f85dd0ad",
-          "destination_type": "A"
-        },
-        {
-          "test": {
-            "test": {
-              "eng": "Education b B"
-            },
-            "type": "contains_any"
-          },
-          "category": {
-            "eng": "Education"
-          },
-          "destination": "69852180-a6b6-40f0-89f0-90830f90dc3b",
-          "uuid": "48a800be-a381-42a9-9777-a3995a2e11b0",
-          "destination_type": "A"
-        },
-        {
-          "test": {
-            "test": {
-              "eng": "Finance / Business c C"
-            },
-            "type": "contains_any"
-          },
-          "category": {
-            "eng": "Business"
-          },
-          "destination": "69852180-a6b6-40f0-89f0-90830f90dc3b",
-          "uuid": "b13ee109-275a-4b14-8bbd-d628084b3cbe",
-          "destination_type": "A"
-        },
-        {
-          "test": {
-            "test": {
-              "eng": "Self Employed d D"
-            },
-            "type": "contains_any"
-          },
-          "category": {
-            "eng": "Self employed "
-          },
-          "destination": "69852180-a6b6-40f0-89f0-90830f90dc3b",
-          "uuid": "fdbc67aa-db39-41c1-af73-ca8a2dc3a726",
-          "destination_type": "A"
-        },
-        {
-          "test": {
-            "test": {
-              "eng": "Student e E"
-            },
-            "type": "contains_any"
-          },
-          "category": {
-            "eng": "Student "
-          },
-          "destination": "69852180-a6b6-40f0-89f0-90830f90dc3b",
-          "uuid": "1f65320e-8014-4f8e-ada0-41d157d3d72c",
-          "destination_type": "A"
-        },
-        {
-          "test": {
-            "test": {
-              "eng": "Uniformed Service f F"
-            },
-            "type": "contains_any"
-          },
-          "category": {
-            "eng": "Uniformed"
-          },
-          "destination": "69852180-a6b6-40f0-89f0-90830f90dc3b",
-          "uuid": "d95a1e1c-a52a-444c-9f4a-b3832bc99a07",
-          "destination_type": "A"
-        },
-        {
-          "test": {
-            "test": {
-              "eng": "Agriculture g G"
-            },
-            "type": "contains_any"
-          },
-          "category": {
-            "eng": "Agriculture"
-          },
-          "destination": "69852180-a6b6-40f0-89f0-90830f90dc3b",
-          "uuid": "f1648295-3e7f-4a7e-a351-bb6602137d35",
-          "destination_type": "A"
-        },
-        {
-          "test": {
-            "test": {
-              "eng": "Social worker h H"
-            },
-            "type": "contains_any"
-          },
-          "category": {
-            "eng": "Social worker"
-          },
-          "destination": "69852180-a6b6-40f0-89f0-90830f90dc3b",
-          "uuid": "1d71cfbc-a610-4965-984c-407d5acc83b7",
-          "destination_type": "A"
-        },
-        {
-          "test": {
-            "test": {
-              "eng": "Other i I"
-            },
-            "type": "contains_any"
-          },
-          "category": {
-            "eng": "Other"
-          },
-          "destination": "b816c6ef-fe02-4ce3-a70b-163f52d61251",
-          "uuid": "2adaaf15-68ce-4682-adb8-150ba26716bc",
-          "destination_type": "A"
-        },
-        {
-          "test": {
-            "test": {
-              "eng": "Corper j J"
-            },
-            "type": "contains_any"
-          },
-          "category": {
-            "eng": "Corper"
-          },
-          "destination": "2bd90e1c-34ad-4206-9505-eb0b93bd6f35",
-          "uuid": "37dd361f-6294-4a52-a7cf-45f8ace052db",
-          "destination_type": "A"
-        },
-        {
-          "test": {
-            "type": "true"
-          },
-          "category": {
-            "eng": "Other"
-          },
-          "destination": "eb0210c0-10c7-4d14-9dcf-7b13b8b0b794",
-          "uuid": "cfdd5f17-eafc-4282-9f6f-57df9c2c5766",
-          "destination_type": "A"
-        }
-      ],
-      "webhook": null,
-      "ruleset_type": "wait_message",
-      "label": "Occupation",
-      "operand": "@step.value",
-      "finished_key": null,
-      "response_type": "C",
-      "y": 3959,
-      "x": 226,
-      "config": {}
-    },
-    {
-      "uuid": "0dad8d42-0853-462b-bce7-7dfa46b35eef",
-      "webhook_action": null,
-      "rules": [
-        {
-          "test": {
-            "type": "true"
-          },
-          "category": {
-            "eng": "All Responses"
-          },
-          "destination": "69852180-a6b6-40f0-89f0-90830f90dc3b",
-          "uuid": "4b6cd273-dbcc-42a9-a407-020a9a9359b2",
-          "destination_type": "A"
-        }
-      ],
-      "webhook": null,
-      "ruleset_type": "wait_message",
-      "label": "Occupation",
-      "operand": "@step.value",
-      "finished_key": null,
-      "response_type": "O",
-      "y": 4207,
-      "x": 66,
-      "config": {}
-    },
-    {
-      "uuid": "46c61e28-d4bd-4af4-89e5-ed8884e45904",
-      "webhook_action": null,
-      "rules": [
-        {
-          "test": {
-            "test": {
-              "eng": "a a) a. english"
-            },
-            "type": "contains_any"
-          },
-          "category": {
-            "base": "English",
-            "eng": "English"
-          },
-          "destination": "8813f0d5-f8d0-4d95-9512-93b081cc4559",
-          "uuid": "1d7f2f58-330a-4a83-b52a-5e77d9880e0d",
-          "destination_type": "A"
-        },
-        {
-          "test": {
-            "test": {
-              "eng": "b b) b. pdgin"
-            },
-            "type": "contains_any"
-          },
-          "category": {
-            "base": "Pidgin",
-            "eng": "Pidgin"
-          },
-          "destination": "5ce6a2f5-8a00-42ec-a290-79751435a22a",
-          "uuid": "06e982ce-dbb6-4ef7-8967-751cd9d42d1d",
-          "destination_type": "A"
-        },
-        {
-          "test": {
-            "test": {
-              "eng": "c c) c. Hausa"
-            },
-            "type": "contains_any"
-          },
-          "category": {
-            "base": "Hausa",
-            "eng": "Hausa"
-          },
-          "destination": "2925195e-1f77-418e-9fd3-a387a4b42ea8",
-          "uuid": "64268aea-a97a-40a8-ab6c-5ba89cfbd2bd",
-          "destination_type": "A"
-        },
-        {
-          "test": {
-            "test": {
-              "eng": "d d) d. yoruba"
-            },
-            "type": "contains_any"
-          },
-          "category": {
-            "base": "Yoruba",
-            "eng": "Yoruba"
-          },
-          "destination": "510e8533-e510-4e23-a715-b79014be724c",
-          "uuid": "703d8040-d9cc-4261-b929-22452dba193a",
-          "destination_type": "A"
-        },
-        {
-          "test": {
-            "test": {
-              "eng": "e e) e. igbo"
-            },
-            "type": "contains_any"
-          },
-          "category": {
-            "base": "Igbo",
-            "eng": "Igbo"
-          },
-          "destination": "f9dd7875-a52e-4b93-a13b-a8e282690a37",
-          "uuid": "c62ab7ab-464f-46bf-b586-6e0a1de5e979",
-          "destination_type": "A"
-        },
-        {
-          "test": {
-            "type": "true"
-          },
-          "category": {
-            "base": "Other",
-            "eng": "Other"
-          },
-          "destination": "dfd1b4e9-c2aa-43b6-9ee6-9efa7a4ef12e",
-          "uuid": "83266486-6b21-4da8-89ff-80643cfbd717",
-          "destination_type": "A"
-        }
-      ],
-      "webhook": null,
-      "ruleset_type": "wait_message",
-      "label": "Language",
-      "operand": "@step.value",
-      "finished_key": null,
-      "response_type": "C",
-      "y": 323,
-      "x": 558,
-      "config": {}
-    }
-  ],
-  "entry": "76e71f2a-f15a-405d-b81f-36e847d3f09b",
-  "metadata": {
-    "uuid": "ac8924a1-7104-4df6-8518-342f4c40dfd2",
-    "revision": 75,
-    "archived": false,
-    "expires": 10080,
-    "name": "U-Report Registration Flow",
-    "created_on": "2014-04-07T14:34:47.504Z",
-    "last_saved": "2015-09-18T19:50:57.231032Z",
-    "notes": [
-      {
-        "body": "We do this using @flow.gender.category instead of @flow.gender so that we save Male or Female instead of whatever the UReporter used to answer the question (which could be M, boy, male, F, girl, etc)",
-        "x": 585,
-        "y": 2242,
-        "title": "Saving gender category to contact"
-      }
-    ]
-  }
 }
