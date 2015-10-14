@@ -13,14 +13,14 @@ public class GreaterThanOrEqualTestTest extends BaseTestTest {
     public void evaluate() {
         GreaterThanOrEqualTest test = new GreaterThanOrEqualTest("32 ");
         assertTest(test, "3l", false, null);
-        assertTest(test, "32", true, "32", new BigDecimal(32));
-        assertTest(test, "33", true, "33", new BigDecimal(33));
+        assertTest(test, "32", true, new BigDecimal(32));
+        assertTest(test, "33", true, new BigDecimal(33));
 
         // test can be an expression
         test = new GreaterThanOrEqualTest("@(contact.age - 2)");
 
         assertTest(test, "3l", false, null);
-        assertTest(test, "32", true, "32", new BigDecimal(32));
-        assertTest(test, "33", true, "33", new BigDecimal(33));
+        assertTest(test, "32", true, new BigDecimal(32));
+        assertTest(test, "33", true, new BigDecimal(33));
     }
 }

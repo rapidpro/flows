@@ -64,21 +64,18 @@ class Test(object):
 
     class Result(object):
         """
-        Holds the result of a test evaluation (matched + the text matched + the value matched)
+        Holds the result of a test evaluation (matched + the value matched)
         """
-        def __init__(self, matched, text, value):
+        def __init__(self, matched, value):
             self.matched = matched
-            self.text = text
             self.value = value
 
         @classmethod
-        def match(cls, text, value=None):
-            if value is None:
-                value = text
-            return cls(True, text, value)
+        def match(cls, value):
+            return cls(True, value)
 
 
-Test.Result.NO_MATCH = Test.Result(False, None, None)
+Test.Result.NO_MATCH = Test.Result(False, None)
 
 
 class TrueTest(Test):
@@ -106,7 +103,7 @@ class FalseTest(Test):
         return cls()
 
     def evaluate(self, runner, run, context, text):
-        return Test.Result(False, text, text)
+        return Test.Result(False, text)
 
 
 class AndTest(Test):
@@ -127,7 +124,7 @@ class AndTest(Test):
         for test in self.tests:
             result = test.evaluate(runner, run, context, text)
             if result.matched:
-                matches.append(result.text)
+                matches.append(conversions.to_string(result.value, context))
             else:
                 return Test.Result.NO_MATCH
 
@@ -152,7 +149,7 @@ class OrTest(Test):
         for test in self.tests:
             result = test.evaluate(runner, run, context, text)
             if result.matched:
-                return Test.Result.match(result.text)
+                return Test.Result.match(result.value)
 
         return Test.Result.NO_MATCH
 
@@ -347,21 +344,21 @@ class NumericTest(Test):
         """
         A very flexible decimal parser
         :param text: the text to be parsed
-        :return: the decimal value and the parse-able matching text (i.e. after substitutions)
+        :return: the decimal value
         """
         # common substitutions
         original_text = text
         text = text.replace('l', '1').replace('o', '0').replace('O', '0')
 
         try:
-            return Decimal(text), original_text
+            return Decimal(text)
         except Exception as e:
             # we only try this hard if we haven't already substituted characters
             if original_text == text:
                 # does this start with a number? just use that part if so
                 match = regex.match(r'^(\d+).*$', text, flags=regex.UNICODE | regex.V0)
                 if match:
-                    return Decimal(match.group(1)), match.group(1)
+                    return Decimal(match.group(1))
             raise e
 
     def evaluate(self, runner, run, context, text):
@@ -370,9 +367,9 @@ class NumericTest(Test):
         # test every word in the message against our test
         for word in regex.split(r'\s+', text, flags=regex.UNICODE | regex.V0):
             try:
-                decimal, word = self.extract_decimal(word)
+                decimal = self.extract_decimal(word)
                 if self.evaluate_for_decimal(runner, context, decimal):
-                    return Test.Result.match(word, decimal)
+                    return Test.Result.match(decimal)
             except Exception:
                 pass
 
@@ -532,7 +529,7 @@ class DateTest(Test):
         try:
             date = conversions.to_date(text, context)
             if self.evaluate_for_date(runner, context, date):
-                return Test.Result.match(text, date)
+                return Test.Result.match(date)
         except EvaluationError:
             pass
 

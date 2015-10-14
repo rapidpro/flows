@@ -13,14 +13,14 @@ public class EqualTestTest extends BaseTestTest {
     public void evaluate() {
         EqualTest test = new EqualTest("32 ");
         assertTest(test, "3l", false, null);
-        assertTest(test, "32", true, "32", new BigDecimal(32));
+        assertTest(test, "32", true, new BigDecimal(32));
         assertTest(test, "33", false, null);
 
         // test can be an expression
         test = new EqualTest("@(contact.age - 2)");
 
         assertTest(test, "3l", false, null);
-        assertTest(test, "32", true, "32", new BigDecimal(32));
+        assertTest(test, "32", true, new BigDecimal(32));
         assertTest(test, "33", false, null);
     }
 }

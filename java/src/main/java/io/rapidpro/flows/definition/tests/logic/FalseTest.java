@@ -26,6 +26,6 @@ public class FalseTest extends Test {
      */
     @Override
     public Result evaluate(Runner runner, RunState run, EvaluationContext context, String text) {
-        return new Result(false, text, text);
+        return new Result(false, text);
     }
 }

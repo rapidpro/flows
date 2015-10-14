@@ -24,14 +24,14 @@ public class BetweenTestTest extends BaseTestTest {
     public void evaluate() {
         BetweenTest test = new BetweenTest("32 ", "41");
 
-        assertTest(test, "32 cats", true, "32", new BigDecimal(32));
-        assertTest(test, "4l dogs", true, "4l", new BigDecimal(41));
+        assertTest(test, "32 cats", true, new BigDecimal(32));
+        assertTest(test, "4l dogs", true, new BigDecimal(41));
         assertTest(test, "31", false, null);
         assertTest(test, "42", false, null);
 
         // min and max can be expressions
         test = new BetweenTest("@contact.age", "@(contact.age + 3)");
 
-        assertTest(test, "35", true, "35", new BigDecimal(35));
+        assertTest(test, "35", true, new BigDecimal(35));
     }
 }

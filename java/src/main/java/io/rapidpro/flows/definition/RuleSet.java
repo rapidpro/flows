@@ -88,7 +88,7 @@ public class RuleSet extends Flow.Node {
         String category = rule.getCategory().getLocalized(Collections.singletonList(run.getFlow().getBaseLanguage()), "");
 
         String valueAsStr = Conversions.toString(testResult.getValue(), context);
-        Result result = new Result(rule, valueAsStr, category, testResult.getText());
+        Result result = new Result(rule, valueAsStr, category, input.getValueAsText(context));
         step.setRuleResult(result);
 
         run.updateValue(this, result, input.getTime());

@@ -44,16 +44,9 @@ public abstract class BaseTestTest extends BaseFlowsTest {
         return parser.parse(json).getAsJsonObject();
     }
 
-    protected void assertTest(Test test, String input, boolean expectedMatched, String expectedText) {
+    protected void assertTest(Test test, String input, boolean expectedMatched, Object expectedValue) {
         Test.Result result = test.evaluate(m_runner, m_run, m_context, input);
         assertThat(result.isMatched(), is(expectedMatched));
-        assertThat(result.getText(), is(expectedText));
-        assertThat(result.getValue(), is((Object) expectedText));
-    }
-
-    protected void assertTest(Test test, String input, boolean expectedMatched, String expectedText, Object expectedValue) {
-        Test.Result result = test.evaluate(m_runner, m_run, m_context, input);
-        assertThat(result.isMatched(), is(expectedMatched));
-        assertThat(result.getText(), is(expectedText));
+        assertThat(result.getValue(), is(expectedValue));
     }
 }

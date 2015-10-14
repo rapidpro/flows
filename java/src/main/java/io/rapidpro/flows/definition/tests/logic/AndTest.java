@@ -2,6 +2,7 @@ package io.rapidpro.flows.definition.tests.logic;
 
 import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluationContext;
+import io.rapidpro.expressions.evaluator.Conversions;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.definition.tests.Test;
@@ -42,7 +43,7 @@ public class AndTest extends Test {
         for (Test test : m_tests) {
             Test.Result result = test.evaluate(runner, run, context, text);
             if (result.isMatched()) {
-                matches.add(result.getText());
+                matches.add(Conversions.toString(result.getValue(), context));
             } else {
                 return Result.NO_MATCH;
             }

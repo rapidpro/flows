@@ -114,7 +114,7 @@ public class RunnerTest extends BaseFlowsTest {
         assertThat(run.getValues().size(), is(1));
         assertThat(run.getValues().get("response_1").getValue(), is("no"));
         assertThat(run.getValues().get("response_1").getCategory(), is("No"));
-        assertThat(run.getValues().get("response_1").getText(), is("no"));
+        assertThat(run.getValues().get("response_1").getText(), is("no way"));
         assertThat(run.getValues().get("response_1").getTime(), notNullValue());
 
         assertThat(run.getState(), is(RunState.State.COMPLETED));
@@ -145,7 +145,7 @@ public class RunnerTest extends BaseFlowsTest {
 
         assertThat(run.getState(), is(RunState.State.WAIT_MESSAGE));
 
-        m_runner.resume(run, Input.of("non"));
+        m_runner.resume(run, Input.of("non!!"));
 
         assertThat(run.getContact().getGroups(), contains("Approved")); // added to group
 
@@ -155,7 +155,7 @@ public class RunnerTest extends BaseFlowsTest {
 
         assertThat(run.getValues().get("response_1").getValue(), is("non"));
         assertThat(run.getValues().get("response_1").getCategory(), is("No"));
-        assertThat(run.getValues().get("response_1").getText(), is("non"));
+        assertThat(run.getValues().get("response_1").getText(), is("non!!"));
 
         assertThat(run.getState(), is(RunState.State.COMPLETED));
     }

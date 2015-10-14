@@ -13,8 +13,8 @@ public class HasNumberTestTest extends BaseTestTest {
     public void evaluate() {
         HasNumberTest test = new HasNumberTest();
 
-        assertTest(test, "32 cats", true, "32", new BigDecimal(32));
-        assertTest(test, "4l dogs", true, "4l", new BigDecimal(41));
+        assertTest(test, "32 cats", true, new BigDecimal(32));
+        assertTest(test, "4l dogs", true, new BigDecimal(41));
         assertTest(test, "cats", false, null);
         assertTest(test, "dogs", false, null);
     }

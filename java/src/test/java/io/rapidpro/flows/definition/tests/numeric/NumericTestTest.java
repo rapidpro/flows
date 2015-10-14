@@ -1,7 +1,5 @@
 package io.rapidpro.flows.definition.tests.numeric;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -16,9 +14,9 @@ public class NumericTestTest {
 
     @Test
     public void extractDecimal() throws Exception {
-        assertThat(NumericTest.extractDecimal("120"), is((Pair) new ImmutablePair<>(new BigDecimal(120), "120")));
-        assertThat(NumericTest.extractDecimal("l2O"), is((Pair) new ImmutablePair<>(new BigDecimal(120), "l2O")));
-        assertThat(NumericTest.extractDecimal("123C"), is((Pair) new ImmutablePair<>(new BigDecimal(123), "123")));
+        assertThat(NumericTest.extractDecimal("120"), is(new BigDecimal(120)));
+        assertThat(NumericTest.extractDecimal("l2O"), is(new BigDecimal(120)));
+        assertThat(NumericTest.extractDecimal("123C"), is(new BigDecimal(123)));
     }
 
     @Test(expected = NumberFormatException.class)
@@ -27,7 +25,7 @@ public class NumericTestTest {
     }
 
     @Test(expected = NumberFormatException.class)
-    public void extractDecimal_whenTextHasAlphaSubsitutionsAndSuffix() {
+    public void extractDecimal_whenTextHasAlphaSubstitutionsAndSuffix() {
         NumericTest.extractDecimal("I23C");
     }
 }

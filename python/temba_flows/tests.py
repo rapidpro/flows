@@ -780,7 +780,7 @@ class RunnerTest(BaseFlowsTest):
         self.assertEqual(len(run.values), 1)
         self.assertEqual(run.values["response_1"].value, "no")
         self.assertEqual(run.values["response_1"].category, "No")
-        self.assertEqual(run.values["response_1"].text, "no")
+        self.assertEqual(run.values["response_1"].text, "no way")
         self.assertIsNotNone(run.values["response_1"].time)
 
         self.assertEqual(run.state, RunState.State.COMPLETED)
@@ -809,7 +809,7 @@ class RunnerTest(BaseFlowsTest):
 
         self.assertEqual(run.state, RunState.State.WAIT_MESSAGE)
 
-        self.runner.resume(run, Input("non"))
+        self.runner.resume(run, Input("non!!"))
 
         self.assertEqual(run.contact.groups, ["Approved"])  # added to group
 
@@ -819,7 +819,7 @@ class RunnerTest(BaseFlowsTest):
 
         self.assertEqual(run.values["response_1"].value, "non")
         self.assertEqual(run.values["response_1"].category, "No")
-        self.assertEqual(run.values["response_1"].text, "non")
+        self.assertEqual(run.values["response_1"].text, "non!!")
 
         self.assertEqual(run.state, RunState.State.COMPLETED)
 
@@ -1016,13 +1016,9 @@ class TestsTest(BaseFlowsTest):
         self.run = self.runner.start(self.org, self.fields, self.contact, flow)
         self.context = self.run.build_context(None)
 
-    def assertTest(self, test, input, expected_matched, expected_text, expected_value=None):
-        if expected_value is None:
-            expected_value = expected_text
-
+    def assertTest(self, test, input, expected_matched, expected_value):
         result = test.evaluate(self.runner, self.run, self.context, input)
         self.assertEqual(result.matched, expected_matched)
-        self.assertEqual(result.text, expected_text)
         self.assertEqual(result.value, expected_value)
 
     def test_true_test(self):
@@ -1110,96 +1106,96 @@ class TestsTest(BaseFlowsTest):
         self.assertEqual(self.run.extra, {'0': "Isaac Newton", '1': "Isaac", '2': "Newton", 'first_name': "Isaac"})
 
     def test_numeric_test(self):
-        self.assertEqual(NumericTest.extract_decimal("120"), (Decimal(120), "120"))
-        self.assertEqual(NumericTest.extract_decimal("l2O"), (Decimal(120), "l2O"))
-        self.assertEqual(NumericTest.extract_decimal("123C"), (Decimal(123), "123"))
+        self.assertEqual(NumericTest.extract_decimal("120"), Decimal(120))
+        self.assertEqual(NumericTest.extract_decimal("l2O"), Decimal(120))
+        self.assertEqual(NumericTest.extract_decimal("123C"), Decimal(123))
 
         # text is NaN
         self.assertRaises(Exception, NumericTest.extract_decimal, "abc")
 
-        # text has alpha subsitutions and suffix
+        # text has alpha substitutions and suffix
         self.assertRaises(Exception, NumericTest.extract_decimal, "I23C")
 
     def test_has_number_test(self):
         test = HasNumberTest()
 
-        self.assertTest(test, "32 cats", True, "32", Decimal(32))
-        self.assertTest(test, "4l dogs", True, "4l", Decimal(41))
+        self.assertTest(test, "32 cats", True, Decimal(32))
+        self.assertTest(test, "4l dogs", True, Decimal(41))
         self.assertTest(test, "cats", False, None)
         self.assertTest(test, "dogs", False, None)
 
     def test_equal_test(self):
         test = EqualTest("32 ")
         self.assertTest(test, "3l", False, None)
-        self.assertTest(test, "32", True, "32", Decimal(32))
+        self.assertTest(test, "32", True, Decimal(32))
         self.assertTest(test, "33", False, None)
 
         # test can be an expression
         test = EqualTest("@(contact.age - 2)")
 
         self.assertTest(test, "3l", False, None)
-        self.assertTest(test, "32", True, "32", Decimal(32))
+        self.assertTest(test, "32", True, Decimal(32))
         self.assertTest(test, "33", False, None)
 
     def test_less_than_test(self):
         test = LessThanTest("32 ")
-        self.assertTest(test, "3l", True, "3l", Decimal(31))
+        self.assertTest(test, "3l", True, Decimal(31))
         self.assertTest(test, "32", False, None)
         self.assertTest(test, "33", False, None)
 
         # test can be an expression
         test = LessThanTest("@(contact.age - 2)")
 
-        self.assertTest(test, "3l", True, "3l", Decimal(31))
+        self.assertTest(test, "3l", True, Decimal(31))
         self.assertTest(test, "32", False, None)
         self.assertTest(test, "33", False, None)
 
     def test_less_than_or_equal_test(self):
         test = LessThanOrEqualTest("32 ")
-        self.assertTest(test, "3l", True, "3l", Decimal(31))
-        self.assertTest(test, "32", True, "32", Decimal(32))
+        self.assertTest(test, "3l", True, Decimal(31))
+        self.assertTest(test, "32", True, Decimal(32))
         self.assertTest(test, "33", False, None)
 
         # test can be an expression
         test = LessThanOrEqualTest("@(contact.age - 2)")
 
-        self.assertTest(test, "3l", True, "3l", Decimal(31))
-        self.assertTest(test, "32", True, "32", Decimal(32))
+        self.assertTest(test, "3l", True, Decimal(31))
+        self.assertTest(test, "32", True, Decimal(32))
         self.assertTest(test, "33", False, None)
 
     def test_greater_than_test(self):
         test = GreaterThanTest("32 ")
         self.assertTest(test, "3l", False, None)
         self.assertTest(test, "32", False, None)
-        self.assertTest(test, "33", True, "33", Decimal(33))
+        self.assertTest(test, "33", True, Decimal(33))
 
         # test can be an expression
         test = GreaterThanTest("@(contact.age - 2)")
 
         self.assertTest(test, "3l", False, None)
         self.assertTest(test, "32", False, None)
-        self.assertTest(test, "33", True, "33", Decimal(33))
+        self.assertTest(test, "33", True, Decimal(33))
 
     def test_greater_than_or_equal_test(self):
         test = GreaterThanOrEqualTest("32 ")
         self.assertTest(test, "3l", False, None)
-        self.assertTest(test, "32", True, "32", Decimal(32))
-        self.assertTest(test, "33", True, "33", Decimal(33))
+        self.assertTest(test, "32", True, Decimal(32))
+        self.assertTest(test, "33", True, Decimal(33))
 
         # test can be an expression
         test = GreaterThanOrEqualTest("@(contact.age - 2)")
 
         self.assertTest(test, "3l", False, None)
-        self.assertTest(test, "32", True, "32", Decimal(32))
-        self.assertTest(test, "33", True, "33", Decimal(33))
+        self.assertTest(test, "32", True, Decimal(32))
+        self.assertTest(test, "33", True, Decimal(33))
 
     def test_has_date_test(self):
         HasDateTest.from_json({}, self.deserialization_context)
 
         test = HasDateTest()
 
-        self.assertTest(test, "December 14, 1992", True, "December 14, 1992", datetime.date(1992, 12, 14))
-        self.assertTest(test, "sometime on 24/8/15", True, "sometime on 24/8/15", datetime.date(2015, 8, 24))
+        self.assertTest(test, "December 14, 1992", True, datetime.date(1992, 12, 14))
+        self.assertTest(test, "sometime on 24/8/15", True, datetime.date(2015, 8, 24))
 
         self.assertTest(test, "no date in this text", False, None)
 
@@ -1210,7 +1206,7 @@ class TestsTest(BaseFlowsTest):
         test = DateEqualTest("24/8/2015")
 
         self.assertTest(test, "23-8-15", False, None)
-        self.assertTest(test, "it was Aug 24, 2015", True, "it was Aug 24, 2015", datetime.date(2015, 8, 24))
+        self.assertTest(test, "it was Aug 24, 2015", True, datetime.date(2015, 8, 24))
         self.assertTest(test, "25th Aug '15", False, None)
 
         # date can be an expression
@@ -1218,7 +1214,7 @@ class TestsTest(BaseFlowsTest):
         test = DateEqualTest("@(dob)")
 
         self.assertTest(test, "23-8-15", False, None)
-        self.assertTest(test, "it was Aug 24, 2015", True, "it was Aug 24, 2015", datetime.date(2015, 8, 24))
+        self.assertTest(test, "it was Aug 24, 2015", True, datetime.date(2015, 8, 24))
         self.assertTest(test, "25th Aug '15", False, None)
 
     def test_date_after_test(self):
@@ -1228,16 +1224,16 @@ class TestsTest(BaseFlowsTest):
         test = DateAfterTest("24/8/2015")
 
         self.assertTest(test, "23-8-15", False, None)
-        self.assertTest(test, "it was Aug 24, 2015", True, "it was Aug 24, 2015", datetime.date(2015, 8, 24))
-        self.assertTest(test, "25th Aug '15", True, "25th Aug '15", datetime.date(2015, 8, 25))
+        self.assertTest(test, "it was Aug 24, 2015", True, datetime.date(2015, 8, 24))
+        self.assertTest(test, "25th Aug '15", True, datetime.date(2015, 8, 25))
 
         # date can be an expression
         self.context.put_variable("dob", "24-08-2015")
         test = DateAfterTest("@(dob)")
 
         self.assertTest(test, "23-8-15", False, None)
-        self.assertTest(test, "it was Aug 24, 2015", True, "it was Aug 24, 2015", datetime.date(2015, 8, 24))
-        self.assertTest(test, "25th Aug '15", True, "25th Aug '15", datetime.date(2015, 8, 25))
+        self.assertTest(test, "it was Aug 24, 2015", True, datetime.date(2015, 8, 24))
+        self.assertTest(test, "25th Aug '15", True, datetime.date(2015, 8, 25))
 
     def test_date_before_test(self):
         test = DateBeforeTest.from_json({"test": "December 14, 1892"}, self.deserialization_context)
@@ -1245,16 +1241,16 @@ class TestsTest(BaseFlowsTest):
 
         test = DateBeforeTest("24/8/2015")
 
-        self.assertTest(test, "23-8-15", True, "23-8-15", datetime.date(2015, 8, 23))
-        self.assertTest(test, "it was Aug 24, 2015", True, "it was Aug 24, 2015", datetime.date(2015, 8, 24))
+        self.assertTest(test, "23-8-15", True, datetime.date(2015, 8, 23))
+        self.assertTest(test, "it was Aug 24, 2015", True, datetime.date(2015, 8, 24))
         self.assertTest(test, "25th Aug '15", False, None)
 
         # date can be an expression
         self.context.put_variable("dob", "24-08-2015")
         test = DateBeforeTest("@(dob)")
 
-        self.assertTest(test, "23-8-15", True, "23-8-15", datetime.date(2015, 8, 23))
-        self.assertTest(test, "it was Aug 24, 2015", True, "it was Aug 24, 2015", datetime.date(2015, 8, 24))
+        self.assertTest(test, "23-8-15", True, datetime.date(2015, 8, 23))
+        self.assertTest(test, "it was Aug 24, 2015", True, datetime.date(2015, 8, 24))
         self.assertTest(test, "25th Aug '15", False, None)
 
     def test_has_phone_test(self):

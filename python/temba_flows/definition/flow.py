@@ -212,7 +212,7 @@ class RuleSet(Flow.Node):
         category = rule.category.get_localized_by_preferred([run.flow.base_language], "")
 
         value_as_str = conversions.to_string(test_result.value, context)
-        result = RuleSet.Result(rule, value_as_str, category, test_result.text)
+        result = RuleSet.Result(rule, value_as_str, category, input.get_value_as_text(context))
         step.rule_result = result
 
         run.update_value(self, result, input.time)

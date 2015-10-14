@@ -18,8 +18,8 @@ public class HasDateTestTest extends BaseTestTest {
     public void evaluate() {
         HasDateTest test = new HasDateTest();
 
-        assertTest(test, "December 14, 1992", true, "December 14, 1992", LocalDate.of(1992, 12, 14));
-        assertTest(test, "sometime on 24/8/15", true, "sometime on 24/8/15", LocalDate.of(2015, 8, 24));
+        assertTest(test, "December 14, 1992", true, LocalDate.of(1992, 12, 14));
+        assertTest(test, "sometime on 24/8/15", true, LocalDate.of(2015, 8, 24));
 
         assertTest(test, "no date in this text", false, null);
         assertTest(test, "123", false, null);  // this differs from old implementation which was a bit too flexible regarding dates

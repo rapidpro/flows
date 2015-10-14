@@ -4,8 +4,6 @@ import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.runner.Runner;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.math.BigDecimal;
 import java.util.regex.Matcher;
@@ -19,15 +17,15 @@ public abstract class NumericTest extends Test {
     /**
      * A very flexible decimal parser
      * @param text the text to be parsed
-     * @return the decimal value and the parse-able matching text (i.e. after substitutions)
+     * @return the decimal value
      */
-    protected static Pair<BigDecimal, String> extractDecimal(String text) {
+    protected static BigDecimal extractDecimal(String text) {
         // common substitutions
         String originalText = text;
         text = text.replace('l', '1').replace('o', '0').replace('O', '0');
 
         try {
-            return new ImmutablePair<>(new BigDecimal(text), originalText);
+            return new BigDecimal(text);
         }
         catch (NumberFormatException ex) {
             // we only try this hard if we haven 't already substituted characters
@@ -35,7 +33,7 @@ public abstract class NumericTest extends Test {
                 // does this start with a number? just use that part if so
                 Matcher matcher = Pattern.compile("^(\\d+).*$").matcher(text);
                 if (matcher.matches()) {
-                    return new ImmutablePair<>(new BigDecimal(matcher.group(1)), matcher.group(1));
+                    return new BigDecimal(matcher.group(1));
                 }
             }
             throw ex;
@@ -52,9 +50,9 @@ public abstract class NumericTest extends Test {
         // test every word in the message against our test
         for (String word : Pattern.compile("\\s+").split(text)) {
             try {
-                Pair<BigDecimal, String> pair = extractDecimal(word);
-                if (evaluateForDecimal(runner, context, pair.getLeft())) {
-                    return Test.Result.match(pair.getRight(), pair.getLeft());
+                BigDecimal decimal = extractDecimal(word);
+                if (evaluateForDecimal(runner, context, decimal)) {
+                    return Test.Result.match(decimal);
                 }
             }
             catch (NumberFormatException ignored) {}

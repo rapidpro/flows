@@ -22,16 +22,16 @@ public class DateBeforeTestTest extends BaseTestTest {
     public void evaluate() {
         DateBeforeTest test = new DateBeforeTest("24/8/2015");
 
-        assertTest(test, "23-8-15", true, "23-8-15", LocalDate.of(2015, 8, 23));
-        assertTest(test, "it was Aug 24, 2015", true, "it was Aug 24, 2015", LocalDate.of(2015, 8, 24));
+        assertTest(test, "23-8-15", true, LocalDate.of(2015, 8, 23));
+        assertTest(test, "it was Aug 24, 2015", true, LocalDate.of(2015, 8, 24));
         assertTest(test, "25th Aug '15", false, null);
 
         // date can be an expression
         m_context.putVariable("dob", "24-08-2015");
         test = new DateBeforeTest("@(dob)");
 
-        assertTest(test, "23-8-15", true, "23-8-15", LocalDate.of(2015, 8, 23));
-        assertTest(test, "it was Aug 24, 2015", true, "it was Aug 24, 2015", LocalDate.of(2015, 8, 24));
+        assertTest(test, "23-8-15", true, LocalDate.of(2015, 8, 23));
+        assertTest(test, "it was Aug 24, 2015", true, LocalDate.of(2015, 8, 24));
         assertTest(test, "25th Aug '15", false, null);
     }
 }

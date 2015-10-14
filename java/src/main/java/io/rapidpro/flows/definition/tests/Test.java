@@ -102,41 +102,34 @@ public abstract class Test {
     public abstract Result evaluate(Runner runner, RunState run, EvaluationContext context, String text);
 
     /**
-     * Holds the result of a test evaluation (matched + the text matched + the value matched)
+     * Holds the result of a test evaluation (matched + the value matched)
      */
     public static class Result {
-        public static Result NO_MATCH = new Result(false, null, null);
+        public static Result NO_MATCH = new Result(false, null);
 
         protected boolean m_matched;
 
-        protected String m_text;
-
         protected Object m_value;
 
-        public Result(boolean matched, String text, Object value) {
+        public Result(boolean matched, Object value) {
             m_matched = matched;
-            m_text = text;
             m_value = value;
         }
 
         public static Result match(String text) {
-            return new Result(true, text, text);
+            return new Result(true, text);
         }
 
-        public static Result match(String text, BigDecimal value) {
-            return new Result(true, text, value);
+        public static Result match(BigDecimal value) {
+            return new Result(true, value);
         }
 
-        public static Result match(String text, LocalDate value) {
-            return new Result(true, text, value);
+        public static Result match(LocalDate value) {
+            return new Result(true, value);
         }
 
         public boolean isMatched() {
             return m_matched;
-        }
-
-        public String getText() {
-            return m_text;
         }
 
         public Object getValue() {
@@ -145,7 +138,7 @@ public abstract class Test {
 
         @Override
         public String toString() {
-            return "Test.Result{matches=" + m_matched + ", match=" + (m_text != null ? "\"" + m_text + "\"" : "null") + '}';
+            return "Test.Result{matched=" + m_matched + ", value=" + m_value + '}';
         }
     }
 }
