@@ -4,6 +4,7 @@ import io.rapidpro.expressions.EvaluatorBuilder;
 import io.rapidpro.expressions.evaluator.Evaluator;
 import io.rapidpro.flows.runner.Location;
 import io.rapidpro.flows.runner.Runner;
+import org.threeten.bp.Instant;
 
 /**
  * Builder for runner instances
@@ -14,6 +15,8 @@ public class RunnerBuilder {
 
     protected Location.Resolver m_locationResolver;
 
+    protected Instant m_now;
+
     public RunnerBuilder withTemplateEvaluator(Evaluator templateEvaluator) {
         m_templateEvaluator = templateEvaluator;
         return this;
@@ -21,6 +24,11 @@ public class RunnerBuilder {
 
     public RunnerBuilder withLocationResolver(Location.Resolver locationResolver) {
         m_locationResolver = locationResolver;
+        return this;
+    }
+
+    public RunnerBuilder withNowAs(Instant now) {
+        m_now = now;
         return this;
     }
 
@@ -41,6 +49,6 @@ public class RunnerBuilder {
             };
         }
 
-        return new Runner(m_templateEvaluator, m_locationResolver);
+        return new Runner(m_templateEvaluator, m_locationResolver, m_now);
     }
 }

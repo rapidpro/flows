@@ -36,7 +36,7 @@ public class EmailAction extends Action {
 
     @Override
     public Result execute(Runner runner, RunState run, Input input) {
-        EvaluationContext context = run.buildContext(input);
+        EvaluationContext context = run.buildContext(runner, input);
 
         EvaluatedTemplate subject = runner.substituteVariables(m_subject, context);
         EvaluatedTemplate message = runner.substituteVariables(m_msg, context);

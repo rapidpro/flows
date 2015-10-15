@@ -36,7 +36,7 @@ public class InputTest extends BaseFlowsTest {
 
         m_runner = new RunnerBuilder().withLocationResolver(new TestLocationResolver()).build();
         m_run = m_runner.start(m_org, m_fields, m_contact, flow);
-        m_context = m_run.buildContext(null);
+        m_context = m_run.buildContext(m_runner, null);
     }
 
     @Test

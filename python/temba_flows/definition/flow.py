@@ -204,7 +204,7 @@ class RuleSet(Flow.Node):
 
         input.consume()
 
-        context = run.build_context(input)
+        context = run.build_context(runner, input)
 
         match = self.find_matching_rule(runner, run, context)
         if not match:

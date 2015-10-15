@@ -29,7 +29,7 @@ public class AddLabelsAction extends Action {
 
     @Override
     public Result execute(Runner runner, RunState run, Input input) {
-        EvaluationContext context = run.buildContext(input);
+        EvaluationContext context = run.buildContext(runner, input);
         List<LabelRef> labels = new ArrayList<>();
         List<String> errors = new ArrayList<>();
 

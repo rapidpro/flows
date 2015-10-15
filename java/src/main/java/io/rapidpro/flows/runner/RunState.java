@@ -111,8 +111,11 @@ public class RunState {
      * @param input the current input
      * @return the context
      */
-    public EvaluationContext buildContext(Input input) {
-        EvaluationContext context = new EvaluationContext(new HashMap<String, Object>(), m_org.getTimezone(), m_org.getDateStyle());
+    public EvaluationContext buildContext(Runner runner, Input input) {
+        // our concept of now may be overridden by the runner
+        Instant now = runner.getNow() != null ? runner.getNow() : Instant.now();
+
+        EvaluationContext context = new EvaluationContext(new HashMap<String, Object>(), m_org.getTimezone(), m_org.getDateStyle(), now);
 
         Map<String, String> contactContext = m_contact.buildContext(this, context);
 
@@ -120,7 +123,7 @@ public class RunState {
             context.putVariable("step", input.buildContext(context, contactContext));
         }
 
-        context.putVariable("date", buildDateContext(context, ZonedDateTime.now(m_org.getTimezone())));
+        context.putVariable("date", buildDateContext(context));
         context.putVariable("contact", contactContext);
         context.putVariable("extra", m_extra);
 
@@ -152,9 +155,10 @@ public class RunState {
     /**
      * Builds the date context (i.e. @date.now, @date.today, ...)
      */
-    protected static Map<String, String> buildDateContext(EvaluationContext container, ZonedDateTime now) {
-        LocalDate asDate = now.toLocalDate();
-        String asDateTimeStr = Conversions.toString(now, container);
+    protected static Map<String, String> buildDateContext(EvaluationContext container) {
+        ZonedDateTime asDateTime = container.getNow().atZone(container.getTimezone());
+        LocalDate asDate = asDateTime.toLocalDate();
+        String asDateTimeStr = Conversions.toString(asDateTime, container);
         String asDateStr = Conversions.toString(asDate, container);
 
         Map<String, String> dateContext = new HashMap<>();

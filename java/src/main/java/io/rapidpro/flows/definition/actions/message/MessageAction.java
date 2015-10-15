@@ -29,7 +29,7 @@ public abstract class MessageAction extends Action {
     public Result execute(Runner runner, RunState run, Input input) {
         String msg = m_msg.getLocalized(run);
         if (StringUtils.isNotEmpty(msg)) {
-            EvaluationContext context = run.buildContext(input);
+            EvaluationContext context = run.buildContext(runner, input);
             return executeWithMessage(runner, context, msg);
         } else {
             return Result.NOOP;

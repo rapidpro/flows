@@ -3,15 +3,13 @@ package io.rapidpro.flows.utils;
 import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import io.rapidpro.expressions.utils.ExpressionUtils;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.GroupRef;
 import io.rapidpro.flows.definition.LabelRef;
 import io.rapidpro.flows.definition.actions.Action;
 import org.threeten.bp.Instant;
-import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.ZoneId;
-import org.threeten.bp.ZoneOffset;
-import org.threeten.bp.format.DateTimeFormatter;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -90,12 +88,10 @@ public class JsonUtils {
      * e.g. "2014-10-03T01:41:12.790Z"
      */
     public static class InstantAdapter extends TypeAdapter<Instant> {
-        protected static DateTimeFormatter s_formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-
         @Override
         public void write(JsonWriter out, Instant instant) throws IOException {
             if (instant != null) {
-                out.value(s_formatter.format(instant.atOffset(ZoneOffset.UTC)));
+                out.value(ExpressionUtils.formatJsonDate(instant));
             } else {
                 out.nullValue();
             }
@@ -103,7 +99,7 @@ public class JsonUtils {
 
         @Override
         public Instant read(JsonReader in) throws IOException {
-            return LocalDateTime.parse(in.nextString(), s_formatter).atOffset(ZoneOffset.UTC).toInstant();
+            return ExpressionUtils.parseJsonDate(in.nextString());
         }
     }
 

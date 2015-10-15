@@ -50,7 +50,7 @@
               "name": "Jimmy",
               "urns": [],
               "groups": ["UReporters", "UReport English", "UReport Youth", "UReport Males"],
-              "fields": {"registration_date": "[[NOW]]", "born": "1981", "gender": "Male", "state": "Lagos", "lga": "Oyo", "ward": "Ibadan", "settlement": "London", "occupation": "Business"},
+              "fields": {"registration_date": "15-10-2015 08:48", "born": "1981", "gender": "Male", "state": "Lagos", "lga": "Oyo", "ward": "Ibadan", "settlement": "London", "occupation": "Business"},
               "language": "eng"
           }
     }

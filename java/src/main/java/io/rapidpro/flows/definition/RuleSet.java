@@ -82,7 +82,7 @@ public class RuleSet extends Flow.Node {
 
         input.consume();
 
-        EvaluationContext context = run.buildContext(input);
+        EvaluationContext context = run.buildContext(runner, input);
 
         Pair<Rule, Test.Result> match = findMatchingRule(runner, run, context);
         if (match == null) {

@@ -1,22 +1,19 @@
 package io.rapidpro.flows;
 
 import com.google.gson.annotations.SerializedName;
-import io.rapidpro.expressions.dates.DateParser;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.definition.actions.message.ReplyAction;
 import io.rapidpro.flows.runner.*;
 import io.rapidpro.flows.utils.JsonUtils;
 import org.junit.Test;
-import org.threeten.bp.Instant;
-import org.threeten.bp.LocalDate;
+import org.threeten.bp.ZoneOffset;
 import org.threeten.bp.ZonedDateTime;
-import org.threeten.bp.temporal.ChronoUnit;
 
 import java.util.List;
-import java.util.Map;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -52,6 +49,7 @@ public class InteractionTest extends BaseFlowsTest {
                         }
                     }
                 })
+                .withNowAs(ZonedDateTime.of(2015, 10, 15, 7, 48, 30, 123456789, ZoneOffset.UTC).toInstant())
                 .build();
 
         for (TestDefinition test : tests) {
@@ -99,34 +97,8 @@ public class InteractionTest extends BaseFlowsTest {
 
         assertThat(run.getContact().getName(), is(test.m_contactFinal.getName()));
         assertThat(run.getContact().getGroups(), is(test.m_contactFinal.getGroups()));
-        assertFieldValues(run.getOrg(), run.getContact().getFields(), test.m_contactFinal.getFields());
+        assertThat(run.getContact().getFields(), is(test.m_contactFinal.getFields()));
         assertThat(run.getContact().getLanguage(), is(test.m_contactFinal.getLanguage()));
-    }
-
-    /**
-     * Fields can contain dynamic datetime values. If an expected field has [[NOW]], we compare it to the current
-     * time with a +/- 1 minute error margin
-     */
-    protected void assertFieldValues(Org org, Map<String, String> actual, Map<String, String> expected) {
-        assertThat(actual.keySet(), is(expected.keySet()));
-
-        for (Map.Entry<String, String> entry : actual.entrySet()) {
-            String actualValue = entry.getValue();
-            String expectedValue = expected.get(entry.getKey());
-
-            if (expectedValue.equals("[[NOW]]")) {
-                DateParser dateParser = new DateParser(LocalDate.now(), org.getTimezone(), org.getDateStyle());
-                ZonedDateTime actualDateTime = (ZonedDateTime) dateParser.auto(actualValue);
-                Instant actualInstant = Instant.from(actualDateTime);
-
-                // equality check with +/- 1 minute error margin
-                assertThat(actualInstant, is(greaterThan(Instant.now().minus(60, ChronoUnit.SECONDS))));
-                assertThat(actualInstant, is(lessThan(Instant.now().plus(60, ChronoUnit.SECONDS))));
-
-            } else {
-                assertThat("Field mismatch for " + entry.getKey(), actualValue, is(expectedValue));
-            }
-        }
     }
 
     protected static class TestDefinition {

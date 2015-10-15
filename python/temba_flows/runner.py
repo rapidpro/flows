@@ -12,10 +12,10 @@ from ordered_set import OrderedSet
 from temba_expressions import conversions
 from temba_expressions.dates import DateStyle
 from temba_expressions.evaluator import Evaluator, EvaluationContext, EvaluationStrategy
+from temba_expressions.utils import format_json_date, parse_json_date
 from .definition.flow import Action, Flow, RuleSet
 from .exceptions import FlowRunException, FlowLoopException
-from .utils.flow import normalize_number
-from .utils.json import format_json_date, parse_json_date
+from .utils import normalize_number
 
 
 DEFAULT_EVALUATOR = Evaluator(expression_prefix='@',
@@ -504,15 +504,18 @@ class RunState(object):
             'state': self.state.name.lower()
         }
 
-    def build_context(self, input):
-        context = EvaluationContext({}, self.org.timezone, self.org.date_style)
+    def build_context(self, runner, input):
+        # our concept of now may be overridden by the runner
+        now = runner.now if runner.now else datetime.datetime.now(tz=self.org.timezone)
+
+        context = EvaluationContext({}, self.org.timezone, self.org.date_style, now)
 
         contact_context = self.contact.build_context(self, context)
 
         if input is not None:
             context.put_variable("step", input.build_context(context, contact_context))
 
-        context.put_variable("date", self.build_date_context(context, datetime.datetime.now(tz=self.org.timezone)))
+        context.put_variable("date", self.build_date_context(context))
         context.put_variable("contact", contact_context)
         context.put_variable("extra", self.extra)
 
@@ -539,12 +542,12 @@ class RunState(object):
         self.values[key] = Value(result.value, result.category, result.text, time)
 
     @staticmethod
-    def build_date_context(container, now):
+    def build_date_context(container):
         """
         Builds the date context (i.e. @date.now, @date.today, ...)
         """
-        as_date = now.date()
-        as_datetime_str = conversions.to_string(now, container)
+        as_date = container.now.date()
+        as_datetime_str = conversions.to_string(container.now, container)
         as_date_str = conversions.to_string(as_date, container)
 
         return {
@@ -594,9 +597,10 @@ class Runner(object):
     """
     The flow runner
     """
-    def __init__(self, template_evaluator=DEFAULT_EVALUATOR, location_resolver=None):
+    def __init__(self, template_evaluator=DEFAULT_EVALUATOR, location_resolver=None, now=None):
         self.template_evaluator = template_evaluator
         self.location_resolver = location_resolver
+        self.now = now
 
     def start(self, org, fields, contact, flow):
         """

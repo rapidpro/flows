@@ -6,6 +6,7 @@ import io.rapidpro.flows.BaseFlowsTest;
 import io.rapidpro.flows.RunnerBuilder;
 import io.rapidpro.flows.definition.Flow;
 import org.junit.Test;
+import org.threeten.bp.Instant;
 import org.threeten.bp.ZoneId;
 import org.threeten.bp.ZonedDateTime;
 
@@ -23,10 +24,10 @@ public class RunStateTest extends BaseFlowsTest {
 
     @Test
     public void buildDateContext() throws Exception {
-        EvaluationContext container = new EvaluationContext(new HashMap<String, Object>(), ZoneId.of("Africa/Kigali"), DateStyle.DAY_FIRST);
-        ZonedDateTime now = ZonedDateTime.of(2015, 8, 24, 9, 44, 5, 0, ZoneId.of("Africa/Kigali"));
+        Instant now = ZonedDateTime.of(2015, 8, 24, 9, 44, 5, 0, ZoneId.of("Africa/Kigali")).toInstant();
+        EvaluationContext container = new EvaluationContext(new HashMap<String, Object>(), ZoneId.of("Africa/Kigali"), DateStyle.DAY_FIRST, now);
 
-        Map<String, String> context = RunState.buildDateContext(container, now);
+        Map<String, String> context = RunState.buildDateContext(container);
 
         assertThat(context, hasEntry("*", "24-08-2015 09:44"));
         assertThat(context, hasEntry("now", "24-08-2015 09:44"));
@@ -34,9 +35,9 @@ public class RunStateTest extends BaseFlowsTest {
         assertThat(context, hasEntry("tomorrow", "25-08-2015"));
         assertThat(context, hasEntry("yesterday", "23-08-2015"));
 
-        container = new EvaluationContext(new HashMap<String, Object>(), ZoneId.of("Africa/Kigali"), DateStyle.MONTH_FIRST);
+        container = new EvaluationContext(new HashMap<String, Object>(), ZoneId.of("Africa/Kigali"), DateStyle.MONTH_FIRST, now);
 
-        context = RunState.buildDateContext(container, now);
+        context = RunState.buildDateContext(container);
 
         assertThat(context, hasEntry("*", "08-24-2015 09:44"));
         assertThat(context, hasEntry("now", "08-24-2015 09:44"));

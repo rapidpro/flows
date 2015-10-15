@@ -36,7 +36,7 @@ public class SaveToContactAction extends Action {
      */
     @Override
     public Result execute(Runner runner, RunState run, Input input) {
-        EvaluatedTemplate valueTpl = runner.substituteVariables(m_value, run.buildContext(input));
+        EvaluatedTemplate valueTpl = runner.substituteVariables(m_value, run.buildContext(runner, input));
         if (!valueTpl.hasErrors()) {
             String field = m_field;
             String label;

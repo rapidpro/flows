@@ -10,10 +10,10 @@
             { "type": "input", "msg": "28th May 2081" },
             { "type": "reply", "msg": "Your birthdate can't be in the future. Try again." },
             { "type": "input", "msg": "sorry I meant 28th May 1981" },
-            { "type": "reply", "msg": "You entered \"sorry I meant 28th May 1981\" which is 28-05-1981" }
+            { "type": "reply", "msg": "You entered \"sorry I meant 28th May 1981\" which is 28-05-1981 and is saved as 28-05-1981. Your approximate age is 34" }
         ],
-        "fields_created": [],
-        "contact_final": { "uuid": "1234", "name": "Joe Flow", "urns": [], "groups": [], "fields": {}}
+        "fields_created": [{ "key": "birthdate", "label": "Birthdate", "value_type": "T" }],
+        "contact_final": { "uuid": "1234", "name": "Joe Flow", "urns": [], "groups": [], "fields": {"birthdate": "28-05-1981"}}
     },
     {
         "org": {"country": "RW", "primary_language": "eng", "timezone": "Africa/Kigali", "date_style": "day_first", "anon": false},
@@ -21,10 +21,10 @@
         "contact_initial": {"uuid": "1234", "name": "Joe Flow", "urns": [], "groups": [], "fields": {}},
         "messages": [
             { "type": "reply", "msg": "When was your birth date?" },
-            { "type": "input", "msg": "MAI-28-1981" },
-            { "type": "reply", "msg": "You entered \"MAI-28-1981\" which is 28-05-1981" }
+            { "type": "input", "msg": "FEV-28-1990" },
+            { "type": "reply", "msg": "You entered \"FEV-28-1990\" which is 28-02-1990 and is saved as 28-02-1990. Your approximate age is 25" }
         ],
-        "fields_created": [],
-        "contact_final": { "uuid": "1234", "name": "Joe Flow", "urns": [], "groups": [], "fields": {}}
+        "fields_created": [{ "key": "birthdate", "label": "Birthdate", "value_type": "T" }],
+        "contact_final": { "uuid": "1234", "name": "Joe Flow", "urns": [], "groups": [], "fields": {"birthdate": "28-02-1990"}}
     }
 ]

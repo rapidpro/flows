@@ -30,7 +30,7 @@ public abstract class GroupMembershipAction extends Action {
      */
     @Override
     public Result execute(Runner runner, RunState run, Input input) {
-        EvaluationContext context = run.buildContext(input);
+        EvaluationContext context = run.buildContext(runner, input);
         List<GroupRef> groups = new ArrayList<>();
         List<String> errors = new ArrayList<>();
 

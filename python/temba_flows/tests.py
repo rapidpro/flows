@@ -8,7 +8,7 @@ import pytz
 import unittest
 
 from ordered_set import OrderedSet
-from temba_expressions.dates import DateStyle, DateParser
+from temba_expressions.dates import DateStyle
 from temba_expressions.evaluator import EvaluationContext
 from .definition import ContactRef, GroupRef, LabelRef, VariableRef
 from .definition.flow import Flow, Action, ActionSet, RuleSet
@@ -17,8 +17,7 @@ from .definition.actions import AddToGroupsAction, RemoveFromGroupsAction, AddLa
 from .definition.tests import *
 from .exceptions import FlowRunException
 from .runner import Contact, ContactUrn, Field, Input, Location, Org, Runner, RunState, Step, Value
-from .utils.flow import edit_distance, normalize_number
-from .utils.json import parse_json_date, format_json_date
+from .utils import edit_distance, normalize_number
 
 
 class BaseFlowsTest(unittest.TestCase):
@@ -87,7 +86,7 @@ class ActionsTest(BaseFlowsTest):
 
         self.runner = Runner(location_resolver=BaseFlowsTest.TestLocationResolver())
         self.run = self.runner.start(self.org, self.fields, self.contact, flow)
-        self.context = self.run.build_context(None)
+        self.context = self.run.build_context(self.runner, None)
 
     def test_reply_action(self):
         action = ReplyAction.from_json({"type": "reply", "msg": {"fre": "Bonjour"}}, self.deserialization_context)
@@ -286,7 +285,7 @@ class ContactTest(BaseFlowsTest):
         flow = Flow.from_json(json.loads(self.read_resource("test_flows/mushrooms.json")))
         self.runner = Runner(location_resolver=BaseFlowsTest.TestLocationResolver())
         self.run = self.runner.start(self.org, self.fields, self.contact, flow)
-        self.context = self.run.build_context(None)
+        self.context = self.run.build_context(self.runner, None)
 
     def test_to_and_from_json(self):
         json_obj = self.contact.to_json()
@@ -511,7 +510,8 @@ class InteractionTest(BaseFlowsTest):
 
         interactions_json = json.loads(self.read_resource(interactions_file))
         tests = [InteractionTest.TestDefinition.from_json(t) for t in interactions_json]
-        runner = Runner(location_resolver=InteractionTest.TestLocationResolver())
+        runner = Runner(location_resolver=InteractionTest.TestLocationResolver(),
+                        now=datetime.datetime(2015, 10, 15, 7, 48, 30, 123456, pytz.UTC))
 
         for test in tests:
             self._run_interaction_test(runner, flow, test)
@@ -552,28 +552,8 @@ class InteractionTest(BaseFlowsTest):
 
         self.assertEqual(run.contact.name, test.contact_final.name)
         self.assertEqual(run.contact.groups, test.contact_final.groups)
-        self.assertFieldValues(run.org, run.contact.fields, test.contact_final.fields)
+        self.assertEqual(run.contact.fields, test.contact_final.fields)
         self.assertEqual(run.contact.language, test.contact_final.language)
-
-    def assertFieldValues(self, org, actual, expected):
-        """
-        Fields can contain dynamic datetime values. If an expected field has [[NOW]], we compare it to the current
-        time with a +/- 1 minute error margin
-        """
-        self.assertEqual(actual.keys(), expected.keys())
-
-        for key, actual_value in actual.iteritems():
-            expected_value = expected[key]
-
-            if expected_value == "[[NOW]]":
-                date_parser = DateParser(datetime.date.today(), org.timezone, org.date_style)
-                actual_datetime = date_parser.auto(actual_value)
-
-                # equality check with +/- 1 minute error margin
-                seconds_diff = (actual_datetime - datetime.datetime.now(tz=org.timezone)).total_seconds()
-                self.assertTrue(abs(seconds_diff) < 60)
-            else:
-                self.assertEqual(actual_value, expected_value, "Field mismatch for " + key)
 
     class TestDefinition(object):
         def __init__(self, org, fields_initial, contact_initial, messages, fields_created, contact_final):
@@ -618,7 +598,7 @@ class InputTest(BaseFlowsTest):
         flow = Flow.from_json(json.loads(self.read_resource("test_flows/mushrooms.json")))
         self.runner = Runner(location_resolver=BaseFlowsTest.TestLocationResolver())
         self.run = self.runner.start(self.org, self.fields, self.contact, flow)
-        self.context = self.run.build_context(None)
+        self.context = self.run.build_context(self.runner, None)
 
     def test_build_context(self):
         time = datetime.datetime(2015, 9, 30, 14, 31, 30, 0, pytz.UTC)
@@ -893,10 +873,10 @@ class RunnerTest(BaseFlowsTest):
 class RunStateTest(BaseFlowsTest):
 
     def test_build_date_context(self):
-        container = EvaluationContext({}, pytz.timezone("Africa/Kigali"), DateStyle.DAY_FIRST)
         now = datetime.datetime(2015, 8, 24, 9, 44, 5, 0, pytz.timezone("Africa/Kigali"))
+        container = EvaluationContext({}, pytz.timezone("Africa/Kigali"), DateStyle.DAY_FIRST, now)
 
-        context = RunState.build_date_context(container, now)
+        context = RunState.build_date_context(container)
 
         self.assertEqual(context, {'*': "24-08-2015 09:44",
                                    'now': "24-08-2015 09:44",
@@ -904,9 +884,9 @@ class RunStateTest(BaseFlowsTest):
                                    'tomorrow': "25-08-2015",
                                    'yesterday': "23-08-2015"})
 
-        container = EvaluationContext({}, pytz.timezone("Africa/Kigali"), DateStyle.MONTH_FIRST)
+        container = EvaluationContext({}, pytz.timezone("Africa/Kigali"), DateStyle.MONTH_FIRST, now)
 
-        context = RunState.build_date_context(container, now)
+        context = RunState.build_date_context(container)
 
         self.assertEqual(context, {'*': "08-24-2015 09:44",
                                    'now': "08-24-2015 09:44",
@@ -1015,7 +995,7 @@ class TestsTest(BaseFlowsTest):
 
         self.runner = Runner(location_resolver=BaseFlowsTest.TestLocationResolver())
         self.run = self.runner.start(self.org, self.fields, self.contact, flow)
-        self.context = self.run.build_context(None)
+        self.context = self.run.build_context(self.runner, None)
 
     def assertTest(self, test, input, expected_matched, expected_value):
         result = test.evaluate(self.runner, self.run, self.context, input)
@@ -1356,19 +1336,6 @@ class UtilsTest(unittest.TestCase):
         self.assertEquals(normalize_number("0788383383", None), ("0788383383", False))
         self.assertEquals(normalize_number("0788383383", "ZZ"), ("0788383383", False))
         self.assertEquals(normalize_number("MTN", "RW"), ("mtn", False))
-
-    def test_json_dates(self):
-        self.assertIsNone(format_json_date(None))
-        self.assertIsNone(parse_json_date(None))
-
-        tz = pytz.timezone("Africa/Kigali")
-        d1 = tz.localize(datetime.datetime(2015, 10, 13, 9, 27, 30, 123000))
-        s1 = format_json_date(d1)
-
-        self.assertEqual(s1, '2015-10-13T07:27:30.123Z')
-
-        d2 = parse_json_date(s1)
-        self.assertEqual(d1, d2)
 
 
 class ValueTest(BaseFlowsTest):

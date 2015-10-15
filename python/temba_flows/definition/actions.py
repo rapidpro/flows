@@ -78,7 +78,7 @@ class MessageAction(Action):
     def execute(self, runner, run, input):
         msg = self.msg.get_localized(run)
         if msg:
-            context = run.build_context(input)
+            context = run.build_context(runner, input)
             return self.execute_with_message(runner, context, msg)
         else:
             return Action.Result.NOOP
@@ -182,7 +182,7 @@ class EmailAction(Action):
                 'msg': self.msg}
 
     def execute(self, runner, run, input):
-        context = run.build_context(input)
+        context = run.build_context(runner, input)
 
         subject, subject_errors = runner.substitute_variables(self.subject, context)
         message, message_errors = runner.substitute_variables(self.msg, context)
@@ -218,7 +218,7 @@ class SaveToContactAction(Action):
         return {'type': self.TYPE, 'field': self.field, 'label': self.label, 'value': self.value}
 
     def execute(self, runner, run, input):
-        value, errors = runner.substitute_variables(self.value, run.build_context(input))
+        value, errors = runner.substitute_variables(self.value, run.build_context(runner, input))
         if not errors:
             field = self.field
             value = value.strip()
@@ -288,7 +288,7 @@ class GroupMembershipAction(Action):
         self.groups = groups
 
     def execute(self, runner, run, input):
-        context = run.build_context(input)
+        context = run.build_context(runner, input)
         groups = []
         errors = []
 
@@ -371,7 +371,7 @@ class AddLabelsAction(Action):
         return {'type': self.TYPE, 'groups': [l.to_json() for l in self.labels]}
 
     def execute(self, runner, run, input):
-        context = run.build_context(input)
+        context = run.build_context(runner, input)
         labels = []
         errors = []
 

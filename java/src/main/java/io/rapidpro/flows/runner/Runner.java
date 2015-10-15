@@ -7,6 +7,7 @@ import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.RuleSet;
 import org.apache.commons.lang3.StringUtils;
 import org.threeten.bp.Instant;
+import org.threeten.bp.ZonedDateTime;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -22,9 +23,12 @@ public class Runner {
 
     protected Location.Resolver m_locationResolver;
 
-    public Runner(Evaluator templateEvaluator, Location.Resolver locationResolver) {
+    protected Instant m_now;
+
+    public Runner(Evaluator templateEvaluator, Location.Resolver locationResolver, Instant now) {
         m_templateEvaluator = templateEvaluator;
         m_locationResolver = locationResolver;
+        m_now = now;
     }
 
     /**
@@ -230,5 +234,9 @@ public class Runner {
             }
         }
         return null;
+    }
+
+    public Instant getNow() {
+        return m_now;
     }
 }
