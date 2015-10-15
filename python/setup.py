@@ -19,7 +19,7 @@ test_packages = _read_requirements("requirements/tests.txt")
 
 setup(
     name='rapidpro-flows',
-    version='1.2',
+    version='1.2.1',
     description='Python implementation of the RapidPro flow engine',
     url='https://github.com/rapidpro/flows',
 
