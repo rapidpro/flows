@@ -13,17 +13,15 @@ import io.rapidpro.flows.runner.Step;
 import io.rapidpro.flows.utils.JsonUtils;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A flow definition, typically loaded from JSON
  */
 public class Flow {
 
-    protected static int SPEC_VERSION = 7;
+    // supported versions of the flow spec
+    public static Set<Integer> SPEC_VERSIONS = new HashSet<>(Arrays.asList(7, 8));
 
     public enum Type {
         @SerializedName("F") FLOW,
@@ -61,7 +59,7 @@ public class Flow {
 
             if (obj.has("version")) {
                 int version = obj.get("version").getAsInt();
-                if (version != SPEC_VERSION) {
+                if (!SPEC_VERSIONS.contains(version)) {
                     throw new FlowParseException("Unsupported flow spec version: " + version);
                 }
             } else {

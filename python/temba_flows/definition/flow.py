@@ -17,7 +17,7 @@ class Flow(object):
     """
     A flow definition, typically loaded from JSON
     """
-    SPEC_VERSION = 7
+    SPEC_VERSIONS = {7, 8}
 
     class Type(Enum):
         FLOW = 'F'
@@ -46,7 +46,7 @@ class Flow(object):
     def from_json(cls, json_obj):
         if 'version' in json_obj:
             version = int(json_obj['version'])
-            if version != cls.SPEC_VERSION:
+            if version not in cls.SPEC_VERSIONS:
                 raise FlowParseException("Unsupported flow spec version: %d" % version)
         else:
             raise FlowParseException("Missing flow spec version")
