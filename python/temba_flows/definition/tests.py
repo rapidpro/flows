@@ -88,6 +88,9 @@ class TrueTest(Test):
     def from_json(cls, json_obj, context):
         return cls()
 
+    def to_json(self):
+        return {'type': self.TYPE}
+
     def evaluate(self, runner, run, context, text):
         return Test.Result.match(text)
 
@@ -101,6 +104,9 @@ class FalseTest(Test):
     @classmethod
     def from_json(cls, json_obj, context):
         return cls()
+
+    def to_json(self):
+        return {'type': self.TYPE}
 
     def evaluate(self, runner, run, context, text):
         return Test.Result(False, text)
@@ -118,6 +124,9 @@ class AndTest(Test):
     @classmethod
     def from_json(cls, json_obj, context):
         return AndTest([Test.from_json(t, context) for t in json_obj['tests']])
+
+    def to_json(self):
+        return {'type': self.TYPE, 'tests': [t.to_json() for t in self.tests]}
 
     def evaluate(self, runner, run, context, text):
         matches = []
@@ -145,6 +154,9 @@ class OrTest(Test):
     def from_json(cls, json_obj, context):
         return OrTest([Test.from_json(t, context) for t in json_obj['tests']])
 
+    def to_json(self):
+        return {'type': self.TYPE, 'tests': [t.to_json() for t in self.tests]}
+
     def evaluate(self, runner, run, context, text):
         for test in self.tests:
             result = test.evaluate(runner, run, context, text)
@@ -163,6 +175,9 @@ class NotEmptyTest(Test):
     @classmethod
     def from_json(cls, json_obj, context):
         return NotEmptyTest()
+
+    def to_json(self):
+        return {'type': self.TYPE}
 
     def evaluate(self, runner, run, context, text):
         text = text.strip()
@@ -204,6 +219,9 @@ class ContainsTest(TranslatableTest):
     @classmethod
     def from_json(cls, json_obj, context):
         return cls(TranslatableText.from_json(json_obj['test']))
+
+    def to_json(self):
+        return {'type': self.TYPE, 'test': self.test.to_json()}
 
     @staticmethod
     def test_in_words(test, words, raw_words):
@@ -249,6 +267,13 @@ class ContainsAnyTest(ContainsTest):
     """
     TYPE = 'contains_any'
 
+    @classmethod
+    def from_json(cls, json_obj, context):
+        return cls(TranslatableText.from_json(json_obj['test']))
+
+    def to_json(self):
+        return {'type': self.TYPE, 'test': self.test.to_json()}
+
     def evaluate_for_localized(self, runner, run, context, text, localized_test):
         localized_test, errors = runner.substitute_variables(localized_test, context)
 
@@ -283,6 +308,9 @@ class StartsWithTest(TranslatableTest):
     def from_json(cls, json_obj, context):
         return cls(TranslatableText.from_json(json_obj['test']))
 
+    def to_json(self):
+        return {'type': self.TYPE, 'test': self.test.to_json()}
+
     def evaluate_for_localized(self, runner, run, context, text, localized_test):
         localized_test, errors = runner.substitute_variables(localized_test, context)
 
@@ -305,6 +333,9 @@ class RegexTest(TranslatableTest):
     @classmethod
     def from_json(cls, json_obj, context):
         return cls(TranslatableText.from_json(json_obj['test']))
+
+    def to_json(self):
+        return {'type': self.TYPE, 'test': self.test.to_json()}
 
     def evaluate_for_localized(self, runner, run, context, text, localized_test):
         try:
@@ -393,6 +424,9 @@ class HasNumberTest(NumericTest):
     def from_json(cls, json_obj, context):
         return cls()
 
+    def to_json(self):
+        return {'type': self.TYPE}
+
     def evaluate_for_decimal(self, runner, context, decimal):
         return True  # this method is only called on decimals parsed from the input
 
@@ -432,6 +466,9 @@ class EqualTest(NumericComparisonTest):
     def from_json(cls, json_obj, context):
         return cls(json_obj['test'])
 
+    def to_json(self):
+        return {'type': self.TYPE, 'test': self.test}
+
     def do_comparison(self, input, test):
         return input == test
 
@@ -445,6 +482,9 @@ class LessThanTest(NumericComparisonTest):
     @classmethod
     def from_json(cls, json_obj, context):
         return cls(json_obj['test'])
+
+    def to_json(self):
+        return {'type': self.TYPE, 'test': self.test}
 
     def do_comparison(self, input, test):
         return input < test
@@ -460,6 +500,9 @@ class LessThanOrEqualTest(NumericComparisonTest):
     def from_json(cls, json_obj, context):
         return cls(json_obj['test'])
 
+    def to_json(self):
+        return {'type': self.TYPE, 'test': self.test}
+
     def do_comparison(self, input, test):
         return input <= test
 
@@ -474,6 +517,9 @@ class GreaterThanTest(NumericComparisonTest):
     def from_json(cls, json_obj, context):
         return cls(json_obj['test'])
 
+    def to_json(self):
+        return {'type': self.TYPE, 'test': self.test}
+
     def do_comparison(self, input, test):
         return input > test
 
@@ -487,6 +533,9 @@ class GreaterThanOrEqualTest(NumericComparisonTest):
     @classmethod
     def from_json(cls, json_obj, context):
         return cls(json_obj['test'])
+
+    def to_json(self):
+        return {'type': self.TYPE, 'test': self.test}
 
     def do_comparison(self, input, test):
         return input >= test
@@ -505,6 +554,9 @@ class BetweenTest(NumericTest):
     @classmethod
     def from_json(cls, json_obj, context):
         return cls(json_obj['min'], json_obj['max'])
+
+    def to_json(self):
+        return {'type': self.TYPE, 'min': self.min, 'max': self.max}
 
     def evaluate_for_decimal(self, runner, context, decimal):
         min_val, min_errors = runner.substitute_variables(self.min, context)
@@ -550,6 +602,9 @@ class HasDateTest(DateTest):
     def from_json(cls, json_obj, context):
         return cls()
 
+    def to_json(self):
+        return {'type': self.TYPE}
+
     def evaluate_for_date(self, runner, context, date):
         return True  # this method is only called on dates parsed from the input
 
@@ -590,6 +645,9 @@ class DateEqualTest(DateComparisonTest):
     def from_json(cls, json_obj, context):
         return cls(json_obj['test'])
 
+    def to_json(self):
+        return {'type': self.TYPE, 'test': self.test}
+
     def do_comparison(self, date, test):
         return date == test
 
@@ -603,6 +661,9 @@ class DateAfterTest(DateComparisonTest):
     @classmethod
     def from_json(cls, json_obj, context):
         return cls(json_obj['test'])
+
+    def to_json(self):
+        return {'type': self.TYPE, 'test': self.test}
 
     def do_comparison(self, date, test):
         return date >= test
@@ -618,6 +679,9 @@ class DateBeforeTest(DateComparisonTest):
     def from_json(cls, json_obj, context):
         return cls(json_obj['test'])
 
+    def to_json(self):
+        return {'type': self.TYPE, 'test': self.test}
+
     def do_comparison(self, date, test):
         return date <= test
 
@@ -631,6 +695,9 @@ class HasPhoneTest(Test):
     @classmethod
     def from_json(cls, json_obj, context):
         return cls()
+
+    def to_json(self):
+        return {'type': self.TYPE}
 
     def evaluate(self, runner, run, context, text):
         country = run.org.country
@@ -660,6 +727,9 @@ class HasStateTest(Test):
     def from_json(cls, json_obj, context):
         return cls()
 
+    def to_json(self):
+        return {'type': self.TYPE}
+
     def evaluate(self, runner, run, context, text):
         from ..runner import Location
 
@@ -684,6 +754,9 @@ class HasDistrictTest(Test):
     @classmethod
     def from_json(cls, json_obj, context):
         return cls(json_obj.get('test', None))
+
+    def to_json(self):
+        return {'type': self.TYPE, 'test': self.state}
 
     def evaluate(self, runner, run, context, text):
         from ..runner import Location

@@ -1003,20 +1003,42 @@ class TestsTest(BaseFlowsTest):
         self.assertEqual(result.value, expected_value)
 
     def test_true_test(self):
+        json_obj = {'type': 'true'}
+        test = Test.from_json(json_obj, self.deserialization_context)
+        self.assertIsInstance(test, TrueTest)
+        self.assertEqual(test.to_json(), json_obj)
+
         test = TrueTest()
         self.assertTest(test, "huh?", True, "huh?")
 
     def test_false_test(self):
+        json_obj = {'type': 'false'}
+        test = Test.from_json(json_obj, self.deserialization_context)
+        self.assertIsInstance(test, FalseTest)
+        self.assertEqual(test.to_json(), json_obj)
+
         test = FalseTest()
         self.assertTest(test, "huh?", False, "huh?")
 
     def test_and_test(self):
+        json_obj = {'type': 'and', 'tests': [{'type': 'contains', 'test': 'upon'},
+                                             {'type': 'starts', 'test': 'once'}]}
+        test = Test.from_json(json_obj, self.deserialization_context)
+        self.assertIsInstance(test, AndTest)
+        self.assertEqual(test.to_json(), json_obj)
+
         test = AndTest([ContainsTest(TranslatableText("upon")), StartsWithTest(TranslatableText("once"))])
         self.assertTest(test, "Once upon a time", True, "upon Once")
         self.assertTest(test, "Once a time", False, None)
         self.assertTest(test, "upon this rock I once", False, None)
 
     def test_or_test(self):
+        json_obj = {'type': 'or', 'tests': [{'type': 'contains', 'test': 'upon'},
+                                            {'type': 'starts', 'test': 'once'}]}
+        test = Test.from_json(json_obj, self.deserialization_context)
+        self.assertIsInstance(test, OrTest)
+        self.assertEqual(test.to_json(), json_obj)
+
         test = OrTest([ContainsTest(TranslatableText("upon")), StartsWithTest(TranslatableText("once"))])
         self.assertTest(test, "Once upon a time", True, "upon")
         self.assertTest(test, "Once a time", True, "Once")
@@ -1024,26 +1046,35 @@ class TestsTest(BaseFlowsTest):
         self.assertTest(test, "huh", False, None)
 
     def test_not_empty_test(self):
+        json_obj = {'type': 'not_empty'}
+        test = Test.from_json(json_obj, self.deserialization_context)
+        self.assertIsInstance(test, NotEmptyTest)
+        self.assertEqual(test.to_json(), json_obj)
+
         test = NotEmptyTest()
         self.assertTest(test, " ok  ", True, "ok")
         self.assertTest(test, "  ", False, None)
         self.assertTest(test, "", False, None)
 
     def test_contains_test(self):
-        test = ContainsTest.from_json({"test": "Hello"}, self.deserialization_context)
-        self.assertEqual(test.test, TranslatableText("Hello"))
+        json_obj = {'type': 'contains', 'test': 'upon'}
+        test = Test.from_json(json_obj, self.deserialization_context)
+        self.assertIsInstance(test, ContainsTest)
+        self.assertEqual(test.to_json(), json_obj)
 
         test = ContainsTest(TranslatableText("north,east"))
-
         self.assertTest(test, "go north east", True, "north east")
         self.assertTest(test, "EAST then NORRTH", True, "NORRTH EAST")
-
         self.assertTest(test, "go north", False, None)
         self.assertTest(test, "east", False, None)
 
     def test_contains_any_test(self):
-        test = ContainsAnyTest(TranslatableText({'eng': "yes,affirmative", 'fre': "non"}))
+        json_obj = {'type': 'contains_any', 'test': 'upon'}
+        test = Test.from_json(json_obj, self.deserialization_context)
+        self.assertIsInstance(test, ContainsAnyTest)
+        self.assertEqual(test.to_json(), json_obj)
 
+        test = ContainsAnyTest(TranslatableText({'eng': "yes,affirmative", 'fre': "non"}))
         self.assertTest(test, "yes", True, "yes")
         self.assertTest(test, "AFFIRMATIVE SIR", True, "AFFIRMATIVE")
         self.assertTest(test, "affirmative yes", True, "yes affirmative")
@@ -1071,6 +1102,11 @@ class TestsTest(BaseFlowsTest):
         self.assertTest(test, "kigali city", False, None)
 
     def test_starts_with_test(self):
+        json_obj = {'type': 'starts', 'test': 'once'}
+        test = Test.from_json(json_obj, self.deserialization_context)
+        self.assertIsInstance(test, StartsWithTest)
+        self.assertEqual(test.to_json(), json_obj)
+
         test = StartsWithTest(TranslatableText("once"))
 
         self.assertTest(test, "  ONCE", True, "ONCE")
@@ -1079,6 +1115,11 @@ class TestsTest(BaseFlowsTest):
         self.assertTest(test, "Hey once", False, None)
 
     def test_regex_test(self):
+        json_obj = {'type': 'regex', 'test': '(?P<first_name>\\w+) (\\w+)'}
+        test = Test.from_json(json_obj, self.deserialization_context)
+        self.assertIsInstance(test, RegexTest)
+        self.assertEqual(test.to_json(), json_obj)
+
         test = RegexTest(TranslatableText("(?P<first_name>\\w+) (\\w+)"))
 
         self.assertTest(test, "Isaac Newton", True, "Isaac Newton")
@@ -1098,6 +1139,11 @@ class TestsTest(BaseFlowsTest):
         self.assertRaises(Exception, NumericTest.extract_decimal, "I23C")
 
     def test_has_number_test(self):
+        json_obj = {'type': 'number'}
+        test = Test.from_json(json_obj, self.deserialization_context)
+        self.assertIsInstance(test, HasNumberTest)
+        self.assertEqual(test.to_json(), json_obj)
+
         test = HasNumberTest()
 
         self.assertTest(test, "32 cats", True, Decimal(32))
@@ -1106,6 +1152,11 @@ class TestsTest(BaseFlowsTest):
         self.assertTest(test, "dogs", False, None)
 
     def test_equal_test(self):
+        json_obj = {'type': 'eq', 'test': '32'}
+        test = Test.from_json(json_obj, self.deserialization_context)
+        self.assertIsInstance(test, EqualTest)
+        self.assertEqual(test.to_json(), json_obj)
+
         test = EqualTest("32 ")
         self.assertTest(test, "3l", False, None)
         self.assertTest(test, "32", True, Decimal(32))
@@ -1119,6 +1170,11 @@ class TestsTest(BaseFlowsTest):
         self.assertTest(test, "33", False, None)
 
     def test_less_than_test(self):
+        json_obj = {'type': 'lt', 'test': '32'}
+        test = Test.from_json(json_obj, self.deserialization_context)
+        self.assertIsInstance(test, LessThanTest)
+        self.assertEqual(test.to_json(), json_obj)
+
         test = LessThanTest("32 ")
         self.assertTest(test, "3l", True, Decimal(31))
         self.assertTest(test, "32", False, None)
@@ -1132,6 +1188,11 @@ class TestsTest(BaseFlowsTest):
         self.assertTest(test, "33", False, None)
 
     def test_less_than_or_equal_test(self):
+        json_obj = {'type': 'lte', 'test': '32'}
+        test = Test.from_json(json_obj, self.deserialization_context)
+        self.assertIsInstance(test, LessThanOrEqualTest)
+        self.assertEqual(test.to_json(), json_obj)
+
         test = LessThanOrEqualTest("32 ")
         self.assertTest(test, "3l", True, Decimal(31))
         self.assertTest(test, "32", True, Decimal(32))
@@ -1145,6 +1206,11 @@ class TestsTest(BaseFlowsTest):
         self.assertTest(test, "33", False, None)
 
     def test_greater_than_test(self):
+        json_obj = {'type': 'gt', 'test': '32'}
+        test = Test.from_json(json_obj, self.deserialization_context)
+        self.assertIsInstance(test, GreaterThanTest)
+        self.assertEqual(test.to_json(), json_obj)
+
         test = GreaterThanTest("32 ")
         self.assertTest(test, "3l", False, None)
         self.assertTest(test, "32", False, None)
@@ -1158,6 +1224,11 @@ class TestsTest(BaseFlowsTest):
         self.assertTest(test, "33", True, Decimal(33))
 
     def test_greater_than_or_equal_test(self):
+        json_obj = {'type': 'gte', 'test': '32'}
+        test = Test.from_json(json_obj, self.deserialization_context)
+        self.assertIsInstance(test, GreaterThanOrEqualTest)
+        self.assertEqual(test.to_json(), json_obj)
+
         test = GreaterThanOrEqualTest("32 ")
         self.assertTest(test, "3l", False, None)
         self.assertTest(test, "32", True, Decimal(32))
@@ -1171,10 +1242,12 @@ class TestsTest(BaseFlowsTest):
         self.assertTest(test, "33", True, Decimal(33))
 
     def test_has_date_test(self):
-        HasDateTest.from_json({}, self.deserialization_context)
+        json_obj = {'type': 'date'}
+        test = Test.from_json(json_obj, self.deserialization_context)
+        self.assertIsInstance(test, HasDateTest)
+        self.assertEqual(test.to_json(), json_obj)
 
         test = HasDateTest()
-
         self.assertTest(test, "December 14, 1992", True, datetime.date(1992, 12, 14))
         self.assertTest(test, "sometime on 24/8/15", True, datetime.date(2015, 8, 24))
 
@@ -1184,8 +1257,12 @@ class TestsTest(BaseFlowsTest):
         self.assertTest(test, "123", False, None)
 
     def test_date_equal_test(self):
-        test = DateEqualTest("24/8/2015")
+        json_obj = {'type': 'date_equal', 'test': '24/8/2015'}
+        test = Test.from_json(json_obj, self.deserialization_context)
+        self.assertIsInstance(test, DateEqualTest)
+        self.assertEqual(test.to_json(), json_obj)
 
+        test = DateEqualTest("24/8/2015")
         self.assertTest(test, "23-8-15", False, None)
         self.assertTest(test, "it was Aug 24, 2015", True, datetime.date(2015, 8, 24))
         self.assertTest(test, "25th Aug '15", False, None)
@@ -1199,11 +1276,12 @@ class TestsTest(BaseFlowsTest):
         self.assertTest(test, "25th Aug '15", False, None)
 
     def test_date_after_test(self):
-        test = DateAfterTest.from_json({"test": "December 14, 1892"}, self.deserialization_context)
-        self.assertEqual(test.test, "December 14, 1892")
+        json_obj = {'type': 'date_after', 'test': '24/8/2015'}
+        test = Test.from_json(json_obj, self.deserialization_context)
+        self.assertIsInstance(test, DateAfterTest)
+        self.assertEqual(test.to_json(), json_obj)
 
         test = DateAfterTest("24/8/2015")
-
         self.assertTest(test, "23-8-15", False, None)
         self.assertTest(test, "it was Aug 24, 2015", True, datetime.date(2015, 8, 24))
         self.assertTest(test, "25th Aug '15", True, datetime.date(2015, 8, 25))
@@ -1217,11 +1295,12 @@ class TestsTest(BaseFlowsTest):
         self.assertTest(test, "25th Aug '15", True, datetime.date(2015, 8, 25))
 
     def test_date_before_test(self):
-        test = DateBeforeTest.from_json({"test": "December 14, 1892"}, self.deserialization_context)
-        self.assertEqual(test.test, "December 14, 1892")
+        json_obj = {'type': 'date_before', 'test': '24/8/2015'}
+        test = Test.from_json(json_obj, self.deserialization_context)
+        self.assertIsInstance(test, DateBeforeTest)
+        self.assertEqual(test.to_json(), json_obj)
 
         test = DateBeforeTest("24/8/2015")
-
         self.assertTest(test, "23-8-15", True, datetime.date(2015, 8, 23))
         self.assertTest(test, "it was Aug 24, 2015", True, datetime.date(2015, 8, 24))
         self.assertTest(test, "25th Aug '15", False, None)
@@ -1235,18 +1314,22 @@ class TestsTest(BaseFlowsTest):
         self.assertTest(test, "25th Aug '15", False, None)
 
     def test_has_phone_test(self):
-        HasPhoneTest.from_json({}, self.deserialization_context)
+        json_obj = {'type': 'phone'}
+        test = Test.from_json(json_obj, self.deserialization_context)
+        self.assertIsInstance(test, HasPhoneTest)
+        self.assertEqual(test.to_json(), json_obj)
 
         test = HasPhoneTest()
-
         self.assertTest(test, "My phone number is 0788 383 383", True, "+250788383383")
         self.assertTest(test, "+250788123123", True, "+250788123123")
         self.assertTest(test, "+12067799294", True, "+12067799294")
-
         self.assertTest(test, "My phone is 0124515", False, None)
 
     def test_has_state_test(self):
-        HasStateTest.from_json({}, self.deserialization_context)
+        json_obj = {'type': 'state'}
+        test = Test.from_json(json_obj, self.deserialization_context)
+        self.assertIsInstance(test, HasStateTest)
+        self.assertEqual(test.to_json(), json_obj)
 
         test = HasStateTest()
 
@@ -1254,11 +1337,12 @@ class TestsTest(BaseFlowsTest):
         self.assertTest(test, "Washington", False, None)
 
     def test_has_district_test(self):
-        test = HasDistrictTest.from_json({"test": "kigali"}, self.deserialization_context)
-        self.assertEqual(test.state, "kigali")
+        json_obj = {'type': 'district', 'test': 'Kigali'}
+        test = Test.from_json(json_obj, self.deserialization_context)
+        self.assertIsInstance(test, HasDistrictTest)
+        self.assertEqual(test.to_json(), json_obj)
 
         test = HasDistrictTest("kigali")
-
         self.assertTest(test, " gasabo", True, "Gasabo")
         self.assertTest(test, "Nine", False, None)
 
