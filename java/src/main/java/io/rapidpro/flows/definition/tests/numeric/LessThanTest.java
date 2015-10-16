@@ -1,9 +1,11 @@
 package io.rapidpro.flows.definition.tests.numeric;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.definition.tests.Test;
+import io.rapidpro.flows.utils.JsonUtils;
 
 import java.math.BigDecimal;
 
@@ -23,6 +25,11 @@ public class LessThanTest extends NumericComparisonTest {
      */
     public static LessThanTest fromJson(JsonObject obj, Flow.DeserializationContext context) throws FlowParseException {
         return new LessThanTest(obj.get("test").getAsString());
+    }
+
+    @Override
+    public JsonElement toJson() {
+        return JsonUtils.object("type", TYPE, "test", m_test);
     }
 
     /**

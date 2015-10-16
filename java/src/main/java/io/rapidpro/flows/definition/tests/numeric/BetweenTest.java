@@ -1,5 +1,6 @@
 package io.rapidpro.flows.definition.tests.numeric;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluatedTemplate;
 import io.rapidpro.expressions.EvaluationContext;
@@ -7,6 +8,7 @@ import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.Runner;
+import io.rapidpro.flows.utils.JsonUtils;
 
 import java.math.BigDecimal;
 
@@ -31,6 +33,11 @@ public class BetweenTest extends NumericTest {
      */
     public static BetweenTest fromJson(JsonObject obj, Flow.DeserializationContext context) throws FlowParseException {
         return new BetweenTest(obj.get("min").getAsString(), obj.get("max").getAsString());
+    }
+
+    @Override
+    public JsonElement toJson() {
+        return JsonUtils.object("type", TYPE, "min", m_min, "max", m_max);
     }
 
     /**

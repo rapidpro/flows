@@ -1,19 +1,28 @@
 package io.rapidpro.flows.definition.tests.location;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import io.rapidpro.flows.definition.tests.BaseTestTest;
-import org.junit.Test;
+import io.rapidpro.flows.definition.tests.Test;
+import io.rapidpro.flows.utils.JsonUtils;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Test for {@link HasStateTest}
  */
 public class HasStateTestTest extends BaseTestTest {
 
-    @Test
-    public void fromJson() throws Exception {
-        HasStateTest.fromJson(parseObject("{}"), m_deserializationContext);
+    @org.junit.Test
+    public void toAndFromJson() throws Exception {
+        JsonObject obj = JsonUtils.object("type", "state");
+        HasStateTest test = (HasStateTest) Test.fromJson(obj, m_deserializationContext);
+
+        assertThat(test.toJson(), is((JsonElement) obj));
     }
 
-    @Test
+    @org.junit.Test
     public void evaluate() {
         HasStateTest test = new HasStateTest();
 

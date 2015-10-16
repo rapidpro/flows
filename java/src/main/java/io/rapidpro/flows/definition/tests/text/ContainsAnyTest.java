@@ -1,5 +1,6 @@
 package io.rapidpro.flows.definition.tests.text;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.utils.ExpressionUtils;
@@ -9,6 +10,7 @@ import io.rapidpro.flows.definition.TranslatableText;
 import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.runner.Runner;
+import io.rapidpro.flows.utils.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -30,6 +32,11 @@ public class ContainsAnyTest extends ContainsTest {
      */
     public static ContainsAnyTest fromJson(JsonObject obj, Flow.DeserializationContext context) throws FlowParseException {
         return new ContainsAnyTest(TranslatableText.fromJson(obj.get("test")));
+    }
+
+    @Override
+    public JsonElement toJson() {
+        return JsonUtils.object("type", TYPE, "test", m_test.toJson());
     }
 
     /**

@@ -1,8 +1,11 @@
 package io.rapidpro.flows.definition.tests.text;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import io.rapidpro.flows.definition.TranslatableText;
 import io.rapidpro.flows.definition.tests.BaseTestTest;
-import org.junit.Test;
+import io.rapidpro.flows.definition.tests.Test;
+import io.rapidpro.flows.utils.JsonUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +18,17 @@ import static org.junit.Assert.assertThat;
  * Test for {@link ContainsTest}
  */
 public class RegexTestTest extends BaseTestTest {
-    @Test
+
+    @org.junit.Test
+    public void toAndFromJson() throws Exception {
+        JsonObject obj = JsonUtils.object("type", "regex", "test", "(?P<first_name>\\w+) (\\w+)");
+        RegexTest test = (RegexTest) Test.fromJson(obj, m_deserializationContext);
+        assertThat(test.m_test, is(new TranslatableText("(?P<first_name>\\w+) (\\w+)")));
+
+        assertThat(test.toJson(), is((JsonElement) obj));
+    }
+
+    @org.junit.Test
     public void evaluate() {
         RegexTest test = new RegexTest(new TranslatableText("(?P<first_name>\\w+) (\\w+)"));
 
@@ -28,7 +41,7 @@ public class RegexTestTest extends BaseTestTest {
         assertThat(m_run.getExtra(), hasEntry("first_name", (Object) "Isaac"));
     }
 
-    @Test
+    @org.junit.Test
     public void pythonToJavaRegex() {
         Map<String, String> groupNames = new HashMap<>();
         String regex = RegexTest.pythonToJavaRegex("(?P<first_name>\\w+) (\\w+)", groupNames);

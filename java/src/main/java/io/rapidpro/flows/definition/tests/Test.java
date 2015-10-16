@@ -21,6 +21,7 @@ import io.rapidpro.flows.definition.tests.text.*;
 import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.runner.Runner;
 import io.rapidpro.flows.utils.JsonUtils;
+import io.rapidpro.flows.utils.Jsonizable;
 import org.threeten.bp.LocalDate;
 
 import java.math.BigDecimal;
@@ -32,7 +33,7 @@ import java.util.Map;
 /**
  * A test which can be evaluated to true or false on a given string
  */
-public abstract class Test {
+public abstract class Test implements Jsonizable {
 
     protected static Map<String, Class<? extends Test>> s_classByType = new HashMap<>();
     static {

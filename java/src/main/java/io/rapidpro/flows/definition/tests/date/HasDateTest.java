@@ -1,10 +1,12 @@
 package io.rapidpro.flows.definition.tests.date;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.Runner;
+import io.rapidpro.flows.utils.JsonUtils;
 import org.threeten.bp.LocalDate;
 
 /**
@@ -19,6 +21,11 @@ public class HasDateTest extends DateTest {
      */
     public static HasDateTest fromJson(JsonObject obj, Flow.DeserializationContext context) {
         return new HasDateTest();
+    }
+
+    @Override
+    public JsonElement toJson() {
+        return JsonUtils.object("type", TYPE);
     }
 
     /**

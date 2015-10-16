@@ -1,5 +1,6 @@
 package io.rapidpro.flows.definition.tests;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.i18n.phonenumbers.PhoneNumberMatch;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
@@ -9,6 +10,7 @@ import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.runner.Runner;
+import io.rapidpro.flows.utils.JsonUtils;
 
 /**
  * Test that returns whether the text contains a valid phone number
@@ -22,6 +24,11 @@ public class HasPhoneTest extends Test {
      */
     public static HasPhoneTest fromJson(JsonObject obj, Flow.DeserializationContext context) throws FlowParseException {
         return new HasPhoneTest();
+    }
+
+    @Override
+    public JsonElement toJson() {
+        return JsonUtils.object("type", TYPE);
     }
 
     /**

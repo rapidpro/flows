@@ -1,8 +1,11 @@
 package io.rapidpro.flows.definition.tests.text;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import io.rapidpro.flows.definition.TranslatableText;
 import io.rapidpro.flows.definition.tests.BaseTestTest;
-import org.junit.Test;
+import io.rapidpro.flows.definition.tests.Test;
+import io.rapidpro.flows.utils.JsonUtils;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -12,13 +15,16 @@ import static org.junit.Assert.assertThat;
  */
 public class ContainsTestTest extends BaseTestTest {
 
-    @Test
-    public void fromJson() throws Exception {
-        ContainsTest test = ContainsTest.fromJson(parseObject("{\"test\": \"Hello\"}"), m_deserializationContext);
-        assertThat(test.getTest(), is(new TranslatableText("Hello")));
+    @org.junit.Test
+    public void toAndFromJson() throws Exception {
+        JsonObject obj = JsonUtils.object("type", "contains", "test", "north,east");
+        ContainsTest test = (ContainsTest) Test.fromJson(obj, m_deserializationContext);
+        assertThat(test.m_test, is(new TranslatableText("north,east")));
+
+        assertThat(test.toJson(), is((JsonElement) obj));
     }
 
-    @Test
+    @org.junit.Test
     public void evaluate() {
         ContainsTest test = new ContainsTest(new TranslatableText("north,east"));
 

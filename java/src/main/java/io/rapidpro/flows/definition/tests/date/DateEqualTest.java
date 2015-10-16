@@ -1,9 +1,11 @@
 package io.rapidpro.flows.definition.tests.date;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.definition.tests.Test;
+import io.rapidpro.flows.utils.JsonUtils;
 import org.threeten.bp.LocalDate;
 
 /**
@@ -22,6 +24,11 @@ public class DateEqualTest extends DateComparisonTest {
      */
     public static DateEqualTest fromJson(JsonObject obj, Flow.DeserializationContext context) throws FlowParseException {
         return new DateEqualTest(obj.get("test").getAsString());
+    }
+
+    @Override
+    public JsonElement toJson() {
+        return JsonUtils.object("type", TYPE, "test", m_test);
     }
 
     /**

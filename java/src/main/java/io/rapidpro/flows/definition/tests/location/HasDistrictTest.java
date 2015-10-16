@@ -1,5 +1,6 @@
 package io.rapidpro.flows.definition.tests.location;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluatedTemplate;
 import io.rapidpro.expressions.EvaluationContext;
@@ -30,6 +31,11 @@ public class HasDistrictTest extends Test {
      */
     public static HasDistrictTest fromJson(JsonObject obj, Flow.DeserializationContext context) throws FlowParseException {
         return new HasDistrictTest(JsonUtils.getAsString(obj, "test"));
+    }
+
+    @Override
+    public JsonElement toJson() {
+        return JsonUtils.object("type", TYPE, "test", m_state);
     }
 
     /**

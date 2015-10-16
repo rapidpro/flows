@@ -1,20 +1,29 @@
 package io.rapidpro.flows.definition.tests.date;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import io.rapidpro.flows.definition.tests.BaseTestTest;
-import org.junit.Test;
+import io.rapidpro.flows.definition.tests.Test;
+import io.rapidpro.flows.utils.JsonUtils;
 import org.threeten.bp.LocalDate;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Test for {@link HasDateTest}
  */
 public class HasDateTestTest extends BaseTestTest {
 
-    @Test
-    public void fromJson() throws Exception {
-        HasDateTest.fromJson(parseObject("{}"), m_deserializationContext);
+    @org.junit.Test
+    public void toAndFromJson() throws Exception {
+        JsonObject obj = JsonUtils.object("type", "date");
+        HasDateTest test = (HasDateTest) Test.fromJson(obj, m_deserializationContext);
+
+        assertThat(test.toJson(), is((JsonElement) obj));
     }
 
-    @Test
+    @org.junit.Test
     public void evaluate() {
         HasDateTest test = new HasDateTest();
 

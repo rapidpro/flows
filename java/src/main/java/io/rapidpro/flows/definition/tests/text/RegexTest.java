@@ -1,5 +1,6 @@
 package io.rapidpro.flows.definition.tests.text;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.flows.definition.Flow;
@@ -8,6 +9,7 @@ import io.rapidpro.flows.definition.TranslatableText;
 import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.runner.Runner;
+import io.rapidpro.flows.utils.JsonUtils;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -32,6 +34,11 @@ public class RegexTest extends TranslatableTest {
      */
     public static RegexTest fromJson(JsonObject obj, Flow.DeserializationContext context) throws FlowParseException {
         return new RegexTest(TranslatableText.fromJson(obj.get("test")));
+    }
+
+    @Override
+    public JsonElement toJson() {
+        return JsonUtils.object("type", TYPE, "test", m_test.toJson());
     }
 
     /**

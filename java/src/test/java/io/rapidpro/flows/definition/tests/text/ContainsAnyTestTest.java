@@ -1,15 +1,30 @@
 package io.rapidpro.flows.definition.tests.text;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import io.rapidpro.flows.definition.TranslatableText;
 import io.rapidpro.flows.definition.tests.BaseTestTest;
-import org.junit.Test;
+import io.rapidpro.flows.definition.tests.Test;
+import io.rapidpro.flows.utils.JsonUtils;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Test for {@link ContainsAnyTest}
  */
 public class ContainsAnyTestTest extends BaseTestTest {
 
-    @Test
+    @org.junit.Test
+    public void toAndFromJson() throws Exception {
+        JsonObject obj = JsonUtils.object("type", "contains_any", "test", "yes,affirmative");
+        ContainsAnyTest test = (ContainsAnyTest) Test.fromJson(obj, m_deserializationContext);
+        assertThat(test.m_test, is(new TranslatableText("yes,affirmative")));
+
+        assertThat(test.toJson(), is((JsonElement) obj));
+    }
+
+    @org.junit.Test
     public void evaluate() {
         ContainsAnyTest test = new ContainsAnyTest(new TranslatableText("eng", "yes,affirmative", "fre", "non"));
 

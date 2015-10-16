@@ -1,7 +1,10 @@
 package io.rapidpro.flows.definition.tests.date;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import io.rapidpro.flows.definition.tests.BaseTestTest;
-import org.junit.Test;
+import io.rapidpro.flows.definition.tests.Test;
+import io.rapidpro.flows.utils.JsonUtils;
 import org.threeten.bp.LocalDate;
 
 import static org.hamcrest.Matchers.is;
@@ -12,13 +15,16 @@ import static org.junit.Assert.assertThat;
  */
 public class DateBeforeTestTest extends BaseTestTest {
 
-    @Test
-    public void fromJson() throws Exception {
-        DateBeforeTest test = DateBeforeTest.fromJson(parseObject("{\"test\": \"December 14, 1892\"}"), m_deserializationContext);
+    @org.junit.Test
+    public void toAndFromJson() throws Exception {
+        JsonObject obj = JsonUtils.object("type", "date_before", "test", "December 14, 1892");
+        DateBeforeTest test = (DateBeforeTest) Test.fromJson(obj, m_deserializationContext);
         assertThat(test.m_test, is("December 14, 1892"));
+
+        assertThat(test.toJson(), is((JsonElement) obj));
     }
 
-    @Test
+    @org.junit.Test
     public void evaluate() {
         DateBeforeTest test = new DateBeforeTest("24/8/2015");
 

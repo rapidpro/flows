@@ -14,6 +14,8 @@ import org.threeten.bp.ZoneId;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * JSON utility methods
@@ -50,6 +52,52 @@ public class JsonUtils {
     public static String getAsString(JsonObject obj, String memberName) {
         JsonElement member = obj.get(memberName);
         return (member == null || member.isJsonNull()) ? null : member.getAsString();
+    }
+
+    /**
+     * Convenience constructor to create a new JsonObject from pairs of property names and values
+     * @param nameValuePairs the name value pairs
+     * @return the object
+     */
+    public static JsonObject object(Object... nameValuePairs) {
+        JsonObject obj = new JsonObject();
+        for (int i = 0; i < nameValuePairs.length; i += 2) {
+            String name = (String) nameValuePairs[i];
+            Object value = nameValuePairs[i + 1];
+            if (value instanceof String) {
+                obj.addProperty(name, (String) value);
+            } else if (value instanceof Boolean) {
+                obj.addProperty(name, (Boolean) value);
+            } else if (value instanceof Number) {
+                obj.addProperty(name, (Number) value);
+            } else if (value instanceof JsonElement) {
+                obj.add(name, (JsonElement) value);
+            } else {
+                throw new RuntimeException("Can't add value of type " + value.getClass().getSimpleName() + " to JSON");
+            }
+        }
+        return obj;
+    }
+
+    /**
+     * Convenience constructor to create a JSON array from multiple items
+     * @param items the array items
+     * @return the array
+     */
+    public static JsonArray array(JsonElement... items) {
+        JsonArray arr = new JsonArray();
+        for (JsonElement elm : items) {
+            arr.add(elm);
+        }
+        return arr;
+    }
+
+    public static JsonElement[] eachToJson(Iterable<? extends Jsonizable> items) {
+        List<JsonElement> res = new ArrayList<>();
+        for (Jsonizable item : items) {
+            res.add(item.toJson());
+        }
+        return res.toArray(new JsonElement[res.size()]);
     }
 
     /**

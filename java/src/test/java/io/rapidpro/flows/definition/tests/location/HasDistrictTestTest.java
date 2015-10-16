@@ -1,7 +1,10 @@
 package io.rapidpro.flows.definition.tests.location;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import io.rapidpro.flows.definition.tests.BaseTestTest;
-import org.junit.Test;
+import io.rapidpro.flows.definition.tests.Test;
+import io.rapidpro.flows.utils.JsonUtils;
 
 import java.util.Map;
 
@@ -13,13 +16,16 @@ import static org.junit.Assert.assertThat;
  */
 public class HasDistrictTestTest extends BaseTestTest {
 
-    @Test
-    public void fromJson() throws Exception {
-        HasDistrictTest test = HasDistrictTest.fromJson(parseObject("{\"test\": \"kigali\"}"), m_deserializationContext);
-        assertThat(test.getState(), is("kigali"));
+    @org.junit.Test
+    public void toAndFromJson() throws Exception {
+        JsonObject obj = JsonUtils.object("type", "district", "test", "Kigali");
+        HasDistrictTest test = (HasDistrictTest) Test.fromJson(obj, m_deserializationContext);
+        assertThat(test.m_state, is("Kigali"));
+
+        assertThat(test.toJson(), is((JsonElement) obj));
     }
 
-    @Test
+    @org.junit.Test
     public void evaluate() {
         HasDistrictTest test = new HasDistrictTest("kigali");
 

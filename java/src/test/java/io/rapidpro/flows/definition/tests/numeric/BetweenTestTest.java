@@ -1,7 +1,10 @@
 package io.rapidpro.flows.definition.tests.numeric;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import io.rapidpro.flows.definition.tests.BaseTestTest;
-import org.junit.Test;
+import io.rapidpro.flows.definition.tests.Test;
+import io.rapidpro.flows.utils.JsonUtils;
 
 import java.math.BigDecimal;
 
@@ -13,14 +16,17 @@ import static org.junit.Assert.assertThat;
  */
 public class BetweenTestTest extends BaseTestTest {
 
-    @Test
-    public void fromJson() throws Exception {
-        BetweenTest test = BetweenTest.fromJson(parseObject("{\"min\": \"@foo\", \"max\": \"123\"}"), m_deserializationContext);
+    @org.junit.Test
+    public void toAndFromJson() throws Exception {
+        JsonObject obj = JsonUtils.object("type", "between", "min", "@foo", "max", "123");
+        BetweenTest test = (BetweenTest) Test.fromJson(obj, m_deserializationContext);
         assertThat(test.m_min, is("@foo"));
         assertThat(test.m_max, is("123"));
+
+        assertThat(test.toJson(), is((JsonElement) obj));
     }
 
-    @Test
+    @org.junit.Test
     public void evaluate() {
         BetweenTest test = new BetweenTest("32 ", "41");
 

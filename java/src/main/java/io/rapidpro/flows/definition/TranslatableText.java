@@ -2,12 +2,14 @@ package io.rapidpro.flows.definition;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import io.rapidpro.flows.runner.RunState;
+import io.rapidpro.flows.utils.Jsonizable;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -17,7 +19,7 @@ import java.util.*;
  * Text that may be a single untranslated value or a translation map
  */
 @JsonAdapter(TranslatableText.JsonAdapter.class)
-public class TranslatableText {
+public class TranslatableText implements Jsonizable {
 
     protected String m_untranslated;
 
@@ -59,6 +61,19 @@ public class TranslatableText {
         }
         else {
             throw new FlowParseException("Translatable text be an object or string primitive");
+        }
+    }
+
+    @Override
+    public JsonElement toJson() {
+        if (m_untranslated != null) {
+            return new JsonPrimitive(m_untranslated);
+        } else {
+            JsonObject obj = new JsonObject();
+            for (Map.Entry<String, String> entry : m_translations.entrySet()) {
+                obj.addProperty(entry.getKey(), entry.getValue());
+            }
+            return obj;
         }
     }
 
