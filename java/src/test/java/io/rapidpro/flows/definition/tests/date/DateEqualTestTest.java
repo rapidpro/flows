@@ -17,11 +17,11 @@ public class DateEqualTestTest extends BaseTestTest {
 
     @org.junit.Test
     public void toAndFromJson() throws Exception {
-        JsonObject obj = JsonUtils.object("type", "date_equal", "test", "December 14, 1892");
-        DateEqualTest test = (DateEqualTest) Test.fromJson(obj, m_deserializationContext);
-        assertThat(test.m_test, is("December 14, 1892"));
+        JsonElement elm = JsonUtils.object("type", "date_equal", "test", "December 14, 1892");
+        DateEqualTest test = (DateEqualTest) Test.fromJson(elm, m_deserializationContext);
+        assertThat(test.getTest(), is("December 14, 1892"));
 
-        assertThat(test.toJson(), is((JsonElement) obj));
+        assertThat(test.toJson(), is(elm));
     }
 
     @org.junit.Test

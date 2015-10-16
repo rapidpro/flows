@@ -16,10 +16,10 @@ public class TrueTestTest extends BaseTestTest {
 
     @org.junit.Test
     public void toAndFromJson() throws Exception {
-        JsonObject obj = JsonUtils.object("type", "true");
-        TrueTest test = (TrueTest) Test.fromJson(obj, m_deserializationContext);
+        JsonElement elm = JsonUtils.object("type", "true");
+        TrueTest test = (TrueTest) Test.fromJson(elm, m_deserializationContext);
 
-        assertThat(test.toJson(), is((JsonElement) obj));
+        assertThat(test.toJson(), is(elm));
     }
 
     @org.junit.Test

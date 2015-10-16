@@ -23,16 +23,16 @@ public class AndTestTest extends BaseTestTest {
 
     @org.junit.Test
     public void toAndFromJson() throws Exception {
-        JsonObject obj = JsonUtils.object("type", "and", "tests", JsonUtils.array(
+        JsonElement elm = JsonUtils.object("type", "and", "tests", JsonUtils.array(
                 JsonUtils.object("type", "contains", "test", "upon"),
                 JsonUtils.object("type", "starts", "test", "once")
         ));
-        AndTest test = (AndTest) Test.fromJson(obj, m_deserializationContext);
-        assertThat(test.m_tests, hasSize(2));
-        assertThat(test.m_tests.get(0), instanceOf(ContainsTest.class));
-        assertThat(test.m_tests.get(1), instanceOf(StartsWithTest.class));
+        AndTest test = (AndTest) Test.fromJson(elm, m_deserializationContext);
+        assertThat(test.getTests(), hasSize(2));
+        assertThat(test.getTests().get(0), instanceOf(ContainsTest.class));
+        assertThat(test.getTests().get(1), instanceOf(StartsWithTest.class));
 
-        assertThat(test.toJson(), is((JsonElement) obj));
+        assertThat(test.toJson(), is(elm));
     }
 
     @org.junit.Test

@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.flows.definition.Flow;
+import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.runner.Runner;
@@ -17,9 +18,9 @@ public class NotEmptyTest extends Test {
     public static final String TYPE = "not_empty";
 
     /**
-     * @see Test#fromJson(JsonObject, Flow.DeserializationContext)
+     * @see Test#fromJson(JsonElement, Flow.DeserializationContext)
      */
-    public static NotEmptyTest fromJson(JsonObject obj, Flow.DeserializationContext context) {
+    public static NotEmptyTest fromJson(JsonElement elm, Flow.DeserializationContext context) throws FlowParseException {
         return new NotEmptyTest();
     }
 

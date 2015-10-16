@@ -1,5 +1,7 @@
 package io.rapidpro.flows.definition.actions.message;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
 import io.rapidpro.flows.definition.ContactRef;
 import io.rapidpro.flows.definition.GroupRef;
 import io.rapidpro.flows.definition.TranslatableText;
@@ -12,6 +14,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -22,38 +25,34 @@ import static org.junit.Assert.assertThat;
 public class SendActionTest extends BaseActionTest {
 
     @Test
-    public void fromJson() {
-        SendAction action = (SendAction) JsonUtils.getGson().fromJson("{" +
-                "\"type\":\"send\"," +
-                "\"msg\":{" +
-                    "\"fre\":\"Bonjour\"" +
-                "}," +
-                "\"groups\":[" +
-                    "{\"id\":123,\"name\":\"Testers\"}" +
-                "]," +
-                "\"contacts\":[" +
-                "{\"id\":234,\"name\":\"Mr Test\"}" +
-                "]," +
-                "\"variables\":[" +
-                "{\"id\":\"@new_contact\"}," +
-                "{\"id\":\"group-@contact.gender\"}" +
-                "]" +
-        "}", Action.class);
-
+    public void toAndFromJson() throws Exception {
+        JsonElement elm = JsonUtils.object(
+                "type", "send",
+                "contacts", JsonUtils.array(JsonUtils.object("id", 123, "name", "Mr Test")),
+                "groups", JsonUtils.array(JsonUtils.object("id", 234, "name", "Testers")),
+                "variables", JsonUtils.array(
+                        JsonUtils.object("id", "@new_contact"),
+                        JsonUtils.object("id", "group-@contact.gender")
+                ),
+                "msg", JsonUtils.object("fre", "Bonjour")
+        );
+        SendAction action = (SendAction) Action.fromJson(elm, m_deserializationContext);
         assertThat(action.getMsg(), is(new TranslatableText("fre", "Bonjour")));
-        assertThat(action.getGroups().get(0).getId(), is(123));
-        assertThat(action.getGroups().get(0).getName(), is("Testers"));
-        assertThat(action.getContacts().get(0).getId(), is(234));
+        assertThat(action.getContacts().get(0).getId(), is(123));
         assertThat(action.getContacts().get(0).getName(), is("Mr Test"));
+        assertThat(action.getGroups().get(0).getId(), is(234));
+        assertThat(action.getGroups().get(0).getName(), is("Testers"));
         assertThat(action.getVariables().get(0).getValue(), is("@new_contact"));
         assertThat(action.getVariables().get(1).getValue(), is("group-@contact.gender"));
+
+        assertThat(action.toJson(), is(elm));
     }
 
     @Test
     public void execute() {
         SendAction action = new SendAction(new TranslatableText("Hi @(\"Dr\" & contact) @contact.first_name. @step.contact said @step.value"),
-                Arrays.asList(new GroupRef(123, "Testers")),
                 Arrays.asList(new ContactRef(234, "Mr Test")),
+                Arrays.asList(new GroupRef(123, "Testers")),
                 Arrays.asList(new VariableRef("@new_contact"), new VariableRef("group-@contact.gender")));
 
         Action.Result result = action.execute(m_runner, m_run, Input.of("Yes"));

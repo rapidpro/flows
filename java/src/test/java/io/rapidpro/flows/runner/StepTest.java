@@ -1,11 +1,12 @@
 package io.rapidpro.flows.runner;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import io.rapidpro.flows.BaseFlowsTest;
 import io.rapidpro.flows.definition.*;
 import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.definition.actions.message.ReplyAction;
+import io.rapidpro.flows.utils.JsonUtils;
 import org.junit.Test;
 import org.threeten.bp.Instant;
 import org.threeten.bp.ZoneId;
@@ -27,35 +28,40 @@ public class StepTest extends BaseFlowsTest {
         Instant arrivedOn = Instant.from(ZonedDateTime.of(2015, 8, 25, 11, 59, 30, 88 * 1000000, ZoneId.of("UTC")));
         Step step = new Step(flow.getEntry(), arrivedOn);
 
-        Gson gson = new GsonBuilder().create();
-        String json = gson.toJson(step);
+        JsonObject obj = (JsonObject) step.toJson();
 
-        assertThat(json, is("{" +
-                "\"node\":\"32cf414b-35e3-4c75-8a78-d5f4de925e13\"," +
-                "\"arrived_on\":\"2015-08-25T11:59:30.088Z\"," +
-                "\"actions\":[]," +
-                "\"errors\":[]" +
-                "}"));
+        assertThat(obj, is(JsonUtils.object(
+                "node", "32cf414b-35e3-4c75-8a78-d5f4de925e13",
+                "arrived_on", "2015-08-25T11:59:30.088Z",
+                "left_on", null,
+                "rule", null,
+                "actions", JsonUtils.array(),
+                "errors", JsonUtils.array()
+        )));
 
         step.addActionResult(Action.Result.performed(new ReplyAction(new TranslatableText("Hi Joe"))));
-        json = gson.toJson(step);
+        obj = (JsonObject) step.toJson();
 
-        assertThat(json, is("{" +
-                "\"node\":\"32cf414b-35e3-4c75-8a78-d5f4de925e13\"," +
-                "\"arrived_on\":\"2015-08-25T11:59:30.088Z\"," +
-                "\"actions\":[{\"msg\":\"Hi Joe\",\"type\":\"reply\"}]," +
-                "\"errors\":[]" +
-                "}"));
+        assertThat(obj, is(JsonUtils.object(
+                "node", "32cf414b-35e3-4c75-8a78-d5f4de925e13",
+                "arrived_on", "2015-08-25T11:59:30.088Z",
+                "left_on", null,
+                "rule", null,
+                "actions", JsonUtils.array(JsonUtils.object("type", "reply", "msg", "Hi Joe")),
+                "errors", JsonUtils.array()
+        )));
 
         step.addActionResult(Action.Result.performed(null, Arrays.asList("This is an error", "This too")));
-        json = gson.toJson(step);
+        obj = (JsonObject) step.toJson();
 
-        assertThat(json, is("{" +
-                "\"node\":\"32cf414b-35e3-4c75-8a78-d5f4de925e13\"," +
-                "\"arrived_on\":\"2015-08-25T11:59:30.088Z\"," +
-                "\"actions\":[{\"msg\":\"Hi Joe\",\"type\":\"reply\"}]," +
-                "\"errors\":[\"This is an error\",\"This too\"]" +
-                "}"));
+        assertThat(obj, is(JsonUtils.object(
+                "node", "32cf414b-35e3-4c75-8a78-d5f4de925e13",
+                "arrived_on", "2015-08-25T11:59:30.088Z",
+                "left_on", null,
+                "rule", null,
+                "actions", JsonUtils.array(JsonUtils.object("type", "reply", "msg", "Hi Joe")),
+                "errors", JsonUtils.array(new JsonPrimitive("This is an error"), new JsonPrimitive("This too"))
+        )));
 
         step.getActions().clear();
         step.getErrors().clear();
@@ -63,14 +69,20 @@ public class StepTest extends BaseFlowsTest {
         Rule yesRule = ((RuleSet) ((ActionSet) flow.getEntry()).getDestination()).getRules().get(0);
 
         step.setRuleResult(new RuleSet.Result(yesRule, "yes", "Yes", "yes ok"));
-        json = gson.toJson(step);
+        obj = (JsonObject) step.toJson();
 
-        assertThat(json, is("{" +
-                "\"node\":\"32cf414b-35e3-4c75-8a78-d5f4de925e13\"," +
-                "\"arrived_on\":\"2015-08-25T11:59:30.088Z\"," +
-                "\"rule\":{\"uuid\":\"a53e3607-ac87-4bee-ab95-30fd4ad8a837\",\"value\":\"yes\",\"category\":\"Yes\",\"text\":\"yes ok\"}," +
-                "\"actions\":[]," +
-                "\"errors\":[]" +
-                "}"));
+        assertThat(obj, is(JsonUtils.object(
+                "node", "32cf414b-35e3-4c75-8a78-d5f4de925e13",
+                "arrived_on", "2015-08-25T11:59:30.088Z",
+                "left_on", null,
+                "rule", JsonUtils.object(
+                        "uuid", "a53e3607-ac87-4bee-ab95-30fd4ad8a837",
+                        "value", "yes",
+                        "category", "Yes",
+                        "text", "yes ok"
+                ),
+                "actions", JsonUtils.array(),
+                "errors", JsonUtils.array()
+        )));
     }
 }

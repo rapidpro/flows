@@ -20,9 +20,9 @@ public class HasStateTest extends Test {
     public static final String TYPE = "state";
 
     /**
-     * @see Test#fromJson(JsonObject, Flow.DeserializationContext)
+     * @see Test#fromJson(JsonElement, Flow.DeserializationContext)
      */
-    public static HasStateTest fromJson(JsonObject obj, Flow.DeserializationContext context) throws FlowParseException {
+    public static HasStateTest fromJson(JsonElement elm, Flow.DeserializationContext context) throws FlowParseException {
         return new HasStateTest();
     }
 

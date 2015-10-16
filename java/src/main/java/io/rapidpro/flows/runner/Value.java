@@ -1,10 +1,13 @@
 package io.rapidpro.flows.runner;
 
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.evaluator.Conversions;
+import io.rapidpro.expressions.utils.ExpressionUtils;
+import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.utils.JsonUtils;
+import io.rapidpro.flows.utils.Jsonizable;
 import org.threeten.bp.Instant;
 
 import java.util.HashMap;
@@ -13,19 +16,14 @@ import java.util.Map;
 /**
  * Holds the result of a contact's last visit to a ruleset
  */
-public class Value {
+public class Value implements Jsonizable {
 
-    @SerializedName("value")
     protected String m_value;
 
-    @SerializedName("category")
     protected String m_category;
 
-    @SerializedName("text")
     protected String m_text;
 
-    @SerializedName("time")
-    @JsonAdapter(JsonUtils.InstantAdapter.class)
     protected Instant m_time;
 
     public Value(String value, String category, String text, Instant time) {
@@ -33,6 +31,26 @@ public class Value {
         m_category = category;
         m_text = text;
         m_time = time;
+    }
+
+    public static Value fromJson(JsonElement elm, Flow.DeserializationContext context) {
+        JsonObject obj = elm.getAsJsonObject();
+        return new Value(
+                obj.get("value").getAsString(),
+                obj.get("category").getAsString(),
+                obj.get("text").getAsString(),
+                ExpressionUtils.parseJsonDate(obj.get("time").getAsString())
+        );
+    }
+
+    @Override
+    public JsonElement toJson() {
+        return JsonUtils.object(
+                "value", m_value,
+                "category", m_category,
+                "text", m_text,
+                "time", ExpressionUtils.formatJsonDate(m_time)
+        );
     }
 
     public Map<String, String> buildContext(EvaluationContext container) {

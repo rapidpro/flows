@@ -1,9 +1,13 @@
 package io.rapidpro.flows.definition.actions.contact;
 
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluatedTemplate;
+import io.rapidpro.flows.definition.Flow;
+import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.runner.*;
+import io.rapidpro.flows.utils.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
@@ -15,20 +19,33 @@ public class SaveToContactAction extends Action {
 
     public static final String TYPE = "save";
 
-    @SerializedName("field")
     protected String m_field;
 
-    @SerializedName("label")
     protected String m_label;
 
-    @SerializedName("value")
     protected String m_value;
 
     public SaveToContactAction(String field, String label, String value) {
-        super(TYPE);
         m_field = field;
         m_label = label;
         m_value = value;
+    }
+
+    /**
+     * @see Action#fromJson(JsonElement, Flow.DeserializationContext)
+     */
+    public static SaveToContactAction fromJson(JsonElement elm, Flow.DeserializationContext context) throws FlowParseException {
+        JsonObject obj = elm.getAsJsonObject();
+        return new SaveToContactAction(
+                JsonUtils.getAsString(obj, "field"),
+                JsonUtils.getAsString(obj, "label"),
+                JsonUtils.getAsString(obj, "value")
+        );
+    }
+
+    @Override
+    public JsonElement toJson() {
+        return JsonUtils.object("type", TYPE, "field", m_field, "label", m_label, "value", m_value);
     }
 
     /**

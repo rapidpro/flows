@@ -1,7 +1,10 @@
 package io.rapidpro.flows.definition.actions.contact;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.definition.actions.BaseActionTest;
+import io.rapidpro.flows.definition.tests.date.DateAfterTest;
 import io.rapidpro.flows.runner.ContactUrn;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.utils.JsonUtils;
@@ -16,12 +19,14 @@ import static org.junit.Assert.assertThat;
 public class SaveToContactActionTest extends BaseActionTest {
 
     @Test
-    public void fromJson() {
-        SaveToContactAction action = (SaveToContactAction) JsonUtils.getGson().fromJson("{\"type\":\"save\",\"field\":\"age\",\"label\":\"Age\",\"value\":\"@extra.age\"}", Action.class);
+    public void toAndFromJson() throws Exception {
+        JsonElement elm = JsonUtils.object("type", "save", "field", "age", "label", "Age", "value", "@extra.age");
+        SaveToContactAction action = (SaveToContactAction) Action.fromJson(elm, m_deserializationContext);
+        assertThat(action.m_field, is("age"));
+        assertThat(action.m_label, is("Age"));
+        assertThat(action.m_value, is("@extra.age"));
 
-        assertThat(action.getField(), is("age"));
-        assertThat(action.getLabel(), is("Age"));
-        assertThat(action.getValue(), is("@extra.age"));
+        assertThat(action.toJson(), is(elm));
     }
 
     @Test

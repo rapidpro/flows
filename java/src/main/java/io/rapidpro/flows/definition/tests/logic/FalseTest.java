@@ -17,9 +17,9 @@ public class FalseTest extends Test {
     public static final String TYPE = "false";
 
     /**
-     * @see Test#fromJson(JsonObject, Flow.DeserializationContext)
+     * @see Test#fromJson(JsonElement, Flow.DeserializationContext)
      */
-    public static FalseTest fromJson(JsonObject obj, Flow.DeserializationContext context) {
+    public static FalseTest fromJson(JsonElement elm, Flow.DeserializationContext context) {
         return new FalseTest();
     }
 

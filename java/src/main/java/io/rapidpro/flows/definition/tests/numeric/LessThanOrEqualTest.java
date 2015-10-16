@@ -21,9 +21,10 @@ public class LessThanOrEqualTest extends NumericComparisonTest {
     }
 
     /**
-     * @see Test#fromJson(JsonObject, Flow.DeserializationContext)
+     * @see Test#fromJson(JsonElement, Flow.DeserializationContext)
      */
-    public static LessThanOrEqualTest fromJson(JsonObject obj, Flow.DeserializationContext context) throws FlowParseException {
+    public static LessThanOrEqualTest fromJson(JsonElement elm, Flow.DeserializationContext context) throws FlowParseException {
+        JsonObject obj = elm.getAsJsonObject();
         return new LessThanOrEqualTest(obj.get("test").getAsString());
     }
 

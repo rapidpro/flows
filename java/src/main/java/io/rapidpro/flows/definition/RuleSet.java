@@ -12,6 +12,7 @@ import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.runner.Runner;
 import io.rapidpro.flows.runner.Step;
 import io.rapidpro.flows.utils.JsonUtils;
+import io.rapidpro.flows.utils.Jsonizable;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -171,19 +172,14 @@ public class RuleSet extends Flow.Node {
     /**
      * Holds the result of a ruleset evaluation
      */
-    public static class Result {
+    public static class Result implements Jsonizable {
 
-        @SerializedName("uuid")
-        @com.google.gson.annotations.JsonAdapter(RefAdapter.class)
         protected Rule m_rule;
 
-        @SerializedName("value")
         protected String m_value;
 
-        @SerializedName("category")
         protected String m_category;
 
-        @SerializedName("text")
         protected String m_text;
 
         public Result(Rule rule, String value, String category, String text) {
@@ -191,6 +187,26 @@ public class RuleSet extends Flow.Node {
             m_value = value;
             m_category = category;
             m_text = text;
+        }
+
+        public static Result fromJson(JsonElement elm, Flow.DeserializationContext context) {
+            JsonObject obj = elm.getAsJsonObject();
+            return new Result(
+                    (Rule) context.getFlow().getElementByUuid(obj.get("uuid").getAsString()),
+                    JsonUtils.getAsString(obj, "value"),
+                    JsonUtils.getAsString(obj, "category"),
+                    JsonUtils.getAsString(obj, "text")
+            );
+        }
+
+        @Override
+        public JsonElement toJson() {
+            return JsonUtils.object(
+                    "uuid", m_rule.getUuid(),
+                    "value", m_value,
+                    "category", m_category,
+                    "text", m_text
+            );
         }
 
         public Rule getRule() {

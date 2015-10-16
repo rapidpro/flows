@@ -20,9 +20,10 @@ public class DateEqualTest extends DateComparisonTest {
     }
 
     /**
-     * @see Test#fromJson(JsonObject, Flow.DeserializationContext)
+     * @see Test#fromJson(JsonElement, Flow.DeserializationContext)
      */
-    public static DateEqualTest fromJson(JsonObject obj, Flow.DeserializationContext context) throws FlowParseException {
+    public static DateEqualTest fromJson(JsonElement elm, Flow.DeserializationContext context) throws FlowParseException {
+        JsonObject obj = elm.getAsJsonObject();
         return new DateEqualTest(obj.get("test").getAsString());
     }
 

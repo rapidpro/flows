@@ -1,19 +1,12 @@
 package io.rapidpro.flows.runner;
 
-import com.google.gson.TypeAdapter;
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import io.rapidpro.flows.utils.FlowUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.IOException;
-
 /**
  * A URN for a contact (e.g. a telephone number or twitter handle)
  */
-@JsonAdapter(ContactUrn.JsonAdapter.class)
 public class ContactUrn {
 
     public enum Scheme {
@@ -82,20 +75,6 @@ public class ContactUrn {
         }
 
         return m_path;
-    }
-
-    /**
-     * Serializes the URN as a string
-     */
-    public class JsonAdapter extends TypeAdapter<ContactUrn> {
-        @Override
-        public void write(JsonWriter out, ContactUrn urn) throws IOException {
-            out.value(urn.toString());
-        }
-        @Override
-        public ContactUrn read(JsonReader in) throws IOException {
-            return ContactUrn.fromString(in.nextString());
-        }
     }
 
     public Scheme getScheme() {

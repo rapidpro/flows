@@ -16,10 +16,10 @@ public class NotEmptyTestTest extends BaseTestTest {
 
     @org.junit.Test
     public void toAndFromJson() throws Exception {
-        JsonObject obj = JsonUtils.object("type", "not_empty");
-        NotEmptyTest test = (NotEmptyTest) Test.fromJson(obj, m_deserializationContext);
+        JsonElement elm = JsonUtils.object("type", "not_empty");
+        NotEmptyTest test = (NotEmptyTest) Test.fromJson(elm, m_deserializationContext);
 
-        assertThat(test.toJson(), is((JsonElement) obj));
+        assertThat(test.toJson(), is(elm));
     }
 
     @org.junit.Test

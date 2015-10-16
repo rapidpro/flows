@@ -1,6 +1,5 @@
 package io.rapidpro.flows.definition.actions.group;
 
-import com.google.gson.annotations.SerializedName;
 import io.rapidpro.expressions.EvaluatedTemplate;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.flows.definition.GroupRef;
@@ -17,11 +16,9 @@ import java.util.List;
  */
 public abstract class GroupMembershipAction extends Action {
 
-    @SerializedName("groups")
     protected List<GroupRef> m_groups;
 
-    public GroupMembershipAction(String type, List<GroupRef> groups) {
-        super(type);
+    public GroupMembershipAction(List<GroupRef> groups) {
         m_groups = groups;
     }
 

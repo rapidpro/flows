@@ -43,7 +43,7 @@ public class ActionSet extends Flow.Node implements Flow.ConnectionStart {
         }
 
         for (JsonElement actionElem : obj.get("actions").getAsJsonArray()) {
-            Action action = jsonContext.deserialize(actionElem, Action.class);
+            Action action = Action.fromJson(actionElem.getAsJsonObject(), context);
             set.m_actions.add(action);
         }
 

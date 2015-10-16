@@ -63,19 +63,19 @@ public abstract class Test implements Jsonizable {
     }
 
     /**
-     * Creates a test from the given JSON object
-     * @param obj the JSON object
+     * Loads a test from the given JSON object
+     * @param elm the JSON element
      * @param context the deserialization context
      * @return the test
      */
-    public static Test fromJson(JsonObject obj, Flow.DeserializationContext context) throws FlowParseException {
-        String type = obj.get("type").getAsString();
+    public static Test fromJson(JsonElement elm, Flow.DeserializationContext context) throws FlowParseException {
+        String type = elm.getAsJsonObject().get("type").getAsString();
         Class<? extends Test> clazz = s_classByType.get(type);
         if (clazz == null) {
             throw new FlowParseException("Unknown test type: " + type);
         }
 
-        return JsonUtils.fromJson(obj, context, clazz);
+        return JsonUtils.fromJson(elm, context, clazz);
     }
 
     /**

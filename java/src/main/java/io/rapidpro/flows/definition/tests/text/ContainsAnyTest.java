@@ -28,9 +28,10 @@ public class ContainsAnyTest extends ContainsTest {
     }
 
     /**
-     * @see Test#fromJson(JsonObject, Flow.DeserializationContext)
+     * @see Test#fromJson(JsonElement, Flow.DeserializationContext)
      */
-    public static ContainsAnyTest fromJson(JsonObject obj, Flow.DeserializationContext context) throws FlowParseException {
+    public static ContainsAnyTest fromJson(JsonElement elm, Flow.DeserializationContext context) throws FlowParseException {
+        JsonObject obj = elm.getAsJsonObject();
         return new ContainsAnyTest(TranslatableText.fromJson(obj.get("test")));
     }
 

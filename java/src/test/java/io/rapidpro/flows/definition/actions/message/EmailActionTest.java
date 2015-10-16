@@ -1,7 +1,10 @@
 package io.rapidpro.flows.definition.actions.message;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
 import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.definition.actions.BaseActionTest;
+import io.rapidpro.flows.definition.actions.label.AddLabelsAction;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.utils.JsonUtils;
 import org.junit.Test;
@@ -17,17 +20,20 @@ import static org.junit.Assert.assertThat;
 public class EmailActionTest extends BaseActionTest {
 
     @Test
-    public void fromJson() {
-        EmailAction action = (EmailAction) JsonUtils.getGson().fromJson("{" +
-                        "\"type\":\"email\"," +
-                        "\"emails\":[\"code@nyaruka.com\", \"@contact.chw_email\"]," +
-                        "\"subject\":\"Salut\"," +
-                        "\"msg\":\"Ça va?\"" +
-        "}", Action.class);
-
+    public void toAndFromJson() throws Exception {
+        JsonElement elm = JsonUtils.object("type", "email",
+                "emails", JsonUtils.array(
+                    new JsonPrimitive("code@nyaruka.com"),
+                    new JsonPrimitive("@contact.chw_email")
+                ),
+                "subject", "Salut",
+                "msg", "Ça va?");
+        EmailAction action = (EmailAction) Action.fromJson(elm, m_deserializationContext);
         assertThat(action.getAddresses(), contains("code@nyaruka.com", "@contact.chw_email"));
         assertThat(action.getSubject(), is("Salut"));
         assertThat(action.getMsg(), is("Ça va?"));
+
+        assertThat(action.toJson(), is(elm));
     }
 
     @Test

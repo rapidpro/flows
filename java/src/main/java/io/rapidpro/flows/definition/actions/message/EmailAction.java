@@ -1,12 +1,16 @@
 package io.rapidpro.flows.definition.actions.message;
 
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluatedTemplate;
 import io.rapidpro.expressions.EvaluationContext;
+import io.rapidpro.flows.definition.Flow;
+import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.runner.Runner;
+import io.rapidpro.flows.utils.JsonUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,20 +22,38 @@ public class EmailAction extends Action {
 
     public static final String TYPE = "email";
 
-    @SerializedName("emails")
     protected List<String> m_addresses;
 
-    @SerializedName("subject")
     protected String m_subject;
 
-    @SerializedName("msg")
     protected String m_msg;
 
     protected EmailAction(List<String> addresses, String subject, String msg) {
-        super(TYPE);
         m_addresses = addresses;
         m_subject = subject;
         m_msg = msg;
+    }
+
+    /**
+     * @see Action#fromJson(JsonElement, Flow.DeserializationContext)
+     */
+    public static EmailAction fromJson(JsonElement elm, Flow.DeserializationContext context) throws FlowParseException {
+        JsonObject obj = elm.getAsJsonObject();
+        return new EmailAction(
+                JsonUtils.fromJsonArray(obj.get("emails").getAsJsonArray(), context, String.class),
+                JsonUtils.getAsString(obj, "subject"),
+                JsonUtils.getAsString(obj, "msg")
+        );
+    }
+
+    @Override
+    public JsonElement toJson() {
+        return JsonUtils.object(
+                "type", TYPE,
+                "emails", JsonUtils.toJsonArray(m_addresses),
+                "subject", m_subject,
+                "msg", m_msg
+        );
     }
 
     @Override

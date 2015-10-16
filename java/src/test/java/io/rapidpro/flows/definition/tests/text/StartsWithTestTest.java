@@ -17,11 +17,11 @@ public class StartsWithTestTest extends BaseTestTest {
 
     @org.junit.Test
     public void toAndFromJson() throws Exception {
-        JsonObject obj = JsonUtils.object("type", "starts", "test", "once");
-        StartsWithTest test = (StartsWithTest) Test.fromJson(obj, m_deserializationContext);
-        assertThat(test.m_test, is(new TranslatableText("once")));
+        JsonElement elm = JsonUtils.object("type", "starts", "test", "once");
+        StartsWithTest test = (StartsWithTest) Test.fromJson(elm, m_deserializationContext);
+        assertThat(test.getTest(), is(new TranslatableText("once")));
 
-        assertThat(test.toJson(), is((JsonElement) obj));
+        assertThat(test.toJson(), is(elm));
     }
 
     @org.junit.Test

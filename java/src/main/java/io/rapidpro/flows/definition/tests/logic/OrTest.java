@@ -26,18 +26,16 @@ public class OrTest extends Test {
     }
 
     /**
-     * @see Test#fromJson(JsonObject, Flow.DeserializationContext)
+     * @see Test#fromJson(JsonElement, Flow.DeserializationContext)
      */
-    public static OrTest fromJson(JsonObject obj, Flow.DeserializationContext context) throws FlowParseException {
+    public static OrTest fromJson(JsonElement elm, Flow.DeserializationContext context) throws FlowParseException {
+        JsonObject obj = elm.getAsJsonObject();
         return new OrTest(Test.fromJsonArray(obj.get("tests").getAsJsonArray(), context));
     }
 
     @Override
     public JsonElement toJson() {
-        return JsonUtils.object(
-                "type", TYPE,
-                "tests", JsonUtils.array(JsonUtils.eachToJson(m_tests))
-        );
+        return JsonUtils.object("type", TYPE, "tests", JsonUtils.toJsonArray(m_tests));
     }
 
     /**
@@ -52,5 +50,9 @@ public class OrTest extends Test {
             }
         }
         return Result.NO_MATCH;
+    }
+
+    public List<Test> getTests() {
+        return m_tests;
     }
 }

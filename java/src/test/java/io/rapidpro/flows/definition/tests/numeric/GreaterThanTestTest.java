@@ -18,11 +18,11 @@ public class GreaterThanTestTest extends BaseTestTest {
 
     @org.junit.Test
     public void toAndFromJson() throws Exception {
-        JsonObject obj = JsonUtils.object("type", "gt", "test", "32");
-        GreaterThanTest test = (GreaterThanTest) Test.fromJson(obj, m_deserializationContext);
-        assertThat(test.m_test, is("32"));
+        JsonElement elm = JsonUtils.object("type", "gt", "test", "32");
+        GreaterThanTest test = (GreaterThanTest) Test.fromJson(elm, m_deserializationContext);
+        assertThat(test.getTest(), is("32"));
 
-        assertThat(test.toJson(), is((JsonElement) obj));
+        assertThat(test.toJson(), is(elm));
     }
 
     @org.junit.Test

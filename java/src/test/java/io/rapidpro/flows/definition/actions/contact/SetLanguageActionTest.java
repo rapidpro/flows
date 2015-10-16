@@ -1,5 +1,6 @@
 package io.rapidpro.flows.definition.actions.contact;
 
+import com.google.gson.JsonElement;
 import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.definition.actions.BaseActionTest;
 import io.rapidpro.flows.runner.Input;
@@ -16,11 +17,13 @@ import static org.junit.Assert.assertThat;
 public class SetLanguageActionTest extends BaseActionTest {
 
     @Test
-    public void fromJson() {
-        SetLanguageAction action = (SetLanguageAction) JsonUtils.getGson().fromJson("{\"type\":\"lang\",\"lang\":\"fre\",\"name\":\"Français\"}", Action.class);
-
+    public void toAndFromJson() throws Exception {
+        JsonElement elm = JsonUtils.object("type", "lang", "lang", "fre", "name", "Français");
+        SetLanguageAction action = (SetLanguageAction) Action.fromJson(elm, m_deserializationContext);
         assertThat(action.getLang(), is("fre"));
         assertThat(action.getName(), is("Français"));
+
+        assertThat(action.toJson(), is(elm));
     }
 
     @Test

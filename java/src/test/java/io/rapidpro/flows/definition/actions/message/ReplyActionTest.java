@@ -1,5 +1,6 @@
 package io.rapidpro.flows.definition.actions.message;
 
+import com.google.gson.JsonElement;
 import io.rapidpro.flows.definition.TranslatableText;
 import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.definition.actions.BaseActionTest;
@@ -16,10 +17,12 @@ import static org.junit.Assert.assertThat;
 public class ReplyActionTest extends BaseActionTest {
 
     @Test
-    public void fromJson() {
-        ReplyAction action = (ReplyAction) JsonUtils.getGson().fromJson("{\"type\":\"reply\",\"msg\":{\"fre\":\"Bonjour\"}}", Action.class);
-
+    public void toAndFromJson() throws Exception {
+        JsonElement elm = JsonUtils.object("type", "reply", "msg", JsonUtils.object("fre", "Bonjour"));
+        ReplyAction action = (ReplyAction) Action.fromJson(elm, m_deserializationContext);
         assertThat(action.getMsg(), is(new TranslatableText("fre", "Bonjour")));
+
+        assertThat(action.toJson(), is(elm));
     }
 
     @Test

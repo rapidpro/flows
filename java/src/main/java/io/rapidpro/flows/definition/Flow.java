@@ -150,22 +150,6 @@ public class Flow {
         }
 
         /**
-         * Serializes the element as a reference to its UUID
-         */
-        public class RefAdapter extends TypeAdapter<Element> {
-            @Override
-            public void write(JsonWriter out, Element element) throws IOException {
-                out.value(element.getUuid());
-
-            }
-            @Override
-            public Element read(JsonReader in) throws IOException {
-                String elementUuid = in.nextString();
-                return JsonUtils.getDeserializationContext().getFlow().getElementByUuid(elementUuid);
-            }
-        }
-
-        /**
          * @see Object#equals(Object)
          */
         @Override

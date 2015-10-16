@@ -16,10 +16,10 @@ public class HasStateTestTest extends BaseTestTest {
 
     @org.junit.Test
     public void toAndFromJson() throws Exception {
-        JsonObject obj = JsonUtils.object("type", "state");
-        HasStateTest test = (HasStateTest) Test.fromJson(obj, m_deserializationContext);
+        JsonElement elm = JsonUtils.object("type", "state");
+        HasStateTest test = (HasStateTest) Test.fromJson(elm, m_deserializationContext);
 
-        assertThat(test.toJson(), is((JsonElement) obj));
+        assertThat(test.toJson(), is(elm));
     }
 
     @org.junit.Test

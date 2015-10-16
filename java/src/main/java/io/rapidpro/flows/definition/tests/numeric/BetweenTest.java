@@ -29,9 +29,10 @@ public class BetweenTest extends NumericTest {
     }
 
     /**
-     * @see Test#fromJson(JsonObject, Flow.DeserializationContext)
+     * @see Test#fromJson(JsonElement, Flow.DeserializationContext)
      */
-    public static BetweenTest fromJson(JsonObject obj, Flow.DeserializationContext context) throws FlowParseException {
+    public static BetweenTest fromJson(JsonElement elm, Flow.DeserializationContext context) throws FlowParseException {
+        JsonObject obj = elm.getAsJsonObject();
         return new BetweenTest(obj.get("min").getAsString(), obj.get("max").getAsString());
     }
 
@@ -58,5 +59,13 @@ public class BetweenTest extends NumericTest {
             catch (NumberFormatException ignored) {}
         }
         return false;
+    }
+
+    public String getMin() {
+        return m_min;
+    }
+
+    public String getMax() {
+        return m_max;
     }
 }

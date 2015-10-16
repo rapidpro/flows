@@ -1,11 +1,13 @@
 package io.rapidpro.flows.runner;
 
-import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import io.rapidpro.expressions.utils.ExpressionUtils;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.RuleSet;
 import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.utils.JsonUtils;
+import io.rapidpro.flows.utils.Jsonizable;
 import org.threeten.bp.Instant;
 
 import java.util.ArrayList;
@@ -14,27 +16,18 @@ import java.util.List;
 /**
  * A step taken by a contact or surveyor in a flow run
  */
-public class Step {
+public class Step implements Jsonizable {
 
-    @SerializedName("node")
-    @JsonAdapter(Flow.Element.RefAdapter.class)
     protected Flow.Node m_node;
 
-    @SerializedName("arrived_on")
-    @JsonAdapter(JsonUtils.InstantAdapter.class)
     protected Instant m_arrivedOn;
 
-    @SerializedName("left_on")
-    @JsonAdapter(JsonUtils.InstantAdapter.class)
     protected Instant m_leftOn;
 
-    @SerializedName("rule")
     protected RuleSet.Result m_ruleResult;
 
-    @SerializedName("actions")
     protected List<Action> m_actions;
 
-    @SerializedName("errors")
     protected List<String> m_errors;
 
     public Step(Flow.Node node, Instant arrivedOn) {
@@ -42,6 +35,39 @@ public class Step {
         m_arrivedOn = arrivedOn;
         m_actions = new ArrayList<>();
         m_errors = new ArrayList<>();
+    }
+
+    public Step(Flow.Node node, Instant arrivedOn, Instant leftOn, RuleSet.Result ruleResult, List<Action> actions, List<String> errors) {
+        m_node = node;
+        m_arrivedOn = arrivedOn;
+        m_leftOn = leftOn;
+        m_ruleResult = ruleResult;
+        m_actions = actions;
+        m_errors = errors;
+    }
+
+    public static Step fromJson(JsonElement elm, Flow.DeserializationContext context) {
+        JsonObject obj = elm.getAsJsonObject();
+        return new Step(
+                (Flow.Node) context.getFlow().getElementByUuid(obj.get("node").getAsString()),
+                ExpressionUtils.parseJsonDate(JsonUtils.getAsString(obj, "arrived_on")),
+                ExpressionUtils.parseJsonDate(JsonUtils.getAsString(obj, "left_on")),
+                JsonUtils.fromJson(obj, "rule", context, RuleSet.Result.class),
+                JsonUtils.fromJsonArray(obj.get("actions").getAsJsonArray(), context, Action.class),
+                JsonUtils.fromJsonArray(obj.get("errors").getAsJsonArray(), context, String.class)
+        );
+    }
+
+    @Override
+    public JsonElement toJson() {
+        return JsonUtils.object(
+                "node", m_node.getUuid(),
+                "arrived_on", ExpressionUtils.formatJsonDate(m_arrivedOn),
+                "left_on", ExpressionUtils.formatJsonDate(m_leftOn),
+                "rule", m_ruleResult != null ? m_ruleResult.toJson() : null,
+                "actions", JsonUtils.toJsonArray(m_actions),
+                "errors", JsonUtils.toJsonArray(m_errors)
+        );
     }
 
     public Flow.Node getNode() {

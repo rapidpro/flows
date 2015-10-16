@@ -18,11 +18,11 @@ public class HasDistrictTestTest extends BaseTestTest {
 
     @org.junit.Test
     public void toAndFromJson() throws Exception {
-        JsonObject obj = JsonUtils.object("type", "district", "test", "Kigali");
-        HasDistrictTest test = (HasDistrictTest) Test.fromJson(obj, m_deserializationContext);
-        assertThat(test.m_state, is("Kigali"));
+        JsonElement elm = JsonUtils.object("type", "district", "test", "Kigali");
+        HasDistrictTest test = (HasDistrictTest) Test.fromJson(elm, m_deserializationContext);
+        assertThat(test.getState(), is("Kigali"));
 
-        assertThat(test.toJson(), is((JsonElement) obj));
+        assertThat(test.toJson(), is(elm));
     }
 
     @org.junit.Test

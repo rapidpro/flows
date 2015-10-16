@@ -21,9 +21,10 @@ public class GreaterThanOrEqualTest extends NumericComparisonTest {
     }
 
     /**
-     * @see Test#fromJson(JsonObject, Flow.DeserializationContext)
+     * @see Test#fromJson(JsonElement, Flow.DeserializationContext)
      */
-    public static GreaterThanOrEqualTest fromJson(JsonObject obj, Flow.DeserializationContext context) throws FlowParseException {
+    public static GreaterThanOrEqualTest fromJson(JsonElement elm, Flow.DeserializationContext context) throws FlowParseException {
+        JsonObject obj = elm.getAsJsonObject();
         return new GreaterThanOrEqualTest(obj.get("test").getAsString());
     }
 

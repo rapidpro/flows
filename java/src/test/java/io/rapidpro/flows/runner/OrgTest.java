@@ -1,9 +1,9 @@
 package io.rapidpro.flows.runner;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import io.rapidpro.expressions.dates.DateStyle;
 import io.rapidpro.flows.BaseFlowsTest;
+import io.rapidpro.flows.utils.JsonUtils;
 import org.junit.Test;
 import org.threeten.bp.ZoneId;
 
@@ -17,18 +17,17 @@ public class OrgTest extends BaseFlowsTest {
 
     @Test
     public void toAndFromJson() {
-        Gson gson = new GsonBuilder().create();
-        String json = gson.toJson(m_org);
+        JsonObject obj = (JsonObject) m_org.toJson();
 
-        assertThat(json, is("{" +
-                "\"country\":\"RW\"," +
-                "\"primary_language\":\"eng\"," +
-                "\"timezone\":\"Africa/Kigali\"," +
-                "\"date_style\":\"day_first\"," +
-                "\"anon\":false" +
-        "}"));
+        assertThat(obj, is(JsonUtils.object(
+                "country", "RW",
+                "primary_language", "eng",
+                "timezone", "Africa/Kigali",
+                "date_style", "day_first",
+                "anon", false
+        )));
 
-        Org org = gson.fromJson(json, Org.class);
+        Org org = Org.fromJson(obj);
 
         assertThat(org.getCountry(), is("RW"));
         assertThat(org.getPrimaryLanguage(), is("eng"));

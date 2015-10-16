@@ -51,6 +51,7 @@ public class Contact {
         m_language = language;
     }
 
+
     public String getUuid() {
         return m_uuid;
     }

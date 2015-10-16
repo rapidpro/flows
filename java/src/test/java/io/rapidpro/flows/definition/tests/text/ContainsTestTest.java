@@ -17,11 +17,11 @@ public class ContainsTestTest extends BaseTestTest {
 
     @org.junit.Test
     public void toAndFromJson() throws Exception {
-        JsonObject obj = JsonUtils.object("type", "contains", "test", "north,east");
-        ContainsTest test = (ContainsTest) Test.fromJson(obj, m_deserializationContext);
-        assertThat(test.m_test, is(new TranslatableText("north,east")));
+        JsonElement elm = JsonUtils.object("type", "contains", "test", "north,east");
+        ContainsTest test = (ContainsTest) Test.fromJson(elm, m_deserializationContext);
+        assertThat(test.getTest(), is(new TranslatableText("north,east")));
 
-        assertThat(test.toJson(), is((JsonElement) obj));
+        assertThat(test.toJson(), is(elm));
     }
 
     @org.junit.Test

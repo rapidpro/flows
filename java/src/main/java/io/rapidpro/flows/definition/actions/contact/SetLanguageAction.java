@@ -1,10 +1,14 @@
 package io.rapidpro.flows.definition.actions.contact;
 
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import io.rapidpro.flows.definition.Flow;
+import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.runner.Runner;
+import io.rapidpro.flows.utils.JsonUtils;
 
 /**
  * Sets the contact's language
@@ -13,16 +17,26 @@ public class SetLanguageAction extends Action {
 
     public static final String TYPE = "lang";
 
-    @SerializedName("lang")
     protected String m_lang;
 
-    @SerializedName("name")
     protected String m_name;
 
     public SetLanguageAction(String lang, String name) {
-        super(TYPE);
         m_lang = lang;
         m_name = name;
+    }
+
+    /**
+     * @see Action#fromJson(JsonElement, Flow.DeserializationContext)
+     */
+    public static SetLanguageAction fromJson(JsonElement elm, Flow.DeserializationContext context) throws FlowParseException {
+        JsonObject obj = elm.getAsJsonObject();
+        return new SetLanguageAction(JsonUtils.getAsString(obj, "lang"), JsonUtils.getAsString(obj, "name"));
+    }
+
+    @Override
+    public JsonElement toJson() {
+        return JsonUtils.object("type", TYPE, "lang", m_lang, "name", m_name);
     }
 
     /**

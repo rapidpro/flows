@@ -36,4 +36,8 @@ public abstract class DateComparisonTest extends DateTest {
     }
 
     protected abstract boolean doComparison(LocalDate input, LocalDate test);
+
+    public String getTest() {
+        return m_test;
+    }
 }

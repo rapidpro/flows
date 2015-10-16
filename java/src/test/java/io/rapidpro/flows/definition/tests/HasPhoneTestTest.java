@@ -14,10 +14,10 @@ public class HasPhoneTestTest extends BaseTestTest {
 
     @org.junit.Test
     public void toAndFromJson() throws Exception {
-        JsonObject obj = JsonUtils.object("type", "phone");
-        HasPhoneTest test = (HasPhoneTest) Test.fromJson(obj, m_deserializationContext);
+        JsonElement elm = JsonUtils.object("type", "phone");
+        HasPhoneTest test = (HasPhoneTest) Test.fromJson(elm, m_deserializationContext);
 
-        assertThat(test.toJson(), is((JsonElement) obj));
+        assertThat(test.toJson(), is(elm));
     }
 
     @org.junit.Test

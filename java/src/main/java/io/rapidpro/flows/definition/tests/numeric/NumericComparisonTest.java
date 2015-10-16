@@ -35,4 +35,8 @@ public abstract class NumericComparisonTest extends NumericTest {
     }
 
     protected abstract boolean doComparison(BigDecimal input, BigDecimal test);
+
+    public String getTest() {
+        return m_test;
+    }
 }

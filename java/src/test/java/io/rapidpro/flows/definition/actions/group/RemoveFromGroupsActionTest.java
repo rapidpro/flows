@@ -1,15 +1,19 @@
 package io.rapidpro.flows.definition.actions.group;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
 import io.rapidpro.flows.definition.GroupRef;
 import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.definition.actions.BaseActionTest;
 import io.rapidpro.flows.runner.Input;
+import io.rapidpro.flows.utils.JsonUtils;
 import org.junit.Test;
 
 import java.util.Arrays;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -17,6 +21,21 @@ import static org.junit.Assert.assertThat;
  */
 public class RemoveFromGroupsActionTest extends BaseActionTest {
 
+    @Test
+    public void toAndFromJson() throws Exception {
+        JsonElement elm = JsonUtils.object("type", "del_group", "groups", JsonUtils.array(
+                JsonUtils.object("id", 123, "name", "Testers"),
+                new JsonPrimitive("People who say @step.value")
+        ));
+        RemoveFromGroupsAction action = (RemoveFromGroupsAction) Action.fromJson(elm, m_deserializationContext);
+        assertThat(action.getGroups(), hasSize(2));
+        assertThat(action.getGroups().get(0).getId(), is(123));
+        assertThat(action.getGroups().get(0).getName(), is("Testers"));
+        assertThat(action.getGroups().get(1).getId(), is(nullValue()));
+        assertThat(action.getGroups().get(1).getName(), is("People who say @step.value"));
+
+        assertThat(action.toJson(), is(elm));
+    }
     @Test
     public void execute() {
         RemoveFromGroupsAction action = new RemoveFromGroupsAction(Arrays.asList(new GroupRef(123, "Testers"), new GroupRef("People who say @step.value")));

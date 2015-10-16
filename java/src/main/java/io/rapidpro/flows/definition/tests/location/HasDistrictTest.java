@@ -27,9 +27,10 @@ public class HasDistrictTest extends Test {
     }
 
     /**
-     * @see Test#fromJson(JsonObject, Flow.DeserializationContext)
+     * @see Test#fromJson(JsonElement, Flow.DeserializationContext)
      */
-    public static HasDistrictTest fromJson(JsonObject obj, Flow.DeserializationContext context) throws FlowParseException {
+    public static HasDistrictTest fromJson(JsonElement elm, Flow.DeserializationContext context) throws FlowParseException {
+        JsonObject obj = elm.getAsJsonObject();
         return new HasDistrictTest(JsonUtils.getAsString(obj, "test"));
     }
 

@@ -1,13 +1,13 @@
 package io.rapidpro.flows.definition;
 
 import com.google.gson.*;
-
-import java.lang.reflect.Type;
+import io.rapidpro.flows.utils.JsonUtils;
+import io.rapidpro.flows.utils.Jsonizable;
 
 /**
  * Reference to a label which can be an object like {"id":123,"name":"Testing"} or an expression string
  */
-public class LabelRef {
+public class LabelRef implements Jsonizable {
 
     protected Integer m_id;
 
@@ -30,30 +30,21 @@ public class LabelRef {
         m_name = name;
     }
 
-    public static class Deserializer implements JsonDeserializer<LabelRef> {
-        @Override
-        public LabelRef deserialize(JsonElement elem, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            if (elem.isJsonObject()) {
-                JsonObject obj = elem.getAsJsonObject();
-                return new LabelRef(obj.get("id").getAsInt(), obj.get("name").getAsString());
-            } else {
-                return new LabelRef(elem.getAsString());
-            }
+    public static LabelRef fromJson(JsonElement elm, Flow.DeserializationContext context) {
+        if (elm.isJsonObject()) {
+            JsonObject obj = elm.getAsJsonObject();
+            return new LabelRef(obj.get("id").getAsInt(), obj.get("name").getAsString());
+        } else {
+            return new LabelRef(elm.getAsString());
         }
     }
 
-    public static class Serializer implements JsonSerializer<LabelRef> {
-        @Override
-        public JsonElement serialize(LabelRef group, Type type, JsonSerializationContext context) {
-            if (group.m_id != null) {
-                JsonObject obj = new JsonObject();
-                obj.addProperty("id", group.m_id);
-                obj.addProperty("name", group.m_name);
-                return obj;
-            }
-            else {
-                return new JsonPrimitive(group.m_name);
-            }
+    @Override
+    public JsonElement toJson() {
+        if (m_id != null) {
+            return JsonUtils.object("id", m_id, "name", m_name);
+        } else {
+            return new JsonPrimitive(m_name);
         }
     }
 

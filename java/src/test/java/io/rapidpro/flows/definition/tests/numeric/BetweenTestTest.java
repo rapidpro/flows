@@ -18,12 +18,12 @@ public class BetweenTestTest extends BaseTestTest {
 
     @org.junit.Test
     public void toAndFromJson() throws Exception {
-        JsonObject obj = JsonUtils.object("type", "between", "min", "@foo", "max", "123");
-        BetweenTest test = (BetweenTest) Test.fromJson(obj, m_deserializationContext);
-        assertThat(test.m_min, is("@foo"));
-        assertThat(test.m_max, is("123"));
+        JsonElement elm = JsonUtils.object("type", "between", "min", "@foo", "max", "123");
+        BetweenTest test = (BetweenTest) Test.fromJson(elm, m_deserializationContext);
+        assertThat(test.getMin(), is("@foo"));
+        assertThat(test.getMax(), is("123"));
 
-        assertThat(test.toJson(), is((JsonElement) obj));
+        assertThat(test.toJson(), is(elm));
     }
 
     @org.junit.Test

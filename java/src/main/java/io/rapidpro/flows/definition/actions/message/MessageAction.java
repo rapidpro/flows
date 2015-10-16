@@ -1,6 +1,5 @@
 package io.rapidpro.flows.definition.actions.message;
 
-import com.google.gson.annotations.SerializedName;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.flows.definition.TranslatableText;
 import io.rapidpro.flows.definition.actions.Action;
@@ -14,11 +13,9 @@ import org.apache.commons.lang3.StringUtils;
  */
 public abstract class MessageAction extends Action {
 
-    @SerializedName("msg")
     protected TranslatableText m_msg;
 
-    public MessageAction(String type, TranslatableText msg) {
-        super(type);
+    public MessageAction(TranslatableText msg) {
         m_msg = msg;
     }
 

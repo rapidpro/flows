@@ -21,11 +21,11 @@ public class RegexTestTest extends BaseTestTest {
 
     @org.junit.Test
     public void toAndFromJson() throws Exception {
-        JsonObject obj = JsonUtils.object("type", "regex", "test", "(?P<first_name>\\w+) (\\w+)");
-        RegexTest test = (RegexTest) Test.fromJson(obj, m_deserializationContext);
-        assertThat(test.m_test, is(new TranslatableText("(?P<first_name>\\w+) (\\w+)")));
+        JsonElement elm = JsonUtils.object("type", "regex", "test", "(?P<first_name>\\w+) (\\w+)");
+        RegexTest test = (RegexTest) Test.fromJson(elm, m_deserializationContext);
+        assertThat(test.getTest(), is(new TranslatableText("(?P<first_name>\\w+) (\\w+)")));
 
-        assertThat(test.toJson(), is((JsonElement) obj));
+        assertThat(test.toJson(), is(elm));
     }
 
     @org.junit.Test

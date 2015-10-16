@@ -21,9 +21,10 @@ public class EqualTest extends NumericComparisonTest {
     }
 
     /**
-     * @see Test#fromJson(JsonObject, Flow.DeserializationContext)
+     * @see Test#fromJson(JsonElement, Flow.DeserializationContext)
      */
-    public static EqualTest fromJson(JsonObject obj, Flow.DeserializationContext context) throws FlowParseException {
+    public static EqualTest fromJson(JsonElement elm, Flow.DeserializationContext context) throws FlowParseException {
+        JsonObject obj = elm.getAsJsonObject();
         return new EqualTest(obj.get("test").getAsString());
     }
 

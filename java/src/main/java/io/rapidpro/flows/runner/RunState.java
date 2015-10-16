@@ -84,18 +84,14 @@ public class RunState {
      * @return the run state
      */
     public static RunState fromJson(String json, Flow flow) {
-        try {
-            Flow.DeserializationContext context = new Flow.DeserializationContext(flow);
-            JsonUtils.setDeserializationContext(context);
+        Flow.DeserializationContext context = new Flow.DeserializationContext(flow);
 
-            RunState runState = JsonUtils.getGson().fromJson(json, RunState.class);
-            runState.m_flow = flow;
+        // TODO
 
-            return runState;
-        }
-        finally {
-            JsonUtils.clearDeserializationContext();
-        }
+        RunState runState = JsonUtils.getGson().fromJson(json, RunState.class);
+        runState.m_flow = flow;
+
+        return runState;
     }
 
     /**

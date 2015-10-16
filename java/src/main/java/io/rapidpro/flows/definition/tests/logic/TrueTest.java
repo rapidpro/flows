@@ -17,9 +17,9 @@ public class TrueTest extends Test {
     public static final String TYPE = "true";
 
     /**
-     * @see Test#fromJson(JsonObject, Flow.DeserializationContext)
+     * @see Test#fromJson(JsonElement, Flow.DeserializationContext)
      */
-    public static TrueTest fromJson(JsonObject obj, Flow.DeserializationContext context) {
+    public static TrueTest fromJson(JsonElement elm, Flow.DeserializationContext context) {
         return new TrueTest();
     }
 
