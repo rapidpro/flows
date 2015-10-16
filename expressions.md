@@ -5,8 +5,7 @@ permalink: /expressions/
 ---
 # Expressions, Version 8
 
-RapidPro provides a template language that allows for the substitution of variables into a string. These along with
-expressions
+RapidPro provides a template language that allows for the substitution of variables into a string.
 
 ```
 Hello @contact.name, how old are you?
@@ -17,7 +16,7 @@ being evaluated against. In all cases expressions are evaluated against the curr
 
 # Variables
 
-The context defines the available variables for substitution, the context contains all the following variables.
+The context defines the variables available for substitution in expressions.
 
 ### Contact Variables
 The ```@contact``` variables all refer to the contact that will receive a message. Note that this will be the contact

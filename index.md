@@ -16,9 +16,15 @@ compatible flow builders (and engines) without having to guess as to what the ap
 Our goal is to be only as specific as needed to avoid ambiguity while also creating a framework that
 allows vendors to extend the functionality without starting anew.
 
+## Versions
+
+RapidPro is an evolving platform, as such the flow specification continues to change as we add
+or modify functionality. This specification refers to the latest version of the flow specification,
+version 8.
+
 ## Navigation
 
  * [Concepts](/flows/concepts/) - Overview of general flow concepts
- * [Expressions](/expressions/) - Overview of RapidPro's expression template language
- * [Specification](/specification/) - Detailed flow specification
- * [Examples](/examples/) - Some example flow definitions
+ * [Expressions](/flows/expressions/) - Overview of RapidPro's expression template language
+ * [Specification](/flows/specification/) - Detailed flow specification
+ * [Examples](/flows/examples/) - Some example flow definitions
