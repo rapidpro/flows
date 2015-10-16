@@ -33,12 +33,6 @@ others.
 
 RapidPro has dual copyright holders of UNICEF and Nyaruka.
 
-## Temba
-
-You'll notice that the main packages in RapidPro are named ```temba```. Temba
-means "Flow" in Kinyarwanda and it is thus an homage to RapidPro's roots in
-Kigali, Rwanda where it was first developed.
-
 ## Commercial Licensing
 
 If you wish to license RapidPro under a different license, you may contact

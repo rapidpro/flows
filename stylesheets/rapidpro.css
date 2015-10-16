@@ -32,3 +32,17 @@ header h2 {
 #navbar > li > a:hover {
     color: #ccc;
 }
+
+#spec p {
+  margin-bottom: 5px;
+}
+
+#spec h3, #spec h4, #spec h2, #spec h1 {
+  margin-bottom: 5px;
+}
+
+#spec pre {
+  margin-top: 0px;
+  margin-bottom: 5px;
+  padding: 5px;
+}
