@@ -1,12 +1,15 @@
 package io.rapidpro.flows.runner;
 
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.evaluator.Conversions;
+import io.rapidpro.expressions.utils.ExpressionUtils;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.RuleSet;
 import io.rapidpro.flows.utils.FlowUtils;
 import io.rapidpro.flows.utils.JsonUtils;
+import io.rapidpro.flows.utils.Jsonizable;
 import org.apache.commons.lang3.StringUtils;
 import org.threeten.bp.Instant;
 import org.threeten.bp.LocalDate;
@@ -21,42 +24,31 @@ import java.util.Map;
 /**
  * Represents state of a flow run after visiting one or more nodes in the flow
  */
-public class RunState {
+public class RunState implements Jsonizable {
 
     public enum State {
-        @SerializedName("in_progress") IN_PROGRESS,
-        @SerializedName("completed") COMPLETED,
-        @SerializedName("wait_message") WAIT_MESSAGE
+        IN_PROGRESS,
+        COMPLETED,
+        WAIT_MESSAGE
     }
 
-    @SerializedName("org")
     protected Org m_org;
 
-    @SerializedName("fields")
     protected List<Field> m_fields;
 
-    @SerializedName("contact")
     protected Contact m_contact;
 
-    @SerializedName("started")
     protected Instant m_started;
 
-    @SerializedName("steps")
     protected List<Step> m_steps;
 
-    @SerializedName("values")
     protected Map<String, Value> m_values;
 
-    @SerializedName("extra")
-    protected Map<String, Object> m_extra;
+    protected Map<String, String> m_extra;
 
-    @SerializedName("state")
     protected State m_state;
 
-    protected transient Flow m_flow;
-
-    protected RunState() {
-    }
+    protected Flow m_flow;
 
     /**
      * Creates a run state for a new run by the given contact in the given flow
@@ -84,22 +76,48 @@ public class RunState {
      * @return the run state
      */
     public static RunState fromJson(String json, Flow flow) {
+        JsonObject obj = JsonUtils.getGson().fromJson(json, JsonObject.class);
         Flow.DeserializationContext context = new Flow.DeserializationContext(flow);
 
-        // TODO
+        RunState run = new RunState(
+                Org.fromJson(obj.get("org")),
+                JsonUtils.fromJsonArray(obj.get("fields").getAsJsonArray(), null, Field.class),
+                Contact.fromJson(obj.get("contact")),
+                flow
+        );
 
-        RunState runState = JsonUtils.getGson().fromJson(json, RunState.class);
-        runState.m_flow = flow;
-
-        return runState;
+        run.m_started = ExpressionUtils.parseJsonDate(JsonUtils.getAsString(obj, "started"));
+        run.m_steps = JsonUtils.fromJsonArray(obj.get("steps").getAsJsonArray(), context, Step.class);
+        run.m_values = JsonUtils.fromJsonObject(obj.get("values").getAsJsonObject(), null, Value.class);
+        run.m_extra = JsonUtils.fromJsonObject(obj.get("extra").getAsJsonObject(), null, String.class);
+        run.m_state = State.valueOf(obj.get("state").getAsString().toUpperCase());
+        return run;
     }
 
     /**
      * Serializes this run state to JSON
      * @return the JSON
      */
-    public String toJson() {
-        return JsonUtils.getGson().toJson(this);
+    @Override
+    public JsonElement toJson() {
+        return JsonUtils.object(
+                "org", m_org.toJson(),
+                "fields", JsonUtils.toJsonArray(m_fields),
+                "contact", m_contact.toJson(),
+                "started", ExpressionUtils.formatJsonDate(m_started),
+                "steps", JsonUtils.toJsonArray(m_steps),
+                "values", JsonUtils.toJsonObject(m_values),
+                "extra", JsonUtils.toJsonObject(m_extra),
+                "state", m_state.name().toLowerCase()
+        );
+    }
+
+    /**
+     * Serializes this run state to a JSON string
+     * @return the JSON
+     */
+    public String toJsonString() {
+        return JsonUtils.getGson().toJson(toJson());
     }
 
     /**
@@ -198,7 +216,7 @@ public class RunState {
             label = FlowUtils.title(key.replaceAll("([^A-Za-z0-9- ]+)", " "));
         }
 
-        Field field = new Field(key, label, valueType);
+        Field field = new Field(key, label, valueType, true);
         m_fields.add(field);
         return field;
     }
@@ -247,7 +265,7 @@ public class RunState {
         return m_values;
     }
 
-    public Map<String, Object> getExtra() {
+    public Map<String, String> getExtra() {
         return m_extra;
     }
 

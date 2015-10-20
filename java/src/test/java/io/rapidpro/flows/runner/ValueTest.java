@@ -30,7 +30,7 @@ public class ValueTest extends BaseFlowsTest {
                 "time", "2015-08-25T11:59:30.088Z"
         )));
 
-        value = Value.fromJson(obj, null);
+        value = Value.fromJson(obj);
 
         assertThat(value.getValue(), is("no"));
         assertThat(value.getCategory(), is("No"));

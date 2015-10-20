@@ -1,7 +1,6 @@
 package io.rapidpro.flows.definition.tests;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import io.rapidpro.flows.utils.JsonUtils;
 
 import static org.hamcrest.Matchers.is;

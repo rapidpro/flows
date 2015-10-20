@@ -1,10 +1,8 @@
 package io.rapidpro.flows.definition.actions.message;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
 import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.definition.actions.BaseActionTest;
-import io.rapidpro.flows.definition.actions.label.AddLabelsAction;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.utils.JsonUtils;
 import org.junit.Test;
@@ -22,10 +20,7 @@ public class EmailActionTest extends BaseActionTest {
     @Test
     public void toAndFromJson() throws Exception {
         JsonElement elm = JsonUtils.object("type", "email",
-                "emails", JsonUtils.array(
-                    new JsonPrimitive("code@nyaruka.com"),
-                    new JsonPrimitive("@contact.chw_email")
-                ),
+                "emails", JsonUtils.array("code@nyaruka.com", "@contact.chw_email"),
                 "subject", "Salut",
                 "msg", "Ça va?");
         EmailAction action = (EmailAction) Action.fromJson(elm, m_deserializationContext);

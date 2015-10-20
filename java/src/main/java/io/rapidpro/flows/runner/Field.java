@@ -1,6 +1,9 @@
 package io.rapidpro.flows.runner;
 
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import io.rapidpro.flows.utils.JsonUtils;
+import io.rapidpro.flows.utils.Jsonizable;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -10,35 +13,48 @@ import java.util.regex.Pattern;
 /**
  * A contact field
  */
-public class Field {
+public class Field implements Jsonizable {
 
     // can't create contact fields with these keys
     protected static Set<String> RESERVED_KEYS = new HashSet<>(Arrays.asList(
             "name", "first_name", "phone", "language", "created_by", "modified_by", "org", "uuid", "groups"));
 
     public enum ValueType {
-        @SerializedName("T") TEXT,
-        @SerializedName("N") DECIMAL,
-        @SerializedName("D") DATETIME,
-        @SerializedName("S") STATE,
-        @SerializedName("I") DISTRICT
+        TEXT("T"),
+        DECIMAL("N"),
+        DATETIME("D"),
+        STATE("S"),
+        DISTRICT("I");
+
+        String m_code;
+
+        ValueType(String code) {
+            m_code = code;
+        }
+
+        static ValueType fromCode(String code) {
+            for (ValueType type : ValueType.values()) {
+                if (type.m_code.equals(code)) {
+                    return type;
+                }
+            }
+            return null;
+        }
     }
 
-    @SerializedName("key")
     protected String m_key;
 
-    @SerializedName("label")
     protected String m_label;
 
-    @SerializedName("value_type")
     protected ValueType m_valueType;
 
-    protected transient boolean m_new = false;
-
-    public Field() {
-    }
+    protected boolean m_new = false;
 
     public Field(String key, String label, ValueType valueType) {
+        this(key, label, valueType, false);
+    }
+
+    public Field(String key, String label, ValueType valueType, boolean isNew) {
         if (!isValidKey(key)) {
             throw new RuntimeException("Field key '" + key + "' is invalid or reserved");
         }
@@ -49,7 +65,24 @@ public class Field {
         m_key = key;
         m_label = label;
         m_valueType = valueType;
-        m_new = true;
+        m_new = isNew;
+    }
+
+    public static Field fromJson(JsonElement elm) {
+        JsonObject obj = elm.getAsJsonObject();
+        return new Field(
+                obj.get("key").getAsString(),
+                obj.get("label").getAsString(),
+                ValueType.fromCode(obj.get("value_type").getAsString())
+        );
+    }
+
+    @Override
+    public JsonElement toJson() {
+        return JsonUtils.object(
+                "key", m_key,
+                "label", m_label,
+                "value_type", m_valueType.m_code);
     }
 
     public static String makeKey(String label) {

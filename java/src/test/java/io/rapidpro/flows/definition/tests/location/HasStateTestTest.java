@@ -1,7 +1,6 @@
 package io.rapidpro.flows.definition.tests.location;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import io.rapidpro.flows.definition.tests.BaseTestTest;
 import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.utils.JsonUtils;

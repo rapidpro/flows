@@ -1,8 +1,11 @@
 package io.rapidpro.flows.runner;
 
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.evaluator.Conversions;
+import io.rapidpro.flows.utils.JsonUtils;
+import io.rapidpro.flows.utils.Jsonizable;
 import org.apache.commons.lang3.StringUtils;
 import org.threeten.bp.ZonedDateTime;
 
@@ -11,24 +14,18 @@ import java.util.*;
 /**
  * A contact that can participate in a flow
  */
-public class Contact {
+public class Contact implements Jsonizable {
 
-    @SerializedName("uuid")
     protected String m_uuid;
 
-    @SerializedName("name")
     protected String m_name;
 
-    @SerializedName("urns")
     protected List<ContactUrn> m_urns;
 
-    @SerializedName("groups")
     protected Set<String> m_groups;
 
-    @SerializedName("fields")
     protected Map<String, String> m_fields;
 
-    @SerializedName("language")
     protected String m_language;
 
     public Contact() {
@@ -51,6 +48,29 @@ public class Contact {
         m_language = language;
     }
 
+    public static Contact fromJson(JsonElement elm) {
+        JsonObject obj = elm.getAsJsonObject();
+        return new Contact(
+                JsonUtils.getAsString(obj, "uuid"),
+                JsonUtils.getAsString(obj, "name"),
+                JsonUtils.fromJsonArray(obj.get("urns").getAsJsonArray(), null, ContactUrn.class),
+                new LinkedHashSet<>(JsonUtils.fromJsonArray(obj.get("groups").getAsJsonArray(), null, String.class)),
+                JsonUtils.fromJsonObject(obj.get("fields").getAsJsonObject(), null, String.class),
+                JsonUtils.getAsString(obj, "language")
+        );
+    }
+
+    @Override
+    public JsonElement toJson() {
+        return JsonUtils.object(
+                "uuid", m_uuid,
+                "name", m_name,
+                "urns", JsonUtils.toJsonArray(m_urns),
+                "groups", JsonUtils.toJsonArray(m_groups),
+                "fields", JsonUtils.toJsonObject(m_fields),
+                "language", m_language
+        );
+    }
 
     public String getUuid() {
         return m_uuid;

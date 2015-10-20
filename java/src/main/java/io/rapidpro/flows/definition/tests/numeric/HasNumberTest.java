@@ -1,7 +1,6 @@
 package io.rapidpro.flows.definition.tests.numeric;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.FlowParseException;

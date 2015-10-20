@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.evaluator.Conversions;
 import io.rapidpro.expressions.utils.ExpressionUtils;
-import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.utils.JsonUtils;
 import io.rapidpro.flows.utils.Jsonizable;
 import org.threeten.bp.Instant;
@@ -33,7 +32,7 @@ public class Value implements Jsonizable {
         m_time = time;
     }
 
-    public static Value fromJson(JsonElement elm, Flow.DeserializationContext context) {
+    public static Value fromJson(JsonElement elm) {
         JsonObject obj = elm.getAsJsonObject();
         return new Value(
                 obj.get("value").getAsString(),

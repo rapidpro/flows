@@ -52,7 +52,7 @@ public class Step implements Jsonizable {
                 (Flow.Node) context.getFlow().getElementByUuid(obj.get("node").getAsString()),
                 ExpressionUtils.parseJsonDate(JsonUtils.getAsString(obj, "arrived_on")),
                 ExpressionUtils.parseJsonDate(JsonUtils.getAsString(obj, "left_on")),
-                JsonUtils.fromJson(obj, "rule", context, RuleSet.Result.class),
+                JsonUtils.fromJson(obj.get("rule"), context, RuleSet.Result.class),
                 JsonUtils.fromJsonArray(obj.get("actions").getAsJsonArray(), context, Action.class),
                 JsonUtils.fromJsonArray(obj.get("errors").getAsJsonArray(), context, String.class)
         );

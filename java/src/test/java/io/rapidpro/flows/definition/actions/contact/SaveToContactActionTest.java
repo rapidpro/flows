@@ -1,10 +1,8 @@
 package io.rapidpro.flows.definition.actions.contact;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.definition.actions.BaseActionTest;
-import io.rapidpro.flows.definition.tests.date.DateAfterTest;
 import io.rapidpro.flows.runner.ContactUrn;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.utils.JsonUtils;

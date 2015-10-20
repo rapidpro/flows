@@ -1,12 +1,12 @@
 package io.rapidpro.flows.runner;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.dates.DateStyle;
 import io.rapidpro.flows.BaseFlowsTest;
 import io.rapidpro.flows.RunnerBuilder;
 import io.rapidpro.flows.definition.Flow;
+import io.rapidpro.flows.utils.JsonUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,17 +37,26 @@ public class ContactTest extends BaseFlowsTest {
 
     @Test
     public void toAndFromJson() {
-        Gson gson = new GsonBuilder().create();
-        String json = gson.toJson(m_contact);
+        JsonObject obj = (JsonObject) m_contact.toJson();
 
-        Contact contact = gson.fromJson(json, Contact.class);
+        assertThat(obj, is(JsonUtils.object(
+                "uuid", "1234-1234",
+                "name", "Joe Flow",
+                "urns", JsonUtils.array("tel:+260964153686", "twitter:realJoeFlow"),
+                "groups", JsonUtils.array("Testers", "Developers"),
+                "fields", JsonUtils.object("age", "34", "gender", "M", "joined", "2015-10-06T11:30:01.123Z"),
+                "language", "eng"
+        )));
+
+        Contact contact = Contact.fromJson(obj);
 
         assertThat(contact.getUuid(), is("1234-1234"));
         assertThat(contact.getName(), is("Joe Flow"));
         assertThat(contact.getUrns(), contains(new ContactUrn(ContactUrn.Scheme.TEL, "+260964153686"), new ContactUrn(ContactUrn.Scheme.TWITTER, "realJoeFlow")));
-        assertThat(contact.getGroups(), contains("Testers", "Developers"));
+        assertThat(contact.getGroups(), containsInAnyOrder("Testers", "Developers"));
         assertThat(contact.getFields(), hasEntry("age", "34"));
         assertThat(contact.getFields(), hasEntry("gender", "M"));
+        assertThat(contact.getFields(), hasEntry("joined", "2015-10-06T11:30:01.123Z"));
         assertThat(contact.getLanguage(), is("eng"));
     }
 

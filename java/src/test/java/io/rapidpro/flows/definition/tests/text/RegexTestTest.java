@@ -1,7 +1,6 @@
 package io.rapidpro.flows.definition.tests.text;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import io.rapidpro.flows.definition.TranslatableText;
 import io.rapidpro.flows.definition.tests.BaseTestTest;
 import io.rapidpro.flows.definition.tests.Test;

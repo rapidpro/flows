@@ -1,11 +1,9 @@
 package io.rapidpro.flows.definition.actions.label;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
 import io.rapidpro.flows.definition.LabelRef;
 import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.definition.actions.BaseActionTest;
-import io.rapidpro.flows.definition.actions.group.AddToGroupsAction;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.utils.JsonUtils;
 import org.junit.Test;
@@ -24,7 +22,7 @@ public class AddLabelsActionTest extends BaseActionTest {
     public void toAndFromJson() throws Exception {
         JsonElement elm = JsonUtils.object("type", "add_label", "labels", JsonUtils.array(
                 JsonUtils.object("id", 123, "name", "Testing"),
-                new JsonPrimitive("Messages with @step.value")
+                "Messages with @step.value"
         ));
         AddLabelsAction action = (AddLabelsAction) Action.fromJson(elm, m_deserializationContext);
         assertThat(action.getLabels(), hasSize(2));

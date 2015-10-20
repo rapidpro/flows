@@ -1,13 +1,16 @@
 package io.rapidpro.flows.runner;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import io.rapidpro.flows.utils.FlowUtils;
+import io.rapidpro.flows.utils.Jsonizable;
 import org.apache.commons.lang3.StringUtils;
 
 /**
  * A URN for a contact (e.g. a telephone number or twitter handle)
  */
-public class ContactUrn {
+public class ContactUrn implements Jsonizable {
 
     public enum Scheme {
         TEL,
@@ -34,6 +37,10 @@ public class ContactUrn {
         String[] parts = urn.split(":", 2);
         Scheme scheme = Scheme.valueOf(parts[0].toUpperCase());
         return new ContactUrn(scheme, parts[1]);
+    }
+
+    public static ContactUrn fromJson(JsonElement elm) {
+        return fromString(elm.getAsString());
     }
 
     /**
@@ -83,6 +90,11 @@ public class ContactUrn {
 
     public String getPath() {
         return m_path;
+    }
+
+    @Override
+    public JsonElement toJson() {
+        return new JsonPrimitive(toString());
     }
 
     /**

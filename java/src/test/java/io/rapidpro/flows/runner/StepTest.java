@@ -1,7 +1,6 @@
 package io.rapidpro.flows.runner;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import io.rapidpro.flows.BaseFlowsTest;
 import io.rapidpro.flows.definition.*;
 import io.rapidpro.flows.definition.actions.Action;
@@ -60,7 +59,7 @@ public class StepTest extends BaseFlowsTest {
                 "left_on", null,
                 "rule", null,
                 "actions", JsonUtils.array(JsonUtils.object("type", "reply", "msg", "Hi Joe")),
-                "errors", JsonUtils.array(new JsonPrimitive("This is an error"), new JsonPrimitive("This too"))
+                "errors", JsonUtils.array("This is an error", "This too")
         )));
 
         step.getActions().clear();

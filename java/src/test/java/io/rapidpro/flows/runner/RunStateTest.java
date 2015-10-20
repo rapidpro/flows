@@ -56,10 +56,10 @@ public class RunStateTest extends BaseFlowsTest {
         runner.resume(run, Input.of("Yes"));
 
         // export to json and reimport
-        String json = run.toJson();
+        String json = run.toJsonString();
         RunState restored = RunState.fromJson(json, flow);
 
         // json should be the same
-        assertThat(restored.toJson(), is(json));
+        assertThat(restored.toJsonString(), is(json));
     }
 }

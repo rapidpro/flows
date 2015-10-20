@@ -7,7 +7,6 @@ import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.RuleSet;
 import org.apache.commons.lang3.StringUtils;
 import org.threeten.bp.Instant;
-import org.threeten.bp.ZonedDateTime;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -220,7 +219,7 @@ public class Runner {
      * @param run the run state
      * @param values the key values
      */
-    public void updateExtra(RunState run, Map<String, ?> values) {
+    public void updateExtra(RunState run, Map<String, String> values) {
         run.getExtra().putAll(values);
     }
 

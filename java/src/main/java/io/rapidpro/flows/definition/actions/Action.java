@@ -1,7 +1,6 @@
 package io.rapidpro.flows.definition.actions;
 
-import com.google.gson.*;
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.JsonElement;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.FlowParseException;
 import io.rapidpro.flows.definition.actions.contact.SaveToContactAction;
@@ -18,7 +17,6 @@ import io.rapidpro.flows.runner.Runner;
 import io.rapidpro.flows.utils.JsonUtils;
 import io.rapidpro.flows.utils.Jsonizable;
 
-import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;

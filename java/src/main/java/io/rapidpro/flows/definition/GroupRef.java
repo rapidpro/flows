@@ -1,6 +1,8 @@
 package io.rapidpro.flows.definition;
 
-import com.google.gson.*;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import io.rapidpro.flows.utils.JsonUtils;
 import io.rapidpro.flows.utils.Jsonizable;
 

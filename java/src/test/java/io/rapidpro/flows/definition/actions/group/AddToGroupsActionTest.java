@@ -1,11 +1,9 @@
 package io.rapidpro.flows.definition.actions.group;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
 import io.rapidpro.flows.definition.GroupRef;
 import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.definition.actions.BaseActionTest;
-import io.rapidpro.flows.definition.actions.contact.SaveToContactAction;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.utils.JsonUtils;
 import org.junit.Test;
@@ -24,7 +22,7 @@ public class AddToGroupsActionTest extends BaseActionTest {
     public void toAndFromJson() throws Exception {
         JsonElement elm = JsonUtils.object("type", "add_group", "groups", JsonUtils.array(
                 JsonUtils.object("id", 123, "name", "Testers"),
-                new JsonPrimitive("People who say @step.value")
+                "People who say @step.value"
         ));
         AddToGroupsAction action = (AddToGroupsAction) Action.fromJson(elm, m_deserializationContext);
         assertThat(action.getGroups(), hasSize(2));

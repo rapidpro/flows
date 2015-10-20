@@ -2,7 +2,6 @@ package io.rapidpro.flows.definition;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.annotations.SerializedName;
 import io.rapidpro.expressions.EvaluationContext;
 import io.rapidpro.expressions.evaluator.Conversions;
 import io.rapidpro.expressions.utils.ExpressionUtils;

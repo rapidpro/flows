@@ -1,7 +1,6 @@
 package io.rapidpro.flows.definition.tests.logic;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import io.rapidpro.flows.definition.TranslatableText;
 import io.rapidpro.flows.definition.tests.BaseTestTest;
 import io.rapidpro.flows.definition.tests.Test;
@@ -11,9 +10,7 @@ import io.rapidpro.flows.utils.JsonUtils;
 
 import java.util.Arrays;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 /**

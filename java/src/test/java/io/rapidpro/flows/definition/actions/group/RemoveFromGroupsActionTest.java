@@ -1,7 +1,6 @@
 package io.rapidpro.flows.definition.actions.group;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
 import io.rapidpro.flows.definition.GroupRef;
 import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.definition.actions.BaseActionTest;
@@ -12,8 +11,6 @@ import org.junit.Test;
 import java.util.Arrays;
 
 import static org.hamcrest.Matchers.*;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -25,7 +22,7 @@ public class RemoveFromGroupsActionTest extends BaseActionTest {
     public void toAndFromJson() throws Exception {
         JsonElement elm = JsonUtils.object("type", "del_group", "groups", JsonUtils.array(
                 JsonUtils.object("id", 123, "name", "Testers"),
-                new JsonPrimitive("People who say @step.value")
+                "People who say @step.value"
         ));
         RemoveFromGroupsAction action = (RemoveFromGroupsAction) Action.fromJson(elm, m_deserializationContext);
         assertThat(action.getGroups(), hasSize(2));

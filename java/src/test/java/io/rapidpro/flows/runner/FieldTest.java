@@ -1,8 +1,8 @@
 package io.rapidpro.flows.runner;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import io.rapidpro.flows.BaseFlowsTest;
+import io.rapidpro.flows.utils.JsonUtils;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
@@ -15,16 +15,15 @@ public class FieldTest extends BaseFlowsTest {
 
     @Test
     public void toAndFromJson() {
-        Gson gson = new GsonBuilder().create();
-        String json = gson.toJson(m_fields.get(0));
+        JsonObject obj = (JsonObject) m_fields.get(0).toJson();
 
-        assertThat(json, is("{" +
-                "\"key\":\"gender\"," +
-                "\"label\":\"Gender\"," +
-                "\"value_type\":\"T\"" +
-                "}"));
+        assertThat(obj, is(JsonUtils.object(
+                "key", "gender",
+                "label", "Gender",
+                "value_type", "T"
+        )));
 
-        Field field = gson.fromJson(json, Field.class);
+        Field field = Field.fromJson(obj);
 
         assertThat(field.getKey(), is("gender"));
         assertThat(field.getLabel(), is("Gender"));

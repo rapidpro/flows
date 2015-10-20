@@ -1,7 +1,6 @@
 package io.rapidpro.flows.definition.actions.message;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
 import io.rapidpro.flows.definition.ContactRef;
 import io.rapidpro.flows.definition.GroupRef;
 import io.rapidpro.flows.definition.TranslatableText;
@@ -14,7 +13,6 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;

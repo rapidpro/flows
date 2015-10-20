@@ -1,7 +1,6 @@
 package io.rapidpro.flows.definition.tests;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.i18n.phonenumbers.PhoneNumberMatch;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;

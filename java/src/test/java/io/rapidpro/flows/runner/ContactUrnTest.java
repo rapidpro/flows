@@ -1,5 +1,7 @@
 package io.rapidpro.flows.runner;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
 import io.rapidpro.flows.BaseFlowsTest;
 import org.junit.Test;
 
@@ -19,6 +21,16 @@ public class ContactUrnTest extends BaseFlowsTest {
         assertThat(urn.getPath(), is("+260964153686"));
 
         assertThat(urn.toString(), is("tel:+260964153686"));
+    }
+
+    @Test
+    public void toAndFromJson() {
+        ContactUrn urn = ContactUrn.fromJson(new JsonPrimitive("tel:+260964153686"));
+
+        assertThat(urn.getScheme(), is(ContactUrn.Scheme.TEL));
+        assertThat(urn.getPath(), is("+260964153686"));
+
+        assertThat(urn.toJson(), is((JsonElement) new JsonPrimitive("tel:+260964153686")));
     }
 
     @Test

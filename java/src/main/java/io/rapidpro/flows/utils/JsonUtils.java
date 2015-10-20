@@ -5,22 +5,14 @@ import io.rapidpro.flows.definition.Flow;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * JSON utility methods
  */
 public class JsonUtils {
 
-    protected static GsonBuilder s_gsonBuilder = new GsonBuilder()
-            .registerTypeAdapter(Flow.class, new Flow.Deserializer());
-
-    protected static Gson s_gson = s_gsonBuilder.create();
-
-    public static GsonBuilder getGsonBuilder() {
-        return s_gsonBuilder;
-    }
+    protected static Gson s_gson = new GsonBuilder().create();
 
     public static Gson getGson() {
         return s_gson;
@@ -49,34 +41,16 @@ public class JsonUtils {
     }
 
     /**
-     * Convenience constructor to create a new JsonObject from pairs of property names and values
-     * @param nameValuePairs the name value pairs
-     * @return the object
+     * Tries to convert a value to a JSON element
+     * @param value the value to convert
+     * @return the JSON element
      */
-    public static JsonObject object(Object... nameValuePairs) {
-        JsonObject obj = new JsonObject();
-        for (int i = 0; i < nameValuePairs.length; i += 2) {
-            String name = (String) nameValuePairs[i];
-            Object value = nameValuePairs[i + 1];
-            if (value instanceof String) {
-                obj.addProperty(name, (String) value);
-            } else if (value instanceof Boolean) {
-                obj.addProperty(name, (Boolean) value);
-            } else if (value instanceof Number) {
-                obj.addProperty(name, (Number) value);
-            } else if (value instanceof JsonElement) {
-                obj.add(name, (JsonElement) value);
-            } else if (value == null) {
-                obj.add(name, null);
-            } else {
-                throw new RuntimeException("Can't add value of type " + value.getClass().getSimpleName() + " to JSON");
-            }
-        }
-        return obj;
-    }
-
     public static JsonElement toJson(Object value) {
-        if (value instanceof String) {
+        if (value == null) {
+            return JsonNull.INSTANCE;
+        } else if (value instanceof JsonElement) {
+            return (JsonElement) value;
+        } else if (value instanceof String) {
             return new JsonPrimitive((String) value);
         } else if (value instanceof Boolean) {
             return new JsonPrimitive((Boolean) value);
@@ -85,24 +59,29 @@ public class JsonUtils {
         } else if (value instanceof Jsonizable) {
             return ((Jsonizable) value).toJson();
         } else {
-            throw new RuntimeException("Can't add value of type " + value.getClass().getSimpleName() + " to JSON");
+            throw new RuntimeException("Can't convert value of type " + value.getClass().getSimpleName() + " to JSON");
         }
     }
 
     /**
-     * Convenience constructor to create a JSON array from multiple items
-     * @param items the array items
-     * @return the array
+     * Converts a map to a JSON object
+     * @param map the map to convert
+     * @return the JSON object
      */
-    public static JsonArray array(JsonElement... items) {
-        JsonArray arr = new JsonArray();
-        for (JsonElement elm : items) {
-            arr.add(elm);
+    public static JsonObject toJsonObject(Map<String, ?> map) {
+        JsonObject obj = new JsonObject();
+        for (Map.Entry<String, ?> entry : map.entrySet()) {
+            obj.add(entry.getKey(), toJson(entry.getValue()));
         }
-        return arr;
+        return obj;
     }
 
-    public static JsonArray toJsonArray(List<?> items) {
+    /**
+     * Converts an iterable of items to a JSON array
+     * @param items the iterable to convert
+     * @return the JSON array
+     */
+    public static JsonArray toJsonArray(Iterable<?> items) {
         JsonArray arr = new JsonArray();
         for (Object item : items) {
             arr.add(toJson(item));
@@ -111,13 +90,41 @@ public class JsonUtils {
     }
 
     /**
-     * Instantiates a new object instance by calling a static fromJson method on its class.
-     * @param elm the JSON element passed to fromJson
-     * @param context the deserialization context
+     * Convenience constructor to create a JSON object from pairs of property names and values
+     * @param nameValuePairs the name value pairs
+     * @return the object
+     */
+    public static JsonObject object(Object... nameValuePairs) {
+        JsonObject obj = new JsonObject();
+        for (int i = 0; i < nameValuePairs.length; i += 2) {
+            String name = (String) nameValuePairs[i];
+            Object value = nameValuePairs[i + 1];
+            obj.add(name, toJson(value));
+        }
+        return obj;
+    }
+
+    /**
+     * Convenience constructor to create a JSON array from multiple items
+     * @param items the array items
+     * @return the array
+     */
+    public static JsonArray array(Object... items) {
+        return toJsonArray(Arrays.asList(items));
+    }
+
+    /**
+     * Loads an object from JSON. If object is not a primitive, it's class must declare a fromJson method.
+     * @param elm the JSON element
+     * @param context the deserialization context (may be null)
      * @param clazz the class to instantiate
      * @return the new object instance
      */
     public static <T> T fromJson(JsonElement elm, Flow.DeserializationContext context, Class<T> clazz) {
+        if (elm == null || elm.isJsonNull()) {
+            return null;
+        }
+
         if (clazz.equals(String.class)) {
             return (T) elm.getAsString();
         } else if (clazz.equals(Boolean.class)) {
@@ -125,27 +132,31 @@ public class JsonUtils {
         }
 
         try {
-            Method method = clazz.getDeclaredMethod("fromJson", JsonElement.class, Flow.DeserializationContext.class);
-            return (T) method.invoke(null, elm, context);
+            if (context != null) {
+                Method method = clazz.getDeclaredMethod("fromJson", JsonElement.class, Flow.DeserializationContext.class);
+                return (T) method.invoke(null, elm, context);
+            } else {
+                Method method = clazz.getDeclaredMethod("fromJson", JsonElement.class);
+                return (T) method.invoke(null, elm);
+            }
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static <T> T fromJson(JsonObject obj, String memberName, Flow.DeserializationContext context, Class<T> clazz) {
-        JsonElement member = obj.get(memberName);
-        if (member == null || member.isJsonNull()) {
-            return null;
-        } else {
-            return fromJson(member, context, clazz);
-        }
-    }
-
-    public static <T> List<T> fromJsonArray(JsonArray array, Flow.DeserializationContext context, Class<T> clazz) {
+    public static <T> List<T> fromJsonArray(JsonArray arr, Flow.DeserializationContext context, Class<T> clazz) {
         List<T> items = new ArrayList<>();
-        for (JsonElement elm : array) {
+        for (JsonElement elm : arr) {
             items.add(fromJson(elm, context, clazz));
         }
         return items;
+    }
+
+    public static <V> Map<String, V> fromJsonObject(JsonObject obj, Flow.DeserializationContext context, Class<V> clazz) {
+        Map<String, V> map = new HashMap<>();
+        for (Map.Entry<String, JsonElement> entry : obj.entrySet()) {
+            map.put(entry.getKey(), fromJson(entry.getValue(), context, clazz));
+        }
+        return map;
     }
 }

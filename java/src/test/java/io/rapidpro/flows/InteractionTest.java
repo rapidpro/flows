@@ -1,6 +1,8 @@
 package io.rapidpro.flows;
 
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.definition.actions.message.ReplyAction;
@@ -35,8 +37,8 @@ public class InteractionTest extends BaseFlowsTest {
 
         Flow flow = Flow.fromJson(readResource(flowFile));
 
-        String interactionsJson = readResource(interactionsFile);
-        TestDefinition[] tests = JsonUtils.getGson().fromJson(interactionsJson, TestDefinition[].class);
+        JsonArray interactionsJson = JsonUtils.getGson().fromJson(readResource(interactionsFile), JsonArray.class);
+        List<TestDefinition> tests = JsonUtils.fromJsonArray(interactionsJson, null, TestDefinition.class);
         Runner runner = new RunnerBuilder()
                 .withLocationResolver(new Location.Resolver() {
                     @Override
@@ -102,30 +104,53 @@ public class InteractionTest extends BaseFlowsTest {
     }
 
     protected static class TestDefinition {
-        @SerializedName("org")
         public Org m_org;
 
-        @SerializedName("fields_initial")
         public List<Field> m_fieldsInitial;
 
-        @SerializedName("contact_initial")
         public Contact m_contactInitial;
 
-        @SerializedName("messages")
         public List<Message> m_messages;
 
-        @SerializedName("fields_created")
         public List<Field> m_fieldsCreated;
 
-        @SerializedName("contact_final")
         public Contact m_contactFinal;
 
+        public TestDefinition(Org org, List<Field> fieldsInitial, Contact contactInitial, List<Message> messages, List<Field> fieldsCreated, Contact contactFinal) {
+            m_org = org;
+            m_fieldsInitial = fieldsInitial;
+            m_contactInitial = contactInitial;
+            m_messages = messages;
+            m_fieldsCreated = fieldsCreated;
+            m_contactFinal = contactFinal;
+        }
+
+        public static TestDefinition fromJson(JsonElement elm) {
+            JsonObject obj = elm.getAsJsonObject();
+            return new TestDefinition(
+                    Org.fromJson(obj.get("org")),
+                    JsonUtils.fromJsonArray(obj.get("fields_initial").getAsJsonArray(), null, Field.class),
+                    Contact.fromJson(obj.get("contact_initial")),
+                    JsonUtils.fromJsonArray(obj.get("messages").getAsJsonArray(), null, Message.class),
+                    JsonUtils.fromJsonArray(obj.get("fields_created").getAsJsonArray(), null, Field.class),
+                    Contact.fromJson(obj.get("contact_final"))
+            );
+        }
+
         public static class Message {
-            @SerializedName("type")
             public String m_type;
 
-            @SerializedName("msg")
             public String m_msg;
+
+            public Message(String type, String msg) {
+                m_type = type;
+                m_msg = msg;
+            }
+
+            public static Message fromJson(JsonElement elm) {
+                JsonObject obj = elm.getAsJsonObject();
+                return new Message(obj.get("type").getAsString(), obj.get("msg").getAsString());
+            }
         }
     }
 }

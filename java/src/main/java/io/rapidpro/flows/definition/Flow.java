@@ -1,9 +1,7 @@
 package io.rapidpro.flows.definition;
 
-import com.google.gson.*;
-import com.google.gson.annotations.SerializedName;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import io.rapidpro.flows.definition.actions.Action;
 import io.rapidpro.flows.definition.actions.message.MessageAction;
 import io.rapidpro.flows.runner.Input;
@@ -12,7 +10,6 @@ import io.rapidpro.flows.runner.Runner;
 import io.rapidpro.flows.runner.Step;
 import io.rapidpro.flows.utils.JsonUtils;
 
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -24,10 +21,25 @@ public class Flow {
     public static Set<Integer> SPEC_VERSIONS = new HashSet<>(Arrays.asList(7, 8));
 
     public enum Type {
-        @SerializedName("F") FLOW,
-        @SerializedName("M") MESSAGE,
-        @SerializedName("V") VOICE,
-        @SerializedName("S") SURVEY;
+        FLOW("F"),
+        MESSAGE("M"),
+        VOICE("V"),
+        SURVEY("S");
+
+        String m_code;
+
+        Type(String code) {
+            m_code = code;
+        }
+
+        static Type fromCode(String code) {
+            for (Type type : Type.values()) {
+                if (type.m_code.equals(code)) {
+                    return type;
+                }
+            }
+            return null;
+        }
     }
 
     protected Type m_type;
@@ -46,74 +58,64 @@ public class Flow {
      * @return the flow
      */
     public static Flow fromJson(String json) throws FlowParseException {
-        return JsonUtils.getGson().fromJson(json, Flow.class);
-    }
+        JsonObject obj = JsonUtils.getGson().fromJson(json, JsonObject.class);
 
-    /**
-     * Custom JSON deserializer
-     */
-    public static class Deserializer implements JsonDeserializer<Flow> {
-        @Override
-        public Flow deserialize(JsonElement elem, java.lang.reflect.Type type, JsonDeserializationContext jsonContext) throws JsonParseException {
-            JsonObject obj = elem.getAsJsonObject();
-
-            if (obj.has("version")) {
-                int version = obj.get("version").getAsInt();
-                if (!SPEC_VERSIONS.contains(version)) {
-                    throw new FlowParseException("Unsupported flow spec version: " + version);
-                }
-            } else {
-                throw new FlowParseException("Missing flow spec version");
+        if (obj.has("version")) {
+            int version = obj.get("version").getAsInt();
+            if (!SPEC_VERSIONS.contains(version)) {
+                throw new FlowParseException("Unsupported flow spec version: " + version);
             }
-
-            Flow flow = new Flow();
-            flow.m_type = jsonContext.deserialize(obj.get("flow_type"), Type.class);
-            flow.m_baseLanguage = JsonUtils.getAsString(obj, "base_language");
-
-            // keep an exhaustive record of all languages in our flow definition
-            Set<String> languages = new HashSet<>();
-
-            DeserializationContext context = new DeserializationContext(flow);
-
-            for (JsonElement asElem : obj.get("action_sets").getAsJsonArray()) {
-                ActionSet actionSet = ActionSet.fromJson(asElem.getAsJsonObject(), context, jsonContext);
-                flow.m_elementsByUuid.put(actionSet.m_uuid, actionSet);
-
-                // see what translations are set on this actionset
-                for (Action action : actionSet.getActions()) {
-                    if (action instanceof MessageAction) {
-                        languages.addAll(((MessageAction) action).getMsg().getLanguages());
-                    }
-                }
-            }
-
-            for (JsonElement rsElem : obj.get("rule_sets").getAsJsonArray()) {
-                RuleSet ruleSet = RuleSet.fromJson(rsElem.getAsJsonObject(), context);
-                flow.m_elementsByUuid.put(ruleSet.m_uuid, ruleSet);
-
-                for (Rule rule : ruleSet.getRules()) {
-                    flow.m_elementsByUuid.put(rule.getUuid(), rule);
-                    languages.addAll(rule.getCategory().getLanguages());
-                }
-            }
-
-            // lookup and set destination nodes
-            for (Map.Entry<ConnectionStart, String> entry : context.m_destinationsToSet.entrySet()) {
-                ConnectionStart start = entry.getKey();
-                start.setDestination((Node) flow.getElementByUuid(entry.getValue()));
-            }
-
-            // only accept languages that are ISO 639-2 (alpha3)
-            flow.m_languages = new HashSet<>();
-            for (String language : languages) {
-                if (language.length() == 3) {
-                    flow.m_languages.add(language);
-                }
-            }
-
-            flow.m_entry = flow.getElementByUuid(JsonUtils.getAsString(obj, "entry"));
-            return flow;
+        } else {
+            throw new FlowParseException("Missing flow spec version");
         }
+
+        Flow flow = new Flow();
+        flow.m_type = Flow.Type.fromCode(obj.get("flow_type").getAsString());
+        flow.m_baseLanguage = JsonUtils.getAsString(obj, "base_language");
+
+        // keep an exhaustive record of all languages in our flow definition
+        Set<String> languages = new HashSet<>();
+
+        DeserializationContext context = new DeserializationContext(flow);
+
+        for (JsonElement asElem : obj.get("action_sets").getAsJsonArray()) {
+            ActionSet actionSet = ActionSet.fromJson(asElem.getAsJsonObject(), context);
+            flow.m_elementsByUuid.put(actionSet.m_uuid, actionSet);
+
+            // see what translations are set on this actionset
+            for (Action action : actionSet.getActions()) {
+                if (action instanceof MessageAction) {
+                    languages.addAll(((MessageAction) action).getMsg().getLanguages());
+                }
+            }
+        }
+
+        for (JsonElement rsElem : obj.get("rule_sets").getAsJsonArray()) {
+            RuleSet ruleSet = RuleSet.fromJson(rsElem.getAsJsonObject(), context);
+            flow.m_elementsByUuid.put(ruleSet.m_uuid, ruleSet);
+
+            for (Rule rule : ruleSet.getRules()) {
+                flow.m_elementsByUuid.put(rule.getUuid(), rule);
+                languages.addAll(rule.getCategory().getLanguages());
+            }
+        }
+
+        // lookup and set destination nodes
+        for (Map.Entry<ConnectionStart, String> entry : context.m_destinationsToSet.entrySet()) {
+            ConnectionStart start = entry.getKey();
+            start.setDestination((Node) flow.getElementByUuid(entry.getValue()));
+        }
+
+        // only accept languages that are ISO 639-2 (alpha3)
+        flow.m_languages = new HashSet<>();
+        for (String language : languages) {
+            if (language.length() == 3) {
+                flow.m_languages.add(language);
+            }
+        }
+
+        flow.m_entry = flow.getElementByUuid(JsonUtils.getAsString(obj, "entry"));
+        return flow;
     }
 
     /**
