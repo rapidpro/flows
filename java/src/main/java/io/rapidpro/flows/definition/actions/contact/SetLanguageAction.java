@@ -44,7 +44,8 @@ public class SetLanguageAction extends Action {
      */
     @Override
     public Result execute(Runner runner, RunState run, Input input) {
-        run.getContact().setLanguage(m_lang);
+        run.getContact().setLanguage(m_lang.length() == 3 ? m_lang : null);
+
         return Result.performed(new SetLanguageAction(m_lang, m_name));
     }
 

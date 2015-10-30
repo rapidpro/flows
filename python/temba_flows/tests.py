@@ -186,6 +186,18 @@ class ActionsTest(BaseFlowsTest):
 
         self.assertEqual(self.run.contact.language, "fre")
 
+        # check when lang is not 3-letter code
+        action = SetLanguageAction("base", "Default")
+
+        result = action.execute(self.runner, self.run, Input("Yes"))
+        self.assertEqual(result.errors, [])
+
+        performed = result.performed
+        self.assertEqual(performed.lang, "base")
+        self.assertEqual(performed.name, "Default")
+
+        self.assertEqual(self.run.contact.language, None)
+
     def test_save_to_contact_action(self):
         action = SaveToContactAction.from_json({"type": "save", "field": "age", "label": "Age", "value": "@extra.age"},
                                                self.deserialization_context)

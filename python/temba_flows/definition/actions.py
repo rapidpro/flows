@@ -274,7 +274,9 @@ class SetLanguageAction(Action):
         return {'type': self.TYPE, 'lang': self.lang, 'name': self.name}
 
     def execute(self, runner, run, input):
-        run.contact.language = self.lang
+        # if lang isn't valid 3-letter code, clear language
+        run.contact.language = self.lang if len(self.lang) == 3 else None
+
         return Action.Result.performed(SetLanguageAction(self.lang, self.name))
 
 

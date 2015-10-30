@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -38,5 +39,17 @@ public class SetLanguageActionTest extends BaseActionTest {
         assertThat(performed.getName(), is("Français"));
 
         assertThat(m_run.getContact().getLanguage(), is("fre"));
+
+        // check when lang is not 3-letter code
+        action = new SetLanguageAction("base", "Default");
+
+        result = action.execute(m_runner, m_run, Input.of("Yes"));
+        assertThat(result.getErrors(), empty());
+
+        performed = (SetLanguageAction) result.getPerformed();
+        assertThat(performed.getLang(), is("base"));
+        assertThat(performed.getName(), is("Default"));
+
+        assertThat(m_run.getContact().getLanguage(), is(nullValue()));
     }
 }
