@@ -351,10 +351,10 @@ Returns the number of words in the given text string. If by_spaces is specified 
 #### WORD\_SLICE(text, start, [stop], [by_spaces]﻿)
 ﻿Extracts a substring of the words beginning at start, and up to but not-including stop. If stop is omitted then the substring will be all words from start until the end of the text. If stop is a negative number, then it is treated as count backwards from the end of the text. If by_spaces is specified and is TRUE then the function splits the text into words only by spaces. Otherwise the text is split by punctuation characters as well
 
-```@WORD_SLICE("TextItexpressions are fun", 2, 4)``` will return 2nd and 3rd words "expressions are"
+```@WORD_SLICE("RapidPro expressions are fun", 2, 4)``` will return 2nd and 3rd words "expressions are"
 
-```@WORD_SLICE("TextItexpressions are fun", 2)``` will return "expressions are fun"
+```@WORD_SLICE("RapidPro expressions are fun", 2)``` will return "expressions are fun"
 
-```@WORD_SLICE("TextItexpressions are fun", 1, -2)``` will return "TextItexpressions"
+```@WORD_SLICE("RapidPro expressions are fun", 1, -2)``` will return "RapidPro expressions"
 
-```@WORD_SLICE("TextItexpressions are fun", -1)``` will return "fun"
+```@WORD_SLICE("RapidPro expressions are fun", -1)``` will return "fun"
