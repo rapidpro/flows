@@ -38,7 +38,9 @@ class BaseFlowsTest(unittest.TestCase):
         self.contact = Contact('1234-1234',
                                "Joe Flow",
                                [ContactUrn.from_string("tel:+260964153686"),
-                                ContactUrn.from_string("twitter:realJoeFlow")],
+                                ContactUrn.from_string("twitter:realJoeFlow"),
+                                ContactUrn.from_string("telegram:1234"),
+                                ContactUrn.from_string("mailto:name@domain.com")],
                                OrderedSet(["Testers", "Developers"]),
                                {"gender": "M", "age": "34", "joined": "2015-10-06T11:30:01.123Z"},
                                'eng')
@@ -245,8 +247,8 @@ class ActionsTest(BaseFlowsTest):
         # try one that updates the phone number
         action = SaveToContactAction("tel_e164", "Phone Number", "@step.value")
         action.execute(self.runner, self.run, Input("0788382382"))
-        self.assertEqual(len(self.run.contact.urns), 3)
-        self.assertEqual(self.run.contact.urns[2], ContactUrn(ContactUrn.Scheme.TEL, "+250788382382"))
+        self.assertEqual(len(self.run.contact.urns), 5)
+        self.assertEqual(self.run.contact.urns[4], ContactUrn(ContactUrn.Scheme.TEL, "+250788382382"))
 
     def test_add_to_groups_action(self):
         action = AddToGroupsAction([GroupRef(123, "Testers"), GroupRef(None, "People who say @step.value")])
@@ -304,7 +306,8 @@ class ContactTest(BaseFlowsTest):
 
         self.assertEqual(json_obj, {'uuid': "1234-1234",
                                     'name': "Joe Flow",
-                                    'urns': ["tel:+260964153686", "twitter:realJoeFlow"],
+                                    'urns': ["tel:+260964153686", "twitter:realJoeFlow",
+                                             "telegram:1234", "mailto:name@domain.com"],
                                     'groups': ["Testers", "Developers"],
                                     'fields': {"age": "34", "gender": "M", "joined": "2015-10-06T11:30:01.123Z"},
                                     'language': 'eng'})
@@ -314,7 +317,9 @@ class ContactTest(BaseFlowsTest):
         self.assertEqual(contact.uuid, "1234-1234")
         self.assertEqual(contact.name, "Joe Flow")
         self.assertEqual(contact.urns, [ContactUrn(ContactUrn.Scheme.TEL, "+260964153686"),
-                                        ContactUrn(ContactUrn.Scheme.TWITTER, "realJoeFlow")])
+                                        ContactUrn(ContactUrn.Scheme.TWITTER, "realJoeFlow"),
+                                        ContactUrn(ContactUrn.Scheme.TELEGRAM, "1234"),
+                                        ContactUrn(ContactUrn.Scheme.MAILTO, "name@domain.com")])
         self.assertEqual(contact.groups, {"Testers", "Developers"})
         self.assertEqual(contact.fields, {"age": "34", "gender": "M", "joined": "2015-10-06T11:30:01.123Z"})
         self.assertEqual(contact.language, 'eng')
@@ -352,7 +357,9 @@ class ContactTest(BaseFlowsTest):
                                    'groups': "Testers,Developers",
                                    'uuid': "1234-1234",
                                    'language': "eng",
+                                   'mailto': "name@domain.com",
                                    'tel': "096 4153686",
+                                   'telegram': "1234",
                                    'twitter': "realJoeFlow",
                                    'gender': "M",
                                    'age': "34",
@@ -367,8 +374,10 @@ class ContactTest(BaseFlowsTest):
                                    'groups': "Testers,Developers",
                                    'uuid': "1234-1234",
                                    'language': "eng",
+                                   'mailto': "1234-1234",
                                    'tel': "1234-1234",
                                    'twitter': "1234-1234",
+                                   'telegram': "1234-1234",
                                    'gender': "M",
                                    'age': "34",
                                    'joined': "10-06-2015 13:30"})
@@ -690,7 +699,10 @@ class RunnerTest(BaseFlowsTest):
 
         self.assertEqual(run.contact.uuid, "1234-1234")
         self.assertEqual(run.contact.name, "Joe Flow")
-        self.assertEqual(run.contact.urns, [ContactUrn(ContactUrn.Scheme.TEL, "+260964153686"), ContactUrn(ContactUrn.Scheme.TWITTER, "realJoeFlow")])
+        self.assertEqual(run.contact.urns, [ContactUrn(ContactUrn.Scheme.TEL, "+260964153686"),
+                                            ContactUrn(ContactUrn.Scheme.TWITTER, "realJoeFlow"),
+                                            ContactUrn(ContactUrn.Scheme.TELEGRAM, "1234"),
+                                            ContactUrn(ContactUrn.Scheme.MAILTO, "name@domain.com")])
         self.assertEqual(run.contact.groups, {"Testers", "Developers"})
         self.assertEqual(len(run.contact.fields), 3)
         self.assertEqual(run.contact.language, "eng")

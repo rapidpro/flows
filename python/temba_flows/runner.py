@@ -248,6 +248,8 @@ class ContactUrn(object):
     class Scheme(Enum):
         TEL = 1
         TWITTER = 2
+        TELEGRAM = 3
+        MAILTO = 4
 
     ANON_MASK = '********'
 
