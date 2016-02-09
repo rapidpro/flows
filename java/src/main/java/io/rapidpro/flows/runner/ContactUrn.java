@@ -8,13 +8,15 @@ import io.rapidpro.flows.utils.Jsonizable;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * A URN for a contact (e.g. a telephone number or twitter handle)
+ * A URN for a contact (e.g. a telephone number, twitter handle, or telegram chat id)
  */
 public class ContactUrn implements Jsonizable {
 
     public enum Scheme {
         TEL,
-        TWITTER
+        TWITTER,
+        TELEGRAM,
+        MAILTO
     }
 
     protected static String ANON_MASK = "********";

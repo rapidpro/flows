@@ -19,8 +19,18 @@ public class ContactUrnTest extends BaseFlowsTest {
 
         assertThat(urn.getScheme(), is(ContactUrn.Scheme.TEL));
         assertThat(urn.getPath(), is("+260964153686"));
-
         assertThat(urn.toString(), is("tel:+260964153686"));
+
+        urn = ContactUrn.fromString("telegram:1234");
+        assertThat(urn.getScheme(), is(ContactUrn.Scheme.TELEGRAM));
+        assertThat(urn.getPath(), is("1234"));
+        assertThat(urn.toString(), is("telegram:1234"));
+
+        urn = ContactUrn.fromString("mailto:name@domain.com");
+        assertThat(urn.getScheme(), is(ContactUrn.Scheme.MAILTO));
+        assertThat(urn.getPath(), is("name@domain.com"));
+        assertThat(urn.toString(), is("mailto:name@domain.com"));
+
     }
 
     @Test
