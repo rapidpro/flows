@@ -398,6 +398,12 @@ class ContactUrnTest(BaseFlowsTest):
         raw = ContactUrn(ContactUrn.Scheme.TWITTER, "  @bob ")
         self.assertEqual(raw.normalized(self.org), ContactUrn(ContactUrn.Scheme.TWITTER, "bob"))
 
+        raw = ContactUrn(ContactUrn.Scheme.EXTERNAL, " eXterNAL123 ")
+        self.assertEqual(raw.normalized(self.org), ContactUrn(ContactUrn.Scheme.EXTERNAL, "eXterNAL123"))
+
+        raw = ContactUrn(ContactUrn.Scheme.MAILTO, " nAme@DOMain.com ")
+        self.assertEqual(raw.normalized(self.org), ContactUrn(ContactUrn.Scheme.MAILTO, "name@domain.com"))
+
 
 class FieldTest(BaseFlowsTest):
 

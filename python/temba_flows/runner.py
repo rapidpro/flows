@@ -250,6 +250,7 @@ class ContactUrn(object):
         TWITTER = 2
         TELEGRAM = 3
         MAILTO = 4
+        EXTERNAL = 5
 
     ANON_MASK = '********'
 
@@ -274,10 +275,13 @@ class ContactUrn(object):
         :param org: the org
         :return: the normalized URN
         """
-        norm_path = self.path.strip().lower()
+        norm_path = self.path.strip()
         if self.scheme == ContactUrn.Scheme.TWITTER:
+            norm_path = norm_path.lower()
             if norm_path[0] == '@':
                 norm_path = norm_path[1:]
+        elif self.scheme == ContactUrn.Scheme.MAILTO:
+            norm_path = norm_path.lower()
         elif self.scheme == ContactUrn.Scheme.TEL:
             norm_path, is_valid = normalize_number(norm_path, org.country)
 

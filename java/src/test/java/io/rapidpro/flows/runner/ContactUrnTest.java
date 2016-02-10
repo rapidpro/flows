@@ -31,6 +31,10 @@ public class ContactUrnTest extends BaseFlowsTest {
         assertThat(urn.getPath(), is("name@domain.com"));
         assertThat(urn.toString(), is("mailto:name@domain.com"));
 
+        urn = ContactUrn.fromString("ext:EXT123");
+        assertThat(urn.getScheme(), is(ContactUrn.Scheme.EXT));
+        assertThat(urn.getPath(), is("EXT123"));
+
     }
 
     @Test
@@ -54,6 +58,8 @@ public class ContactUrnTest extends BaseFlowsTest {
         raw = new ContactUrn(ContactUrn.Scheme.MAILTO, " nAme@DomAIN.com ");
         assertThat(raw.normalized(m_org), is(new ContactUrn(ContactUrn.Scheme.MAILTO, "name@domain.com")));
 
+        raw = new ContactUrn(ContactUrn.Scheme.EXT, " ExTErnal123 ");
+        assertThat(raw.normalized(m_org), is(new ContactUrn(ContactUrn.Scheme.EXT, "ExTErnal123")));
 
     }
 }

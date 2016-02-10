@@ -16,7 +16,8 @@ public class ContactUrn implements Jsonizable {
         TEL,
         TWITTER,
         TELEGRAM,
-        MAILTO
+        MAILTO,
+        EXT,
     }
 
     protected static String ANON_MASK = "********";
@@ -51,12 +52,15 @@ public class ContactUrn implements Jsonizable {
      * @return the normalized URN
      */
     public ContactUrn normalized(Org org) {
-        String normPath = m_path.trim().toLowerCase();
+        String normPath = m_path.trim();
 
         if (m_scheme == Scheme.TWITTER) {
+            normPath = normPath.toLowerCase();
             if (normPath.charAt(0) == '@') {
                 normPath = normPath.substring(1);
             }
+        } else if (m_scheme == Scheme.MAILTO) {
+            normPath = normPath.toLowerCase();
         }
         else if (m_scheme == Scheme.TEL) {
             normPath = FlowUtils.normalizeNumber(normPath, org.getCountry()).getLeft();
