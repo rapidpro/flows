@@ -274,12 +274,12 @@ class ContactUrn(object):
         :param org: the org
         :return: the normalized URN
         """
+        norm_path = self.path.strip().lower()
         if self.scheme == ContactUrn.Scheme.TWITTER:
-            norm_path = self.path.strip()
             if norm_path[0] == '@':
                 norm_path = norm_path[1:]
-        else:
-            norm_path, is_valid = normalize_number(self.path, org.country)
+        elif self.scheme == ContactUrn.Scheme.TEL:
+            norm_path, is_valid = normalize_number(norm_path, org.country)
 
         return ContactUrn(self.scheme, norm_path)
 

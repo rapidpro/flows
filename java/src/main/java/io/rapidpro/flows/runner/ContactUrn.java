@@ -51,14 +51,15 @@ public class ContactUrn implements Jsonizable {
      * @return the normalized URN
      */
     public ContactUrn normalized(Org org) {
-        String normPath;
-        if (m_scheme == ContactUrn.Scheme.TWITTER) {
-            normPath = m_path.trim();
+        String normPath = m_path.trim().toLowerCase();
+
+        if (m_scheme == Scheme.TWITTER) {
             if (normPath.charAt(0) == '@') {
                 normPath = normPath.substring(1);
             }
-        } else {
-            normPath = FlowUtils.normalizeNumber(m_path, org.getCountry()).getLeft();
+        }
+        else if (m_scheme == Scheme.TEL) {
+            normPath = FlowUtils.normalizeNumber(normPath, org.getCountry()).getLeft();
         }
 
         return new ContactUrn(m_scheme, normPath);

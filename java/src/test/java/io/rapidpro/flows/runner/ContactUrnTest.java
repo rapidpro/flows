@@ -48,7 +48,12 @@ public class ContactUrnTest extends BaseFlowsTest {
         ContactUrn raw = new ContactUrn(ContactUrn.Scheme.TEL, " 078-383-5665 ");
         assertThat(raw.normalized(m_org), is(new ContactUrn(ContactUrn.Scheme.TEL, "+250783835665")));
 
-        raw = new ContactUrn(ContactUrn.Scheme.TWITTER, "  @bob ");
+        raw = new ContactUrn(ContactUrn.Scheme.TWITTER, "  @bOb ");
         assertThat(raw.normalized(m_org), is(new ContactUrn(ContactUrn.Scheme.TWITTER, "bob")));
+
+        raw = new ContactUrn(ContactUrn.Scheme.MAILTO, " nAme@DomAIN.com ");
+        assertThat(raw.normalized(m_org), is(new ContactUrn(ContactUrn.Scheme.MAILTO, "name@domain.com")));
+
+
     }
 }
