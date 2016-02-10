@@ -250,7 +250,7 @@ class ContactUrn(object):
         TWITTER = 2
         TELEGRAM = 3
         MAILTO = 4
-        EXTERNAL = 5
+        EXT = 5
 
     ANON_MASK = '********'
 
