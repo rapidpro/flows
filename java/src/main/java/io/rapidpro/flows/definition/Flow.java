@@ -52,6 +52,8 @@ public class Flow {
 
     protected Map<String, Element> m_elementsByUuid = new HashMap<>();
 
+    protected JsonObject m_metadata;
+
     /**
      * Creates a flow from a JSON flow definition
      * @param json the JSON
@@ -72,6 +74,7 @@ public class Flow {
         Flow flow = new Flow();
         flow.m_type = Flow.Type.fromCode(obj.get("flow_type").getAsString());
         flow.m_baseLanguage = JsonUtils.getAsString(obj, "base_language");
+        flow.m_metadata = obj.getAsJsonObject("metadata");
 
         // keep an exhaustive record of all languages in our flow definition
         Set<String> languages = new HashSet<>();
@@ -223,6 +226,10 @@ public class Flow {
 
     public Node getEntry() {
         return m_entry;
+    }
+
+    public JsonObject getMetadata() {
+        return m_metadata;
     }
 
     public <T extends Element> T getElementByUuid(String uuid) {
