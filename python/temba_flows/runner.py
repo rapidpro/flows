@@ -248,6 +248,9 @@ class ContactUrn(object):
     class Scheme(Enum):
         TEL = 1
         TWITTER = 2
+        TELEGRAM = 3
+        MAILTO = 4
+        EXT = 5
 
     ANON_MASK = '********'
 
@@ -272,12 +275,15 @@ class ContactUrn(object):
         :param org: the org
         :return: the normalized URN
         """
+        norm_path = self.path.strip()
         if self.scheme == ContactUrn.Scheme.TWITTER:
-            norm_path = self.path.strip()
+            norm_path = norm_path.lower()
             if norm_path[0] == '@':
                 norm_path = norm_path[1:]
-        else:
-            norm_path, is_valid = normalize_number(self.path, org.country)
+        elif self.scheme == ContactUrn.Scheme.MAILTO:
+            norm_path = norm_path.lower()
+        elif self.scheme == ContactUrn.Scheme.TEL:
+            norm_path, is_valid = normalize_number(norm_path, org.country)
 
         return ContactUrn(self.scheme, norm_path)
 

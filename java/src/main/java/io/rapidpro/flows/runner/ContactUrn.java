@@ -8,13 +8,16 @@ import io.rapidpro.flows.utils.Jsonizable;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * A URN for a contact (e.g. a telephone number or twitter handle)
+ * A URN for a contact (e.g. a telephone number, twitter handle, or telegram chat id)
  */
 public class ContactUrn implements Jsonizable {
 
     public enum Scheme {
         TEL,
-        TWITTER
+        TWITTER,
+        TELEGRAM,
+        MAILTO,
+        EXT,
     }
 
     protected static String ANON_MASK = "********";
@@ -49,14 +52,18 @@ public class ContactUrn implements Jsonizable {
      * @return the normalized URN
      */
     public ContactUrn normalized(Org org) {
-        String normPath;
-        if (m_scheme == ContactUrn.Scheme.TWITTER) {
-            normPath = m_path.trim();
+        String normPath = m_path.trim();
+
+        if (m_scheme == Scheme.TWITTER) {
+            normPath = normPath.toLowerCase();
             if (normPath.charAt(0) == '@') {
                 normPath = normPath.substring(1);
             }
-        } else {
-            normPath = FlowUtils.normalizeNumber(m_path, org.getCountry()).getLeft();
+        } else if (m_scheme == Scheme.MAILTO) {
+            normPath = normPath.toLowerCase();
+        }
+        else if (m_scheme == Scheme.TEL) {
+            normPath = FlowUtils.normalizeNumber(normPath, org.getCountry()).getLeft();
         }
 
         return new ContactUrn(m_scheme, normPath);
