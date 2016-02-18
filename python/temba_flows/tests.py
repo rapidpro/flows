@@ -455,6 +455,11 @@ class FlowTest(BaseFlowsTest):
         self.assertEqual(flow.base_language, 'eng')
         self.assertEqual(flow.languages, {'eng', 'fre'})
 
+        # access arbitrary properties in the metadata
+        self.assertEqual('Mushrooms', flow.metadata['name'])
+        self.assertEqual('73c40f19-007d-46bd-83ea-aef439de9f9c', flow.metadata['uuid'])
+        self.assertEqual(25, flow.metadata['revision'])
+
         as1 = flow.entry
 
         self.assertIsInstance(as1, ActionSet)
@@ -507,6 +512,8 @@ class FlowTest(BaseFlowsTest):
         self.assertEqual(len(as4.actions), 1)
         self.assertIsInstance(as4.actions[0], ReplyAction)
         self.assertEqual(as4.destination, rs1)
+
+
 
     def test_from_json_with_empty_flow(self):
         flow = Flow.from_json(json.loads(self.read_resource('test_flows/empty.json')))

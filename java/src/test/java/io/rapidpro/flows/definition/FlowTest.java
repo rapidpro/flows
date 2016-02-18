@@ -23,6 +23,9 @@ public class FlowTest extends BaseFlowsTest {
         assertThat(flow.getType(), is(Flow.Type.FLOW));
         assertThat(flow.getBaseLanguage(), is("eng"));
         assertThat(flow.getLanguages(), containsInAnyOrder("eng", "fre"));
+        assertThat(flow.getMetadata().get("name").getAsString(), is("Mushrooms"));
+        assertThat(flow.getMetadata().get("revision").getAsInt(), is(25));
+
 
         ActionSet as1 = (ActionSet) flow.getEntry();
 

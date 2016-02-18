@@ -41,6 +41,7 @@ class Flow(object):
         self.base_language = base_language
         self.entry = None
         self.elements_by_uuid = {}
+        self.metadata = {}
 
     @classmethod
     def from_json(cls, json_obj):
@@ -60,6 +61,9 @@ class Flow(object):
         languages = set()
 
         context = Flow.DeserializationContext(flow)
+
+        if 'metadata' in json_obj:
+            flow.metadata = json_obj['metadata']
 
         for as_obj in json_obj['action_sets']:
             action_set = ActionSet.from_json(as_obj, context)
