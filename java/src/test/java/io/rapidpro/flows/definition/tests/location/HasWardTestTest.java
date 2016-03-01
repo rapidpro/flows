@@ -23,4 +23,19 @@ public class HasWardTestTest extends BaseTestTest {
         assertThat(test.getDistrict(), is("Gasabo"));
         assertThat(test.toJson(), is(elm));
     }
+
+    @org.junit.Test
+    public void evaluate() {
+        HasWardTest test = new HasWardTest("kigali", "gasabo");
+
+        assertTest(test, " jali", true, "Jali");
+        assertTest(test, "Nine", false, null);
+
+        ((Map<String, String>) m_context.getVariables().get("extra")).put("homestate", "Kigali");
+        ((Map<String, String>) m_context.getVariables().get("extra")).put("homedistrict", "gasabo");
+        test = new HasWardTest("@extra.homestate", "@extra.homedistrict");
+
+        assertTest(test, " jali", true, "Jali");
+        assertTest(test, "Nine", false, null);
+    }
 }

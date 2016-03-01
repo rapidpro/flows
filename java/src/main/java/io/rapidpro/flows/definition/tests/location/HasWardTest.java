@@ -54,10 +54,8 @@ public class HasWardTest extends Test {
 
             if (!stateTpl.hasErrors() && !districtTpl.hasErrors()) {
                 Location state = runner.parseLocation(stateTpl.getOutput(), country, Location.Level.STATE, null);
-                System.out.println(state);
                 if (state != null) {
-                    Location district = runner.parseLocation(text, country, Location.Level.DISTRICT, state);
-                    System.out.println(district);
+                    Location district = runner.parseLocation(districtTpl.getOutput(), country, Location.Level.DISTRICT, state);
                     if (district != null) {
                         Location ward = runner.parseLocation(text, country, Location.Level.WARD, district);
                         if (ward != null) {
