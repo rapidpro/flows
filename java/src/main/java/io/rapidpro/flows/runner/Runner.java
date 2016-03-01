@@ -210,12 +210,14 @@ public class Runner {
             }
             case WARD: {
                 Field stateField = getLocationField(run, Field.ValueType.STATE);
-                if (stateField != null) {
+                Field districtField = getLocationField(run, Field.ValueType.DISTRICT);
+                if (stateField != null && districtField != null) {
                     String stateName = run.getContact().getFields().get(stateField.getKey());
-                    if (StringUtils.isNotEmpty(stateName)) {
+                    String districtName = run.getContact().getFields().get(districtField.getKey());
+                    if (StringUtils.isNotEmpty(stateName) && StringUtils.isNotEmpty(districtName)) {
                         Location state = m_locationResolver.resolve(stateName, run.getOrg().getCountry(), Location.Level.STATE, null);
                         if (state != null) {
-                            Location district = m_locationResolver.resolve(value, run.getOrg().getCountry(), Location.Level.DISTRICT, state);
+                            Location district = m_locationResolver.resolve(districtName, run.getOrg().getCountry(), Location.Level.DISTRICT, state);
                             if (district != null) {
                                 Location ward = m_locationResolver.resolve(value, run.getOrg().getCountry(), Location.Level.WARD, district);
                                 if (ward != null) {
