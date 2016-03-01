@@ -63,17 +63,20 @@ class BaseFlowsTest(unittest.TestCase):
 
     class TestLocationResolver(Location.Resolver):
         """
-        Location resolver for testing which has one state (Kigali) and one district (Gasabo)
+        Location resolver for testing which has one state (Kigali) and one district (Gasabo) and sector (Jali)
         """
         def __init__(self):
             self.kigali = Location("S0001", "Kigali", Location.Level.STATE)
             self.gasabo = Location("D0001", "Gasabo", Location.Level.DISTRICT)
+            self.jali = Location("W0001", "Jali", Location.Level.WARD)
 
         def resolve(self, text, country, level, parent):
             if level == Location.Level.STATE and text.strip().lower() == "kigali":
                 return self.kigali
             elif level == Location.Level.DISTRICT and text.strip().lower() == "gasabo" and parent == self.kigali:
                 return self.gasabo
+            elif level == Location.Level.WARD and text.strip().lower() == "jali" and parent == self.gasabo:
+                return self.jali
             else:
                 return None
 
@@ -911,6 +914,22 @@ class RunnerTest(BaseFlowsTest):
 
         self.assertEqual(run.contact.fields["district"], "Gasabo")
 
+    def test_update_contact_ward_field(self):
+
+        runner = Runner(location_resolver=BaseFlowsTest.TestLocationResolver())
+        flow = Flow.from_json(json.loads(self.read_resource("test_flows/mushrooms.json")))
+        run = runner.start(self.org, self.fields, self.contact, flow)
+
+        run.get_or_create_field("state", "State", Field.ValueType.STATE)
+        run.get_or_create_field("district", "District", Field.ValueType.DISTRICT)
+        run.get_or_create_field("ward", "Ward", Field.ValueType.WARD)
+
+        runner.update_contact_field(run, "state", "kigali")
+        runner.update_contact_field(run, "district", "gasabo")
+        runner.update_contact_field(run, "ward", "jali")
+
+        self.assertEqual(run.contact.fields["ward"], "Jali")
+
 
 class RunStateTest(BaseFlowsTest):
 
@@ -1392,6 +1411,23 @@ class TestsTest(BaseFlowsTest):
         test = HasDistrictTest("@extra.homestate")
 
         self.assertTest(test, " gasabo", True, "Gasabo")
+        self.assertTest(test, "Nine", False, None)
+
+    def test_has_ward_test(self):
+        json_obj = {'type': 'ward', 'state': 'Kigali', 'district': 'Gasabo'}
+        test = Test.from_json(json_obj, self.deserialization_context)
+        self.assertIsInstance(test, HasWardTest)
+        self.assertEqual(test.to_json(), json_obj)
+
+        test = HasWardTest("kigali", 'gasabo')
+        self.assertTest(test, " jali", True, "Jali")
+        self.assertTest(test, "Nine", False, None)
+
+        self.context.variables["extra"]["homestate"] = "Kigali"
+        self.context.variables["extra"]["homelga"] = "Gasabo"
+        test = HasWardTest("@extra.homestate", "@extra.homelga")
+
+        self.assertTest(test, " jali", True, "Jali")
         self.assertTest(test, "Nine", False, None)
 
 
