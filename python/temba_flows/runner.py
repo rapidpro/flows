@@ -747,11 +747,15 @@ class Runner(object):
                 if state_name:
                     state = self.location_resolver.resolve(state_name, run.org.country, Location.Level.STATE, None)
                     if state:
-                        district = self.location_resolver.resolve(value, run.org.country, Location.Level.DISTRICT, state)
-                        if district:
-                            ward = self.location_resolver.resolve(value, run.org.country, Location.Level.WARD, district)
-                            if ward:
-                                actual_value = ward.name
+                        district_field = self.get_location_field(run, Field.ValueType.DISTRICT)
+                        if district_field:
+                            district_name = run.contact.fields.get(district_field.key, None)
+                            if district_name:
+                                district = self.location_resolver.resolve(district_name, run.org.country, Location.Level.DISTRICT, state)
+                                if district:
+                                    ward = self.location_resolver.resolve(value, run.org.country, Location.Level.WARD, district)
+                                    if ward:
+                                        actual_value = ward.name
         run.contact.fields[field.key] = actual_value
         return field
 
