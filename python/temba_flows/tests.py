@@ -914,6 +914,22 @@ class RunnerTest(BaseFlowsTest):
 
         self.assertEqual(run.contact.fields["district"], "Gasabo")
 
+    def test_update_contact_ward_field(self):
+
+        runner = Runner(location_resolver=BaseFlowsTest.TestLocationResolver())
+        flow = Flow.from_json(json.loads(self.read_resource("test_flows/mushrooms.json")))
+        run = runner.start(self.org, self.fields, self.contact, flow)
+
+        run.get_or_create_field("state", "State", Field.ValueType.STATE)
+        run.get_or_create_field("district", "District", Field.ValueType.DISTRICT)
+        run.get_or_create_field("ward", "Ward", Field.ValueType.WARD)
+
+        runner.update_contact_field(run, "state", "kigali")
+        runner.update_contact_field(run, "district", "gasabo")
+        runner.update_contact_field(run, "ward", "jali")
+
+        self.assertEqual(run.contact.fields["ward"], "Jali")
+
 
 class RunStateTest(BaseFlowsTest):
 
