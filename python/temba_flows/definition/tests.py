@@ -45,7 +45,8 @@ class Test(object):
                 DateBeforeTest.TYPE: DateBeforeTest,
                 HasPhoneTest.TYPE: HasPhoneTest,
                 HasStateTest.TYPE: HasStateTest,
-                HasDistrictTest.TYPE: HasDistrictTest
+                HasDistrictTest.TYPE: HasDistrictTest,
+                HasWardTest.TYPE: HasWardTest
             }
 
         test_type = json_obj['type']
@@ -772,5 +773,43 @@ class HasDistrictTest(Test):
                     district = runner.parse_location(text, country, Location.Level.DISTRICT, state)
                     if district:
                         return Test.Result.match(district.name)
+
+        return Test.Result.NO_MATCH
+
+
+class HasWardTest(Test):
+    """
+    Test that returns whether the text contains a valid ward in the given state and district
+    """
+    TYPE = "ward"
+
+    def __init__(self, state, district):
+        self.state = state
+        self.district = district
+
+    @classmethod
+    def from_json(cls, json_obj, context):
+        return cls(json_obj.get('state', None), json_obj.get('district', None))
+
+    def to_json(self):
+        return {'type': self.TYPE, 'state': self.state, 'district': self.district}
+
+    def evaluate(self, runner, run, context, text):
+        from ..runner import Location
+
+        country = run.org.country
+        if country:
+            # state might be an expression
+            state_tpl, state_errors = runner.substitute_variables(self.state, context)
+            district_tpl, district_errors = runner.substitute_variables(self.district, context)
+
+            if not state_errors and not district_errors:
+                state = runner.parse_location(state_tpl, country, Location.Level.STATE, None)
+                if state:
+                    district = runner.parse_location(district_tpl, country, Location.Level.DISTRICT, state)
+                    if district:
+                        ward = runner.parse_location(text, country, Location.Level.WARD, district)
+                        if ward:
+                            return Test.Result.match(ward.name)
 
         return Test.Result.NO_MATCH
