@@ -24,7 +24,8 @@ public class Field implements Jsonizable {
         DECIMAL("N"),
         DATETIME("D"),
         STATE("S"),
-        DISTRICT("I");
+        DISTRICT("I"),
+        WARD("W");
 
         String m_code;
 

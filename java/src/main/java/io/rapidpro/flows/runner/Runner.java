@@ -193,7 +193,7 @@ public class Runner {
                 break;
             }
             case DISTRICT: {
-                Field stateField = getStateField(run);
+                Field stateField = getLocationField(run, Field.ValueType.STATE);
                 if (stateField != null) {
                     String stateName = run.getContact().getFields().get(stateField.getKey());
                     if (StringUtils.isNotEmpty(stateName)) {
@@ -202,6 +202,25 @@ public class Runner {
                             Location district = m_locationResolver.resolve(value, run.getOrg().getCountry(), Location.Level.DISTRICT, state);
                             if (district != null) {
                                 actualValue = district.getName();
+                            }
+                        }
+                    }
+                }
+                break;
+            }
+            case WARD: {
+                Field stateField = getLocationField(run, Field.ValueType.STATE);
+                if (stateField != null) {
+                    String stateName = run.getContact().getFields().get(stateField.getKey());
+                    if (StringUtils.isNotEmpty(stateName)) {
+                        Location state = m_locationResolver.resolve(stateName, run.getOrg().getCountry(), Location.Level.STATE, null);
+                        if (state != null) {
+                            Location district = m_locationResolver.resolve(value, run.getOrg().getCountry(), Location.Level.DISTRICT, state);
+                            if (district != null) {
+                                Location ward = m_locationResolver.resolve(value, run.getOrg().getCountry(), Location.Level.WARD, district);
+                                if (ward != null) {
+                                    actualValue = ward.getName();
+                                }
                             }
                         }
                     }
@@ -226,9 +245,9 @@ public class Runner {
     /**
      * TODO this mimics what we currently do in RapidPro but needs changed
      */
-    public Field getStateField(RunState run) {
+    public Field getLocationField(RunState run, Field.ValueType type) {
         for (Field field : run.m_fields) {
-            if (field.getValueType().equals(Field.ValueType.STATE)) {
+            if (field.getValueType().equals(type)) {
                 return field;
             }
         }
