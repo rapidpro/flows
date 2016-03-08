@@ -234,7 +234,7 @@ public class RunnerTest extends BaseFlowsTest {
     }
 
     @Test
-    public void updateContacWardtField() throws Exception {
+    public void updateContactWardField() throws Exception {
         Runner runner = new RunnerBuilder()
             .withLocationResolver(new TestLocationResolver())
             .build();
