@@ -38,8 +38,8 @@ public class HasWardTest extends Test {
 
     @Override
     public JsonElement toJson() {
-    return JsonUtils.object("type", TYPE, "state", m_state, "district", m_district);
-  }
+        return JsonUtils.object("type", TYPE, "state", m_state, "district", m_district);
+    }
 
     /**
      * @see Test#evaluate(Runner, RunState, EvaluationContext, String)
