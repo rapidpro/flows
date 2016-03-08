@@ -232,4 +232,24 @@ public class RunnerTest extends BaseFlowsTest {
 
         assertThat(run.getContact().getFields().get("district"), is("Gasabo"));
     }
+
+    @Test
+    public void updateContactWardField() throws Exception {
+        Runner runner = new RunnerBuilder()
+            .withLocationResolver(new TestLocationResolver())
+            .build();
+
+        Flow flow = Flow.fromJson(readResource("test_flows/mushrooms.json"));
+        RunState run = m_runner.start(m_org, m_fields, m_contact, flow);
+
+        run.getOrCreateField("state", "State", Field.ValueType.STATE);
+        run.getOrCreateField("district", "District", Field.ValueType.DISTRICT);
+        run.getOrCreateField("ward", "Ward", Field.ValueType.WARD);
+
+        runner.updateContactField(run, "state", "kigali");
+        runner.updateContactField(run, "district", "gasabo");
+        runner.updateContactField(run, "ward", "jali");
+
+        assertThat(run.getContact().getFields().get("ward"), is("Jali"));
+    }
 }

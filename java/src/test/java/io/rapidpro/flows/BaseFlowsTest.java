@@ -69,6 +69,7 @@ public abstract class BaseFlowsTest {
     public static class TestLocationResolver implements Location.Resolver {
         private static Location m_kigali = new Location("S0001", "Kigali", Location.Level.STATE);
         private static Location m_gasabo = new Location("D0001", "Gasabo", Location.Level.DISTRICT);
+        private static Location m_jali = new Location("W0001", "Jali", Location.Level.WARD);
 
         @Override
         public Location resolve(String text, String country, Location.Level level, Location parent) {
@@ -76,6 +77,8 @@ public abstract class BaseFlowsTest {
                 return m_kigali;
             } else if (level == Location.Level.DISTRICT && text.trim().equalsIgnoreCase("Gasabo") && parent.equals(m_kigali)) {
                 return m_gasabo;
+            } else if (level == Location.Level.WARD && text.trim().equalsIgnoreCase("Jali") && parent.equals(m_gasabo)) {
+                return m_jali;
             } else {
                 return null;
             }

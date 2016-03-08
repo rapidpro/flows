@@ -64,6 +64,7 @@ class Field(object):
         DATETIME = 'D'
         STATE = 'S'
         DISTRICT = 'I'
+        WARD = 'W'
 
         def __init__(self, code):
             self.code = code
@@ -354,6 +355,7 @@ class Location(object):
     class Level(Enum):
         STATE = 1
         DISTRICT = 2
+        WARD = 3
 
     def __init__(self, osm_id, name, level):
         self.osm_id = osm_id
@@ -722,7 +724,6 @@ class Runner(object):
         """
         field = run.get_or_create_field(key, label)
         actual_value = None
-
         if field.value_type in (Field.ValueType.TEXT, Field.ValueType.DECIMAL, Field.ValueType.DATETIME):
             actual_value = value
         elif field.value_type == Field.ValueType.STATE:
@@ -730,7 +731,7 @@ class Runner(object):
             if state:
                 actual_value = state.name
         elif field.value_type == Field.ValueType.DISTRICT:
-            state_field = self.get_state_field(run)
+            state_field = self.get_location_field(run, Field.ValueType.STATE)
             if state_field:
                 state_name = run.contact.fields.get(state_field.key, None)
                 if state_name:
@@ -739,7 +740,22 @@ class Runner(object):
                         district = self.location_resolver.resolve(value, run.org.country, Location.Level.DISTRICT, state)
                         if district:
                             actual_value = district.name
-
+        elif field.value_type == Field.ValueType.WARD:
+            state_field = self.get_location_field(run, Field.ValueType.STATE)
+            if state_field:
+                state_name = run.contact.fields.get(state_field.key, None)
+                if state_name:
+                    state = self.location_resolver.resolve(state_name, run.org.country, Location.Level.STATE, None)
+                    if state:
+                        district_field = self.get_location_field(run, Field.ValueType.DISTRICT)
+                        if district_field:
+                            district_name = run.contact.fields.get(district_field.key, None)
+                            if district_name:
+                                district = self.location_resolver.resolve(district_name, run.org.country, Location.Level.DISTRICT, state)
+                                if district:
+                                    ward = self.location_resolver.resolve(value, run.org.country, Location.Level.WARD, district)
+                                    if ward:
+                                        actual_value = ward.name
         run.contact.fields[field.key] = actual_value
         return field
 
@@ -751,9 +767,9 @@ class Runner(object):
         """
         run.extra.update(values)
 
-    def get_state_field(self, run):
+    def get_location_field(self, run, type):
         # TODO this mimics what we currently do in RapidPro but needs changed
         for field in run.fields.values():
-            if field.value_type == Field.ValueType.STATE:
+            if field.value_type == type:
                 return field
         return None

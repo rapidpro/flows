@@ -276,6 +276,7 @@ The destination must be one of:
        | <has-phone-test>
        | <has-state-test>
        | <has-district-test>
+       | <has-ward-test>
 ```
 
 #### True Tests
@@ -460,4 +461,12 @@ Test that returns whether the text contains a valid district in the given state.
 
 ```
 <has-district-test> : { "type": "district", "test": <template> }
+```
+
+#### Has Ward Tests
+
+Test that returns whether the text contains a valid ward in the given state and district.
+
+```
+<has-ward-test> : { "type": "ward", "state": <template>, "district": <template> }
 ```
