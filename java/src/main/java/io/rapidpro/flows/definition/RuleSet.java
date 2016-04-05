@@ -12,11 +12,15 @@ import io.rapidpro.flows.runner.Runner;
 import io.rapidpro.flows.runner.Step;
 import io.rapidpro.flows.utils.JsonUtils;
 import io.rapidpro.flows.utils.Jsonizable;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,6 +38,10 @@ public class RuleSet extends Flow.Node {
         WAIT_RECORDING,
         WAIT_DIGIT,
         WAIT_DIGITS,
+        WAIT_GPS,
+        WAIT_PHOTO,
+        WAIT_VIDEO,
+        WAIT_AUDIO,
         WEBHOOK,
         FLOW_FIELD,
         FORM_FIELD,
@@ -96,7 +104,7 @@ public class RuleSet extends Flow.Node {
         String category = rule.getCategory().getLocalized(Collections.singletonList(run.getFlow().getBaseLanguage()), "");
 
         String valueAsStr = Conversions.toString(testResult.getValue(), context);
-        Result result = new Result(rule, valueAsStr, category, input.getValueAsText(context));
+        Result result = new Result(rule, valueAsStr, category, input.getValueAsText(context), input.getMedia());
         step.setRuleResult(result);
 
         run.updateValue(this, result, input.getTime());
@@ -152,9 +160,12 @@ public class RuleSet extends Flow.Node {
 
     public boolean isPause() {
         return m_rulesetType == Type.WAIT_MESSAGE
-                || m_rulesetType == Type.WAIT_RECORDING
                 || m_rulesetType == Type.WAIT_DIGIT
-                || m_rulesetType == Type.WAIT_DIGITS;
+                || m_rulesetType == Type.WAIT_DIGITS
+                || m_rulesetType == Type.WAIT_AUDIO
+                || m_rulesetType == Type.WAIT_GPS
+                || m_rulesetType == Type.WAIT_PHOTO
+                || m_rulesetType == Type.WAIT_VIDEO;
     }
 
     protected String getConfigAsString(String key, String defaultValue) {
@@ -181,20 +192,25 @@ public class RuleSet extends Flow.Node {
 
         protected String m_text;
 
-        public Result(Rule rule, String value, String category, String text) {
+        protected String m_media;
+
+        public Result(Rule rule, String value, String category, String text, String media) {
             m_rule = rule;
             m_value = value;
             m_category = category;
             m_text = text;
+            m_media = media;
         }
 
         public static Result fromJson(JsonElement elm, Flow.DeserializationContext context) {
             JsonObject obj = elm.getAsJsonObject();
+
             return new Result(
                     (Rule) context.getFlow().getElementByUuid(obj.get("uuid").getAsString()),
                     JsonUtils.getAsString(obj, "value"),
                     JsonUtils.getAsString(obj, "category"),
-                    JsonUtils.getAsString(obj, "text")
+                    JsonUtils.getAsString(obj, "text"),
+                    JsonUtils.getAsString(obj, "media")
             );
         }
 
@@ -204,7 +220,8 @@ public class RuleSet extends Flow.Node {
                     "uuid", m_rule.getUuid(),
                     "value", m_value,
                     "category", m_category,
-                    "text", m_text
+                    "text", m_text,
+                    "media", m_media
             );
         }
 

@@ -29,7 +29,11 @@ public class RunState implements Jsonizable {
     public enum State {
         IN_PROGRESS,
         COMPLETED,
-        WAIT_MESSAGE
+        WAIT_AUDIO,
+        WAIT_MESSAGE,
+        WAIT_PHOTO,
+        WAIT_GPS,
+        WAIT_VIDEO
     }
 
     protected Org m_org;

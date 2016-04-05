@@ -67,7 +67,7 @@ public class StepTest extends BaseFlowsTest {
 
         Rule yesRule = ((RuleSet) ((ActionSet) flow.getEntry()).getDestination()).getRules().get(0);
 
-        step.setRuleResult(new RuleSet.Result(yesRule, "yes", "Yes", "yes ok"));
+        step.setRuleResult(new RuleSet.Result(yesRule, "yes", "Yes", "yes ok", null));
         obj = (JsonObject) step.toJson();
 
         assertThat(obj, is(JsonUtils.object(
@@ -78,10 +78,37 @@ public class StepTest extends BaseFlowsTest {
                         "uuid", "a53e3607-ac87-4bee-ab95-30fd4ad8a837",
                         "value", "yes",
                         "category", "Yes",
-                        "text", "yes ok"
+                        "text", "yes ok",
+                        "media", null
                 ),
                 "actions", JsonUtils.array(),
                 "errors", JsonUtils.array()
         )));
+
+        // test to and from with media value
+        step.getActions().clear();
+        step.getErrors().clear();
+
+        step.setRuleResult(new RuleSet.Result(yesRule, "yes", "Yes", null, "image:file:/var/blah"));
+        obj = (JsonObject) step.toJson();
+        assertThat(obj, is(JsonUtils.object(
+                "node", "32cf414b-35e3-4c75-8a78-d5f4de925e13",
+                "arrived_on", "2015-08-25T11:59:30.088Z",
+                "left_on", null,
+                "rule", JsonUtils.object(
+                        "uuid", "a53e3607-ac87-4bee-ab95-30fd4ad8a837",
+                        "value", "yes",
+                        "category", "Yes",
+                        "text", null,
+                        "media", "image:file:/var/blah"
+                ),
+                "actions", JsonUtils.array(),
+                "errors", JsonUtils.array()
+        )));
+
+
+
+
     }
+
 }
