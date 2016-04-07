@@ -225,6 +225,13 @@ public class RuleSet extends Flow.Node {
             );
         }
 
+        /**
+         * Media is mutable since they can point to files that have been moved
+         */
+        public void setMedia(String media) {
+            m_media = media;
+        }
+
         public Rule getRule() {
             return m_rule;
         }
@@ -240,5 +247,10 @@ public class RuleSet extends Flow.Node {
         public String getText() {
             return m_text;
         }
+
+        public String getMedia() {
+            return m_media;
+        }
+
     }
 }
