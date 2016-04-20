@@ -11,6 +11,7 @@ import io.rapidpro.flows.definition.tests.date.DateEqualTest;
 import io.rapidpro.flows.definition.tests.date.HasDateTest;
 import io.rapidpro.flows.definition.tests.location.HasDistrictTest;
 import io.rapidpro.flows.definition.tests.location.HasStateTest;
+import io.rapidpro.flows.definition.tests.location.HasWardTest;
 import io.rapidpro.flows.definition.tests.logic.AndTest;
 import io.rapidpro.flows.definition.tests.logic.FalseTest;
 import io.rapidpro.flows.definition.tests.logic.OrTest;
@@ -59,6 +60,7 @@ public abstract class Test implements Jsonizable {
         s_classByType.put(HasPhoneTest.TYPE, HasPhoneTest.class);
         s_classByType.put(HasStateTest.TYPE, HasStateTest.class);
         s_classByType.put(HasDistrictTest.TYPE, HasDistrictTest.class);
+        s_classByType.put(HasWardTest.TYPE, HasWardTest.class);
     }
 
     /**

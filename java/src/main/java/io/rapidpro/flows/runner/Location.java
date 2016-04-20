@@ -7,7 +7,8 @@ public class Location {
 
     public enum Level {
         STATE,
-        DISTRICT
+        DISTRICT,
+        WARD
     }
 
     protected String m_osmId;
