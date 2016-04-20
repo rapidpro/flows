@@ -679,6 +679,14 @@ class InputTest(BaseFlowsTest):
                                    'time': "30-09-2015 16:31",
                                    'contact': contact_context})
 
+        _input = Input("file://location/file.png", time, media_type='image/png')
+
+        context = _input.build_context(container, contact_context)
+        self.assertEqual(context, {'*': "file://location/file.png",
+                                   'value': "file://location/file.png",
+                                   'time': "30-09-2015 16:31",
+                                   'contact': contact_context})
+
 
 class OrgTest(BaseFlowsTest):
 
@@ -1029,7 +1037,12 @@ class StepTest(BaseFlowsTest):
         self.assertEqual(json_obj, {'node': "32cf414b-35e3-4c75-8a78-d5f4de925e13",
                                     'arrived_on': "2015-08-25T11:59:30.088Z",
                                     'left_on': None,
-                                    'rule': {'uuid': "a53e3607-ac87-4bee-ab95-30fd4ad8a837", "value": "yes", "category": "Yes", "text": "yes ok"},
+                                    'rule': {
+                                        'uuid': "a53e3607-ac87-4bee-ab95-30fd4ad8a837",
+                                        "value": "yes",
+                                        "media": None,
+                                        "category": "Yes",
+                                        "text": "yes ok"},
                                     'actions': [],
                                     'errors': []})
 

@@ -3,8 +3,11 @@ package io.rapidpro.flows.runner;
 import io.rapidpro.expressions.dates.DateStyle;
 import io.rapidpro.flows.BaseFlowsTest;
 import io.rapidpro.flows.RunnerBuilder;
+import io.rapidpro.flows.definition.ActionSet;
 import io.rapidpro.flows.definition.Flow;
+import io.rapidpro.flows.definition.RuleSet;
 import org.junit.Test;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 import org.threeten.bp.Instant;
 import org.threeten.bp.ZoneId;
 
@@ -201,6 +204,75 @@ public class RunnerTest extends BaseFlowsTest {
         assertThat(run.getValues().get("enough_for_soup").getValue(), is("7"));
         assertThat(run.getValues().get("enough_for_soup").getCategory(), is("> 2"));
         assertThat(run.getValues().get("enough_for_soup").getText(), is("7"));
+    }
+
+    @Test
+    public void startAndResume_media() throws Exception {
+        Flow flow = Flow.fromJson(readResource("test_flows/media.json"));
+
+        RunState run = m_runner.start(m_org, m_fields, m_contact, flow);
+        Step prev = run.getSteps().get(0);
+        Step current = run.getSteps().get(1);
+
+        // we start off at a action asking a question
+        assertThat(prev.getNode().getUuid(), is("ede3844f-9469-49a6-a419-5cdd3e5f99df"));
+        assertThat(prev.getActions(), hasSize(1));
+        assertReply(prev.getActions().get(0), "What kind of media?");
+        assertThat(current.getNode().getUuid(), is("7045f76b-d78a-44b3-9c83-2a982aae344f"));
+
+        // and we are left waiting for a reply
+        assertThat(run.getState(), is(RunState.State.WAIT_MESSAGE));
+
+        // reply with "p" for a photo
+        m_runner.resume(run, Input.of("photo"));
+        prev = run.getSteps().get(0);
+        current = run.getSteps().get(1);
+
+        assertThat(prev.getNode().getUuid(), is("7045f76b-d78a-44b3-9c83-2a982aae344f"));
+        assertThat(prev.getRuleResult().getCategory(), is("Photo"));
+        assertThat(prev.getRuleResult().getValue(), is("photo"));
+        assertThat(current.getNode().getUuid(), is("5d8b19a2-10a5-4e2b-9e2c-409fdcf26fed"));
+        assertReply(current.getActions().get(0), "Send a profile pic");
+
+        // which takes us to a ruleset
+        RuleSet ruleset = (RuleSet)run.getSteps().get(2).getNode();
+        assertThat(ruleset.getUuid(), is("0654e2bb-3f50-4512-b823-6abe4aedcef4"));
+        assertThat(ruleset.getRuleSetType(), is(RuleSet.Type.WAIT_PHOTO));
+
+        // now lets submit an image
+        m_runner.resume(run, Input.of("image/png", "file://location/image.png"));
+        prev = run.getSteps().get(0);
+        current = run.getSteps().get(1);
+
+        // show the results of the image
+        assertThat(prev.getNode().getUuid(), is("0654e2bb-3f50-4512-b823-6abe4aedcef4"));
+        assertThat(prev.getRuleResult().getCategory(), is("All Responses"));
+        assertThat(prev.getRuleResult().getValue(), is("file://location/image.png"));
+
+        // now we ask for the next media type again
+        assertThat(current.getNode().getUuid(), is("8c27c8d8-4b42-40e0-81e3-c1d811aec616"));
+        assertThat(current.getActions(), hasSize(1));
+        assertReply(current.getActions().get(0), "What kind of media?");
+
+        assertThat(run.getValues().get("photo").getValue(), is("file://location/image.png"));
+        assertThat(run.getValues().get("photo").getCategory(), is("All Responses"));
+        assertThat(run.getValues().get("photo").getText(), is("file://location/image.png"));
+
+        // add a response for the other media types
+        m_runner.resume(run, Input.of("video"));
+        m_runner.resume(run, Input.of("image/mp4", "file://location/video.mp4"));
+
+        m_runner.resume(run, Input.of("location"));
+        m_runner.resume(run, Input.of("geo", "123,456"));
+
+        m_runner.resume(run, Input.of("audio"));
+        m_runner.resume(run, Input.of("audio/x-wav", "file://location/audio.wav"));
+
+        // check those responses ultmately make it through as well
+        assertThat(run.getValues().get("video").getValue(), is("file://location/video.mp4"));
+        assertThat(run.getValues().get("audio").getValue(), is("file://location/audio.wav"));
+        assertThat(run.getValues().get("location").getValue(), is("123,456"));
+
     }
 
     @Test(expected = FlowRunException.class)

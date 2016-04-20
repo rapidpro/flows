@@ -89,7 +89,7 @@ public class StepTest extends BaseFlowsTest {
         step.getActions().clear();
         step.getErrors().clear();
 
-        step.setRuleResult(new RuleSet.Result(yesRule, "yes", "Yes", null, "image:file:/var/blah"));
+        step.setRuleResult(new RuleSet.Result(yesRule, "yes", "Yes", null, "image/png:file://var/blah.png"));
         obj = (JsonObject) step.toJson();
         assertThat(obj, is(JsonUtils.object(
                 "node", "32cf414b-35e3-4c75-8a78-d5f4de925e13",
@@ -100,7 +100,7 @@ public class StepTest extends BaseFlowsTest {
                         "value", "yes",
                         "category", "Yes",
                         "text", null,
-                        "media", "image:file:/var/blah"
+                        "media", "image/png:file://var/blah.png"
                 ),
                 "actions", JsonUtils.array(),
                 "errors", JsonUtils.array()

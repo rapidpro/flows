@@ -315,10 +315,13 @@ class ContactUrn(object):
 
 class Input(object):
 
-    def __init__(self, value, time=None):
+    def __init__(self, value, time=None, media_type=None):
         self.value = value
         self.time = time if time else datetime.datetime.now(tz=pytz.UTC)
         self.consumed = False
+
+        if media_type:
+            self.media = '%s:%s' % (media_type, value)
 
     def build_context(self, container, contact_context):
         """
