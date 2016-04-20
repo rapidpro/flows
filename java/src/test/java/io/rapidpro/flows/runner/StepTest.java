@@ -105,10 +105,5 @@ public class StepTest extends BaseFlowsTest {
                 "actions", JsonUtils.array(),
                 "errors", JsonUtils.array()
         )));
-
-
-
-
     }
-
 }
