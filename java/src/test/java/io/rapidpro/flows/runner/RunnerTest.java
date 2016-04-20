@@ -248,8 +248,9 @@ public class RunnerTest extends BaseFlowsTest {
         assertThat(prev.getNode().getUuid(), is("0654e2bb-3f50-4512-b823-6abe4aedcef4"));
         assertThat(prev.getRuleResult().getCategory(), is("All Responses"));
         assertThat(prev.getRuleResult().getValue(), is("file://location/image.png"));
+        assertThat(prev.getRuleResult().getMedia(), is("image/png:file://location/image.png"));
 
-        // now we ask for the next media type again
+        // now we get asked for the next media type again
         assertThat(current.getNode().getUuid(), is("8c27c8d8-4b42-40e0-81e3-c1d811aec616"));
         assertThat(current.getActions(), hasSize(1));
         assertReply(current.getActions().get(0), "What kind of media?");
@@ -268,11 +269,10 @@ public class RunnerTest extends BaseFlowsTest {
         m_runner.resume(run, Input.of("audio"));
         m_runner.resume(run, Input.of("audio/x-wav", "file://location/audio.wav"));
 
-        // check those responses ultmately make it through as well
+        // check those responses ultimately make it through as well
         assertThat(run.getValues().get("video").getValue(), is("file://location/video.mp4"));
         assertThat(run.getValues().get("audio").getValue(), is("file://location/audio.wav"));
         assertThat(run.getValues().get("location").getValue(), is("123,456"));
-
     }
 
     @Test(expected = FlowRunException.class)

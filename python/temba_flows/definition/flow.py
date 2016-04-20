@@ -209,7 +209,6 @@ class RuleSet(Flow.Node):
         if logger.isEnabledFor(logging.DEBUG):
             logger.debug("Visiting rule set %s with input %s from contact %s"
                          % (self.uuid, unicode(input), run.contact.uuid))
-
         input.consume()
 
         context = run.build_context(runner, input)
@@ -224,7 +223,7 @@ class RuleSet(Flow.Node):
         category = rule.category.get_localized_by_preferred([run.flow.base_language], "")
 
         value_as_str = conversions.to_string(test_result.value, context)
-        result = RuleSet.Result(rule, value_as_str, category, input.get_value_as_text(context))
+        result = RuleSet.Result(rule, value_as_str, category, input.get_value_as_text(context), input.media)
         step.rule_result = result
 
         run.update_value(self, result, input.time)
@@ -274,6 +273,8 @@ class RuleSet(Flow.Node):
             self.category = category
             self.text = text
             self.media = media
+
+            print 'INit: %s, %s' % (value, media)
 
         @classmethod
         def from_json(cls, json_obj, context):

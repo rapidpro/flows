@@ -898,6 +898,65 @@ class RunnerTest(BaseFlowsTest):
         self.assertEqual(run.values["enough_for_soup"].category, "> 2")
         self.assertEqual(run.values["enough_for_soup"].text, "7")
 
+    def test_start_and_resume_media(self):
+        flow = Flow.from_json(json.loads(self.read_resource("test_flows/media.json")))
+
+        run = self.runner.start(self.org, self.fields, self.contact, flow)
+
+        self.assertEqual(run.steps[0].node.uuid, "ede3844f-9469-49a6-a419-5cdd3e5f99df")
+        self.assertEqual(len(run.steps[0].actions), 1)
+        self.assertReply(run.steps[0].actions[0], "What kind of media?")
+        self.assertEqual(run.steps[1].node.uuid, "7045f76b-d78a-44b3-9c83-2a982aae344f")
+        self.assertEqual(run.state, RunState.State.WAIT_MESSAGE)
+
+        self.runner.resume(run, Input("photo"))
+
+        self.assertEqual(run.steps[0].node.uuid, "7045f76b-d78a-44b3-9c83-2a982aae344f")
+        self.assertEqual(run.steps[0].rule_result.category, "Photo")
+        self.assertEqual(run.steps[0].rule_result.value, "photo")
+        self.assertEqual(run.steps[1].node.uuid, "5d8b19a2-10a5-4e2b-9e2c-409fdcf26fed")
+        self.assertReply(run.steps[1].actions[0], "Send a profile pic")
+
+        # which takes us to a ruleset
+        ruleset = run.steps[2].node
+        self.assertEqual(ruleset.uuid, "0654e2bb-3f50-4512-b823-6abe4aedcef4")
+        self.assertEqual(ruleset.ruleset_type, RuleSet.Type.WAIT_PHOTO)
+
+        # now lets submit an image
+        self.runner.resume(run, Input("file://location/image.png", media_type="image/png"))
+        prev = run.steps[0]
+        current = run.steps[1]
+
+        # show the results of the image
+        self.assertEqual('0654e2bb-3f50-4512-b823-6abe4aedcef4', prev.node.uuid)
+        self.assertEqual(prev.rule_result.category, 'All Responses')
+        self.assertEqual(prev.rule_result.value, 'file://location/image.png')
+        self.assertEqual(prev.rule_result.media, 'image/png:file://location/image.png')
+
+        # now we get asked for the next media type again
+        self.assertEqual('8c27c8d8-4b42-40e0-81e3-c1d811aec616', current.node.uuid)
+        self.assertEqual(len(current.actions), 1)
+        self.assertReply(current.actions[0], 'What kind of media?')
+
+        self.assertEqual(run.values["photo"].text, "file://location/image.png")
+        self.assertEqual(run.values["photo"].value, "file://location/image.png")
+        self.assertEqual(run.values["photo"].category, "All Responses")
+
+        # other media types
+        self.runner.resume(run, Input("video"))
+        self.runner.resume(run, Input("file://location/video.mp4", media_type="video/mp4"))
+
+        self.runner.resume(run, Input("audio"))
+        self.runner.resume(run, Input("file://location/audio.wav", media_type="audio/x-wav"))
+
+        self.runner.resume(run, Input("location"))
+        self.runner.resume(run, Input("123,456", media_type="geo"))
+
+        # check those responses ultimately make it through as well
+        self.assertEqual(run.values["video"].value, "file://location/video.mp4")
+        self.assertEqual(run.values["audio"].value, "file://location/audio.wav")
+        self.assertEqual(run.values["location"].value, "123,456")
+
     def test_start_with_empty_flow(self):
         flow = Flow.from_json(json.loads(self.read_resource("test_flows/empty.json")))
         self.assertRaises(FlowRunException, self.runner.start, self.org, self.fields, self.contact, flow)

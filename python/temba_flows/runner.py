@@ -319,9 +319,7 @@ class Input(object):
         self.value = value
         self.time = time if time else datetime.datetime.now(tz=pytz.UTC)
         self.consumed = False
-
-        if media_type:
-            self.media = '%s:%s' % (media_type, value)
+        self.media = '%s:%s' % (media_type, value) if media_type else None
 
     def build_context(self, container, contact_context):
         """
