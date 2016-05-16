@@ -1125,8 +1125,14 @@ class TestsTest(BaseFlowsTest):
 
         test = ContainsTest(TranslatableText("north,east"))
         self.assertTest(test, "go north east", True, "north east")
-        self.assertTest(test, "EAST then NORRTH", True, "NORRTH EAST")
+        self.assertTest(test, "EAST then NORRTH", True, "EAST NORRTH")
         self.assertTest(test, "go north", False, None)
+        self.assertTest(test, "east", False, None)
+
+        test = ContainsTest(TranslatableText("north,North"))
+        self.assertTest(test, "go north east", True, "north")
+        self.assertTest(test, "EAST then NORRTH", True, "NORRTH")
+        self.assertTest(test, "go north", True, "north")
         self.assertTest(test, "east", False, None)
 
     def test_contains_any_test(self):
@@ -1138,7 +1144,7 @@ class TestsTest(BaseFlowsTest):
         test = ContainsAnyTest(TranslatableText({'eng': "yes,affirmative", 'fre': "non"}))
         self.assertTest(test, "yes", True, "yes")
         self.assertTest(test, "AFFIRMATIVE SIR", True, "AFFIRMATIVE")
-        self.assertTest(test, "affirmative yes", True, "yes affirmative")
+        self.assertTest(test, "affirmative yes", True, "affirmative yes")
         self.assertTest(test, "afirmative!", True, "afirmative")  # edit distance
 
         # edit distance doesn't apply for words shorter than 4 chars
@@ -1161,6 +1167,13 @@ class TestsTest(BaseFlowsTest):
         self.assertTest(test, "good morning", True, "good")
         self.assertTest(test, "kLab is good", True, "kLab good")
         self.assertTest(test, "kigali city", False, None)
+
+        # no duplication if duplicated test
+        test = ContainsAnyTest(TranslatableText("north,North"))
+        self.assertTest(test, "go north east", True, "north")
+        self.assertTest(test, "EAST then NORRTH", True, "NORRTH")
+        self.assertTest(test, "go north", True, "north")
+        self.assertTest(test, "east", False, None)
 
     def test_starts_with_test(self):
         json_obj = {'type': 'starts', 'test': 'once'}

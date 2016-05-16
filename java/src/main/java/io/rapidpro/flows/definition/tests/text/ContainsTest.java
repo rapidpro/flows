@@ -15,7 +15,8 @@ import io.rapidpro.flows.utils.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * Test that returns whether the text contains the given words
@@ -41,22 +42,26 @@ public class ContainsTest extends TranslatableTest {
         return JsonUtils.object("type", TYPE, "test", m_test.toJson());
     }
 
-    protected String testInWords(String test, String[] words, String[] rawWords) {
+    protected boolean findMatches(SortedSet<Integer> matches, String test, String[] words, String[] rawWords) {
+        boolean matched = false;
         for (int w = 0; w < words.length; w++) {
             String word = words[w];
             if (word.equals(test)) {
-                return rawWords[w];
+                matches.add(w);
+                matched = true;
+                continue;
             }
 
             // words are over 4 characters and start with the same letter
             if (word.length() > 4 && test.length() > 4 && word.charAt(0) == test.charAt(0)) {
                 // edit distance of 1 or less is a match
                 if (FlowUtils.editDistance(word, test) <= 1) {
-                    return rawWords[w];
+                    matches.add(w);
+                    matched = true;
                 }
             }
         }
-        return null;
+        return matched;
     }
 
     /**
@@ -74,17 +79,24 @@ public class ContainsTest extends TranslatableTest {
         String[] rawWords = ExpressionUtils.tokenize(text);
 
         // run through each of our tests
-        List<String> matches = new ArrayList<>();
+        SortedSet<Integer> matches = new TreeSet<>();
+        int matchCount = 0;
         for (String test : tests) {
-            String match = testInWords(test, words, rawWords);
-            if (StringUtils.isNotEmpty(match)) {
-                matches.add(match);
+            boolean matched = findMatches(matches, test, words, rawWords);
+            if (matched){
+                matchCount += 1;
             }
         }
 
         // we are a match only if every test matches
-        if (matches.size() == tests.length) {
-            return Result.match(StringUtils.join(matches, " "));
+        if (matchCount == tests.length) {
+            // build our actual matches as strings
+            ArrayList<String> matchingWords = new ArrayList<>();
+            for (int matchIndex: matches){
+                matchingWords.add(rawWords[matchIndex]);
+            }
+
+            return Result.match(StringUtils.join(matchingWords, " "));
         } else {
             return Result.NO_MATCH;
         }
