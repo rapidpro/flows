@@ -225,20 +225,22 @@ class ContainsTest(TranslatableTest):
         return {'type': self.TYPE, 'test': self.test.to_json()}
 
     @staticmethod
-    def test_in_words(test, words, raw_words):
-        matches = []
+    def find_matches(matches, test, words, raw_words):
+        matched = False
         for index, word in enumerate(words):
             if word == test:
-                matches.append(index)
+                matches.add(index)
+                matched = True
                 continue
 
             # words are over 4 characters and start with the same letter
             if len(word) > 4 and len(test) > 4 and word[0] == test[0]:
                 # edit distance of 1 or less is a match
                 if edit_distance(word, test) <= 1:
-                    matches.append(index)
+                    matches.add(index)
+                    matched = True
 
-        return matches
+        return matched
 
     def evaluate_for_localized(self, runner, run, context, text, localized_test):
         localized_test, errors = runner.substitute_variables(localized_test, context)
@@ -254,10 +256,9 @@ class ContainsTest(TranslatableTest):
         matches = set()
         matched_tests = 0
         for test in tests:
-            match = self.test_in_words(test, words, raw_words)
-            if match:
+            matched = self.find_matches(matches, test, words, raw_words)
+            if matched:
                 matched_tests += 1
-                matches.update(match)
 
         # we are a match only if every test matches
         if matched_tests == len(tests):
@@ -294,9 +295,7 @@ class ContainsAnyTest(ContainsTest):
         # run through each of our tests
         matches = set()
         for test in tests:
-            match = self.test_in_words(test, words, raw_words)
-            if match:
-                matches.update(match)
+            self.find_matches(matches, test, words, raw_words)
 
         # we are a match if at least one test matches
         if matches:
