@@ -28,9 +28,18 @@ public class ContainsTestTest extends BaseTestTest {
         ContainsTest test = new ContainsTest(new TranslatableText("north,east"));
 
         assertTest(test, "go north east", true, "north east");
-        assertTest(test, "EAST then NORRTH", true, "NORRTH EAST");
+        assertTest(test, "EAST then NORRTH", true, "EAST NORRTH");
 
         assertTest(test, "go north", false, null);
+        assertTest(test, "east", false, null);
+
+
+        test = new ContainsTest(new TranslatableText("north,North"));
+
+        assertTest(test, "go north NORTH", true, "north NORTH");
+        assertTest(test, "EAST then NORRTH", true, "NORRTH");
+
+        assertTest(test, "go north", true, "north");
         assertTest(test, "east", false, null);
     }
 }

@@ -225,18 +225,22 @@ class ContainsTest(TranslatableTest):
         return {'type': self.TYPE, 'test': self.test.to_json()}
 
     @staticmethod
-    def test_in_words(test, words, raw_words):
+    def find_matches(matches, test, words, raw_words):
+        matched = False
         for index, word in enumerate(words):
             if word == test:
-                return raw_words[index]
+                matches.add(index)
+                matched = True
+                continue
 
             # words are over 4 characters and start with the same letter
             if len(word) > 4 and len(test) > 4 and word[0] == test[0]:
                 # edit distance of 1 or less is a match
                 if edit_distance(word, test) <= 1:
-                    return raw_words[index]
+                    matches.add(index)
+                    matched = True
 
-        return None
+        return matched
 
     def evaluate_for_localized(self, runner, run, context, text, localized_test):
         localized_test, errors = runner.substitute_variables(localized_test, context)
@@ -249,15 +253,18 @@ class ContainsTest(TranslatableTest):
         raw_words = tokenize(text)
 
         # run through each of our tests
-        matches = []
+        matches = set()
+        matched_tests = 0
         for test in tests:
-            match = self.test_in_words(test, words, raw_words)
-            if match:
-                matches.append(match)
+            matched = self.find_matches(matches, test, words, raw_words)
+            if matched:
+                matched_tests += 1
 
         # we are a match only if every test matches
-        if len(matches) == len(tests):
-            return Test.Result.match(" ".join(matches))
+        if matched_tests == len(tests):
+            matches = sorted(list(matches))
+            matched_words = " ".join([raw_words[idx] for idx in matches])
+            return Test.Result.match(matched_words)
         else:
             return Test.Result.NO_MATCH
 
@@ -286,15 +293,15 @@ class ContainsAnyTest(ContainsTest):
         raw_words = tokenize(text)
 
         # run through each of our tests
-        matches = []
+        matches = set()
         for test in tests:
-            match = self.test_in_words(test, words, raw_words)
-            if match:
-                matches.append(match)
+            self.find_matches(matches, test, words, raw_words)
 
         # we are a match if at least one test matches
-        if len(matches) > 0:
-            return Test.Result.match(" ".join(matches))
+        if matches:
+            matches = sorted(list(matches))
+            matched_words = " ".join([raw_words[idx] for idx in matches])
+            return Test.Result.match(matched_words)
         else:
             return Test.Result.NO_MATCH
 

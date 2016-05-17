@@ -14,7 +14,8 @@ import io.rapidpro.flows.utils.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * Test that returns whether the text contains any of the given words
@@ -55,17 +56,19 @@ public class ContainsAnyTest extends ContainsTest {
         String[] rawWords = ExpressionUtils.tokenize(text);
 
         // run through each of our tests
-        List<String> matches = new ArrayList<>();
+        SortedSet<Integer> matches = new TreeSet<>();
         for (String test : tests) {
-            String match = testInWords(test, words, rawWords);
-            if (StringUtils.isNotEmpty(match)) {
-                matches.add(match);
-            }
+            findMatches(matches, test, words, rawWords);
         }
 
         // we are a match if at least one test matches
         if (matches.size() > 0) {
-            return Test.Result.match(StringUtils.join(matches, " "));
+            // build our actual matches as strings
+            ArrayList<String> matchingWords = new ArrayList<>();
+            for (int matchIndex: matches){
+                matchingWords.add(rawWords[matchIndex]);
+            }
+            return Test.Result.match(StringUtils.join(matchingWords, " "));
         } else {
             return Test.Result.NO_MATCH;
         }
