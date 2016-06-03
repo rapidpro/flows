@@ -129,6 +129,8 @@ public class JsonUtils {
             return (T) elm.getAsString();
         } else if (clazz.equals(Boolean.class)) {
             return (T) (Boolean) elm.getAsBoolean();
+        } else if (clazz.equals(Integer.class)) {
+            return (T) (Integer) elm.getAsInt();
         }
 
         try {
@@ -159,4 +161,13 @@ public class JsonUtils {
         }
         return map;
     }
+
+    public static <V> List<Map<String, V>> fromJsonObjectArray(JsonArray arr, Flow.DeserializationContext context, Class<V> clazz) {
+        List<Map<String, V>> items = new ArrayList<>();
+        for (JsonElement elm : arr) {
+            items.add(fromJsonObject(elm.getAsJsonObject(), context, clazz));
+        }
+        return items;
+    }
+
 }

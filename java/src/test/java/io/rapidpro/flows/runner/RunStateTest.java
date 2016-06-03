@@ -57,7 +57,7 @@ public class RunStateTest extends BaseFlowsTest {
 
         // export to json and reimport
         String json = run.toJsonString();
-        RunState restored = RunState.fromJson(json, flow);
+        RunState restored = RunState.fromJson(json, RunState.buildFlowMap(flow));
 
         // json should be the same
         assertThat(restored.toJsonString(), is(json));

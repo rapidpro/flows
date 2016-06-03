@@ -2,9 +2,13 @@ package io.rapidpro.flows;
 
 import io.rapidpro.expressions.EvaluatorBuilder;
 import io.rapidpro.expressions.evaluator.Evaluator;
+import io.rapidpro.flows.definition.Flow;
 import io.rapidpro.flows.runner.Location;
 import io.rapidpro.flows.runner.Runner;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -17,7 +21,9 @@ public class RunnerBuilderTest extends BaseFlowsTest {
 
     @Test
     public void build() {
-        Runner runner = new RunnerBuilder().build();
+
+        List<Flow> flows = new ArrayList<Flow>();
+        Runner runner = new RunnerBuilder(flows).build();
         assertThat(runner.getTemplateEvaluator(), is(notNullValue()));
 
         Evaluator evaluator = new EvaluatorBuilder().build();
@@ -29,7 +35,7 @@ public class RunnerBuilderTest extends BaseFlowsTest {
             }
         };
 
-        runner = new RunnerBuilder()
+        runner = new RunnerBuilder(flows)
                 .withTemplateEvaluator(evaluator)
                 .withLocationResolver(resolver)
                 .build();

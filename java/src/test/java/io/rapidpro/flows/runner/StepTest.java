@@ -25,7 +25,7 @@ public class StepTest extends BaseFlowsTest {
     public void toAndFromJson() throws Exception {
         Flow flow = Flow.fromJson(readResource("test_flows/mushrooms.json"));
         Instant arrivedOn = Instant.from(ZonedDateTime.of(2015, 8, 25, 11, 59, 30, 88 * 1000000, ZoneId.of("UTC")));
-        Step step = new Step(flow.getEntry(), arrivedOn);
+        Step step = new Step(flow, flow.getEntry(), arrivedOn);
 
         JsonObject obj = (JsonObject) step.toJson();
 
@@ -35,7 +35,8 @@ public class StepTest extends BaseFlowsTest {
                 "left_on", null,
                 "rule", null,
                 "actions", JsonUtils.array(),
-                "errors", JsonUtils.array()
+                "errors", JsonUtils.array(),
+                "flow_id", 17576
         )));
 
         step.addActionResult(Action.Result.performed(new ReplyAction(new TranslatableText("Hi Joe"))));
@@ -47,7 +48,8 @@ public class StepTest extends BaseFlowsTest {
                 "left_on", null,
                 "rule", null,
                 "actions", JsonUtils.array(JsonUtils.object("type", "reply", "msg", "Hi Joe")),
-                "errors", JsonUtils.array()
+                "errors", JsonUtils.array(),
+                "flow_id", 17576
         )));
 
         step.addActionResult(Action.Result.performed(null, Arrays.asList("This is an error", "This too")));
@@ -59,7 +61,8 @@ public class StepTest extends BaseFlowsTest {
                 "left_on", null,
                 "rule", null,
                 "actions", JsonUtils.array(JsonUtils.object("type", "reply", "msg", "Hi Joe")),
-                "errors", JsonUtils.array("This is an error", "This too")
+                "errors", JsonUtils.array("This is an error", "This too"),
+                "flow_id", 17576
         )));
 
         step.getActions().clear();
@@ -67,7 +70,7 @@ public class StepTest extends BaseFlowsTest {
 
         Rule yesRule = ((RuleSet) ((ActionSet) flow.getEntry()).getDestination()).getRules().get(0);
 
-        step.setRuleResult(new RuleSet.Result(yesRule, "yes", "Yes", "yes ok", null));
+        step.setRuleResult(new RuleSet.Result(yesRule, "yes", "Yes", "yes ok", null, flow.getId()));
         obj = (JsonObject) step.toJson();
 
         assertThat(obj, is(JsonUtils.object(
@@ -79,17 +82,19 @@ public class StepTest extends BaseFlowsTest {
                         "value", "yes",
                         "category", "Yes",
                         "text", "yes ok",
-                        "media", null
+                        "media", null,
+                        "flow_id", 17576
                 ),
                 "actions", JsonUtils.array(),
-                "errors", JsonUtils.array()
+                "errors", JsonUtils.array(),
+                "flow_id", 17576
         )));
 
         // test to and from with media value
         step.getActions().clear();
         step.getErrors().clear();
 
-        step.setRuleResult(new RuleSet.Result(yesRule, "yes", "Yes", null, "image/png:file://var/blah.png"));
+        step.setRuleResult(new RuleSet.Result(yesRule, "yes", "Yes", null, "image/png:file://var/blah.png", flow.getId()));
         obj = (JsonObject) step.toJson();
         assertThat(obj, is(JsonUtils.object(
                 "node", "32cf414b-35e3-4c75-8a78-d5f4de925e13",
@@ -100,10 +105,12 @@ public class StepTest extends BaseFlowsTest {
                         "value", "yes",
                         "category", "Yes",
                         "text", null,
-                        "media", "image/png:file://var/blah.png"
+                        "media", "image/png:file://var/blah.png",
+                        "flow_id", 17576
                 ),
                 "actions", JsonUtils.array(),
-                "errors", JsonUtils.array()
+                "errors", JsonUtils.array(),
+                "flow_id", 17576
         )));
     }
 }
