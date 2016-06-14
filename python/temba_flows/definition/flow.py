@@ -274,8 +274,6 @@ class RuleSet(Flow.Node):
             self.text = text
             self.media = media
 
-            print 'INit: %s, %s' % (value, media)
-
         @classmethod
         def from_json(cls, json_obj, context):
             return cls(context.flow.get_element_by_uuid(json_obj['uuid']),
