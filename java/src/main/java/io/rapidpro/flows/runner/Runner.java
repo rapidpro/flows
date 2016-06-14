@@ -88,8 +88,22 @@ public class Runner {
 
             // should we pause at this node?
             if (currentNode instanceof RuleSet) {
+                RuleSet ruleset = (RuleSet) currentNode;
                 if (((RuleSet) currentNode).isPause() && (input == null || input.isConsumed())) {
-                    run.setState(RunState.State.WAIT_MESSAGE);
+
+                    // set our waiting state appropriately
+                    if (ruleset.getRuleSetType() == RuleSet.Type.WAIT_GPS) {
+                        run.setState(RunState.State.WAIT_GPS);
+                    } else if (ruleset.getRuleSetType() == RuleSet.Type.WAIT_PHOTO) {
+                        run.setState(RunState.State.WAIT_PHOTO);
+                    } else if (ruleset.getRuleSetType() == RuleSet.Type.WAIT_VIDEO) {
+                        run.setState(RunState.State.WAIT_VIDEO);
+                    } else if (ruleset.getRuleSetType() == RuleSet.Type.WAIT_AUDIO) {
+                        run.setState(RunState.State.WAIT_AUDIO);
+                    } else {
+                        run.setState(RunState.State.WAIT_MESSAGE);
+                    }
+
                     return run;
                 }
             }

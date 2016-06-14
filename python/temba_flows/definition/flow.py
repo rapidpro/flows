@@ -174,11 +174,15 @@ class RuleSet(Flow.Node):
         WAIT_RECORDING = 2
         WAIT_DIGIT = 3
         WAIT_DIGITS = 4
-        WEBHOOK = 5
-        FLOW_FIELD = 6
-        FORM_FIELD = 7
-        CONTACT_FIELD = 8
-        EXPRESSION = 9
+        WAIT_GPS = 5
+        WAIT_PHOTO = 6
+        WAIT_VIDEO = 7
+        WAIT_AUDIO = 8
+        WEBHOOK = 9
+        FLOW_FIELD = 10
+        FORM_FIELD = 11
+        CONTACT_FIELD = 12
+        EXPRESSION = 13
 
     def __init__(self, uuid, ruleset_type, label, operand, config):
         super(RuleSet, self).__init__(uuid)
@@ -205,7 +209,6 @@ class RuleSet(Flow.Node):
         if logger.isEnabledFor(logging.DEBUG):
             logger.debug("Visiting rule set %s with input %s from contact %s"
                          % (self.uuid, unicode(input), run.contact.uuid))
-
         input.consume()
 
         context = run.build_context(runner, input)
@@ -220,7 +223,7 @@ class RuleSet(Flow.Node):
         category = rule.category.get_localized_by_preferred([run.flow.base_language], "")
 
         value_as_str = conversions.to_string(test_result.value, context)
-        result = RuleSet.Result(rule, value_as_str, category, input.get_value_as_text(context))
+        result = RuleSet.Result(rule, value_as_str, category, input.get_value_as_text(context), input.media)
         step.rule_result = result
 
         run.update_value(self, result, input.time)
@@ -255,31 +258,37 @@ class RuleSet(Flow.Node):
         return self.ruleset_type == RuleSet.Type.WAIT_MESSAGE \
                or self.ruleset_type == RuleSet.Type.WAIT_RECORDING \
                or self.ruleset_type == RuleSet.Type.WAIT_DIGIT \
-               or self.ruleset_type == RuleSet.Type.WAIT_DIGITS
+               or self.ruleset_type == RuleSet.Type.WAIT_DIGITS \
+               or self.ruleset_type == RuleSet.Type.WAIT_AUDIO \
+               or self.ruleset_type == RuleSet.Type.WAIT_GPS \
+               or self.ruleset_type == RuleSet.Type.WAIT_PHOTO
 
     class Result(object):
         """
         Holds the result of a ruleset evaluation
         """
-        def __init__(self, rule, value, category, text):
+        def __init__(self, rule, value, category, text, media=None):
             self.rule = rule
             self.value = value
             self.category = category
             self.text = text
+            self.media = media
 
         @classmethod
         def from_json(cls, json_obj, context):
             return cls(context.flow.get_element_by_uuid(json_obj['uuid']),
                        json_obj['value'],
                        json_obj['category'],
-                       json_obj['text'])
+                       json_obj['text'],
+                       json_obj['media'])
 
         def to_json(self):
             return {
                 'uuid': self.rule.uuid,
                 'value': self.value,
                 'category': self.category,
-                'text': self.text
+                'text': self.text,
+                'media': self.media
             }
 
 
