@@ -46,7 +46,8 @@ class Test(object):
                 HasPhoneTest.TYPE: HasPhoneTest,
                 HasStateTest.TYPE: HasStateTest,
                 HasDistrictTest.TYPE: HasDistrictTest,
-                HasWardTest.TYPE: HasWardTest
+                HasWardTest.TYPE: HasWardTest,
+                SubflowTest.TYPE: SubflowTest
             }
 
         test_type = json_obj['type']
@@ -813,3 +814,24 @@ class HasWardTest(Test):
                             return Test.Result.match(ward.name)
 
         return Test.Result.NO_MATCH
+
+
+class SubflowTest(Test):
+    """
+    Test for evaluating the type of exit from a subflow
+    """
+    TYPE = "subflow"
+    EXIT_TYPE = "exit_type"
+
+    def __init__(self, exit_type):
+        self.exit_type = exit_type
+
+    @classmethod
+    def from_json(cls, json_obj, context):
+        return cls(json_obj.get(cls.EXIT_TYPE))
+
+    def to_json(self):
+        return {'type': self.TYPE, cls.EXIT_TYPE: self.exit_type}
+
+    def evaluate(self, runner, run, context, text):
+        return Test.Result.match(text)

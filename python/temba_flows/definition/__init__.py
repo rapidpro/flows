@@ -41,7 +41,7 @@ class TranslatableText(object):
             preferred_languages.append(run_state.contact.language)
 
         preferred_languages.append(run_state.org.primary_language)
-        preferred_languages.append(run_state.flow.base_language)
+        preferred_languages.append(run_state.get_flow().base_language)
 
         return self.get_localized_by_preferred(preferred_languages, default_text)
 

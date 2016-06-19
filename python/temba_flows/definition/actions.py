@@ -103,7 +103,6 @@ class ReplyAction(MessageAction):
 
     def execute_with_message(self, runner, context, msg):
         template, errors = runner.substitute_variables(msg, context)
-
         performed = ReplyAction(TranslatableText(template))
         return Action.Result.performed(performed, errors)
 

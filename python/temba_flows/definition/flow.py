@@ -93,16 +93,22 @@ class Flow(object):
 
         return flow
 
+    def get_id(self):
+        return self.metadata.get('id', None)
+
     class DeserializationContext(object):
         """
         Allows state to be provided to deserialization methods
         """
-        def __init__(self, flow):
-            self.flow = flow
+        def __init__(self, flow_dict):
+            self.flow_dict = flow_dict
             self.destinations_to_set = {}
 
         def needs_destination(self, start, destination_uuid):
             self.destinations_to_set[start] = destination_uuid
+
+        def get_flow(self, flow_id):
+            return self.flow_dict[flow_id]
 
     class Element(object):
         """
@@ -183,6 +189,7 @@ class RuleSet(Flow.Node):
         FORM_FIELD = 11
         CONTACT_FIELD = 12
         EXPRESSION = 13
+        SUBFLOW = 14
 
     def __init__(self, uuid, ruleset_type, label, operand, config):
         super(RuleSet, self).__init__(uuid)
@@ -220,10 +227,10 @@ class RuleSet(Flow.Node):
         rule, test_result = match
 
         # get category in the flow base language
-        category = rule.category.get_localized_by_preferred([run.flow.base_language], "")
+        category = rule.category.get_localized_by_preferred([run.get_flow().base_language], "")
 
         value_as_str = conversions.to_string(test_result.value, context)
-        result = RuleSet.Result(rule, value_as_str, category, input.get_value_as_text(context), input.media)
+        result = RuleSet.Result(step.get_flow(), rule, value_as_str, category, input.get_value_as_text(context), input.media)
         step.rule_result = result
 
         run.update_value(self, result, input.time)
@@ -263,22 +270,29 @@ class RuleSet(Flow.Node):
                or self.ruleset_type == RuleSet.Type.WAIT_GPS \
                or self.ruleset_type == RuleSet.Type.WAIT_PHOTO
 
+    def is_subflow(self):
+        return self.ruleset_type == RuleSet.Type.SUBFLOW
+
+    def get_subflow_id(self):
+        return self.config.get('flow', {}).get('id', None)
+
     class Result(object):
         """
         Holds the result of a ruleset evaluation
         """
-        def __init__(self, rule, value, category, text, media=None):
+        def __init__(self, flow, rule, value, category, text, media=None):
+            self.flow = flow
             self.rule = rule
             self.value = value
             self.category = category
             self.text = text
             self.media = media
 
-            print 'INit: %s, %s' % (value, media)
-
         @classmethod
         def from_json(cls, json_obj, context):
-            return cls(context.flow.get_element_by_uuid(json_obj['uuid']),
+            flow = context.get_flow(json_obj['flow_id'])
+            return cls(flow,
+                       flow.get_element_by_uuid(json_obj['uuid']),
                        json_obj['value'],
                        json_obj['category'],
                        json_obj['text'],
@@ -286,6 +300,7 @@ class RuleSet(Flow.Node):
 
         def to_json(self):
             return {
+                'flow_id': self.flow.get_id(),
                 'uuid': self.rule.uuid,
                 'value': self.value,
                 'category': self.category,
