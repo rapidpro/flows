@@ -36,7 +36,7 @@ public class StepTest extends BaseFlowsTest {
                 "rule", null,
                 "actions", JsonUtils.array(),
                 "errors", JsonUtils.array(),
-                "flow_id", 17576
+                "flow_uuid", "73c40f19-007d-46bd-83ea-aef439de9f9c"
         )));
 
         step.addActionResult(Action.Result.performed(new ReplyAction(new TranslatableText("Hi Joe"))));
@@ -49,7 +49,7 @@ public class StepTest extends BaseFlowsTest {
                 "rule", null,
                 "actions", JsonUtils.array(JsonUtils.object("type", "reply", "msg", "Hi Joe")),
                 "errors", JsonUtils.array(),
-                "flow_id", 17576
+                "flow_uuid", "73c40f19-007d-46bd-83ea-aef439de9f9c"
         )));
 
         step.addActionResult(Action.Result.performed(null, Arrays.asList("This is an error", "This too")));
@@ -62,7 +62,7 @@ public class StepTest extends BaseFlowsTest {
                 "rule", null,
                 "actions", JsonUtils.array(JsonUtils.object("type", "reply", "msg", "Hi Joe")),
                 "errors", JsonUtils.array("This is an error", "This too"),
-                "flow_id", 17576
+                "flow_uuid", "73c40f19-007d-46bd-83ea-aef439de9f9c"
         )));
 
         step.getActions().clear();
@@ -70,7 +70,7 @@ public class StepTest extends BaseFlowsTest {
 
         Rule yesRule = ((RuleSet) ((ActionSet) flow.getEntry()).getDestination()).getRules().get(0);
 
-        step.setRuleResult(new RuleSet.Result(yesRule, "yes", "Yes", "yes ok", null, flow.getId()));
+        step.setRuleResult(new RuleSet.Result(yesRule, "yes", "Yes", "yes ok", null, flow.getUUID()));
         obj = (JsonObject) step.toJson();
 
         assertThat(obj, is(JsonUtils.object(
@@ -83,18 +83,18 @@ public class StepTest extends BaseFlowsTest {
                         "category", "Yes",
                         "text", "yes ok",
                         "media", null,
-                        "flow_id", 17576
+                        "flow_uuid", "73c40f19-007d-46bd-83ea-aef439de9f9c"
                 ),
                 "actions", JsonUtils.array(),
                 "errors", JsonUtils.array(),
-                "flow_id", 17576
+                "flow_uuid", "73c40f19-007d-46bd-83ea-aef439de9f9c"
         )));
 
         // test to and from with media value
         step.getActions().clear();
         step.getErrors().clear();
 
-        step.setRuleResult(new RuleSet.Result(yesRule, "yes", "Yes", null, "image/png:file://var/blah.png", flow.getId()));
+        step.setRuleResult(new RuleSet.Result(yesRule, "yes", "Yes", null, "image/png:file://var/blah.png", flow.getUUID()));
         obj = (JsonObject) step.toJson();
         assertThat(obj, is(JsonUtils.object(
                 "node", "32cf414b-35e3-4c75-8a78-d5f4de925e13",
@@ -106,11 +106,11 @@ public class StepTest extends BaseFlowsTest {
                         "category", "Yes",
                         "text", null,
                         "media", "image/png:file://var/blah.png",
-                        "flow_id", 17576
+                        "flow_uuid", "73c40f19-007d-46bd-83ea-aef439de9f9c"
                 ),
                 "actions", JsonUtils.array(),
                 "errors", JsonUtils.array(),
-                "flow_id", 17576
+                "flow_uuid", "73c40f19-007d-46bd-83ea-aef439de9f9c"
         )));
     }
 }

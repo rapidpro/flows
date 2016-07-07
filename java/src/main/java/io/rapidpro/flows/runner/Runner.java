@@ -21,7 +21,7 @@ public class Runner {
 
     protected Instant m_now;
 
-    protected Map<Integer,Flow> m_flows;
+    protected Map<String,Flow> m_flows;
 
     public Runner(Evaluator templateEvaluator, Location.Resolver locationResolver, Instant now, List<Flow> flows) {
         m_templateEvaluator = templateEvaluator;
@@ -31,7 +31,7 @@ public class Runner {
         // create a map of flow uuid to flow
         m_flows = new HashMap<>();
         for (Flow flow : flows) {
-            m_flows.put(flow.getMetadata().get("id").getAsInt(), flow);
+            m_flows.put(flow.getUUID(), flow);
         }
     }
 
@@ -43,9 +43,9 @@ public class Runner {
      * @param flowId the id of the flow to start
      * @return the run state
      */
-    public RunState start(Org org, List<Field> fields, Contact contact, int flowId) throws FlowRunException {
+    public RunState start(Org org, List<Field> fields, Contact contact, String flowUUID) throws FlowRunException {
         RunState run = new RunState(org, fields, contact, m_flows);
-        run.setActiveFlow(flowId);
+        run.setActiveFlow(flowUUID);
         return resume(run, null);
     }
 
@@ -58,8 +58,8 @@ public class Runner {
      * @return the run state
      */
     public RunState start(Org org, List<Field> fields, Contact contact, Flow flow) throws FlowRunException {
-        m_flows.put(flow.getId(), flow);
-        return start(org, fields, contact, flow.getId());
+        m_flows.put(flow.getUUID(), flow);
+        return start(org, fields, contact, flow.getUUID());
     }
 
     /**
@@ -119,7 +119,7 @@ public class Runner {
             if (currentNode instanceof RuleSet) {
                 RuleSet ruleset = (RuleSet) currentNode;
                 if (resumeStep == null && ruleset.isSubflow() && (lastStep == null || !ruleset.getUuid().equals(lastStep.getNode().getUuid()))) {
-                    run.enterSubflow(step, ruleset.getSubflowId());
+                    run.enterSubflow(step, ruleset.getSubflowUUID());
                     currentNode = run.getFlow().getEntry();
                 }
             }

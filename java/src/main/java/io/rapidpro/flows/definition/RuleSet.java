@@ -66,12 +66,12 @@ public class RuleSet extends Flow.Node {
     /**
      * Get the id for our subflow if we have one
      */
-    public int getSubflowId() {
+    public String getSubflowUUID() {
         Object flow = m_config.get("flow");
         if (flow != null) {
-            return ((Double) ((Map)flow).get("id")).intValue();
+            return ((Map)flow).get("uuid").toString();
         }
-        return 0;
+        return null;
     }
 
     /**
@@ -119,7 +119,7 @@ public class RuleSet extends Flow.Node {
         String category = rule.getCategory().getLocalized(Collections.singletonList(run.getFlow().getBaseLanguage()), "");
 
         String valueAsStr = Conversions.toString(testResult.getValue(), context);
-        Result result = new Result(rule, valueAsStr, category, input.getValueAsText(context), input.getMedia(), step.getFlow().getId());
+        Result result = new Result(rule, valueAsStr, category, input.getValueAsText(context), input.getMedia(), step.getFlow().getUUID());
         step.setRuleResult(result);
 
         run.updateValue(this, result, input.getTime());
@@ -209,28 +209,28 @@ public class RuleSet extends Flow.Node {
 
         protected String m_media;
 
-        protected int m_flowId;
+        protected String m_flowUUID;
 
-        public Result(Rule rule, String value, String category, String text, String media, int flowId) {
+        public Result(Rule rule, String value, String category, String text, String media, String flowUUID) {
             m_rule = rule;
             m_value = value;
             m_category = category;
             m_text = text;
             m_media = media;
-            m_flowId = flowId;
+            m_flowUUID = flowUUID;
         }
 
         public static Result fromJson(JsonElement elm, Flow.DeserializationContext context) {
             JsonObject obj = elm.getAsJsonObject();
-            int flowId = JsonUtils.getAsInteger(obj, "flow_id");
-            Flow flow = context.getFlow(flowId);
+            String flowUUID = JsonUtils.getAsString(obj, "flow_uuid");
+            Flow flow = context.getFlow(flowUUID);
             return new Result(
                     (Rule) flow.getElementByUuid(obj.get("uuid").getAsString()),
                     JsonUtils.getAsString(obj, "value"),
                     JsonUtils.getAsString(obj, "category"),
                     JsonUtils.getAsString(obj, "text"),
                     JsonUtils.getAsString(obj, "media"),
-                    flowId
+                    flowUUID
             );
         }
 
@@ -242,7 +242,7 @@ public class RuleSet extends Flow.Node {
                     "category", m_category,
                     "text", m_text,
                     "media", m_media,
-                    "flow_id", m_flowId
+                    "flow_uuid", m_flowUUID
             );
         }
 

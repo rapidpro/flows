@@ -60,7 +60,7 @@ public class SubflowTest extends BaseFlowsTest {
     public void testSubflow() throws Exception {
 
         // start in the parent run
-        RunState run = m_runner.start(m_org, m_fields, m_contact, 35636);
+        RunState run = m_runner.start(m_org, m_fields, m_contact, "7c1dee9b-af4c-407b-a269-5553e59149e1");
 
         // starting the flow should get us our initial prompt
         assertThat(getMessages(run).size(), is(1));

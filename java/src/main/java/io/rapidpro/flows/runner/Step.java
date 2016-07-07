@@ -53,7 +53,7 @@ public class Step implements Jsonizable {
     public static Step fromJson(JsonElement elm, Flow.DeserializationContext context) {
         JsonObject obj = elm.getAsJsonObject();
 
-        Flow flow = context.getFlow(obj.get("flow_id").getAsInt());
+        Flow flow = context.getFlow(obj.get("flow_uuid").getAsString());
         return new Step(flow,
                 (Flow.Node) flow.getElementByUuid(obj.get("node").getAsString()),
                 ExpressionUtils.parseJsonDate(JsonUtils.getAsString(obj, "arrived_on")),
@@ -73,7 +73,7 @@ public class Step implements Jsonizable {
                 "rule", m_ruleResult != null ? m_ruleResult.toJson() : null,
                 "actions", JsonUtils.toJsonArray(m_actions),
                 "errors", JsonUtils.toJsonArray(m_errors),
-                "flow_id", m_flow.getId()
+                "flow_uuid", m_flow.getUUID()
         );
     }
 
