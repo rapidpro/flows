@@ -93,8 +93,8 @@ class Flow(object):
 
         return flow
 
-    def get_id(self):
-        return self.metadata.get('id', None)
+    def get_uuid(self):
+        return self.metadata.get('uuid', None)
 
     class DeserializationContext(object):
         """
@@ -107,8 +107,8 @@ class Flow(object):
         def needs_destination(self, start, destination_uuid):
             self.destinations_to_set[start] = destination_uuid
 
-        def get_flow(self, flow_id):
-            return self.flow_dict[flow_id]
+        def get_flow(self, flow_uuid):
+            return self.flow_dict[flow_uuid]
 
     class Element(object):
         """
@@ -273,8 +273,8 @@ class RuleSet(Flow.Node):
     def is_subflow(self):
         return self.ruleset_type == RuleSet.Type.SUBFLOW
 
-    def get_subflow_id(self):
-        return self.config.get('flow', {}).get('id', None)
+    def get_subflow_uuid(self):
+        return self.config.get('flow', {}).get('uuid', None)
 
     class Result(object):
         """
@@ -290,7 +290,7 @@ class RuleSet(Flow.Node):
 
         @classmethod
         def from_json(cls, json_obj, context):
-            flow = context.get_flow(json_obj['flow_id'])
+            flow = context.get_flow(json_obj['flow_uuid'])
             return cls(flow,
                        flow.get_element_by_uuid(json_obj['uuid']),
                        json_obj['value'],
@@ -300,7 +300,7 @@ class RuleSet(Flow.Node):
 
         def to_json(self):
             return {
-                'flow_id': self.flow.get_id(),
+                'flow_uuid': self.flow.get_uuid(),
                 'uuid': self.rule.uuid,
                 'value': self.value,
                 'category': self.category,

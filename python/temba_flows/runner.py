@@ -396,7 +396,7 @@ class Step(object):
     @classmethod
     def from_json(cls, json_obj, context):
 
-        flow = context.get_flow(json_obj['flow_id'])
+        flow = context.get_flow(json_obj['flow_uuid'])
         return cls(flow,
                    flow.get_element_by_uuid(json_obj['node']),
                    parse_json_date(json_obj['arrived_on']),
@@ -413,7 +413,7 @@ class Step(object):
             'rule': self.rule_result.to_json() if self.rule_result else None,
             'actions': [a.to_json() for a in self.actions],
             'errors': self.errors,
-            'flow_id': self.flow.get_id()
+            'flow_uuid': self.flow.get_uuid()
         }
 
     def get_flow(self):
@@ -571,10 +571,10 @@ class RunState(object):
 
         return context
 
-    def enter_subflow(self, current_step, flow_id):
+    def enter_subflow(self, current_step, flow_uuid):
         self.level += 1
         self.suspended_steps.append(current_step)
-        self.set_active_flow(flow_id)
+        self.set_active_flow(flow_uuid)
         self.get_values().clear()
 
     def exit_subflow(self):
@@ -582,13 +582,13 @@ class RunState(object):
         self.active_flows.pop()
         return self.suspended_steps[-1]
 
-    def set_active_flow(self, flow_id):
-        self.active_flows.append(flow_id)
+    def set_active_flow(self, flow_uuid):
+        self.active_flows.append(flow_uuid)
 
     def get_flow(self):
-        return self.flow_dict[self.get_active_flow_id()]
+        return self.flow_dict[self.get_active_flow_uuid()]
 
-    def get_active_flow_id(self):
+    def get_active_flow_uuid(self):
         return self.active_flows[self.level]
 
     def get_values(self):
@@ -670,11 +670,11 @@ class Runner(object):
 
         # create a map of flows we are going to run with
         if flow_list:
-            self.flow_dict = {flow.get_id() : flow for flow in flow_list}
+            self.flow_dict = {flow.get_uuid(): flow for flow in flow_list}
         else:
             self.flow_dict = {}
 
-    def start(self, org, fields, contact, flow_id):
+    def start(self, org, fields, contact, flow_uuid):
         """
         Starts a new run
         :param org: the org
@@ -685,7 +685,7 @@ class Runner(object):
         """
 
         run = RunState(org, fields, contact, self.flow_dict)
-        run.set_active_flow(flow_id)
+        run.set_active_flow(flow_uuid)
         return self.resume(run, None)
 
     def resume(self, run, input):
@@ -728,7 +728,7 @@ class Runner(object):
             # see if we should dive into a subflow
             if isinstance(current_node, RuleSet):
                 if resume_step is None and current_node.is_subflow() and (current_node.uuid != last_step.node.uuid):
-                    run.enter_subflow(step, current_node.get_subflow_id());
+                    run.enter_subflow(step, current_node.get_subflow_uuid())
                     current_node = run.get_flow().entry;
 
             resume_step = None

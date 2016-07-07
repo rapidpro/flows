@@ -91,7 +91,7 @@ class ActionsTest(BaseFlowsTest):
         self.deserialization_context = Flow.DeserializationContext(flow)
 
         self.runner = Runner([flow], location_resolver=BaseFlowsTest.TestLocationResolver())
-        self.run = self.runner.start(self.org, self.fields, self.contact, flow.get_id())
+        self.run = self.runner.start(self.org, self.fields, self.contact, flow.get_uuid())
         self.context = self.run.build_context(self.runner, None)
 
     def test_reply_action(self):
@@ -302,7 +302,7 @@ class ContactTest(BaseFlowsTest):
 
         flow = Flow.from_json(json.loads(self.read_resource("test_flows/mushrooms.json")))
         self.runner = Runner([flow], location_resolver=BaseFlowsTest.TestLocationResolver())
-        self.run = self.runner.start(self.org, self.fields, self.contact, flow.get_id())
+        self.run = self.runner.start(self.org, self.fields, self.contact, flow.get_uuid())
         self.context = self.run.build_context(self.runner, None)
 
     def test_to_and_from_json(self):
@@ -475,7 +475,7 @@ class FlowTest(BaseFlowsTest):
         runner = Runner(flows, now=datetime.datetime(2015, 10, 15, 7, 48, 30, 123456, pytz.UTC))
 
         # and start our parent flow
-        run = runner.start(self.org, [], self.contact, flows[0].get_id())
+        run = runner.start(self.org, [], self.contact, flows[0].get_uuid())
 
         # starting the flow should get us our initial prompt
         self.assertEqual(1, len(get_messages(run)))
@@ -607,7 +607,7 @@ class InteractionTest(BaseFlowsTest):
         run = None
         while True:
             if not run:
-                run = runner.start(test.org, test.fields_initial, test.contact_initial, flow.get_id())
+                run = runner.start(test.org, test.fields_initial, test.contact_initial, flow.get_uuid())
             else:
                 message = test.messages.pop(0)
                 self.assertEqual("input", message.type)
@@ -684,7 +684,7 @@ class InputTest(BaseFlowsTest):
 
         flow = Flow.from_json(json.loads(self.read_resource("test_flows/mushrooms.json")))
         self.runner = Runner([flow], location_resolver=BaseFlowsTest.TestLocationResolver())
-        self.run = self.runner.start(self.org, self.fields, self.contact, flow.get_id())
+        self.run = self.runner.start(self.org, self.fields, self.contact, flow.get_uuid())
         self.context = self.run.build_context(self.runner, None)
 
     def test_build_context(self):
@@ -768,7 +768,7 @@ class RunnerTest(BaseFlowsTest):
     def test_start_and_resume_mushrooms(self):
         flow = Flow.from_json(json.loads(self.read_resource("test_flows/mushrooms.json")))
 
-        run = self.runner.start(self.org, self.fields, self.contact, flow.get_id())
+        run = self.runner.start(self.org, self.fields, self.contact, flow.get_uuid())
 
         self.assertEqual(run.org.primary_language, "eng")
         self.assertEqual(run.org.timezone, pytz.timezone("Africa/Kigali"))
@@ -874,7 +874,7 @@ class RunnerTest(BaseFlowsTest):
 
         jean = Contact("1234-1234", "Jean D'Amour", [ContactUrn.from_string("tel:+260964153686")], OrderedSet(), {}, "fre")
 
-        run = self.runner.start(self.org, self.fields, jean, flow.get_id())
+        run = self.runner.start(self.org, self.fields, jean, flow.get_uuid())
 
         self.assertEqual(run.contact.language, "fre")
         self.assertEqual(len(run.steps), 2)
@@ -912,7 +912,7 @@ class RunnerTest(BaseFlowsTest):
 
     def test_start_and_resume_greatwall(self):
         flow = Flow.from_json(json.loads(self.read_resource("test_flows/greatwall.json")))
-        run = self.runner.start(self.org, self.fields, self.contact, flow.get_id())
+        run = self.runner.start(self.org, self.fields, self.contact, flow.get_uuid())
 
         self.assertEqual(run.steps[0].node.uuid, "8dbb7e1a-43d6-4c5b-a99d-fe3ee8923b65")
         self.assertEqual(len(run.steps[0].actions), 1)
@@ -955,7 +955,7 @@ class RunnerTest(BaseFlowsTest):
     def test_start_and_resume_media(self):
         flow = Flow.from_json(json.loads(self.read_resource("test_flows/media.json")))
 
-        run = self.runner.start(self.org, self.fields, self.contact, flow.get_id())
+        run = self.runner.start(self.org, self.fields, self.contact, flow.get_uuid())
 
         self.assertEqual(run.steps[0].node.uuid, "ede3844f-9469-49a6-a419-5cdd3e5f99df")
         self.assertEqual(len(run.steps[0].actions), 1)
@@ -1016,14 +1016,14 @@ class RunnerTest(BaseFlowsTest):
     def test_start_with_empty_flow(self):
         flow = Flow.from_json(json.loads(self.read_resource("test_flows/empty.json")))
         runner = Runner([flow], location_resolver=BaseFlowsTest.TestLocationResolver())
-        self.assertRaises(FlowRunException, runner.start, self.org, self.fields, self.contact, flow.get_id())
+        self.assertRaises(FlowRunException, runner.start, self.org, self.fields, self.contact, flow.get_uuid())
 
     def test_update_contact_field(self):
         self.fields.append(Field("district", "District", Field.ValueType.DISTRICT))
 
         flow = Flow.from_json(json.loads(self.read_resource("test_flows/mushrooms.json")))
         runner = Runner([flow], location_resolver=BaseFlowsTest.TestLocationResolver())
-        run = runner.start(self.org, self.fields, self.contact, flow.get_id())
+        run = runner.start(self.org, self.fields, self.contact, flow.get_uuid())
 
         runner.update_contact_field(run, "district", "Gasabo")
 
@@ -1041,7 +1041,7 @@ class RunnerTest(BaseFlowsTest):
 
         flow = Flow.from_json(json.loads(self.read_resource("test_flows/mushrooms.json")))
         runner = Runner([flow], location_resolver=BaseFlowsTest.TestLocationResolver())
-        run = runner.start(self.org, self.fields, self.contact, flow.get_id())
+        run = runner.start(self.org, self.fields, self.contact, flow.get_uuid())
 
         run.get_or_create_field("state", "State", Field.ValueType.STATE)
         run.get_or_create_field("district", "District", Field.ValueType.DISTRICT)
@@ -1081,14 +1081,14 @@ class RunStateTest(BaseFlowsTest):
     def test_to_and_from_json(self):
         flow = Flow.from_json(json.loads(self.read_resource("test_flows/mushrooms.json")))
         runner = Runner([flow])
-        run = runner.start(self.org, self.fields, self.contact, flow.get_id())
+        run = runner.start(self.org, self.fields, self.contact, flow.get_uuid())
 
         # send our first message through so we have references to rules
         runner.resume(run, Input("Yes"))
 
         # export to json and re-import
         json_str = json.dumps(run.to_json())
-        restored = RunState.from_json(json.loads(json_str), {flow.get_id(): flow})
+        restored = RunState.from_json(json.loads(json_str), {flow.get_uuid(): flow})
 
         # json should be the same
         self.assertEqual(json.dumps(restored.to_json()), json_str)
@@ -1098,7 +1098,7 @@ class StepTest(BaseFlowsTest):
 
     def test_to_and_from_json(self):
         flow = Flow.from_json(json.loads(self.read_resource("test_flows/mushrooms.json")))
-        deserialization_context = Flow.DeserializationContext({flow.get_id(): flow})
+        deserialization_context = Flow.DeserializationContext({flow.get_uuid(): flow})
         arrived_on = datetime.datetime(2015, 8, 25, 11, 59, 30, 88000, pytz.UTC)
 
         step = Step(flow, flow.entry, arrived_on)
@@ -1111,7 +1111,7 @@ class StepTest(BaseFlowsTest):
                                     'rule': None,
                                     'actions': [],
                                     'errors': [],
-                                    'flow_id': 17576})
+                                    'flow_uuid': '73c40f19-007d-46bd-83ea-aef439de9f9c'})
 
         step.add_action_result(Action.Result.performed(ReplyAction(TranslatableText("Hi Joe"))))
         json_obj = step.to_json()
@@ -1122,7 +1122,7 @@ class StepTest(BaseFlowsTest):
                                     'rule': None,
                                     'actions': [{'type': "reply", 'msg': "Hi Joe"}],
                                     'errors': [],
-                                    'flow_id': 17576})
+                                    'flow_uuid': '73c40f19-007d-46bd-83ea-aef439de9f9c'})
 
         step.add_action_result(Action.Result.performed(None, ["This is an error", "This too"]))
         json_obj = step.to_json()
@@ -1133,7 +1133,7 @@ class StepTest(BaseFlowsTest):
                                     'rule': None,
                                     'actions': [{'type': "reply", 'msg': "Hi Joe"}],
                                     'errors': ["This is an error", "This too"],
-                                    'flow_id': 17576})
+                                    'flow_uuid': '73c40f19-007d-46bd-83ea-aef439de9f9c'})
 
         step = Step.from_json(json_obj, deserialization_context)
 
@@ -1156,7 +1156,7 @@ class StepTest(BaseFlowsTest):
                                     'arrived_on': "2015-08-25T11:59:30.088Z",
                                     'left_on': None,
                                     'rule': {
-                                        'flow_id': 17576,
+                                        'flow_uuid': '73c40f19-007d-46bd-83ea-aef439de9f9c',
                                         'uuid': "a53e3607-ac87-4bee-ab95-30fd4ad8a837",
                                         "value": "yes",
                                         "media": None,
@@ -1164,7 +1164,7 @@ class StepTest(BaseFlowsTest):
                                         "text": "yes ok"},
                                     'actions': [],
                                     'errors': [],
-                                    'flow_id': 17576})
+                                    'flow_uuid': '73c40f19-007d-46bd-83ea-aef439de9f9c'})
 
         step = Step.from_json(json_obj, deserialization_context)
 
@@ -1188,7 +1188,7 @@ class TestsTest(BaseFlowsTest):
         self.deserialization_context = Flow.DeserializationContext(flows)
 
         self.runner = Runner(flows, location_resolver=BaseFlowsTest.TestLocationResolver())
-        self.run = self.runner.start(self.org, self.fields, self.contact, flow.get_id())
+        self.run = self.runner.start(self.org, self.fields, self.contact, flow.get_uuid())
         self.context = self.run.build_context(self.runner, None)
 
     def assertTest(self, test, input, expected_matched, expected_value):
