@@ -238,7 +238,6 @@ public class Flow {
     }
 
     public String getUUID() {
-        System.out.println(m_metadata.toString());
         return m_metadata.get("uuid").getAsString();
     }
 
