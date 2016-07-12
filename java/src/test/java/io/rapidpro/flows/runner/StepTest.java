@@ -70,7 +70,7 @@ public class StepTest extends BaseFlowsTest {
 
         Rule yesRule = ((RuleSet) ((ActionSet) flow.getEntry()).getDestination()).getRules().get(0);
 
-        step.setRuleResult(new RuleSet.Result(yesRule, "yes", "Yes", "yes ok", null, flow.getUUID()));
+        step.setRuleResult(new RuleSet.Result(yesRule, "yes", "Yes", "yes ok", null, flow.getUuid()));
         obj = (JsonObject) step.toJson();
 
         assertThat(obj, is(JsonUtils.object(
@@ -94,7 +94,7 @@ public class StepTest extends BaseFlowsTest {
         step.getActions().clear();
         step.getErrors().clear();
 
-        step.setRuleResult(new RuleSet.Result(yesRule, "yes", "Yes", null, "image/png:file://var/blah.png", flow.getUUID()));
+        step.setRuleResult(new RuleSet.Result(yesRule, "yes", "Yes", null, "image/png:file://var/blah.png", flow.getUuid()));
         obj = (JsonObject) step.toJson();
         assertThat(obj, is(JsonUtils.object(
                 "node", "32cf414b-35e3-4c75-8a78-d5f4de925e13",

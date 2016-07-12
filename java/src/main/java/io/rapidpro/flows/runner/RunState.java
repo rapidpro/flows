@@ -54,7 +54,7 @@ public class RunState implements Jsonizable {
 
     protected Map<String,Flow> m_flows;
 
-    protected List<String> m_activeFlowUUIDs;
+    protected List<String> m_activeFlowUuids;
 
     protected List<Step> m_suspendedSteps;
 
@@ -76,7 +76,7 @@ public class RunState implements Jsonizable {
         this.m_state = State.IN_PROGRESS;
         this.m_flows = flows;
         this.m_level = 0;
-        this.m_activeFlowUUIDs = new ArrayList<>();
+        this.m_activeFlowUuids = new ArrayList<>();
         this.m_suspendedSteps = new ArrayList<>();
 
         // our current level of values
@@ -86,7 +86,7 @@ public class RunState implements Jsonizable {
 
     public static Map<String,Flow> buildFlowMap(Flow flow) {
         Map<String,Flow> flows = new HashMap<>();
-        flows.put(flow.getUUID(), flow);
+        flows.put(flow.getUuid(), flow);
         return flows;
     }
 
@@ -114,7 +114,7 @@ public class RunState implements Jsonizable {
         run.m_state = State.valueOf(obj.get("state").getAsString().toUpperCase());
         run.m_level = obj.get("level").getAsInt();
         run.m_suspendedSteps = JsonUtils.fromJsonArray(obj.get("suspended_steps").getAsJsonArray(), context, Step.class);
-        run.m_activeFlowUUIDs = JsonUtils.fromJsonArray(obj.get("active_flows").getAsJsonArray(), null, String.class);
+        run.m_activeFlowUuids = JsonUtils.fromJsonArray(obj.get("active_flows").getAsJsonArray(), null, String.class);
 
         return run;
     }
@@ -134,7 +134,7 @@ public class RunState implements Jsonizable {
                 "values", toJsonObjectArray(m_values),
                 "extra", JsonUtils.toJsonObject(m_extra),
                 "state", m_state.name().toLowerCase(),
-                "active_flows", JsonUtils.toJsonArray(m_activeFlowUUIDs),
+                "active_flows", JsonUtils.toJsonArray(m_activeFlowUuids),
                 "suspended_steps", JsonUtils.toJsonArray(m_suspendedSteps),
                 "level", m_level
         );
@@ -161,10 +161,10 @@ public class RunState implements Jsonizable {
 
     /**
      * Sets the active flow by pushing on to our list of flows
-     * @param activeFlowUUID
+     * @param activeFlowUuid
      */
-    public void setActiveFlow(String activeFlowUUID) {
-        this.m_activeFlowUUIDs.add(activeFlowUUID);
+    public void setActiveFlow(String activeFlowUuid) {
+        this.m_activeFlowUuids.add(activeFlowUuid);
     }
 
     /**
@@ -231,12 +231,12 @@ public class RunState implements Jsonizable {
      * Enters a subflow. Suspends the current step and pushes the provided
      * flow on to our active flow list.
      * @param currentStep the step to suspend until completion of the subflow
-     * @param flowUUID the flow start
+     * @param flowUuid the flow start
      */
-    public void enterSubflow(Step currentStep, String flowUUID) {
+    public void enterSubflow(Step currentStep, String flowUuid) {
         m_level++;
         m_suspendedSteps.add(currentStep);
-        setActiveFlow(flowUUID);
+        setActiveFlow(flowUuid);
 
         // wipe any existing values at our new level
         getValues().clear();
@@ -249,7 +249,7 @@ public class RunState implements Jsonizable {
      */
     public Step exitSubflow() {
         m_level--;
-        m_activeFlowUUIDs.remove(m_activeFlowUUIDs.size() - 1);
+        m_activeFlowUuids.remove(m_activeFlowUuids.size() - 1);
         return m_suspendedSteps.remove(m_suspendedSteps.size() - 1);
     }
 
@@ -323,11 +323,11 @@ public class RunState implements Jsonizable {
     }
 
     public Flow getFlow() {
-        return m_flows.get(getActiveFlowUUID());
+        return m_flows.get(getActiveFlowUuid());
     }
 
-    public String getActiveFlowUUID() {
-        return m_activeFlowUUIDs.get(m_activeFlowUUIDs.size() - 1);
+    public String getActiveFlowUuid() {
+        return m_activeFlowUuids.get(m_activeFlowUuids.size() - 1);
     }
 
     public Instant getStarted() {
@@ -345,7 +345,7 @@ public class RunState implements Jsonizable {
     public List<Step> getCompletedSteps() {
         List<Step> completed = new ArrayList<>();
         for (Step step : m_steps) {
-            if (step.isCompleted() || m_state == State.COMPLETED) {
+            if (step.isCompleted()) {
                 completed.add(step);
             }
         }

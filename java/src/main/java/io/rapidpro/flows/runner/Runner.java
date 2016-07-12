@@ -31,7 +31,7 @@ public class Runner {
         // create a map of flow uuid to flow
         m_flows = new HashMap<>();
         for (Flow flow : flows) {
-            m_flows.put(flow.getUUID(), flow);
+            m_flows.put(flow.getUuid(), flow);
         }
     }
 
@@ -40,12 +40,12 @@ public class Runner {
      * @param org the org
      * @param fields the contact fields
      * @param contact the contact
-     * @param flowId the id of the flow to start
+     * @param flowUuid the id of the flow to start
      * @return the run state
      */
-    public RunState start(Org org, List<Field> fields, Contact contact, String flowUUID) throws FlowRunException {
+    public RunState start(Org org, List<Field> fields, Contact contact, String flowUuid) throws FlowRunException {
         RunState run = new RunState(org, fields, contact, m_flows);
-        run.setActiveFlow(flowUUID);
+        run.setActiveFlow(flowUuid);
         return resume(run, null);
     }
 
@@ -58,8 +58,8 @@ public class Runner {
      * @return the run state
      */
     public RunState start(Org org, List<Field> fields, Contact contact, Flow flow) throws FlowRunException {
-        m_flows.put(flow.getUUID(), flow);
-        return start(org, fields, contact, flow.getUUID());
+        m_flows.put(flow.getUuid(), flow);
+        return start(org, fields, contact, flow.getUuid());
     }
 
     /**
@@ -119,8 +119,13 @@ public class Runner {
             if (currentNode instanceof RuleSet) {
                 RuleSet ruleset = (RuleSet) currentNode;
                 if (resumeStep == null && ruleset.isSubflow() && (lastStep == null || !ruleset.getUuid().equals(lastStep.getNode().getUuid()))) {
-                    run.enterSubflow(step, ruleset.getSubflowUUID());
+                    run.enterSubflow(step, ruleset.getSubflowUuid());
                     currentNode = run.getFlow().getEntry();
+
+                    // create our new step accordingly
+                    System.out.println("New step for subflow: " + run.getFlow().getMetadata().get("name"));
+                    step = new Step(run.getFlow(), currentNode, arrivedOn);
+                    run.getSteps().add(step);
                 }
             }
 
@@ -162,6 +167,8 @@ public class Runner {
             }
             // if not then we've completed this flow
             else {
+
+                step.setTerminal(true);
 
                 // if its at the lowest level, then we are done
                 if (run.m_level == 0) {

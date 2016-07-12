@@ -24,6 +24,8 @@ public class Step implements Jsonizable {
 
     protected Instant m_leftOn;
 
+    protected boolean m_terminal;
+
     protected RuleSet.Result m_ruleResult;
 
     protected List<Action> m_actions;
@@ -73,7 +75,7 @@ public class Step implements Jsonizable {
                 "rule", m_ruleResult != null ? m_ruleResult.toJson() : null,
                 "actions", JsonUtils.toJsonArray(m_actions),
                 "errors", JsonUtils.toJsonArray(m_errors),
-                "flow_uuid", m_flow.getUUID()
+                "flow_uuid", m_flow.getUuid()
         );
     }
 
@@ -123,7 +125,12 @@ public class Step implements Jsonizable {
     }
 
     public boolean isCompleted() {
-        return m_leftOn != null;
+        return m_leftOn != null || m_terminal;
+    }
+
+
+    public void setTerminal(boolean terminal) {
+        m_terminal = terminal;
     }
 
 }

@@ -136,15 +136,15 @@ public class Flow {
 
         public DeserializationContext(Flow flow) {
             m_flows = new HashMap<>();
-            m_flows.put(flow.getUUID(), flow);
+            m_flows.put(flow.getUuid(), flow);
         }
 
         public void needsDestination(ConnectionStart start, String destinationUuid) {
             m_destinationsToSet.put(start, destinationUuid);
         }
 
-        public Flow getFlow(String flowUUID) {
-            return m_flows.get(flowUUID);
+        public Flow getFlow(String flowUuid) {
+            return m_flows.get(flowUuid);
         }
     }
 
@@ -237,7 +237,7 @@ public class Flow {
         return m_metadata;
     }
 
-    public String getUUID() {
+    public String getUuid() {
         return m_metadata.get("uuid").getAsString();
     }
 
