@@ -120,7 +120,7 @@ public class RuleSet extends Flow.Node {
 
         String valueAsStr = Conversions.toString(testResult.getValue(), context);
 
-        Result result = new Result(rule, valueAsStr, category, input.getValueAsText(context), input.getMedia(), step.getFlow().getUuid());
+        Result result = new Result(rule, valueAsStr, category, input.getValueAsText(context), input.getMedia(), step.getFlow());
         step.setRuleResult(result);
 
         run.updateValue(this, result, input.getTime());
@@ -210,15 +210,15 @@ public class RuleSet extends Flow.Node {
 
         protected String m_media;
 
-        protected String m_flowUuid;
+        protected Flow m_flow;
 
-        public Result(Rule rule, String value, String category, String text, String media, String flowUuid) {
+        public Result(Rule rule, String value, String category, String text, String media, Flow flow) {
             m_rule = rule;
             m_value = value;
             m_category = category;
             m_text = text;
             m_media = media;
-            m_flowUuid = flowUuid;
+            m_flow = flow;
         }
 
         public static Result fromJson(JsonElement elm, Flow.DeserializationContext context) {
@@ -231,7 +231,7 @@ public class RuleSet extends Flow.Node {
                     JsonUtils.getAsString(obj, "category"),
                     JsonUtils.getAsString(obj, "text"),
                     JsonUtils.getAsString(obj, "media"),
-                    flowUuid
+                    flow
             );
         }
 
@@ -243,7 +243,7 @@ public class RuleSet extends Flow.Node {
                     "category", m_category,
                     "text", m_text,
                     "media", m_media,
-                    "flow_uuid", m_flowUuid
+                    "flow_uuid", m_flow.getUuid()
             );
         }
 
@@ -272,10 +272,6 @@ public class RuleSet extends Flow.Node {
 
         public String getMedia() {
             return m_media;
-        }
-
-        public String getFlowUuid() {
-            return m_flowUuid;
         }
     }
 }

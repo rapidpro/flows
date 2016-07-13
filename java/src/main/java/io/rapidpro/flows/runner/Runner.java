@@ -123,7 +123,6 @@ public class Runner {
                     currentNode = run.getFlow().getEntry();
 
                     // create our new step accordingly
-                    System.out.println("New step for subflow: " + run.getFlow().getMetadata().get("name"));
                     step = new Step(run.getFlow(), currentNode, arrivedOn);
                     run.getSteps().add(step);
                 }
