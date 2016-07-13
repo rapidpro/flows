@@ -10,7 +10,7 @@ import io.rapidpro.flows.runner.Runner;
 import io.rapidpro.flows.utils.JsonUtils;
 
 /**
- * Test that evaulates the exit of a subflow. In our case, we always
+ * Test that evaulates the exit of a subflow.
  */
 public class SubflowTest extends Test {
 

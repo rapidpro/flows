@@ -465,7 +465,6 @@ class FlowTest(BaseFlowsTest):
                         msgs.append(action.msg)
             return msgs
 
-
         # read in our subflow import and create flow defs
         subflow_import = json.loads(self.read_resource('test_flows/subflow.json'))
         flows = []
