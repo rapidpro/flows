@@ -41,7 +41,6 @@ public class ReplyAction extends MessageAction {
     @Override
     protected Result executeWithMessage(Runner runner, EvaluationContext context, String message) {
         EvaluatedTemplate template = runner.substituteVariables(message, context);
-
         Action performed = new ReplyAction(new TranslatableText(template.getOutput()));
         return Result.performed(performed, template.getErrors());
     }

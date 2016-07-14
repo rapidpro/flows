@@ -19,7 +19,8 @@ from .utils import normalize_number
 
 
 DEFAULT_EVALUATOR = Evaluator(expression_prefix='@',
-                              allowed_top_levels=('channel', 'contact', 'date', 'extra', 'flow', 'step'))
+                              allowed_top_levels=('channel', 'contact', 'date', 'extra',
+                                                  'flow', 'step', 'parent', 'child'))
 
 
 class Org(object):
@@ -383,7 +384,8 @@ class Step(object):
     """
     A step taken by a contact or surveyor in a flow run
     """
-    def __init__(self, node, arrived_on, left_on=None, rule_result=None, actions=None, errors=None):
+    def __init__(self, flow, node, arrived_on, left_on=None, rule_result=None, actions=None, errors=None):
+        self.flow = flow
         self.node = node
         self.arrived_on = arrived_on
         self.left_on = left_on
@@ -393,7 +395,10 @@ class Step(object):
 
     @classmethod
     def from_json(cls, json_obj, context):
-        return cls(context.flow.get_element_by_uuid(json_obj['node']),
+
+        flow = context.get_flow(json_obj['flow_uuid'])
+        return cls(flow,
+                   flow.get_element_by_uuid(json_obj['node']),
                    parse_json_date(json_obj['arrived_on']),
                    parse_json_date(json_obj['left_on']),
                    RuleSet.Result.from_json(json_obj['rule'], context) if json_obj.get('rule') else None,
@@ -407,8 +412,12 @@ class Step(object):
             'left_on': format_json_date(self.left_on),
             'rule': self.rule_result.to_json() if self.rule_result else None,
             'actions': [a.to_json() for a in self.actions],
-            'errors': self.errors
+            'errors': self.errors,
+            'flow_uuid': self.flow.get_uuid()
         }
+
+    def get_flow(self):
+        return self.flow
 
     def add_action_result(self, action_result):
         if action_result.performed:
@@ -465,37 +474,46 @@ class RunState(object):
         COMPLETED = 2
         WAIT_MESSAGE = 3
 
-    def __init__(self, org, fields, contact, flow):
+    def __init__(self, org, fields, contact, flow_dict):
         self.org = org
         self.fields = {f.key: f for f in fields}
         self.contact = contact
         self.started = datetime.datetime.now(tz=pytz.UTC)
         self.steps = []
-        self.values = {}
         self.extra = {}
         self.state = RunState.State.IN_PROGRESS
-        self.flow = flow
+        self.flow_dict = flow_dict
+        self.active_flows = []
+        self.suspended_steps = []
+        self.level = 0
+
+        # current level of values 
+        self.values = [dict()]
+
 
     @classmethod
-    def from_json(cls, json_obj, flow):
+    def from_json(cls, json_obj, flow_dict):
         """
         Restores a run state from JSON
         :param json_obj: the JSON containing a serialized run state
         :param flow: the flow the run state is for
         :return: the run state
         """
-        deserialization_context = Flow.DeserializationContext(flow)
+        deserialization_context = Flow.DeserializationContext(flow_dict)
 
         run = cls(Org.from_json(json_obj['org']),
                   [Field.from_json(f) for f in json_obj['fields']],
                   Contact.from_json(json_obj['contact']),
-                  flow)
+                  flow_dict)
 
         run.started = parse_json_date(json_obj['started'])
         run.steps = [Step.from_json(s, deserialization_context) for s in json_obj['steps']]
-        run.values = {k: Value.from_json(v) for k, v in json_obj['values'].iteritems()}
+        run.values = [{k: Value.from_json(v) for k, v in values.iteritems()} for values in json_obj['values']]
         run.extra = json_obj['extra']
         run.state = RunState.State[json_obj['state'].upper()]
+        run.level = json_obj['level']
+        run.suspended_steps = [Step.from_json(s, deserialization_context) for s in json_obj['suspended_steps']]
+        run.active_flows = json_obj['active_flows']
         return run
 
     def to_json(self):
@@ -508,9 +526,12 @@ class RunState(object):
             'contact': self.contact.to_json(),
             'started': format_json_date(self.started),
             'steps': [s.to_json() for s in self.steps],
-            'values': {k: v.to_json() for k, v in self.values.iteritems()},
+            'values': [{k: v.to_json() for k, v in values.iteritems()} for values in self.values],
             'extra': self.extra,
-            'state': self.state.name.lower()
+            'state': self.state.name.lower(),
+            'active_flows': [flow_id for flow_id in self.active_flows],
+            'suspended_steps': [s.to_json() for s in self.suspended_steps],
+            'level': self.level
         }
 
     def build_context(self, runner, input):
@@ -527,17 +548,53 @@ class RunState(object):
         context.put_variable("date", self.build_date_context(context))
         context.put_variable("contact", contact_context)
         context.put_variable("extra", self.extra)
+    
+        def build_flow_context(value_dict):
+            flow_context = {}
+            values = []
+            for key, value in value_dict.iteritems():
+                flow_context[key] = value.build_context(context)
+                values.append("%s: %s" % (key, value))
+            flow_context['*'] = "\n".join(values)
 
-        flow_context = {}
-        values = []
-        for key, value in self.values.iteritems():
-            flow_context[key] = value.build_context(context)
-            values.append("%s: %s" % (key, value))
-        flow_context['*'] = "\n".join(values)
+            return flow_context
 
-        context.put_variable("flow", flow_context)
+        context.put_variable("flow", build_flow_context(self.get_values()))
+
+        # add the flow that was one level above us
+        if self.level > 0:
+            context.put_variable("parent", build_flow_context(self.values[self.level - 1]))
+
+        # if we have a child below us, add that context in too
+        if len(self.values) > self.level + 1:
+            context.put_variable("child", build_flow_context(self.values[self.level + 1]))
 
         return context
+
+    def enter_subflow(self, current_step, flow_uuid):
+        self.level += 1
+        self.suspended_steps.append(current_step)
+        self.set_active_flow(flow_uuid)
+        self.get_values().clear()
+
+    def exit_subflow(self):
+        self.level -= 1
+        self.active_flows.pop()
+        return self.suspended_steps[-1]
+
+    def set_active_flow(self, flow_uuid):
+        self.active_flows.append(flow_uuid)
+
+    def get_flow(self):
+        return self.flow_dict[self.get_active_flow_uuid()]
+
+    def get_active_flow_uuid(self):
+        return self.active_flows[self.level]
+
+    def get_values(self):
+        if len(self.values) <= self.level:
+            self.values.append({})
+        return self.values[self.level]
 
     def update_value(self, rule_set, result, time):
         """
@@ -548,7 +605,7 @@ class RunState(object):
         :return:
         """
         key = regex.sub(r'[^a-z0-9]+', '_', rule_set.label.lower())
-        self.values[key] = Value(result.value, result.category, result.text, time)
+        self.get_values()[key] = Value(result.value, result.category, result.text, time)
 
     @staticmethod
     def build_date_context(container):
@@ -606,21 +663,29 @@ class Runner(object):
     """
     The flow runner
     """
-    def __init__(self, template_evaluator=DEFAULT_EVALUATOR, location_resolver=None, now=None):
+    def __init__(self, flow_list=None, template_evaluator=DEFAULT_EVALUATOR, location_resolver=None, now=None):
         self.template_evaluator = template_evaluator
         self.location_resolver = location_resolver
         self.now = now
 
-    def start(self, org, fields, contact, flow):
+        # create a map of flows we are going to run with
+        if flow_list:
+            self.flow_dict = {flow.get_uuid(): flow for flow in flow_list}
+        else:
+            self.flow_dict = {}
+
+    def start(self, org, fields, contact, flow_uuid):
         """
         Starts a new run
         :param org: the org
         :param fields: the contact fields
         :param contact: the contact
-        :param flow: the flow
+        :param flow_id: the id of the flow to start
         :return: the run state
         """
-        run = RunState(org, fields, contact, flow)
+
+        run = RunState(org, fields, contact, self.flow_dict)
+        run.set_active_flow(flow_uuid)
         return self.resume(run, None)
 
     def resume(self, run, input):
@@ -641,13 +706,14 @@ class Runner(object):
         if last_step:
             current_node = last_step.node  # we're resuming an existing run
         else:
-            current_node = run.flow.entry  # we're starting a new run
+            current_node = run.get_flow().entry  # we're starting a new run
             if not current_node:
                 raise FlowRunException("Flow has no entry point")
 
         # tracks nodes visited so we can detect loops
         nodes_visited = OrderedSet()
 
+        resume_step = None
         while current_node:
             # if we're resuming a previously paused step, then use its arrived on value
             if last_step and len(nodes_visited) == 0:
@@ -656,8 +722,16 @@ class Runner(object):
                 arrived_on = datetime.datetime.now(tz=pytz.UTC)
 
             # create new step for this node
-            step = Step(current_node, arrived_on)
+            step = Step(run.get_flow(), current_node, arrived_on)
             run.steps.append(step)
+
+            # see if we should dive into a subflow
+            if isinstance(current_node, RuleSet):
+                if resume_step is None and current_node.is_subflow() and (current_node.uuid != last_step.node.uuid):
+                    run.enter_subflow(step, current_node.get_subflow_uuid())
+                    current_node = run.get_flow().entry;
+
+            resume_step = None
 
             # should we pause at this node?
             if isinstance(current_node, RuleSet):
@@ -677,8 +751,15 @@ class Runner(object):
                 # if we have a next node, then record leaving this one
                 step.left_on = datetime.datetime.now(tz=pytz.UTC)
             else:
-                # if not then we've completed this flow
-                run.state = RunState.State.COMPLETED
+                # if we are at the lowest level, we are done
+                if run.level == 0:
+                    run.state = RunState.State.COMPLETED
+
+                # otherwise, go up a level
+                else:
+                    resume_step = run.exit_subflow()
+                    next_node = resume_step.node
+
 
             current_node = next_node
 

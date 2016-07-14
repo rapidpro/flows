@@ -61,6 +61,7 @@ public abstract class Test implements Jsonizable {
         s_classByType.put(HasStateTest.TYPE, HasStateTest.class);
         s_classByType.put(HasDistrictTest.TYPE, HasDistrictTest.class);
         s_classByType.put(HasWardTest.TYPE, HasWardTest.class);
+        s_classByType.put(SubflowTest.TYPE, SubflowTest.class);
     }
 
     /**

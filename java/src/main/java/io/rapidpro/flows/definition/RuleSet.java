@@ -42,7 +42,8 @@ public class RuleSet extends Flow.Node {
         FLOW_FIELD,
         FORM_FIELD,
         CONTACT_FIELD,
-        EXPRESSION
+        EXPRESSION,
+        SUBFLOW
     }
 
     protected Type m_rulesetType;
@@ -54,6 +55,24 @@ public class RuleSet extends Flow.Node {
     protected Map<String, Object> m_config;
 
     protected List<Rule> m_rules = new ArrayList<>();
+
+    /**
+     * If this rule is a subflow
+     */
+    public boolean isSubflow() {
+        return m_rulesetType.equals(Type.SUBFLOW);
+    }
+
+    /**
+     * Get the id for our subflow if we have one
+     */
+    public String getSubflowUuid() {
+        Object flow = m_config.get("flow");
+        if (flow != null) {
+            return ((Map)flow).get("uuid").toString();
+        }
+        return null;
+    }
 
     /**
      * Creates a rule set from a JSON object
@@ -97,10 +116,11 @@ public class RuleSet extends Flow.Node {
         Test.Result testResult = match.getRight();
 
         // get category in the flow base language
-        String category = rule.getCategory().getLocalized(Collections.singletonList(run.getFlow().getBaseLanguage()), "");
+        String category = rule.getCategory().getLocalized(Collections.singletonList(run.getActiveFlow().getBaseLanguage()), "");
 
         String valueAsStr = Conversions.toString(testResult.getValue(), context);
-        Result result = new Result(rule, valueAsStr, category, input.getValueAsText(context), input.getMedia());
+
+        Result result = new Result(rule, valueAsStr, category, input.getValueAsText(context), input.getMedia(), step.getFlow());
         step.setRuleResult(result);
 
         run.updateValue(this, result, input.getTime());
@@ -190,23 +210,28 @@ public class RuleSet extends Flow.Node {
 
         protected String m_media;
 
-        public Result(Rule rule, String value, String category, String text, String media) {
+        protected Flow m_flow;
+
+        public Result(Rule rule, String value, String category, String text, String media, Flow flow) {
             m_rule = rule;
             m_value = value;
             m_category = category;
             m_text = text;
             m_media = media;
+            m_flow = flow;
         }
 
         public static Result fromJson(JsonElement elm, Flow.DeserializationContext context) {
             JsonObject obj = elm.getAsJsonObject();
-
+            String flowUuid = JsonUtils.getAsString(obj, "flow_uuid");
+            Flow flow = context.getFlow(flowUuid);
             return new Result(
-                    (Rule) context.getFlow().getElementByUuid(obj.get("uuid").getAsString()),
+                    (Rule) flow.getElementByUuid(obj.get("uuid").getAsString()),
                     JsonUtils.getAsString(obj, "value"),
                     JsonUtils.getAsString(obj, "category"),
                     JsonUtils.getAsString(obj, "text"),
-                    JsonUtils.getAsString(obj, "media")
+                    JsonUtils.getAsString(obj, "media"),
+                    flow
             );
         }
 
@@ -217,7 +242,8 @@ public class RuleSet extends Flow.Node {
                     "value", m_value,
                     "category", m_category,
                     "text", m_text,
-                    "media", m_media
+                    "media", m_media,
+                    "flow_uuid", m_flow.getUuid()
             );
         }
 
@@ -248,5 +274,6 @@ public class RuleSet extends Flow.Node {
             return m_media;
         }
 
+        public Flow getFlow() { return m_flow; }
     }
 }

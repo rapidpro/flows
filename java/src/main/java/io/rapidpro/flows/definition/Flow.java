@@ -18,7 +18,7 @@ import java.util.*;
 public class Flow {
 
     // supported versions of the flow spec
-    public static Set<Integer> SPEC_VERSIONS = new HashSet<>(Arrays.asList(7, 8));
+    public static Set<Integer> SPEC_VERSIONS = new HashSet<>(Arrays.asList(7, 8, 9));
 
     public enum Type {
         FLOW("F"),
@@ -79,7 +79,7 @@ public class Flow {
         // keep an exhaustive record of all languages in our flow definition
         Set<String> languages = new HashSet<>();
 
-        DeserializationContext context = new DeserializationContext(flow);
+        DeserializationContext context = new DeserializationContext(new HashMap<String, Flow>());
 
         for (JsonElement asElem : obj.get("action_sets").getAsJsonArray()) {
             ActionSet actionSet = ActionSet.fromJson(asElem.getAsJsonObject(), context);
@@ -126,20 +126,25 @@ public class Flow {
      */
     public static class DeserializationContext {
 
-        protected Flow m_flow;
+        protected Map<String,Flow> m_flows;
 
         protected Map<ConnectionStart, String> m_destinationsToSet = new HashMap<>();
 
+        public DeserializationContext(Map<String,Flow> flows) {
+            m_flows = flows;
+        }
+
         public DeserializationContext(Flow flow) {
-            m_flow = flow;
+            m_flows = new HashMap<>();
+            m_flows.put(flow.getUuid(), flow);
         }
 
         public void needsDestination(ConnectionStart start, String destinationUuid) {
             m_destinationsToSet.put(start, destinationUuid);
         }
 
-        public Flow getFlow() {
-            return m_flow;
+        public Flow getFlow(String flowUuid) {
+            return m_flows.get(flowUuid);
         }
     }
 
@@ -230,6 +235,10 @@ public class Flow {
 
     public JsonObject getMetadata() {
         return m_metadata;
+    }
+
+    public String getUuid() {
+        return m_metadata.get("uuid").getAsString();
     }
 
     public <T extends Element> T getElementByUuid(String uuid) {

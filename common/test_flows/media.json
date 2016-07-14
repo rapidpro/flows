@@ -395,7 +395,7 @@
     "contact_creation": "login",
     "expires": 10080,
     "saved_on": "2016-04-12T15:58:45.306277Z",
-    "id": 35628,
+    "uuid": "123456e87-3466-4468-ab11-0e8d84c0e9fb",
     "revision": 137
   }
 }

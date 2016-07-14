@@ -8,10 +8,7 @@ import io.rapidpro.flows.definition.RuleSet;
 import org.apache.commons.lang3.StringUtils;
 import org.threeten.bp.Instant;
 
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Implementation of the flow runner
@@ -24,10 +21,18 @@ public class Runner {
 
     protected Instant m_now;
 
-    public Runner(Evaluator templateEvaluator, Location.Resolver locationResolver, Instant now) {
+    protected Map<String,Flow> m_flows;
+
+    public Runner(Evaluator templateEvaluator, Location.Resolver locationResolver, Instant now, List<Flow> flows) {
         m_templateEvaluator = templateEvaluator;
         m_locationResolver = locationResolver;
         m_now = now;
+
+        // create a map of flow uuid to flow
+        m_flows = new HashMap<>();
+        for (Flow flow : flows) {
+            m_flows.put(flow.getUuid(), flow);
+        }
     }
 
     /**
@@ -35,12 +40,26 @@ public class Runner {
      * @param org the org
      * @param fields the contact fields
      * @param contact the contact
-     * @param flow the flow
+     * @param flowUuid the id of the flow to start
+     * @return the run state
+     */
+    public RunState start(Org org, List<Field> fields, Contact contact, String flowUuid) throws FlowRunException {
+        RunState run = new RunState(org, fields, contact, m_flows);
+        run.setActiveFlow(m_flows.get(flowUuid));
+        return resume(run, null);
+    }
+
+    /**
+     * Starts a new run
+     * @param org the org
+     * @param fields the contact fields
+     * @param contact the contact
+     * @param flow the flow to start
      * @return the run state
      */
     public RunState start(Org org, List<Field> fields, Contact contact, Flow flow) throws FlowRunException {
-        RunState run = new RunState(org, fields, contact, flow);
-        return resume(run, null);
+        m_flows.put(flow.getUuid(), flow);
+        return start(org, fields, contact, flow.getUuid());
     }
 
     /**
@@ -64,7 +83,7 @@ public class Runner {
             currentNode = lastStep.getNode(); // we're resuming an existing run
         }
         else {
-            currentNode = run.getFlow().getEntry();  // we're starting a new run
+            currentNode = run.getActiveFlow().getEntry();  // we're starting a new run
             if (currentNode == null) {
                 throw new FlowRunException("Flow has no entry point");
             }
@@ -73,6 +92,7 @@ public class Runner {
         // tracks nodes visited so we can detect loops
         Set<Flow.Node> nodesVisited = new LinkedHashSet<>();
 
+        Step resumeStep = null;
         while (currentNode != null) {
             // if we're resuming a previously paused step, then use its arrived on value
             Instant arrivedOn;
@@ -82,15 +102,40 @@ public class Runner {
                 arrivedOn = Instant.now();
             }
 
-            // create new step for this node
-            Step step = new Step(currentNode, arrivedOn);
-            run.getSteps().add(step);
+            // create our step for the current node
+            Step step = new Step(run.getActiveFlow(), currentNode, arrivedOn);
+
+            // if we are resuming an old step, use that instead
+            if (resumeStep != null) {
+                step = resumeStep;
+                currentNode = step.getNode();
+            }
+            // otherwise add our step to our step list
+            else {
+                run.getSteps().add(step);
+            }
+
+            // see if we need to dive into a subflow
+            if (currentNode instanceof RuleSet) {
+                RuleSet ruleset = (RuleSet) currentNode;
+                if (resumeStep == null && ruleset.isSubflow() && (lastStep == null || !ruleset.getUuid().equals(lastStep.getNode().getUuid()))) {
+                    run.enterSubflow(step, ruleset.getSubflowUuid());
+                    currentNode = run.getActiveFlow().getEntry();
+
+                    // create our new step accordingly
+                    step = new Step(run.getActiveFlow(), currentNode, arrivedOn);
+                    run.getSteps().add(step);
+                }
+            }
+
+            // no longer resuming
+            resumeStep = null;
 
             // should we pause at this node?
             if (currentNode instanceof RuleSet) {
                 RuleSet ruleset = (RuleSet) currentNode;
-                if (((RuleSet) currentNode).isPause() && (input == null || input.isConsumed())) {
 
+                if (ruleset.isPause() && (input == null || input.isConsumed())) {
                     // set our waiting state appropriately
                     if (ruleset.getRuleSetType() == RuleSet.Type.WAIT_GPS) {
                         run.setState(RunState.State.WAIT_GPS);
@@ -103,7 +148,6 @@ public class Runner {
                     } else {
                         run.setState(RunState.State.WAIT_MESSAGE);
                     }
-
                     return run;
                 }
             }
@@ -116,13 +160,24 @@ public class Runner {
             }
 
             Flow.Node nextNode = currentNode.visit(this, run, step, input);
-
             if (nextNode != null) {
                 // if we have a next node, then record leaving this one
                 step.setLeftOn(Instant.now());
-            } else {
-                // if not then we've completed this flow
-                run.setState(RunState.State.COMPLETED);
+            }
+            // if not then we've completed this flow
+            else {
+
+                step.setTerminal(true);
+
+                // if its at the lowest level, then we are done
+                if (run.m_level == 0) {
+                    run.setState(RunState.State.COMPLETED);
+                }
+                // otherwise, we are going up a level
+                else {
+                    resumeStep = run.exitSubflow();
+                    nextNode = resumeStep.getNode();
+                }
             }
 
             currentNode = nextNode;

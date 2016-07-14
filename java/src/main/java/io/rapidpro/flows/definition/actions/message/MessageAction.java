@@ -38,4 +38,8 @@ public abstract class MessageAction extends Action {
     public TranslatableText getMsg() {
         return m_msg;
     }
+
+    public String toString() {
+        return m_msg.toString();
+    }
 }

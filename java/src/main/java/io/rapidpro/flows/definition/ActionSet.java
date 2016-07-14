@@ -3,6 +3,8 @@ package io.rapidpro.flows.definition;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.rapidpro.flows.definition.actions.Action;
+import io.rapidpro.flows.definition.actions.message.MessageAction;
+import io.rapidpro.flows.definition.actions.message.SendAction;
 import io.rapidpro.flows.runner.Input;
 import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.runner.Runner;

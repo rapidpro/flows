@@ -24,32 +24,40 @@ public class Step implements Jsonizable {
 
     protected Instant m_leftOn;
 
+    protected boolean m_terminal;
+
     protected RuleSet.Result m_ruleResult;
 
     protected List<Action> m_actions;
 
     protected List<String> m_errors;
 
-    public Step(Flow.Node node, Instant arrivedOn) {
+    protected Flow m_flow;
+
+    public Step(Flow flow, Flow.Node node, Instant arrivedOn) {
         m_node = node;
         m_arrivedOn = arrivedOn;
         m_actions = new ArrayList<>();
         m_errors = new ArrayList<>();
+        m_flow = flow;
     }
 
-    public Step(Flow.Node node, Instant arrivedOn, Instant leftOn, RuleSet.Result ruleResult, List<Action> actions, List<String> errors) {
+    public Step(Flow flow, Flow.Node node, Instant arrivedOn, Instant leftOn, RuleSet.Result ruleResult, List<Action> actions, List<String> errors) {
         m_node = node;
         m_arrivedOn = arrivedOn;
         m_leftOn = leftOn;
         m_ruleResult = ruleResult;
         m_actions = actions;
         m_errors = errors;
+        m_flow = flow;
     }
 
     public static Step fromJson(JsonElement elm, Flow.DeserializationContext context) {
         JsonObject obj = elm.getAsJsonObject();
-        return new Step(
-                (Flow.Node) context.getFlow().getElementByUuid(obj.get("node").getAsString()),
+
+        Flow flow = context.getFlow(obj.get("flow_uuid").getAsString());
+        return new Step(flow,
+                (Flow.Node) flow.getElementByUuid(obj.get("node").getAsString()),
                 ExpressionUtils.parseJsonDate(JsonUtils.getAsString(obj, "arrived_on")),
                 ExpressionUtils.parseJsonDate(JsonUtils.getAsString(obj, "left_on")),
                 JsonUtils.fromJson(obj.get("rule"), context, RuleSet.Result.class),
@@ -66,7 +74,8 @@ public class Step implements Jsonizable {
                 "left_on", ExpressionUtils.formatJsonDate(m_leftOn),
                 "rule", m_ruleResult != null ? m_ruleResult.toJson() : null,
                 "actions", JsonUtils.toJsonArray(m_actions),
-                "errors", JsonUtils.toJsonArray(m_errors)
+                "errors", JsonUtils.toJsonArray(m_errors),
+                "flow_uuid", m_flow.getUuid()
         );
     }
 
@@ -107,11 +116,21 @@ public class Step implements Jsonizable {
         }
     }
 
+    public Flow getFlow() {
+        return m_flow;
+    }
+
     public List<String> getErrors() {
         return m_errors;
     }
 
     public boolean isCompleted() {
-        return m_leftOn != null;
+        return m_leftOn != null || m_terminal;
     }
+
+
+    public void setTerminal(boolean terminal) {
+        m_terminal = terminal;
+    }
+
 }
