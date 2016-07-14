@@ -273,5 +273,7 @@ public class RuleSet extends Flow.Node {
         public String getMedia() {
             return m_media;
         }
+
+        public Flow getFlow() { return m_flow; }
     }
 }
