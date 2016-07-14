@@ -45,7 +45,7 @@ public class Runner {
      */
     public RunState start(Org org, List<Field> fields, Contact contact, String flowUuid) throws FlowRunException {
         RunState run = new RunState(org, fields, contact, m_flows);
-        run.setActiveFlow(flowUuid);
+        run.setActiveFlow(m_flows.get(flowUuid));
         return resume(run, null);
     }
 
@@ -83,7 +83,7 @@ public class Runner {
             currentNode = lastStep.getNode(); // we're resuming an existing run
         }
         else {
-            currentNode = run.getFlow().getEntry();  // we're starting a new run
+            currentNode = run.getActiveFlow().getEntry();  // we're starting a new run
             if (currentNode == null) {
                 throw new FlowRunException("Flow has no entry point");
             }
@@ -103,7 +103,7 @@ public class Runner {
             }
 
             // create our step for the current node
-            Step step = new Step(run.getFlow(), currentNode, arrivedOn);
+            Step step = new Step(run.getActiveFlow(), currentNode, arrivedOn);
 
             // if we are resuming an old step, use that instead
             if (resumeStep != null) {
@@ -120,10 +120,10 @@ public class Runner {
                 RuleSet ruleset = (RuleSet) currentNode;
                 if (resumeStep == null && ruleset.isSubflow() && (lastStep == null || !ruleset.getUuid().equals(lastStep.getNode().getUuid()))) {
                     run.enterSubflow(step, ruleset.getSubflowUuid());
-                    currentNode = run.getFlow().getEntry();
+                    currentNode = run.getActiveFlow().getEntry();
 
                     // create our new step accordingly
-                    step = new Step(run.getFlow(), currentNode, arrivedOn);
+                    step = new Step(run.getActiveFlow(), currentNode, arrivedOn);
                     run.getSteps().add(step);
                 }
             }

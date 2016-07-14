@@ -54,7 +54,7 @@ public class RunState implements Jsonizable {
 
     protected Map<String,Flow> m_flows;
 
-    protected List<String> m_activeFlowUuids;
+    protected List<Flow> m_activeFlows;
 
     protected List<Step> m_suspendedSteps;
 
@@ -76,7 +76,7 @@ public class RunState implements Jsonizable {
         this.m_state = State.IN_PROGRESS;
         this.m_flows = flows;
         this.m_level = 0;
-        this.m_activeFlowUuids = new ArrayList<>();
+        this.m_activeFlows = new ArrayList<>();
         this.m_suspendedSteps = new ArrayList<>();
 
         // our current level of values
@@ -107,6 +107,13 @@ public class RunState implements Jsonizable {
                 flows
         );
 
+        // load up our active flows
+        List<String> flowUuids = JsonUtils.fromJsonArray(obj.get("active_flows").getAsJsonArray(), null, String.class);
+        List<Flow> activeFlows = new ArrayList<>();
+        for (String flowUuid : flowUuids) {
+            activeFlows.add(flows.get(flowUuid));
+        }
+
         run.m_started = ExpressionUtils.parseJsonDate(JsonUtils.getAsString(obj, "started"));
         run.m_steps = JsonUtils.fromJsonArray(obj.get("steps").getAsJsonArray(), context, Step.class);
         run.m_values = JsonUtils.fromJsonObjectArray(obj.get("values").getAsJsonArray(), null, Value.class);
@@ -114,7 +121,7 @@ public class RunState implements Jsonizable {
         run.m_state = State.valueOf(obj.get("state").getAsString().toUpperCase());
         run.m_level = obj.get("level").getAsInt();
         run.m_suspendedSteps = JsonUtils.fromJsonArray(obj.get("suspended_steps").getAsJsonArray(), context, Step.class);
-        run.m_activeFlowUuids = JsonUtils.fromJsonArray(obj.get("active_flows").getAsJsonArray(), null, String.class);
+        run.m_activeFlows = activeFlows;
 
         return run;
     }
@@ -125,6 +132,13 @@ public class RunState implements Jsonizable {
      */
     @Override
     public JsonElement toJson() {
+
+        // get a list of active flow uuids
+        List<String> flowUuids = new ArrayList<>();
+        for (Flow flow : m_activeFlows) {
+            flowUuids.add(flow.getUuid());
+        }
+
         return JsonUtils.object(
                 "org", m_org.toJson(),
                 "fields", JsonUtils.toJsonArray(m_fields),
@@ -134,7 +148,7 @@ public class RunState implements Jsonizable {
                 "values", toJsonObjectArray(m_values),
                 "extra", JsonUtils.toJsonObject(m_extra),
                 "state", m_state.name().toLowerCase(),
-                "active_flows", JsonUtils.toJsonArray(m_activeFlowUuids),
+                "active_flows", JsonUtils.toJsonArray(flowUuids),
                 "suspended_steps", JsonUtils.toJsonArray(m_suspendedSteps),
                 "level", m_level
         );
@@ -161,10 +175,10 @@ public class RunState implements Jsonizable {
 
     /**
      * Sets the active flow by pushing on to our list of flows
-     * @param activeFlowUuid
+     * @param activeFlow
      */
-    public void setActiveFlow(String activeFlowUuid) {
-        this.m_activeFlowUuids.add(activeFlowUuid);
+    public void setActiveFlow(Flow activeFlow) {
+        this.m_activeFlows.add(activeFlow);
     }
 
     /**
@@ -236,7 +250,8 @@ public class RunState implements Jsonizable {
     public void enterSubflow(Step currentStep, String flowUuid) {
         m_level++;
         m_suspendedSteps.add(currentStep);
-        setActiveFlow(flowUuid);
+
+        setActiveFlow(m_flows.get(flowUuid));
 
         // wipe any existing values at our new level
         getValues().clear();
@@ -249,7 +264,7 @@ public class RunState implements Jsonizable {
      */
     public Step exitSubflow() {
         m_level--;
-        m_activeFlowUuids.remove(m_activeFlowUuids.size() - 1);
+        m_activeFlows.remove(m_activeFlows.size() - 1);
         return m_suspendedSteps.remove(m_suspendedSteps.size() - 1);
     }
 
@@ -322,12 +337,8 @@ public class RunState implements Jsonizable {
         return m_contact;
     }
 
-    public Flow getFlow() {
-        return m_flows.get(getActiveFlowUuid());
-    }
-
-    public String getActiveFlowUuid() {
-        return m_activeFlowUuids.get(m_activeFlowUuids.size() - 1);
+    public Flow getActiveFlow() {
+        return m_activeFlows.get(m_activeFlows.size() - 1);
     }
 
     public Instant getStarted() {

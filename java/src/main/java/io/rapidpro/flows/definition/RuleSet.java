@@ -116,7 +116,7 @@ public class RuleSet extends Flow.Node {
         Test.Result testResult = match.getRight();
 
         // get category in the flow base language
-        String category = rule.getCategory().getLocalized(Collections.singletonList(run.getFlow().getBaseLanguage()), "");
+        String category = rule.getCategory().getLocalized(Collections.singletonList(run.getActiveFlow().getBaseLanguage()), "");
 
         String valueAsStr = Conversions.toString(testResult.getValue(), context);
 

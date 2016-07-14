@@ -103,7 +103,7 @@ public class TranslatableText implements Jsonizable {
             preferredLanguages.add(run.getContact().getLanguage());
         }
         preferredLanguages.add(run.getOrg().getPrimaryLanguage());
-        preferredLanguages.add(run.getFlow().getBaseLanguage());
+        preferredLanguages.add(run.getActiveFlow().getBaseLanguage());
 
         return getLocalized(preferredLanguages, defaultText);
     }
