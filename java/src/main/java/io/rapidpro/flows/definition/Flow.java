@@ -18,7 +18,7 @@ import java.util.*;
 public class Flow {
 
     // supported versions of the flow spec
-    public static Set<Integer> SPEC_VERSIONS = new HashSet<>(Arrays.asList(7, 8, 9));
+    public static Set<Integer> SPEC_VERSIONS = new HashSet<>(Arrays.asList(7, 8, 9, 10));
 
     public enum Type {
         FLOW("F"),
