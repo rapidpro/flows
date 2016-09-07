@@ -39,7 +39,7 @@ Just as the variables on Contact Fields, the name of the variable will be the sa
 Below ```[variable-name]``` refers to that Rule name in your flow.
 
  * ```@flow``` - All flow variables collected to this point. ex: "Name: Foo, Age: 32"
- * ```@flow.[variable-name]``` - Which value collected by you rule. ex: "32"
+ * ```@flow.[variable-name]``` - Which value collected by your rule. ex: "32"
  * ```@flow.[variable-name].category``` - Which category matched on your rule. ex: "Valid Age"
  * ```@flow.[variable-name].text``` - The full text that was run against your rule. ex: "My age is 32"
  * ```@flow.[variable-name].value``` - The full text that was run against your rule. ex: "My age is 32"
