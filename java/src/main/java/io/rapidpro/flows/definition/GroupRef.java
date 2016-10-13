@@ -11,12 +11,12 @@ import io.rapidpro.flows.utils.Jsonizable;
  */
 public class GroupRef implements Jsonizable {
 
-    protected Integer m_id;
+    protected String m_uuid;
 
     protected String m_name;
 
-    public Integer getId() {
-        return m_id;
+    public String getUuid() {
+        return m_uuid;
     }
 
     public String getName() {
@@ -27,15 +27,15 @@ public class GroupRef implements Jsonizable {
         m_name = name;
     }
 
-    public GroupRef(Integer id, String name) {
-        m_id = id;
+    public GroupRef(String uuid, String name) {
+        m_uuid = uuid;
         m_name = name;
     }
 
     public static GroupRef fromJson(JsonElement elm, Flow.DeserializationContext context) {
         if (elm.isJsonObject()) {
             JsonObject obj = elm.getAsJsonObject();
-            return new GroupRef(JsonUtils.getAsInteger(obj, "id"), obj.get("name").getAsString());
+            return new GroupRef(JsonUtils.getAsString(obj, "uuid"), obj.get("name").getAsString());
         } else {
             return new GroupRef(elm.getAsString());
         }
@@ -43,8 +43,8 @@ public class GroupRef implements Jsonizable {
 
     @Override
     public JsonElement toJson() {
-        if (m_id != null) {
-            return JsonUtils.object("id", m_id, "name", m_name);
+        if (m_uuid != null) {
+            return JsonUtils.object("uuid", m_uuid, "name", m_name);
         } else {
             return new JsonPrimitive(m_name);
         }
@@ -52,7 +52,7 @@ public class GroupRef implements Jsonizable {
 
     @Override
     public String toString() {
-        return "GroupRef{id=" + m_id + ", name=\"" + m_name + "\"}";
+        return "GroupRef{uuid=" + m_uuid + ", name=\"" + m_name + "\"}";
     }
 
     @Override
@@ -62,13 +62,13 @@ public class GroupRef implements Jsonizable {
 
         GroupRef ref = (GroupRef) o;
 
-        if (m_id != null ? !m_id.equals(ref.m_id) : ref.m_id != null) return false;
+        if (m_uuid != null ? !m_uuid.equals(ref.m_uuid) : ref.m_uuid != null) return false;
         return m_name.equals(ref.m_name);
     }
 
     @Override
     public int hashCode() {
-        int result = m_id != null ? m_id.hashCode() : 0;
+        int result = m_uuid != null ? m_uuid.hashCode() : 0;
         result = 31 * result + m_name.hashCode();
         return result;
     }

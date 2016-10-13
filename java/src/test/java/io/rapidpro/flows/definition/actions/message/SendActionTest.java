@@ -26,8 +26,8 @@ public class SendActionTest extends BaseActionTest {
     public void toAndFromJson() throws Exception {
         JsonElement elm = JsonUtils.object(
                 "type", "send",
-                "contacts", JsonUtils.array(JsonUtils.object("id", 123, "name", "Mr Test")),
-                "groups", JsonUtils.array(JsonUtils.object("id", 234, "name", "Testers")),
+                "contacts", JsonUtils.array(JsonUtils.object("uuid", "123", "name", "Mr Test")),
+                "groups", JsonUtils.array(JsonUtils.object("uuid", "234", "name", "Testers")),
                 "variables", JsonUtils.array(
                         JsonUtils.object("id", "@new_contact"),
                         JsonUtils.object("id", "group-@contact.gender")
@@ -36,9 +36,9 @@ public class SendActionTest extends BaseActionTest {
         );
         SendAction action = (SendAction) Action.fromJson(elm, m_deserializationContext);
         assertThat(action.getMsg(), is(new TranslatableText("fre", "Bonjour")));
-        assertThat(action.getContacts().get(0).getId(), is(123));
+        assertThat(action.getContacts().get(0).getUuid(), is("123"));
         assertThat(action.getContacts().get(0).getName(), is("Mr Test"));
-        assertThat(action.getGroups().get(0).getId(), is(234));
+        assertThat(action.getGroups().get(0).getUuid(), is("234"));
         assertThat(action.getGroups().get(0).getName(), is("Testers"));
         assertThat(action.getVariables().get(0).getValue(), is("@new_contact"));
         assertThat(action.getVariables().get(1).getValue(), is("group-@contact.gender"));
@@ -49,8 +49,8 @@ public class SendActionTest extends BaseActionTest {
     @Test
     public void execute() {
         SendAction action = new SendAction(new TranslatableText("Hi @(\"Dr\" & contact) @contact.first_name. @step.contact said @step.value"),
-                Arrays.asList(new ContactRef(234, "Mr Test")),
-                Arrays.asList(new GroupRef(123, "Testers")),
+                Arrays.asList(new ContactRef("234", "Mr Test")),
+                Arrays.asList(new GroupRef("123", "Testers")),
                 Arrays.asList(new VariableRef("@new_contact"), new VariableRef("group-@contact.gender")));
 
         Action.Result result = action.execute(m_runner, m_run, Input.of("Yes"));
@@ -59,10 +59,10 @@ public class SendActionTest extends BaseActionTest {
         SendAction performed = (SendAction) result.getPerformed();
         assertThat(performed.getMsg(), is(new TranslatableText("Hi @(\"Dr\"&contact) @contact.first_name. Joe Flow said Yes")));
         assertThat(performed.getGroups().size(), is(1));
-        assertThat(performed.getGroups().get(0).getId(), is(123));
+        assertThat(performed.getGroups().get(0).getUuid(), is("123"));
         assertThat(performed.getGroups().get(0).getName(), is("Testers"));
         assertThat(performed.getContacts().size(), is(1));
-        assertThat(performed.getContacts().get(0).getId(), is(234));
+        assertThat(performed.getContacts().get(0).getUuid(), is("234"));
         assertThat(performed.getContacts().get(0).getName(), is("Mr Test"));
         assertThat(performed.getVariables().size(), is(2));
         assertThat(performed.getVariables().get(0).getValue(), is("@new_contact"));
