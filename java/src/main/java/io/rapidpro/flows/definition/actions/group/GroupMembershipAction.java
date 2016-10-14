@@ -32,7 +32,7 @@ public abstract class GroupMembershipAction extends Action {
         List<String> errors = new ArrayList<>();
 
         for (GroupRef group : m_groups) {
-            if (group.getId() == null) {
+            if (group.getUuid() == null) {
                 EvaluatedTemplate template = runner.substituteVariables(group.getName(), context);
                 if (!template.hasErrors()) {
                     groups.add(new GroupRef(template.getOutput()));

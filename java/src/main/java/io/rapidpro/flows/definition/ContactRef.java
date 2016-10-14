@@ -11,23 +11,24 @@ import io.rapidpro.flows.utils.Jsonizable;
  */
 public class ContactRef implements Jsonizable {
 
-    protected Integer m_id;
+    protected String m_uuid;
 
     protected String m_name;
+    private String uuid;
 
     public ContactRef(String name) {
         m_name = name;
     }
 
-    public ContactRef(Integer id, String name) {
-        m_id = id;
+    public ContactRef(String uuid, String name) {
+        m_uuid = uuid;
         m_name = name;
     }
 
     public static ContactRef fromJson(JsonElement elm, Flow.DeserializationContext context) {
         if (elm.isJsonObject()) {
             JsonObject obj = elm.getAsJsonObject();
-            return new ContactRef(obj.get("id").getAsInt(), obj.get("name").getAsString());
+            return new ContactRef(obj.get("uuid").getAsString(), obj.get("name").getAsString());
         } else {
             return new ContactRef(elm.getAsString());
         }
@@ -35,15 +36,15 @@ public class ContactRef implements Jsonizable {
 
     @Override
     public JsonElement toJson() {
-        if (m_id != null) {
-            return JsonUtils.object("id", m_id, "name", m_name);
+        if (m_uuid != null) {
+            return JsonUtils.object("uuid", m_uuid, "name", m_name);
         } else {
             return new JsonPrimitive(m_name);
         }
     }
 
-    public Integer getId() {
-        return m_id;
+    public String getUuid() {
+        return m_uuid;
     }
 
     public String getName() {
