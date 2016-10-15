@@ -11,7 +11,8 @@ public class InGroupTestTest extends BaseTestTest {
 
     @org.junit.Test
     public void toAndFromJson() throws Exception {
-        JsonElement elm = JsonUtils.object("type", "in_group", "name", "Subscribers");
+        JsonElement group = JsonUtils.object("name", "Subscribers");
+        JsonElement elm = JsonUtils.object("type", "in_group", "test", group);
         InGroupTest test = (InGroupTest) Test.fromJson(elm, m_deserializationContext);
         assertThat(test.toJson(), is(elm));
     }

@@ -37,16 +37,19 @@ public class InGroupTest extends Test {
 
     public static InGroupTest fromJson(JsonElement elm, Flow.DeserializationContext context) throws FlowParseException {
         JsonObject obj = elm.getAsJsonObject();
-        GroupRef group = JsonUtils.fromJson(obj, context, GroupRef.class);
+        JsonObject test = obj.getAsJsonObject("test");
+        GroupRef group = JsonUtils.fromJson(test, context, GroupRef.class);
         return new InGroupTest(group);
     }
 
     @Override
     public JsonElement toJson() {
-        JsonObject obj = JsonUtils.object("type", TYPE, "name", m_group.getName());
+        JsonObject group = JsonUtils.object("name", m_group.getName());
         if (m_group.getUuid() != null) {
-            obj.addProperty("uuid", m_group.getUuid());
+            group.addProperty("uuid", m_group.getUuid());
         }
+
+        JsonObject obj = JsonUtils.object("type", TYPE, "test", group);
         return obj;
     }
 }
