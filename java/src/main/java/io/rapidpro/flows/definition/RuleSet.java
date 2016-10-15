@@ -38,6 +38,7 @@ public class RuleSet extends Flow.Node {
         WAIT_PHOTO,
         WAIT_VIDEO,
         WAIT_AUDIO,
+        GROUP,
         WEBHOOK,
         FLOW_FIELD,
         FORM_FIELD,
