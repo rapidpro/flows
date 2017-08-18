@@ -63,9 +63,19 @@ public class Flow {
         JsonObject obj = JsonUtils.getGson().fromJson(json, JsonObject.class);
 
         if (obj.has("version")) {
-            int version = obj.get("version").getAsInt();
-            if (!SPEC_VERSIONS.contains(version)) {
-                throw new FlowParseException("Unsupported flow spec version: " + version);
+            String version = obj.get("version").getAsString();
+            String[] parts = version.split("\\.");
+            if (parts.length > 0) {
+                try {
+                    int majorVersion = Integer.parseInt(parts[0]);
+                    if (!SPEC_VERSIONS.contains(majorVersion)) {
+                        throw new FlowParseException("Unsupported flow spec version: " + version);
+                    }
+                } catch (NumberFormatException e) {
+                    throw new FlowParseException("Unsupported flow spec version: " + version);
+                }
+            } else {
+                throw new FlowParseException("Missing flow spec version");
             }
         } else {
             throw new FlowParseException("Missing flow spec version");

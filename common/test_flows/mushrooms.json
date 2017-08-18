@@ -95,7 +95,7 @@
             ]
         }
     ],
-    "version": 7,
+    "version": "7.2",
     "flow_type": "F",
     "entry": "32cf414b-35e3-4c75-8a78-d5f4de925e13",
     "rule_sets": [
