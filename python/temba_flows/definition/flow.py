@@ -46,9 +46,14 @@ class Flow(object):
     @classmethod
     def from_json(cls, json_obj):
         if 'version' in json_obj:
-            version = int(json_obj['version'])
-            if version not in cls.SPEC_VERSIONS:
-                raise FlowParseException("Unsupported flow spec version: %d" % version)
+            version = str(json_obj['version'])
+            parts = version.split(".")
+            if len(parts) > 0:
+                major_version = int(parts[0])
+                if major_version not in cls.SPEC_VERSIONS:
+                    raise FlowParseException("Unsupported flow spec version: %s" % version)
+            else:
+                raise FlowParseException("Unsupported flow spec version: %s" % version)
         else:
             raise FlowParseException("Missing flow spec version")
 
