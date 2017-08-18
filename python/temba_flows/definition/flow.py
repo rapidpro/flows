@@ -48,11 +48,8 @@ class Flow(object):
         if 'version' in json_obj:
             version = str(json_obj['version'])
             parts = version.split(".")
-            if len(parts) > 0:
-                major_version = int(parts[0])
-                if major_version not in cls.SPEC_VERSIONS:
-                    raise FlowParseException("Unsupported flow spec version: %s" % version)
-            else:
+            major_version = int(parts[0])
+            if major_version not in cls.SPEC_VERSIONS:
                 raise FlowParseException("Unsupported flow spec version: %s" % version)
         else:
             raise FlowParseException("Missing flow spec version")
