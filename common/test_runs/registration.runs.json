@@ -50,7 +50,7 @@
             "name": "Jimmy",
             "urns": [],
             "groups": ["UReporters", "UReport English", "UReport Youth", "UReport Males"],
-            "fields": {"registration_date": "15-10-2015 08:48", "born": "1981", "gender": "Male", "state": "Lagos", "lga": "Oyo", "ward": "Ibadan", "settlement": "London", "occupation": "Business"},
+            "fields": {"registration_date": "2015-10-15T08:48:30.123456+01:00", "born": "1981", "gender": "Male", "state": "Lagos", "lga": "Oyo", "ward": "Ibadan", "settlement": "London", "occupation": "Business"},
             "language": "eng"
         }
     },
@@ -97,7 +97,7 @@
             "name": "Jane",
             "urns": [],
             "groups": ["UReporters", "UReport English", "UReport Adults", "UReport Females"],
-            "fields": {"registration_date": "15-10-2015 08:48", "born": "45", "gender": "Female", "state": "Lagos", "lga": "Oyo", "ward": "Ibadan", "settlement": "London", "occupation": "Education"},
+            "fields": {"registration_date": "2015-10-15T08:48:30.123456+01:00", "born": "45", "gender": "Female", "state": "Lagos", "lga": "Oyo", "ward": "Ibadan", "settlement": "London", "occupation": "Education"},
             "language": "eng"
         }
     }

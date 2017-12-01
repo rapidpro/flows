@@ -51,7 +51,7 @@ public class InputTest extends BaseFlowsTest {
         Map<String, Object> context =  input.buildContext(container, contactContext);
         assertThat(context, hasEntry("*", (Object) "Hello"));
         assertThat(context, hasEntry("value", (Object) "Hello"));
-        assertThat(context, hasEntry("time", (Object) "30-09-2015 16:31"));
+        assertThat(context, hasEntry("time", (Object) "2015-09-30T16:31:30+02:00"));
         assertThat(context, hasEntry("contact", (Object) contactContext));
 
         input = Input.of(new BigDecimal("123.456"));
@@ -69,7 +69,7 @@ public class InputTest extends BaseFlowsTest {
         input = Input.of(ZonedDateTime.of(2015, 9, 21, 13, 30, 0, 0, ZoneId.of("UTC")));
 
         context =  input.buildContext(container, contactContext);
-        assertThat(context, hasEntry("*", (Object) "21-09-2015 15:30"));
-        assertThat(context, hasEntry("value", (Object) "21-09-2015 15:30"));
+        assertThat(context, hasEntry("*", (Object) "2015-09-21T15:30:00+02:00"));
+        assertThat(context, hasEntry("value", (Object) "2015-09-21T15:30:00+02:00"));
     }
 }
