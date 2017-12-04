@@ -1,9 +1,5 @@
 language: java
+install: mvn install -DskipTests=true -Dgpg.skip=true
 jdk:
+  - oraclejdk9
   - oraclejdk8
-sudo: false
-before_script:
-script: mvn clean test
-notifications:
-  slack:
-    secure: amXDmxIyqDYeVRdL4gaIxeMt0wR/EXEnZRXcPG08l9uiOdeW5YKB2j49v/70FlCcnGiHjxUvTQMcewzUEPN/rKMDJ3oQsuEvztHitrWvC7OvKENDgFzERHDTmMRQmZyYTlzqeOt6Wgs2hYl6OvizvPj+z1NOdlzXepfXcjpG8xryTeiHVPhZmA6MQFfEDILbOMqk8E0Ib2Xo+moKsBQRhV9Ku/DDiLW/lUqqBWXWyCf7Afk9S1mJFdMq2bvvotBSL8S55tv5i4uqrsOZlBwH0HqSHnHMaoGVfls9m+brkn14DGwY3QFXOF6ABNnPXnjF4Yni7i1vSqEtsdsxCBsrcppqtZBKnmtKT0D2mqB3KGhoTfKU++fvgppDXDv8S9gyQ21qYD3ubxbFVMtk2UeK1aOX0mqH+r6X8I6pz+8zz/VXF984cW2anHEtlOmB1taOZw3zjGr1sMqRsl4mp3vljPRoAXrB+i/FG2OXpUWhI/XUfAuB7D8tKfosxf7oOBnn4azbyzMckeAQsMwd1bZ+VY9AJPLLAbOsKKxn3tPmhu88WujJXmyjIi/o9MXW19Ez7/ucC2a+/HbfUTAgMyP+d2Njdut3/Pb9nf/HGye8WO3cAhbAyxGRBEBO1AUqE9ehUpoM2z0xxkJ79AiCVhuRhjTHALAfn5wj77yRch3Akbw=
