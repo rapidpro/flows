@@ -29,8 +29,8 @@ public class RunStateTest extends BaseFlowsTest {
 
         Map<String, String> context = RunState.buildDateContext(container);
 
-        assertThat(context, hasEntry("*", "24-08-2015 09:44"));
-        assertThat(context, hasEntry("now", "24-08-2015 09:44"));
+        assertThat(context, hasEntry("*", "2015-08-24T09:44:05+02:00"));
+        assertThat(context, hasEntry("now", "2015-08-24T09:44:05+02:00"));
         assertThat(context, hasEntry("today", "24-08-2015"));
         assertThat(context, hasEntry("tomorrow", "25-08-2015"));
         assertThat(context, hasEntry("yesterday", "23-08-2015"));
@@ -39,8 +39,8 @@ public class RunStateTest extends BaseFlowsTest {
 
         context = RunState.buildDateContext(container);
 
-        assertThat(context, hasEntry("*", "08-24-2015 09:44"));
-        assertThat(context, hasEntry("now", "08-24-2015 09:44"));
+        assertThat(context, hasEntry("*", "2015-08-24T09:44:05+02:00"));
+        assertThat(context, hasEntry("now", "2015-08-24T09:44:05+02:00"));
         assertThat(context, hasEntry("today", "08-24-2015"));
         assertThat(context, hasEntry("tomorrow", "08-25-2015"));
         assertThat(context, hasEntry("yesterday", "08-23-2015"));

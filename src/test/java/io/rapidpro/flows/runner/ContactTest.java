@@ -104,7 +104,7 @@ public class ContactTest extends BaseFlowsTest {
 
         assertThat(context, hasEntry("gender", "M"));
         assertThat(context, hasEntry("age", "34"));
-        assertThat(context, hasEntry("joined", "06-10-2015 13:30"));
+        assertThat(context, hasEntry("joined", "2015-10-06T13:30:01.123000+02:00"));
 
         m_org.m_anon = true;
         m_context.setDateStyle(DateStyle.MONTH_FIRST);
@@ -122,6 +122,6 @@ public class ContactTest extends BaseFlowsTest {
 
         assertThat(context, hasEntry("gender", "M"));
         assertThat(context, hasEntry("age", "34"));
-        assertThat(context, hasEntry("joined", "10-06-2015 13:30"));
+        assertThat(context, hasEntry("joined", "2015-10-06T13:30:01.123000+02:00"));
     }
 }
