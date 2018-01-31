@@ -30,7 +30,6 @@ public class ContainsAnyTestTest extends BaseTestTest {
         assertTest(test, "yes", true, "yes");
         assertTest(test, "AFFIRMATIVE SIR", true, "AFFIRMATIVE");
         assertTest(test, "affirmative yes", true, "affirmative yes");
-        assertTest(test, "afirmative!", true, "afirmative"); // edit distance
 
         // edit distance doesn't apply for words shorter than 4 chars
         assertTest(test, "Ok YEES I will", false, null);
@@ -56,7 +55,7 @@ public class ContainsAnyTestTest extends BaseTestTest {
         test = new ContainsAnyTest(new TranslatableText("north,North"));
 
         assertTest(test, "go north NORTH", true, "north NORTH");
-        assertTest(test, "EAST then NORRTH", true, "NORRTH");
+        assertTest(test, "EAST then NORTH", true, "NORTH");
 
         assertTest(test, "go north", true, "north");
         assertTest(test, "east", false, null);
