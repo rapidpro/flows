@@ -14,16 +14,6 @@ import static org.junit.Assert.assertThat;
 public class FlowUtilsTest extends BaseFlowsTest {
 
     @Test
-    public void editDistance() {
-        assertThat(FlowUtils.editDistance("", ""), is(0));
-        assertThat(FlowUtils.editDistance("abcd", "abcd"), is(0));    // 0 differences
-        assertThat(FlowUtils.editDistance("abcd", "abc"), is(1));     // 1 deletion
-        assertThat(FlowUtils.editDistance("abcd", "ad"), is(2));      // 2 deletions
-        assertThat(FlowUtils.editDistance("abcd", "axbcd"), is(1));   // 1 addition
-        assertThat(FlowUtils.editDistance("abcd", "acbd"), is(1));    // 1 transposition
-    }
-
-    @Test
     public void normalizeNumber() {
         // valid numbers
         assertThat(FlowUtils.normalizeNumber("0788383383", "RW"), is((Pair) new ImmutablePair<>("+250788383383", true)));

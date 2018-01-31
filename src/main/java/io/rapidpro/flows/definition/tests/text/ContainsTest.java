@@ -51,15 +51,6 @@ public class ContainsTest extends TranslatableTest {
                 matched = true;
                 continue;
             }
-
-            // words are over 4 characters and start with the same letter
-            if (word.length() > 4 && test.length() > 4 && word.charAt(0) == test.charAt(0)) {
-                // edit distance of 1 or less is a match
-                if (FlowUtils.editDistance(word, test) <= 1) {
-                    matches.add(w);
-                    matched = true;
-                }
-            }
         }
         return matched;
     }
