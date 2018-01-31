@@ -10,7 +10,6 @@ import io.rapidpro.flows.definition.TranslatableText;
 import io.rapidpro.flows.definition.tests.Test;
 import io.rapidpro.flows.runner.RunState;
 import io.rapidpro.flows.runner.Runner;
-import io.rapidpro.flows.utils.FlowUtils;
 import io.rapidpro.flows.utils.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
 
