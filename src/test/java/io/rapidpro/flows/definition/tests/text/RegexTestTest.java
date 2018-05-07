@@ -20,16 +20,16 @@ public class RegexTestTest extends BaseTestTest {
 
     @org.junit.Test
     public void toAndFromJson() throws Exception {
-        JsonElement elm = JsonUtils.object("type", "regex", "test", "(?P<first_name>\\w+) (\\w+)");
+        JsonElement elm = JsonUtils.object("type", "regex", "test", "(\\w+) (\\w+)");
         RegexTest test = (RegexTest) Test.fromJson(elm, m_deserializationContext);
-        assertThat(test.getTest(), is(new TranslatableText("(?P<first_name>\\w+) (\\w+)")));
+        assertThat(test.getTest(), is(new TranslatableText("(\\w+) (\\w+)")));
 
         assertThat(test.toJson(), is(elm));
     }
 
     @org.junit.Test
     public void evaluate() {
-        RegexTest test = new RegexTest(new TranslatableText("(?P<first_name>\\w+) (\\w+)"));
+        RegexTest test = new RegexTest(new TranslatableText("(\\w+) (\\w+)"));
 
         assertTest(test, "Isaac Newton", true, "Isaac Newton");
         assertTest(test, "Isaac", false, null);
@@ -37,15 +37,5 @@ public class RegexTestTest extends BaseTestTest {
         assertThat(m_run.getExtra(), hasEntry("0", (Object) "Isaac Newton"));
         assertThat(m_run.getExtra(), hasEntry("1", (Object) "Isaac"));
         assertThat(m_run.getExtra(), hasEntry("2", (Object) "Newton"));
-        assertThat(m_run.getExtra(), hasEntry("first_name", (Object) "Isaac"));
-    }
-
-    @org.junit.Test
-    public void pythonToJavaRegex() {
-        Map<String, String> groupNames = new HashMap<>();
-        String regex = RegexTest.pythonToJavaRegex("(?P<first_name>\\w+) (\\w+)", groupNames);
-
-        assertThat(regex, is("(?<name1>\\w+) (\\w+)"));
-        assertThat(groupNames, hasEntry("name1", "first_name"));
     }
 }
