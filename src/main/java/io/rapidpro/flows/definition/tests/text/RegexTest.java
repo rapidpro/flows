@@ -49,7 +49,7 @@ public class RegexTest extends TranslatableTest {
     protected Result evaluateForLocalized(Runner runner, RunState run, EvaluationContext context, String text, String localizedTest) {
         try {
             // check whether we match
-            int flags = ExpressionUtils.getPatternUnicodeFlag() | Pattern.CASE_INSENSITIVE | Pattern.MULTILINE;
+            int flags = Pattern.CASE_INSENSITIVE | Pattern.MULTILINE;
             Pattern regex = Pattern.compile(localizedTest, flags);
             Matcher matcher = regex.matcher(text);
 
