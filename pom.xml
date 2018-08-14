@@ -3,7 +3,7 @@
 
     <groupId>io.rapidpro</groupId>
     <artifactId>flows</artifactId>
-    <version>11.3</version>
+    <version>11.4-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>RapidPro Flows</name>
@@ -48,7 +48,7 @@
         <connection>scm:git:git@github.com:rapidpro/flows.git</connection>
         <developerConnection>scm:git:git@github.com:rapidpro/flows.git</developerConnection>
         <url>git@github.com:rapidpro/flows.git</url>
-        <tag>v11.3</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <dependencies>
