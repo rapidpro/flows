@@ -7,9 +7,6 @@ import org.apache.commons.lang3.text.WordUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.lang.reflect.Field;
-import java.util.regex.Pattern;
-
 /**
  * Miscellaneous utility methods
  */
