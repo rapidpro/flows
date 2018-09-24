@@ -27,6 +27,7 @@ public class FlowUtilsTest extends BaseFlowsTest {
         assertThat(FlowUtils.normalizeNumber("+62877747666", null), is((Pair) new ImmutablePair<>("+62877747666", true)));
         assertThat(FlowUtils.normalizeNumber("62877747666", "ID"), is((Pair) new ImmutablePair<>("+62877747666", true)));
         assertThat(FlowUtils.normalizeNumber("0877747666", "ID"), is((Pair) new ImmutablePair<>("+62877747666", true)));
+        assertThat(FlowUtils.normalizeNumber("310 1234567", "PK"), is((Pair) new ImmutablePair<>("+923101234567", true)));
 
         // invalid numbers
         assertThat(FlowUtils.normalizeNumber("12345", "RW"), is((Pair) new ImmutablePair<>("12345", false)));

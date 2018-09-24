@@ -26,6 +26,7 @@ public class HasPhoneTestTest extends BaseTestTest {
         assertTest(test, "My phone number is 0788 383 383", true, "+250788383383");
         assertTest(test, "+250788123123", true, "+250788123123");
         assertTest(test, "+12067799294", true, "+12067799294");
+        assertTest(test, "+92 310 1234567", true, "+923101234567");
 
         assertTest(test, "My phone is 0124515", false, null);
     }

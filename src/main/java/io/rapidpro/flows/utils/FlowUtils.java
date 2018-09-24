@@ -40,7 +40,7 @@ public class FlowUtils {
             Phonenumber.PhoneNumber normalized = phoneUtil.parse(number, countryCode);
 
             // now does it look plausible ?
-            if (phoneUtil.isValidNumber(normalized)) {
+            if (phoneUtil.isPossibleNumber(normalized)) {
                 return new ImmutablePair<>(phoneUtil.format(normalized, PhoneNumberUtil.PhoneNumberFormat.E164), true);
             }
         } catch (NumberParseException ignored) {}
